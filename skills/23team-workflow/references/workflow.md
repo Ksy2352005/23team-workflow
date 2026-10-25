@@ -1,445 +1,444 @@
-# 23 TEAM — MASTER WEBSITE SECURITY, PRIVACY, COMPLIANCE & LAUNCH WORKFLOW
+# 23 TEAM — MASTER WEBSITE SECURITY, PRIVACY, COMPLIANCE & LAUNCH WORKFLOW (v2)
+
+Sections: 0 Legal research · 1 Role · 1A Tiering · 2 Inspection · 2A Live DNS · 2B Accounts ·
+3 Footer · 3A Automatic pages · 3B Owner privacy · 4 Legal pages · 5 Consent · 6 Secrets ·
+7 Auth · 8 Forms & APIs · 8A Spam protection · 9 Data & storage · 10 Dependencies ·
+11 HTTPS, headers, DNS, email · 12 Accessibility · 13 Performance & SEO · 14 Third parties ·
+15 International review · 16 Testing · 17 Backups & deployment · 18 Monitoring ·
+19 Report · 20 Rules · 21 Execution · 22 Handover & ownership · 23 Maintenance ·
+24 Incident response · Appendix: pitfalls learned
 
 ## 0. MANDATORY INTERNATIONAL LEGAL RESEARCH
 
-For every client website, identify the relevant countries and jurisdictions based on the client's business location, target audience, services, and data processing activities.
+Identify every relevant jurisdiction from: where the business is established, where its
+customers are, which languages and currencies the site uses, where data is hosted or
+sent, and the sector. Follow the method in `legal-jurisdictions.md`.
 
-Research the currently applicable laws using authoritative sources, including official government websites, legislation databases, and data protection authorities.
+Research the currently applicable rules from authoritative sources (official legislation
+databases, regulators, data protection authorities). The starting register in
+`legal-jurisdictions.md` is a map of what to check, never proof of what applies today.
 
-Consider applicable privacy, cookie consent, consumer protection, ecommerce, accessibility, marketing, data retention, and sector-specific requirements.
+Consider: privacy and data protection, cookies and similar technologies, consumer
+protection and distance selling, e-commerce and provider identification, accessibility,
+marketing (email, SMS, calls), data retention, language requirements, children's data,
+AI disclosure (chatbots), platform rules (marketplaces / user content), sector rules
+(health, finance, legal, alcohol, gambling, pharmacy, real estate, education).
 
-Do not assume that the same legal rules apply in every country. Do not claim worldwide legal compliance without sufficient evidence.
+For each requirement record in the Legal Register: jurisdiction · rule · authoritative
+source URL · whether the source text was actually read · date checked · required website
+implementation · verification result · unresolved questions.
 
-For each relevant legal requirement, record (see the Legal Register in `report-template.md`):
+If the source could not be opened, say so. If interpretation is needed, mark
+**NEEDS LEGAL REVIEW**. Never invent requirements; never claim worldwide compliance.
 
-* Jurisdiction
-* Applicable rule
-* Authoritative source
-* Date checked
-* Required website implementation
-* Verification result
-* Unresolved questions
+## 1. ROLE
 
-If the law is uncertain, the official sources are insufficient, or qualified legal interpretation is needed, mark the issue **NEEDS LEGAL REVIEW**. Never invent legal requirements or claim compliance without evidence.
+Senior web developer, security engineer, accessibility specialist, privacy implementation
+assistant, SEO specialist and QA engineer for 23 Team. Apply this workflow to every new
+website and every substantial modification. Inspect, implement when authorized, test and
+report verified results — not just recommendations.
 
-## 1. YOUR ROLE
+## 1A. TIERING — SET THE DEPTH
 
-Act as the senior web developer, security engineer, accessibility specialist, privacy implementation assistant, SEO specialist, and quality assurance engineer for 23 Team.
+Classify the site; more than one tier can apply, use the highest.
 
-Apply this workflow to every new website and every substantial website modification.
-
-Your objective is to produce professional, fast, accessible, secure, maintainable websites that are ready for launch and appropriate for the client's business, target audience, jurisdiction, technology stack, and actual integrations.
-
-Do not merely describe improvements. When authorized and technically possible, inspect the project, implement the changes, run the checks, and report verified results.
-
-Never claim that a website is completely secure, fully compliant with every law, or production-ready without evidence.
+| Tier | Site type | Minimum depth |
+|---|---|---|
+| 1 | Static brochure, no forms | All sections; sections 7, 9 usually NOT APPLICABLE |
+| 2 | Forms, bookings, newsletter, CMS (WordPress etc.) | + 8, 8A in full; CMS plugin/theme/core updates; admin hardening |
+| 3 | Accounts, e-commerce, payments, subscriptions, user content | + 7, 9 in full; access-control tests; payment flow (PCI scope via hosted checkout); consumer-law pages |
+| 4 | Sensitive data: health, children, finance, legal, biometric, location | + data protection impact assessment flag (NEEDS LEGAL REVIEW); encryption at rest; strict retention; external penetration test recommended before launch |
 
 ## 2. INITIAL PROJECT INSPECTION
 
-Before editing anything, inspect the existing project. Identify:
+Before editing anything, inspect and record:
 
-* Framework, programming language, dependencies, build system, and hosting environment.
-* Website pages, routes, components, and navigation.
-* Existing backend services, APIs, databases, forms, and authentication.
-* Environment variables and secret-management methods.
-* Third-party integrations, including analytics, advertising pixels, booking systems, payments, email services, maps, embedded content, chat widgets, and external APIs.
-* Existing cookie banners, privacy notices, terms, and other legal pages.
-* DNS, HTTPS, hosting, CDN, and deployment configuration where access is available.
-* Existing testing, monitoring, backup, and deployment processes.
-* Whether the website is a static site, CMS, ecommerce store, or dynamic application.
-* The client's business location, intended markets, target audience, and data-collection purposes.
+* Framework, language, dependencies, build system, hosting, CDN.
+* Pages, routes, components, navigation; every image, video, embed and download.
+* Backend services, APIs, databases, forms, authentication, file uploads.
+* Environment variables and secret storage (names only, never values).
+* Third-party integrations: analytics, tag managers, pixels, booking, payments, email,
+  maps, video, chat/AI widgets, CRM, messaging bots, workers/functions, external APIs.
+* Existing cookie banner, privacy notice, terms, legal notice, accessibility statement.
+* Deployment method, version control, CI/CD, staging, backups, monitoring.
+* All websites sharing the same hosting account or server user (isolation, §2B).
+* Business location, markets, audience, languages, data-collection purposes.
 
-Do not assume that a service is installed just because it is mentioned in a previous conversation. Inspect the actual project files and configuration.
+Inspect real files and configuration. Do not expose secrets while inspecting.
 
-Do not expose secrets while inspecting the project. Never print secret values in reports or logs.
+### 2A. CONFIRM WHICH DNS IS LIVE
 
-If essential information is missing, identify the gap and ask only the questions necessary to proceed safely.
+Before trusting any DNS panel, query the public NS records. A hosting or CDN panel may
+hold a zone that is not authoritative. Record: registrar, authoritative nameservers,
+A/AAAA/CNAME for apex and `www`, MX, SPF, DKIM, DMARC, CAA, DNSSEC (DS at the parent +
+DNSKEY), and every subdomain found (certificate transparency + common names).
 
-## 3. REQUIRED FOOTER DESIGN
+### 2B. ACCOUNTS THE SITE DEPENDS ON
 
-Create a professional, understated footer that fits the individual website's visual identity.
+List every account: domain registrar, DNS, hosting, CDN/Cloudflare, email/mailbox,
+Git hosting, CI/CD, CMS admins, analytics/ads, payment provider, form/messaging
+services (Telegram, WhatsApp, email relays), booking tools, the privacy-contact mailbox.
 
-### Appearance
+For each, verify where access allows (otherwise NEEDS VERIFICATION with exact steps):
 
-* Small-to-medium font size, generally around 12–14px on desktop, adjusted for readability and accessibility.
-* Muted grey or another subdued colour derived from the website's design system.
-* Readable text with sufficient contrast; no excessively low opacity on legal links.
-* Consistent spacing, alignment, typography, and hover states.
-* Links easy to tap on mobile.
-* Visible keyboard-focus indicators.
-* Smooth, subtle hover transitions without unnecessary animation.
-* Respect the user's reduced-motion preference.
-* Match background, borders, typography, and accent colours to the project.
-* Responsive across desktop, tablet, and mobile.
-* Clear labels rather than ambiguous icons alone.
-* Visually minimal without hiding important legal information.
+* Two-factor authentication on every human login (missing 2FA on an admin = High).
+* Members and roles follow least privilege; no ex-staff or unknown members.
+* API tokens: scoped, expiring, named; tokens given to agencies or AI tools revoked or
+  narrowed after the work.
+* Recovery email/phone owned by the client, not a personal address of a contractor.
+* Who owns the account (client vs 23 Team) — record it for handover (§22).
+* Registrar: transfer lock on, auto-renew on, expiry date recorded, WHOIS privacy where available.
+* Hosting isolation: each client site in its own account or server user. Shared
+  accounts → Medium finding.
 
-Never apply one fixed colour scheme to every client. Use the project's actual brand colours, typography, light or dark background, and design tokens.
+## 3. FOOTER DESIGN
 
-### Footer link groups
+Professional, understated footer that fits each site's own identity.
 
-Inspect the actual business and website functionality before deciding which pages are required. Include applicable links from:
+* ~12–14px, muted colour from the site's tokens, contrast ≥ 4.5:1 (no low-opacity legal links).
+* Consistent spacing; links ≥ 24×24 px target area (WCAG 2.5.8); visible focus; subtle
+  hover; respects reduced motion; responsive; clear text labels (not icons alone).
+* Never one fixed colour scheme across clients.
 
-**Business and navigation:** About Us (when relevant); Contact; Services or Products (when relevant); FAQ (when useful); Accessibility Statement (where appropriate or required).
+**Link groups (include only what applies):** About · Contact · Services/Products · FAQ ·
+Accessibility Statement · Privacy Policy · Cookie Policy · Cookie Settings · Terms ·
+Returns/Refunds/Withdrawal · Shipping · Cancellation · Warranty · Legal Notice/Impressum ·
+Privacy rights requests · Security contact (`/.well-known/security.txt`, Tier 2+).
 
-**Privacy and legal:** Privacy Policy; Cookie Policy (where appropriate); Cookie Settings / Privacy Preferences (when a consent-management system is used); Terms and Conditions / Terms of Service (when applicable); Returns and Refunds Policy (relevant ecommerce); Shipping and Delivery Policy (relevant ecommerce); Cancellation Policy (relevant services or bookings); Warranty information (when applicable); Legal Notice or company information (where required); Data Protection / Privacy Rights Request information (where appropriate).
+**Footer verification (all required, evidence in report):**
 
-Do not create irrelevant pages just to make the footer appear complete. Do not invent company registration numbers, business addresses, VAT identifiers, licensing details, or legal statements. Ask the client for missing business information.
-
-### Footer functionality
-
-* Verify every footer link.
-* Ensure legal pages are accessible from relevant pages.
-* Prevent broken links and accidental dead-end routes.
-* Ensure the footer does not cover content or obscure mobile controls.
-* Keep cookie preferences accessible after the initial banner is dismissed.
-* Use the correct canonical URL and internal navigation structure.
-* Check that the footer works with keyboard navigation and screen readers.
+* Automated crawl: every footer link on every page template returns 200 (no 404,
+  no redirect loops, no placeholder `#` links).
+* Legal pages reachable from every page, on desktop and mobile, by keyboard.
+* No `[CONFIRM: …]` placeholders live.
+* Cookie settings link reopens the consent panel after dismissal.
+* Footer does not cover content or controls on mobile; works with screen readers.
+* Indexing matches the client's wish (§3B).
 
 ## 3A. AUTOMATIC PAGE DETERMINATION AND DRAFTING
 
-The client expects this to be automatic. Do not ask the client which pages are needed or what they should say. Work it out from the website itself, then draft everything.
+Do not ask the client which pages are needed. Work it out, then draft everything.
 
-### Step 1 — Classify the business from the site
+**Step 1 — classify from the site** (record evidence):
 
-Inspect the actual pages, copy, forms, buttons, prices, scripts and integrations, and classify the website. More than one type can apply.
-
-| Type | Signals in the site |
+| Type | Signals |
 |---|---|
-| Service business (agency, consultant, trades, beauty, health) | Service descriptions, "get a quote / proposal", contact or enquiry forms, no cart |
-| Booking / appointments | Booking widgets, calendars, time slots, deposits |
-| Restaurant / venue / hospitality | Menus, opening hours, reservations, events |
-| Physical products — showcase only | Product pages without checkout |
-| Ecommerce (physical goods) | Cart, checkout, prices, shipping, payment gateway |
-| Digital products / downloads / courses | Downloads, licences, course access |
-| Subscriptions / SaaS / memberships | Accounts, recurring billing, login |
-| Marketplace / user-generated content | User accounts posting content, reviews, listings |
-| Newsletter / marketing lists | Email sign-up forms, marketing tools |
+| Service business | Service descriptions, quote/enquiry forms, no cart |
+| Booking / appointments | Calendars, time slots, deposits |
+| Restaurant / venue | Menus, hours, reservations, events |
+| Showcase products | Product pages without checkout |
+| E-commerce (physical) | Cart, checkout, prices, shipping, payment |
+| Digital products / courses | Downloads, licences, course access |
+| Subscriptions / SaaS / membership | Accounts, recurring billing, login |
+| Marketplace / user content | Users post content, reviews, listings |
+| Newsletter / marketing lists | Email sign-up, marketing tools |
+| Chatbot / AI features | AI chat, AI-generated content shown to users |
 
-Record the classification and the evidence for it in the report.
-
-### Step 2 — Map type + jurisdiction + real data flows to required pages
-
-Combine the classification, the jurisdictions from section 0, and the third-party data flows actually found (section 14). Typical outcome (always confirm against the legal research for the specific jurisdiction):
+**Step 2 — map type + jurisdiction + real data flows to pages:**
 
 | Page | Include when |
 |---|---|
-| Privacy Policy | Any personal data is collected (forms, bookings, accounts, newsletter, analytics) or third parties receive visitor data |
-| Legal Notice / company information | The jurisdiction requires service-provider identification (verify per jurisdiction; e.g. EU e-commerce rules and national laws) |
-| Cookie Policy + Cookie Settings link | Non-essential cookies, local storage, pixels or trackers are actually used |
-| Terms and Conditions | Online sales, bookings, accounts, subscriptions, digital products, or user content; optional for brochure-type service sites |
-| Returns / Refunds / Right of withdrawal | Selling goods or digital content to consumers |
-| Shipping and Delivery | Physical goods are shipped |
-| Cancellation Policy | Bookings, appointments, events or subscriptions |
-| Warranty / Guarantee | Selling goods (statutory warranty information where required) |
-| Accessibility Statement | Required by law for the client, or good practice where the client wants it |
-| Privacy Rights Request info | Usually inside the Privacy Policy; separate page only where useful |
+| Privacy Policy | Any personal data collected or sent to third parties (forms, logs, fonts, embeds) |
+| Legal Notice / Impressum | Jurisdiction requires provider identification (EU e-commerce rules, DE/AT/HU/CH and others) |
+| Cookie Policy + Settings | Non-essential cookies, storage, pixels or trackers actually used |
+| Terms | Sales, bookings, accounts, subscriptions, digital products, user content |
+| Withdrawal / Returns / Refunds | Selling to consumers at a distance (EU: 14-day withdrawal + model form) |
+| Shipping | Physical goods shipped |
+| Cancellation | Bookings, events, subscriptions |
+| Warranty | Goods sold (statutory warranty info where required) |
+| Accessibility Statement | Legally required (e.g. EU public sector, EAA-covered services) or client wants it |
+| Content/community rules + notice-and-action | User-generated content or marketplace (EU DSA) |
+| AI disclosure | Chatbot or AI-generated content shown to users (EU AI Act transparency) |
 
-Do not include pages that the evidence does not support.
+**Step 3 — draft every page** from the real implementation, in the site's language(s);
+flag where a local-language version may be required (NEEDS LEGAL REVIEW). Fill only
+publicly verifiable facts and cite where each came from. Unknown facts → visible
+`[CONFIRM: …]` placeholder, collected into one short question list; never publish with
+placeholders. Legal-judgment clauses → NEEDS LEGAL REVIEW in the report, not in the page.
 
-### Step 3 — Draft every page automatically
+**Step 4 — present and publish** after approval (§17).
 
-* Write each page from the real implementation: the actual data fields, actual services, actual third parties, actual cookies, actual prices and processes found on the site.
-* Write in the site's language(s). If the site serves a country whose official language differs from the site's language, flag whether a local-language version is required (NEEDS LEGAL REVIEW).
-* Use the site's own layout and design tokens; link every page from the footer.
-* Fill in business facts that are publicly verifiable (e.g. from the site, Hostinger/DNS data, or the official company registry of the jurisdiction) and cite where each came from.
-* Facts that cannot be found or verified (registration numbers, tax numbers, registered address, retention periods, refund terms the client actually offers) must never be invented. Use a clearly visible placeholder such as `[CONFIRM: company registration number]`, collect all placeholders into a single short question list for the client, and do not publish pages containing placeholders.
-* Mark clauses that need legal judgment as NEEDS LEGAL REVIEW in the report (not in the visible page text).
+## 3B. OWNER PRIVACY OPTION (sole traders and small owners)
 
-### Step 4 — Present and publish
+When the law requires personal details (name, address) to be published but the owner
+does not want them found by search engines:
 
-Show the client the classification, the list of pages with the reason for each, the drafts, and the short list of facts to confirm. Publish only after approval, following section 17.
+* Legal pages get `<meta name="robots" content="noindex, nofollow, noarchive">` and an
+  `X-Robots-Tag` header (verify the header live).
+* Do NOT block those pages in robots.txt (crawlers must see the noindex).
+* Keep them out of sitemap.xml; no schema.org Person/Organization data with the owner's
+  details; owner's name not in homepage title, meta, Open Graph or structured data.
+* Suggest a registered-office / seat service address and a domain email instead of home
+  address and personal email; explain which details the law still requires.
+* Explain honestly: noindex keeps compliant search engines away; it cannot stop copying.
+* After launch, check `site:domain` in search results (or ask the owner to).
 
 ## 4. PRIVACY POLICY AND LEGAL PAGES
 
-Determine which legal pages are appropriate based on the actual business model, jurisdiction, data collected, audience, and third-party services. Do not use one generic policy unchanged for every client.
+Never reuse one generic policy unchanged. Privacy Policy covers, where applicable:
+controller identity and contact · categories of data · purposes and legal bases · every
+collection method (forms, logs, fonts, embeds, analytics, payments) · recipients and
+processors · international transfers and safeguards · retention (realistic and actually
+operated) · rights and how to exercise them · supervisory authority · automated
+decisions · children · changes.
 
-### Privacy Policy
+Cookie Policy must match the measured implementation; never claim "no cookies" before
+browser and network inspection. Terms and business policies: no unsupported legal
+promises; jurisdiction-specific clauses → NEEDS LEGAL REVIEW.
 
-Where applicable, clearly explain:
+Also check marketing claims on the site ("secure", "GDPR compliant", "certified",
+"best", fake urgency, reviews) — they must be true and supportable.
 
-* The identity of the relevant business or data controller.
-* Contact details and privacy contact information, where required.
-* Categories of personal data collected.
-* Purposes and applicable legal bases for processing.
-* Forms, booking tools, analytics, advertising, payments, and other data-collection methods.
-* Recipients and categories of third-party service providers.
-* International data transfers, where relevant.
-* Retention periods or criteria for determining retention.
-* Applicable privacy rights and how to exercise them.
-* Complaint or supervisory-authority information, where required.
-* Whether automated decision-making or profiling is used, where relevant.
-* How visitors can contact the business about privacy questions.
+## 5. COOKIE CONSENT
 
-Do not invent the actual data practices. Verify them with the implementation and client.
+Implement only when required by the jurisdiction and the technologies actually used.
+Brand-matched, accessible (focus moves into banner, keyboard operable, no trap), mobile-safe.
 
-### Cookie Policy
+Where consent is required: accept and reject equally prominent; manage preferences;
+categories in plain language; strictly necessary separate; nothing optional fires before
+consent (verify in network log); withdrawal as easy as consent; choices persist; no
+dark patterns; no "continued browsing = consent"; respect Global Privacy Control where
+law requires (some US states). A decorative banner is not consent management.
 
-Where appropriate, explain: what cookies and similar technologies are used; their purposes and categories; which services set them; whether they are necessary, analytics, advertising, or other; how consent and withdrawal work; how visitors can access cookie settings.
+Test: first load (no optional requests), accept, reject, customise, reopen, withdraw,
+reload persistence, second page, mobile. Also: no tracking code loaded twice; preferences
+not silently reset on each page; consent records hold no unnecessary personal data;
+declining optional cookies never breaks essential functions. Don't install tracking just
+because the banner supports it.
 
-The policy must match the actual implementation. Do not claim that a website uses no cookies until its technologies and network behaviour have been examined.
+## 6. SECRETS AND ENVIRONMENT CONFIGURATION
 
-### Terms and business-specific policies
+* Scan code, public files, bundles, source maps, Git history, CI logs for secrets
+  (automated scanner + targeted patterns; investigate every hit for false positives).
+* Distinguish public identifiers from credentials.
+* Secrets only in server-side env / secret managers; check that no version or old
+  deployment stores them as plain text (e.g. Worker plain_text bindings).
+* Public directories: no env files, backups, dumps, archives, logs, setup notes,
+  READMEs with internal details, `.git`.
+* Production debug off; error output and logs free of credentials.
+* Exposed secret → rotate first, then remove; deleting from latest code does not remove
+  it from history, caches or copies. Never repeat the secret.
 
-Create or flag relevant terms, cancellation, refund, shipping, delivery, warranty, and other business-specific policies. Do not generate unsupported legal promises. If a provision requires jurisdiction-specific legal judgment, mark it for review by the client or a qualified professional.
+## 7. AUTHENTICATION AND AUTHORIZATION (Tier 3+)
 
-## 5. COOKIE CONSENT BANNER
+Server-side authorization on every protected route and API; horizontal and vertical
+privilege tests; password reset and recovery; session expiry and invalidation; cookie
+flags (Secure, HttpOnly, SameSite); established password hashing (argon2/bcrypt/scrypt);
+MFA for admins; brute-force protection; no plaintext passwords; CMS admin URL hardening
+and least-privilege roles. A hidden button is not access control.
+Static sites without accounts: NOT APPLICABLE (say why).
 
-Implement a polished, responsive cookie-consent experience whenever required by the applicable rules and actual technologies used. Use the project's own colours, typography, spacing, border radius, shadows, and component design.
+## 8. FORMS, APIs AND INJECTION
 
-### Visual design
+For every form and endpoint: server-side validation (type, length, format, required);
+reject non-object / malformed bodies cleanly (test `null`, arrays, strings, huge bodies,
+wrong content types); context-appropriate output encoding; parameterized queries; upload
+restrictions (type, size, storage outside web root, no execution); CSRF where cookies
+authenticate; CORS limited to needed origins (not a security boundary); generic error
+messages; no personal data in URLs, analytics events or logs; caller cannot choose the
+recipient (email "to", chat IDs, webhook URLs); success, failure and duplicate-submit
+handling; the visitor is told when sending fails.
 
-* Clean, modern banner or compact consent panel matched to the brand colours.
-* Primary brand colour for the main action where appropriate; secondary styling for alternatives.
-* Readable contrast.
-* Subtle entrance and dismissal transitions; respect reduced motion.
-* Do not block essential functionality unnecessarily.
-* Works on mobile and desktop; no overlap with important buttons, navigation, or form controls.
-* Accessible semantic markup and keyboard-operable controls.
+Document every data flow: browser → site/backend → each service → final recipient.
 
-Do not use the same colours across every client website. Derive the banner's colours from the actual project theme.
+## 8A. SPAM AND ABUSE PROTECTION (any public form or endpoint)
 
-### Required consent behaviour (where consent is required)
+A public form without verified abuse protection is a FAIL (Medium).
 
-* Clear way to accept optional cookies.
-* Comparably accessible way to reject optional cookies.
-* Way to manage cookie preferences.
-* Categories explained in understandable language.
-* Strictly necessary technologies kept separate from optional categories.
-* No non-essential analytics or advertising tags before valid consent where prior consent is required.
-* Withdrawing or changing consent possible later.
-* Consent decisions recorded only as necessary and in accordance with applicable requirements.
-* Declining optional cookies does not disable essential website functions.
-* No deceptive button styling, misleading wording, or manipulative consent patterns.
+* Bot challenge verified server-side (Cloudflare Turnstile, hCaptcha or similar). Check
+  the privacy/cookie impact of the chosen service and disclose it.
+* Honeypot field (hidden from keyboard and screen readers).
+* Rate limiting that is **proven to trigger in production** (§16). Note that the test
+  machine may use rotating IPs; design the test accordingly.
+* Size limits, field limits, origin check (as a filter only).
+* Owner alerting on delivery failures (§18).
+* Set limits from legitimate traffic and service quotas, not arbitrary numbers.
 
-Do not treat continued browsing as consent where that is not a valid legal basis. Do not assume that every country requires the same consent mechanism. Determine the applicable requirements.
+## 9. DATA AND STORAGE (Tier 3+, or any persistent storage)
 
-### Technical implementation
+Least-privilege DB users; credentials out of code; tenant isolation tested; data
+minimisation; retention and deletion actually implemented (scheduled job or written
+manual procedure with reminders); backups encrypted and restorable; private uploads not
+publicly reachable; no production data in development; migrations with backup + rollback.
+Also count messaging apps, inboxes and spreadsheets that receive form data as storage.
+Static sites without a database: database checks NOT APPLICABLE (say why), but the
+messaging/inbox storage above still applies.
 
-* Audit cookies, scripts, local storage, pixels, and other tracking technologies.
-* Identify which services create or receive identifiers.
-* Configure consent integration with analytics and advertising tools where installed.
-* Verify consent behaviour through browser inspection and network requests.
-* Ensure optional scripts remain blocked until the required consent is obtained.
-* Verify that consent choices persist appropriately.
-* Test accept, reject, customise, reopen settings, and withdraw-consent behaviour.
-* Avoid loading the same tracking code twice.
-* Ensure the banner does not silently reset preferences on every page.
-* Avoid storing unnecessary personal data in consent records.
+## 10. DEPENDENCIES AND SOURCE CODE
 
-Do not install unnecessary tracking technologies simply because the banner supports them. If a proper consent-management platform is needed, identify the requirement rather than pretending a decorative banner provides compliant consent management.
+Inventory packages and runtime services (including CDN-loaded scripts/fonts). Run the
+package-manager audit (npm/pnpm/yarn audit, pip-audit, composer audit, CMS plugin/theme
+updates). Assess, don't blindly upgrade. Static analysis (semgrep or equivalent) on all
+first-party code including inline scripts and serverless functions. SRI for third-party
+static scripts where possible. Remove unused packages only after checking indirect use.
+Review risky install/build scripts; confirm production builds expose no development
+configuration or source maps with secrets; no breaking upgrades without compatibility checks.
 
-## 6. SECURITY: SECRETS AND ENVIRONMENT CONFIGURATION
+## 11. HTTPS, HEADERS, DNS AND EMAIL
 
-* Search the current codebase and relevant Git history for exposed secrets.
-* Check for API keys, passwords, access tokens, database credentials, private keys, and webhook secrets.
-* Distinguish genuinely public identifiers from credentials that grant privileged access.
-* Check frontend JavaScript, HTML, CSS, source maps, generated bundles, and public assets for secrets.
-* Review environment-variable usage and production configuration.
-* Verify that secret values are stored server-side or in an appropriate secrets manager.
-* Check that secrets are not committed to GitHub.
-* Inspect public directories for environment files, backups, logs, configuration files, database dumps, and source archives.
-* Ensure production debug mode is disabled.
-* Review error output and logs for credential exposure.
+* HTTPS on every host (apex, www, subdomains); HTTP → HTTPS 301; certificate covers every
+  hostname used; renewal automatic. TLS grade from an external scanner (SSL Labs) when
+  the local network intercepts TLS.
+* Headers on every page template **and** error pages: CSP (tested in browser with zero
+  violations; aim to remove `'unsafe-inline'` via files or hashes), HSTS, frame
+  protection (X-Frame-Options and/or `frame-ancestors`), nosniff, Referrer-Policy,
+  Permissions-Policy. Don't break functionality; test each policy.
+* Methods: only what is needed (TRACE/PUT/DELETE disabled on static hosting).
+* Sensitive paths probe (see `tools-and-fallbacks.md` list).
+* DNS (from §2A): `www` and apex both resolve and redirect consistently; no dangling
+  CNAMEs to external services (subdomain takeover); CAA set; DNSSEC either fully
+  anchored (DS published) or not claimed; zone panel = live zone.
+* Email authentication for the domain: SPF, DKIM, DMARC (move from `p=none` toward
+  `quarantine`/`reject` once reports are clean); MX correct.
+* CDN/caching: no private or personalised responses cached publicly.
+* Server banners: minimise where the host allows (Informational).
+* Not every header belongs on every resource; test the impact of each policy.
+* Admin interfaces and server configuration reviewed where access exists.
 
-If a secret has been exposed, identify the affected credential, recommend immediate revocation or rotation, and update the relevant protected configuration after authorization. Do not repeat the secret in your report. Do not claim that deleting a secret from the latest code removes it from Git history.
+## 12. ACCESSIBILITY AND UX
 
-## 7. AUTHENTICATION AND AUTHORIZATION
-
-For applications with accounts, admin functions, private information, or privileged actions:
-
-* Check authentication requirements.
-* Check authorization on the server, not only in the user interface.
-* Check access controls for administrative routes and APIs.
-* Test for horizontal and vertical privilege escalation where appropriate.
-* Review password reset and account recovery.
-* Check session expiration and invalidation.
-* Review cookie security attributes for authentication cookies.
-* Use secure password hashing appropriate to the application and framework.
-* Never store plaintext passwords.
-* Never invent authentication requirements for a static website that has no accounts.
-* Verify that private resources cannot be retrieved by unauthorized users.
-
-A hidden admin button is not a security control.
-
-## 8. FORMS, APIs, AND INJECTION RISKS
-
-Inspect every form and endpoint that accepts data.
-
-* Validate input on the server; apply appropriate input constraints.
-* Use context-appropriate output encoding; prevent cross-site scripting.
-* Use parameterized database queries or safe ORM methods; check for SQL and other injection.
-* Review file uploads, if supported; enforce request-size and file-type restrictions.
-* Add abuse prevention and rate limiting to public endpoints where appropriate.
-* Verify authentication and authorization on protected API routes.
-* Protect state-changing browser requests against CSRF when applicable.
-* Configure CORS to allow only necessary origins. Do not treat CORS as authentication or authorization.
-* Return safe error messages without stack traces or secrets.
-* Ensure form submissions cannot expose sensitive data through URLs, analytics events, or logs.
-* Verify success and failure handling.
-* Test spam protection without breaking legitimate users.
-
-Do not add arbitrary rate limits without considering legitimate traffic, service limits, and abuse risks.
-
-## 9. DATABASE AND STORAGE SECURITY
-
-For projects that use databases or persistent storage:
-
-* Apply least-privilege access; keep database credentials out of public code; use protected environment configuration.
-* Check that clients cannot access other clients' records; validate access controls at the data layer.
-* Avoid unnecessary personal data collection; establish retention and deletion behaviour.
-* Review backups and restoration.
-* Protect uploaded files and private documents; prevent public access to private storage.
-* Do not copy production data into development unnecessarily.
-* Avoid destructive migrations without backups and a recovery plan.
-
-For static websites without a database, mark database-specific checks NOT APPLICABLE instead of inventing a database audit.
-
-## 10. DEPENDENCY AND SOURCE-CODE SECURITY
-
-* Identify the package manager and lockfile; run the appropriate package-manager audit.
-* Check dependencies for known vulnerabilities; review outdated dependencies.
-* Remove unused packages only after checking indirect and build-tool usage.
-* Avoid unverified packages and unnecessary dependencies; review risky install and build scripts.
-* Use static analysis and security-focused linters where appropriate.
-* Review code changes affecting authentication, payments, storage, forms, or access control.
-* Verify that production builds do not expose development configuration.
-* Do not automatically apply breaking upgrades without checking compatibility.
-
-Do not blindly delete packages merely because they appear unused in a superficial scan.
-
-## 11. HTTP, HTTPS, AND INFRASTRUCTURE
-
-Where supported by the hosting environment:
-
-* Verify HTTPS works; check certificate validity and renewal; check HTTP→HTTPS redirects.
-* Review security headers: an appropriate Content-Security-Policy, HSTS where appropriate, frame protections, MIME-type protections, Referrer-Policy, and Permissions-Policy where appropriate.
-* Avoid introducing headers that break legitimate site functionality.
-* Review DNS records and public service exposure; check unnecessary public files and endpoints.
-* Review CDN and caching configuration; ensure private or personalised responses are not cached publicly.
-* Check administrative interfaces and server configuration where access is available.
-* Review Cloudflare configuration where used.
-
-Do not assume every security header belongs on every resource. Test the impact of each policy.
-
-## 12. ACCESSIBILITY AND USER EXPERIENCE
-
-Use WCAG 2.2 as the baseline reference, with the applicable conformance target determined for the project. Check:
-
-* Keyboard-only navigation and visible focus states.
-* Semantic HTML and heading hierarchy.
-* Accessible labels and validation messages for form controls.
-* Text and interface contrast.
-* Meaningful image alt text.
-* Accessible dialogs and banners.
-* Mobile usability, responsive layouts, zoom and text resizing.
-* Reduced-motion preferences.
-* Screen-reader behaviour for important interactions.
-* Links and buttons with clear purposes.
-
-Do not mark accessibility as passed solely because an automated tool reports a good score.
+Baseline WCAG 2.2 AA. Follow `accessibility.md` step by step, including the alt-text
+audit, video/media rules, headings and landmarks, forms, keyboard, focus, contrast,
+reflow/zoom, motion, target size, and the cookie banner. Automated tools find only part
+of the issues: always add the manual keyboard pass and a screen-reader spot check.
 
 ## 13. PERFORMANCE AND TECHNICAL SEO
 
-* Optimize image formats and sizes; avoid unnecessarily large assets.
-* Review JavaScript bundles and unused dependencies; avoid render-blocking resources where practical.
-* Check caching and compression; review loading performance and Core Web Vitals.
-* Check page titles, meta descriptions, and heading structure.
-* Configure canonical URLs when appropriate.
-* Generate and validate a sitemap where appropriate; check robots.txt and indexing directives.
-* Verify important pages are indexable; check for broken links and redirects.
-* Add structured data only when appropriate and supported by actual page content.
-* Verify social-sharing metadata where useful; check mobile layout and functionality.
-
-Do not promise search rankings or mark SEO as complete solely because metadata exists.
+* Page-weight budget: HTML < 100 KB, total first load < 2 MB on mobile unless justified;
+  never embed large media as base64 in HTML/JS; video as separate compressed files with
+  poster and `preload="metadata"`.
+* Images: modern formats, correct dimensions, `width`/`height`, lazy-load below the fold.
+* Caching and compression; render-blocking resources; Core Web Vitals (Lighthouse / field data).
+* One `<h1>` with the page's main message as real text; title and meta description per
+  page; canonical; Open Graph; favicon; robots.txt; sitemap.xml (excluding noindex pages);
+  hreflang for multilingual sites; structured data only when true; broken-link crawl.
+* Never promise rankings.
 
 ## 14. THIRD-PARTY SERVICES AND DATA FLOWS
 
-Detect the integrations actually used (e.g. Google Analytics, Google Tag Manager, Google Search Console, advertising pixels, booking systems, email marketing, transactional email, payment gateways, maps, embedded video, chat tools, CRM systems, Cloudflare Workers, external APIs).
-
-For each relevant integration:
-
-* Identify the information it receives and whether it stores or transfers personal data.
-* Check authentication and credential handling.
-* Check the privacy notice and consent configuration.
-* Check whether the service is necessary.
-* Check failure handling and any additional security or availability risks.
-
-Do not claim that a third-party service is installed unless confirmed by code, configuration, or an authorized account inspection.
+For each integration confirmed by code, config or account inspection: data received,
+storage/transfer location, legal transfer basis, authentication and permissions,
+necessity, consent requirement, failure behaviour, disclosure in the privacy policy.
+Fonts, maps, video embeds and CAPTCHAs count: they send visitor IPs to third parties.
 
 ## 15. INTERNATIONAL PRIVACY AND LEGAL REVIEW
 
-Identify the jurisdictions that may apply based on the business, its establishment, audience, services, and data processing. Consider relevant requirements such as:
+Use `legal-jurisdictions.md`. Separate verified implementation facts from legal
+assumptions. Flag unresolved points for the client or a qualified professional. Never
+guarantee worldwide compliance. Do not treat a region (e.g. "the Middle East") as one law.
 
-* EU GDPR and applicable ePrivacy rules (and their national implementations).
-* UK GDPR and applicable UK privacy and electronic-communications rules.
-* Other applicable national or regional privacy, consumer-protection, ecommerce, and accessibility requirements.
-* Local business disclosure and sector-specific requirements.
+## 16. TESTING
 
-Do not assume that a country list alone determines every applicable law. Do not automatically treat every Middle Eastern, Central Asian, or East Asian jurisdiction as having identical requirements.
+Run what the environment supports; see `tools-and-fallbacks.md`.
 
-Separate verified implementation facts from legal assumptions. Flag unresolved issues for client confirmation or qualified legal review. Never guarantee worldwide compliance.
-
-## 16. AUTOMATED TESTING
-
-Where the project environment supports it, configure and run appropriate automated tests, using tools such as GitHub Actions, Playwright, Lighthouse, dependency scanning, secret scanning, static analysis, and OWASP ZAP or another scanner for authorized testing.
-
-Tests should cover relevant critical paths: homepage and important routes; forms; authentication and protected resources (if present); cookie consent; analytics consent behaviour; mobile layouts; error states; navigation; redirects; important third-party integrations.
-
-Never perform intrusive security testing against systems without appropriate authorization. Do not expose production customer data during tests.
+* Security controls pass only when proven against the **real deployment**. Local tests
+  with mocks/simulators show the code path works, not that the control works.
+* Critical paths: pages, navigation, footer links, forms (success, validation, failure,
+  duplicate, rate-limited), consent behaviour, auth and protected resources, redirects,
+  mobile, error pages, integrations end-to-end with dummy data marked TEST.
+* Scanners: secrets, dependencies, SAST, accessibility, headers, TLS. DAST (e.g. ZAP
+  baseline) only on systems you are authorized to test; prefer staging.
+* Check results for false positives and false negatives.
+* Never call it a penetration test unless one was performed. A clean scan is not proof.
+* No intrusive tests without authorization; never use real customer data.
 
 ## 17. BACKUPS AND SAFE DEPLOYMENT
 
-Before substantial production changes:
+Before production changes: confirm the deployment target and current state; back up
+code, data, uploads and config (version control preferred; otherwise a locked server-side
+copy + a local copy); record the rollback steps; check env/secrets without exposing
+them; run tests; obtain approval.
 
-* Identify the deployment target and verify the current project state.
-* Preserve source-code history; back up databases and uploads where applicable.
-* Confirm the rollback strategy.
-* Check environment variables and production secrets without exposing their values.
-* Run applicable tests and obtain the required approval.
+Deploy in a safe order (e.g. backend accepts both old and new clients before the
+frontend changes; protective files like `.htaccess` deny rules uploaded before the
+files they protect). Byte-compare deployed files with the tested build.
 
-Prefer a staging environment when practical. Do not publish significant production changes without authorization.
-
-After deployment: verify important pages; test critical forms; check HTTPS and redirects; check consent behaviour; verify important integrations; review error logs where authorized; run smoke tests; confirm monitoring where configured; record the deployment and remaining risks.
-
-Never claim that a rollback is available unless the necessary code, data, configuration, and restoration steps actually exist.
+After deployment: verify pages, forms, headers, redirects, consent, integrations; run
+smoke tests on desktop and mobile; record the deployment and remaining risks. Never claim
+a rollback exists unless its steps and data actually exist.
 
 ## 18. MONITORING AND MAINTENANCE
 
-For production websites, consider monitoring of: availability; SSL certificate status; error logs and application failures; dependency vulnerabilities; backup success and restoration testing; expiring domains and services; form delivery failures; analytics tracking health; search indexing problems; security alerts.
+Where services and access exist: uptime, certificate expiry, domain expiry, form/
+integration delivery failures (alert the owner, not only the visitor), error logs,
+dependency alerts, backup success, security notifications from host/CDN. Never promise
+monitoring that is not configured.
 
-Configure monitoring only where the required service and access are available. Do not promise continuous monitoring if no monitoring system is configured.
+## 19. FINAL REPORT
 
-## 19. REQUIRED FINAL REPORT
-
-For every security review or launch, produce a report using `report-template.md`. Results: PASS, FAIL, NOT RUN, NEEDS REVIEW, NOT APPLICABLE (plus NEEDS LEGAL REVIEW for legal items). Severity: Critical, High, Medium, Low, Informational.
-
-Launch decision — choose one: READY FOR APPROVAL; BLOCKED BY CRITICAL OR HIGH-RISK ISSUES; NEEDS MANUAL REVIEW; NOT READY FOR PRODUCTION. Explain the reasons.
-
-Never mark an unperformed check as passed. Never claim that a website is completely secure or legally compliant.
+Use `report-template.md`. Every checklist item gets a status, evidence and method tag.
+Every FAIL gets: issue, severity, realistic impact, location, fix, fixed?, retested?
+End with readiness (security: NOT READY / READY WITH ACCEPTED RISKS / READY FOR FINAL
+REVIEW; launch: READY FOR APPROVAL / BLOCKED / NEEDS MANUAL REVIEW / NOT READY), manual
+verifications for the client, prioritized fixes, tests to repeat, a separate
+privacy/legal summary, a production suitability statement, and the sentence:
+"No audit can guarantee the absence of all vulnerabilities."
 
 ## 20. NON-NEGOTIABLE RULES
 
-1. Never expose API keys, passwords, tokens, private keys, or confidential client data.
-2. Never commit production secrets to GitHub.
+1. Never expose API keys, passwords, tokens, private keys or confidential client data.
+2. Never commit production secrets.
 3. Never assume a frontend-only restriction protects a backend resource.
-4. Never treat CORS as authentication.
-5. Never use deceptive cookie-consent interfaces.
-6. Never load optional tracking technologies before required consent.
+4. Never treat CORS or Origin checks as authentication.
+5. Never use deceptive consent interfaces.
+6. Never load optional tracking before required consent.
 7. Never invent client details or legal obligations.
-8. Never perform destructive production changes without authorization.
+8. Never make destructive or production changes without authorization.
 9. Never conduct unauthorized security testing.
-10. Never delete dependencies or data without checking the consequences.
-11. Never claim a check passed without evidence.
+10. Never delete dependencies or data without checking consequences.
+11. Never claim a check passed without evidence; simulations are not evidence for security controls.
 12. Never claim complete security based on automated tests.
 13. Always preserve a recovery path before risky production changes.
-14. Always separate client projects and their credentials.
-15. Always report unresolved risks honestly.
+14. Always separate client projects, hosting accounts and credentials.
+15. Always report unresolved risks honestly, and correct earlier reports when new evidence contradicts them.
+16. Never publish a client's personal details beyond what the law requires; offer §3B.
 
 ## 21. EXECUTION PRINCIPLE
 
-INSPECT → PLAN → IMPLEMENT → TEST → REPORT → OBTAIN APPROVAL → DEPLOY → VERIFY.
+INSPECT → PLAN → IMPLEMENT → TEST → REPORT → OBTAIN APPROVAL → DEPLOY → VERIFY LIVE → MAINTAIN.
+Perform every safe, authorized task the environment supports. If a tool, credential or
+permission is missing, say exactly what is missing and the client's next action. Never
+pretend to have accessed a service, configured DNS, installed tracking or deployed code.
 
-Perform all safe, authorized tasks that the available environment supports. If a required tool, credential, permission, or service is unavailable, explain the limitation and provide the exact next action needed.
+## 22. HANDOVER AND OWNERSHIP
 
-Do not pretend to have accessed an external service, created an account, configured DNS, installed tracking, or deployed code unless the action actually succeeded and can be verified.
+Deliver to the client: account ownership table (§2B), where secrets live (names only),
+how to deploy and roll back, backup locations, monitoring contacts, retention tasks and
+their schedule, open risks and accepted risks with who accepted them, and the reports.
+Remove or narrow 23 Team / AI-tool access that is no longer needed.
+
+## 23. MAINTENANCE CADENCE
+
+* **Monthly:** uptime/certificate status, one TEST form submission, backup present,
+  retention deletions done (e.g. old enquiries in inbox/Telegram), CMS/plugin updates.
+* **Quarterly:** headers + TLS + sensitive-path re-scan, dependency audit, account
+  members and 2FA review, footer link crawl, legal pages still match the site.
+* **Yearly or on major change:** full workflow including legal research refresh.
+* **Triggered:** new integration, new country, new form, new data type, incident.
+
+## 24. INCIDENT RESPONSE
+
+If a breach, defacement, leaked secret or data exposure is suspected:
+1. Contain: rotate exposed credentials, disable the affected integration or page.
+2. Preserve evidence: logs, file timestamps, copies of changed files (no further damage).
+3. Restore from a known-good backup; verify.
+4. Assess personal-data impact. EU/UK GDPR: notify the supervisory authority within
+   72 hours of awareness when there is a risk to individuals, and the individuals when
+   the risk is high — NEEDS LEGAL REVIEW for the decision; other jurisdictions per register.
+5. Inform the client in plain language; document timeline, cause and fixes.
+6. Re-run the security checklist on affected areas; update this workflow if a gap is found.
+
+## APPENDIX — PITFALLS LEARNED (keep adding)
+
+* A hosting/CDN DNS panel may not be the live zone — always check NS first.
+* The biggest risk can be an account without 2FA, not the website code.
+* Local tests with a mocked rate limiter passed while the real limiter did nothing.
+* Rotating egress IPs hide per-IP limits; test with enough parallel requests or a
+  fixed source, and report the method.
+* Setup notes, worker source and old backups left in `public_html` leak internals.
+* "The token is no longer in the HTML" means it once was: rotate it.
+* Text baked into a hero video is invisible to screen readers and search engines.
+* Base64 video inside HTML made a 7.6 MB page.
+* Shared hosting user across client sites breaks isolation.
+* Error pages may not receive the security headers set for normal pages.
+* A `null` JSON body crashed a Worker that handled every other malformed input.

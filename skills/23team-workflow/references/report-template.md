@@ -1,60 +1,88 @@
-# 23 Team — Website Review Report
+# 23 Team — Website Review Report (v2 template)
 
-## Summary for the client (plain language)
+Write plain language first, technical evidence second. Never "fully secure". Include the
+sentence: "No audit can guarantee the absence of all vulnerabilities."
 
-- What was checked:
-- Biggest risks, in order:
-- What was fixed:
-- What needs a decision from you:
+## 1. Verdict and summary
+
+- Security readiness: NOT READY | READY WITH ACCEPTED RISKS | READY FOR FINAL REVIEW — because …
 - Launch decision: READY FOR APPROVAL | BLOCKED BY CRITICAL OR HIGH-RISK ISSUES | NEEDS MANUAL REVIEW | NOT READY FOR PRODUCTION — because …
+- What was checked (one line)
+- Critical / High findings
+- Medium / Low / Informational findings (IDs + one line each)
+- What was fixed during this work (deployed and retested vs. drafted only)
+- Corrections to earlier reports (if any)
 
-## Project
+## 2. Project, scope, methods, limits
 
 | Field | Value |
 |---|---|
 | Client / project | |
-| Website URL | |
-| Framework / stack | |
-| Hosting / CDN | |
+| URL(s) and hostnames | |
+| Tier (workflow §1A) | |
+| Stack | |
+| Hosting / CDN / DNS (live NS) | |
+| Accounts in scope (§2B) | |
 | Review date | |
-| Scope (what was and was not reviewed) | |
-| Access used | (e.g. Hostinger API, Cloudflare API, live site, repository) |
-| Limitations | (anything that could not be inspected, and why) |
+| Scope | |
+| Access used | |
+| Not possible / limitations | |
 
-## Findings
+Method tags: [Code] [Auto] [Live] [Config] [External] [Owner]. Tools and versions used.
 
-Result: PASS · FAIL · NOT RUN · NEEDS REVIEW · NOT APPLICABLE
-Severity: Critical · High · Medium · Low · Informational
+## 3. Failed checks in detail
 
-| # | Area | Check performed | Result | Severity | Evidence | Practical impact | Recommended remediation | Fixed? | Retested? |
-|---|---|---|---|---|---|---|---|---|---|
-| 1 | | | | | | | | | |
+| ID | Issue | Severity | Realistic impact | Where | Recommended fix | Fixed? | Retested? |
+|---|---|---|---|---|---|---|---|
 
-Areas to cover (workflow sections): Inspection (2) · Footer (3) · Legal pages (4) ·
-Cookie consent (5) · Secrets (6) · Auth (7) · Forms & APIs (8) · Database (9) ·
-Dependencies (10) · HTTPS & headers & DNS (11) · Accessibility (12) ·
-Performance & SEO (13) · Third parties (14) · Legal review (15) · Tests (16) ·
-Backups & deployment (17) · Monitoring (18)
+## 4. Checklists A–H (from `security-checklist.md`)
 
-## Legal register
+One table per checklist: Check · Status · Evidence and method.
+Statuses: PASS · FAIL · NOT RUN · NEEDS VERIFICATION · NEEDS LEGAL REVIEW · NOT APPLICABLE (with reason).
 
-| Jurisdiction | Applicable rule | Authoritative source (URL) | Date checked | Required website implementation | Verification result | Unresolved questions |
+## 5. Accessibility results
+
+Pages scanned · axe results per page · keyboard pass · screen-reader spot check · alt-text
+audit (count of images, issues) · media (captions, pause) · open WCAG failures with criterion numbers.
+
+## 6. Footer and legal pages
+
+| Page | Needed? (reason) | URL | HTTP status | Linked from every page? | Indexing (index/noindex) | Placeholders left? |
 |---|---|---|---|---|---|---|
-| | | | | | | |
 
-Any item needing interpretation → **NEEDS LEGAL REVIEW**.
+Business classification and evidence.
 
-## Third-party data flows
+## 7. Third-party data flows
 
-| Service | Confirmed by | Data received | Stores / transfers personal data? | Consent needed? | Listed in privacy policy? |
+Data-flow chain per integration: browser → backend → service → final recipient.
+
+| Service | Confirmed by | Data received | Stores / transfers personal data (where) | Consent needed? | In privacy policy? |
 |---|---|---|---|---|---|
 
-## Information needed from the client
+## 8. Legal register
 
--
+| Jurisdiction | Rule | Authoritative source (URL) | Source read? | Date checked | Required implementation | Result | Open questions |
+|---|---|---|---|---|---|---|---|
 
-## Launch decision
+## 9. Client actions
 
-Decision:
+- Manual verifications (checkbox list with exact steps)
+- Information needed (one short list)
+- Fixes in priority order (who does each)
+- Tests to repeat after fixes
 
-Reasons:
+## 10. Privacy and legal summary (separate from security)
+
+Bullets: each NEEDS LEGAL REVIEW item, transfers, missing disclosures, claims on the site,
+cookie status, retention operation.
+
+## 11. Production suitability statement
+
+On the evidence available, the website is / is not suitable for production because …
+This review used [methods]. It was / was not a penetration test.
+No audit can guarantee the absence of all vulnerabilities.
+
+## 12. Handover (launches)
+
+Account ownership table · secrets locations (names only) · deploy/rollback steps · backups ·
+monitoring · maintenance schedule (workflow §23) · accepted risks and who accepted them.
