@@ -37,6 +37,7 @@ export function drawMascot(ctx, P) {
   const sg = ctx.createRadialGradient(x, y, 0, x, y, H * .3); sg.addColorStop(0, 'rgba(5,6,25,.45)'); sg.addColorStop(1, 'rgba(5,6,25,0)');
   ctx.fillStyle = sg; ctx.save(); ctx.translate(x, y); ctx.scale(1, .2); ctx.translate(-x, -y); ctx.beginPath(); ctx.arc(x, y, H * .3, 0, 7); ctx.fill(); ctx.restore();
   ctx.translate(x, y); ctx.rotate(P.lean || 0); ctx.translate(-x, -y);
+  if (P.rot) { const px = x, py = y - .2 * H; ctx.translate(px, py); ctx.rotate(P.rot); ctx.translate(-px, -py); }
   const lift = sit * .13 * H, yb = y - lift - bob;       // body baseline
   const hipY = yb - .2 * H, shY = yb - .47 * H, headY = yb - .74 * H * (1 - sq * .6), R = .245 * H;
   const legW = .115 * H, legDX = .075 * H * (1 - .55 * Math.abs(f)), fwd = Math.sign(f || 1);
@@ -77,7 +78,6 @@ export function drawMascot(ctx, P) {
   const bx = x, by = yb - .345 * H;
   ctx.fillStyle = bodyGrad(ctx, bx, by, .24 * H, sk, light);
   ctx.beginPath(); ctx.ellipse(bx, by, .185 * H * (1 + sq * .4) * (1 - .1 * Math.abs(f)), .19 * H * (1 - sq), 0, 0, 7); ctx.fill();
-  rim(ctx, bx, by, .19 * H, P.rimSide, P.rimCol || '#ffc27a', .35, .06);
   if (!(f > .25)) hands.L = arm(-1, armL); if (!(f < -.25)) hands.R = arm(1, armR);
   // held props
   P_tray = P; if (P.hold) drawHeld(ctx, P.hold, hands, H, x, shY, f);
@@ -86,7 +86,6 @@ export function drawMascot(ctx, P) {
   ctx.save(); ctx.translate(hx, hy); ctx.rotate(P.tilt || 0); ctx.translate(-hx, -hy);
   ctx.fillStyle = 'rgba(0,0,20,.22)'; ctx.beginPath(); ctx.ellipse(hx, hy + R * .9, R * .55, R * .16, 0, 0, 7); ctx.fill();
   ctx.fillStyle = bodyGrad(ctx, hx, hy, R, sk, light); ctx.beginPath(); ctx.arc(hx, hy, R, 0, 7); ctx.fill();
-  rim(ctx, hx, hy, R, P.rimSide, P.rimCol || '#ffc27a', .6, .08);
   if (!P.back) face(ctx, hx, hy, R, Math.max(-1, Math.min(1, f + (P.headTurn || 0))), P);
   ctx.restore();
   ctx.restore();
@@ -127,6 +126,8 @@ function drawHeld(ctx, what, hands, H, x, shY, f) {
     ctx.fillStyle = '#eef0f6'; ctx.beginPath(); ctx.ellipse(tx, ty - .008 * H, .19 * H, .018 * H, 0, 0, 7); ctx.fill();
   }
   if (what === 'cup' && hR) cup(ctx, hR[0], hR[1] - .02 * H, H * .5);
+  if (what === 'knife' && hR) { ctx.fillStyle = '#3a2a1e'; ctx.fillRect(hR[0] - .012 * H, hR[1] - .05 * H, .024 * H, .06 * H); ctx.fillStyle = '#dfe3ea'; ctx.beginPath(); ctx.moveTo(hR[0] - .01 * H, hR[1] + .01 * H); ctx.lineTo(hR[0] + .012 * H, hR[1] + .01 * H); ctx.lineTo(hR[0] + .02 * H, hR[1] + .13 * H); ctx.lineTo(hR[0] - .01 * H, hR[1] + .1 * H); ctx.closePath(); ctx.fill(); }
+  if (what === 'coin' && hR) { ctx.fillStyle = '#e8c35a'; ctx.beginPath(); ctx.ellipse(hR[0], hR[1] + .03 * H, .028 * H, .022 * H, 0, 0, 7); ctx.fill(); ctx.strokeStyle = '#b8902e'; ctx.lineWidth = .006 * H; ctx.stroke(); }
 }
 // a plate with food (steam when hot)
 export function plate(ctx, x, y, s, food = true, steam = 0, t = 0) {

@@ -5,7 +5,7 @@ import numpy as np
 from scipy.signal import fftconvolve
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.environ.get('LIB', os.path.expanduser('~/lemo-opuscar')), 'core', 'audio'))
-from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, creak, thump, ding, compress, limit, add
+from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, creak, thump, ding, whoosh, compress, limit, add
 
 ev = json.load(open(os.path.join(HERE, 'events.json')))
 DUR = ev['dur']; EVS = ev['ev']
@@ -107,7 +107,7 @@ vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
 voice = buf(); add(voice, vo, 0, 1)
 venv = np.convolve(np.abs(vo), np.ones(int(.12 * SR)) / int(.12 * SR), 'same'); venv = np.minimum(1, venv / (np.percentile(venv, 90) + 1e-9))
-duck = np.ones(N); duck[:len(venv)] = 1 - .55 * np.clip(venv * 1.6, 0, 1)
+duck = np.ones(N); duck[:len(venv)] = 1 - .7 * np.clip(venv * 1.8, 0, 1)
 duck = np.convolve(duck, np.ones(int(.08 * SR)) / int(.08 * SR), 'same')
 
 # —— foley ——
@@ -163,43 +163,65 @@ for e in EVS:
     else: x = mx(soft_step(.06), hp(noise(.04), 3000) * env_exp(.04, .006) * .02)
     add(fx, x, e['t'], 1, pan * .7)
 
+# 1: saving — a coin into the jar each time, the calendar pages flipping, a happy hum of the sketch
+for t in HIT['coins']: add(fx, verb(mx(clink(.11, 1.25 + rng.random() * .2), clink(.06, 1.7)), .4, .25), t, 1, -.2)
+for t in HIT['pages']: add(fx, lp(hp(noise(.12), 1500), 6000) * np.sin(np.pi * t_(.12) / .12) * .05, t, 1, .3)
+add(fx, verb(ding(.08), 1.2, .5), H1('sketch'), 1, -.3)
 # the key, the lock, the sign coming on
 for i in range(6): add(fx, clink(.05 + rng.random() * .04, 1.4 + rng.random() * .5), H1('keyJingle') + i * .06 + rng.random() * .03, 1, .1)
 add(fx, click(.25, .7), H1('keyIn'), 1, .1); add(fx, click(.4, .5), H1('lockClick'), 1, .1); add(fx, thump(.1, 90), H1('lockClick') + .03, 1)
 buzz = np.sin(2 * np.pi * 100 * t_(.5)) * .3 + np.sin(2 * np.pi * 200 * t_(.5)) * .2; buzz *= (rng.random(len(buzz)) > .5) * .5 + .5
 add(fx, lp(buzz, 1500) * env_exp(.5, .2) * .06, H1('signOn'), 1, .2)
 for i in range(5): add(fx, click(.08, 2 + i * .2), H1('signOn') + i * .07, 1, -.3 + i * .15)
-# morning: cloth strokes, the chair, the handle, the door, the plaque
+# 2a: the alarm clock, the blanket, the stretch
+ring_d = H1('alarmOff') - H1('alarm'); rt = t_(ring_d)
+ring = (np.sin(2 * np.pi * 2200 * rt) + .5 * np.sin(2 * np.pi * 3300 * rt)) * (np.sin(2 * np.pi * 24 * rt) > 0) * .12
+add(fx, ring, H1('alarm'), 1, .2); add(fx, thump(.12, 120), H1('alarmOff'), 1, .2); add(fx, click(.15, .7), H1('alarmOff'), 1, .2)
+add(fx, lp(noise(.45), 1800) * np.sin(np.pi * t_(.45) / .45) * .05, H1('popUp') - .05, 1, 0)
+add(fx, lp(noise(.6), 900) * np.sin(np.pi * t_(.6) / .6) * .03, H1('stretch'), 1, 0)
+# 2b: chopping on the board, a pot bubbling
+for t in HIT['chops']: add(fx, mx(thump(.12, 160), lp(click(.12, .5), 3000)), t, 1, 0)
+bub = np.zeros(int(1.9 * SR))
+for k in range(26): at = int(rng.random() * (len(bub) - 4000)); bb = np.sin(2 * np.pi * (300 + rng.random() * 400) * t_(.03)) * env_exp(.03, .008); bub[at:at + len(bb)] += bb * .03
+add(fx, bub, 6.95, 1, .5)
+# 2c/2d: cloth strokes, the plaque flip
 for t in HIT['wipes']: add(fx, squeak(.08), t - .12, 1, -.1)
-add(fx, scrape(.12, .4), H1('chairTuck'), 1, -.2)
-add(fx, click(.2, .8), H1('handle1'), 1, -.4); add(fx, creak(.12), H1('doorCreak'), 1, -.4); add(fx, fade(bed(1.0, 300, 2500, .05), .3, .4), 12.5, 1, -.4)
 add(fx, click(.12, 1.3), H1('flip'), 1, -.4); add(fx, lp(noise(.08), 3000) * env_exp(.08, .02) * .05, H1('flip') + .03, 1, -.4)
-for t in HIT['polish']: add(fx, verb(mx(squeak(.05) * .6, clink(.03, 1.6)), .5, .3), t, 1, .4)
-# the door opens: the bell
+# 3: day one — the calendar, the time-lapse (a fast clock and a whoosh), day two — the page tears
+add(fx, verb(clink(.05, .7), .6, .3), H1('calendar1'), 1, -.5)
+for k in range(int(2.0 / .09)): add(fx, click(.05, 1.5 + (k % 2) * .4), H1('timelapse') + k * .09, 1, .3)
+add(fx, whoosh(1.9, .06), H1('timelapse'), 1, 0)
+add(fx, lp(hp(noise(.35), 1200), 7000) * (np.abs(np.sin(2 * np.pi * 40 * t_(.35))) ** 2) * np.sin(np.pi * t_(.35) / .35) * .12, H1('tear'), 1, -.4)
+add(fx, mx(*[clink(.035, .9 + .1 * k) for k in range(2)]), H1('jarLook'), 1, -.2)
+add(fx, lp(noise(.8), 600) * np.sin(np.pi * t_(.8) / .8) * .03, H1('sigh'), 1, .1)
+# 5: the door opens: the bell
 add(fx, creak(.08), H1('bell1') - .12, 1, -.4); add(fx, verb(ding(.55), 1.1, .5), H1('bell1'), 1, -.4)
 add(fx, thump(.1, 80), H1('doorShut1'), 1, -.4); add(fx, click(.12, .6), H1('doorShut1') + .04, 1, -.4)
-# the welcome: chair, handshake, the chair pulled and pushed, the menu
+# 6: the welcome
 add(fx, scrape(.12, .35), H1('standUp'), 1, .3)
 for t in HIT['handshake']: add(fx, lp(noise(.06), 1500) * env_exp(.06, .015) * .05, t, 1, -.1)
 add(fx, scrape(.14, .45), H1('chairPull'), 1, .1); add(fx, lp(noise(.2), 900) * env_exp(.2, .06) * .08, H1('sit'), 1, .1); add(fx, scrape(.1, .35), H1('chairPush'), 1, .1)
 add(fx, lp(noise(.12), 2500) * env_exp(.12, .03) * .06, H1('menuDown'), 1, .2)
-# serving at the window (heard muffled through the glass), the guest's delight, the fork
+# 7: through the glass; the "!"
 add(fx, lp(clink(.09, 1.0), 2200), H1('plateDown1'), 1, .2)
 for t in HIT['clap1']: add(fx, lp(hp(noise(.05), 800) * env_exp(.05, .01), 2500) * .05, t, 1, .2)
 for t in HIT['forks']: add(fx, lp(clink(.035, 1.5), 2500), t, 1, .2)
-# new guests: handle, bell
+pp = np.sin(2 * np.pi * np.cumsum(np.linspace(500, 1400, int(.12 * SR))) / SR) * env_exp(.12, .04) * .12; add(fx, pp, H1('bang'), 1, .3)
+# 8–9: new guests: handle, bell
 for k, b in (('handle2', 'bell2'), ('handle3', 'bell3'), ('handle4', 'bell4')):
     add(fx, click(.2, .8), H1(k), 1, -.3); add(fx, verb(ding(.35), 1.0, .45), H1(b), 1, -.3)
-# the full room: plates down, clapping, a laugh, cutlery all around
-for k in ('plateDown2', 'plateDown3'): add(fx, verb(clink(.12, .9), .5, .3), H1(k), 1, .5); add(fx, thump(.05, 180), H1(k), 1, .5)
-for t in HIT['clap2']: add(fx, verb(hp(noise(.05), 800) * env_exp(.05, .01) * .09, .4, .3), t, 1, .5)
+# 10: the full room
+for k in ('plateDown2', 'plateDown3'): add(fx, verb(clink(.12, .9), .5, .3), H1(k), 1, 0); add(fx, thump(.05, 180), H1(k), 1, 0)
+for t in HIT['clap2']: add(fx, verb(hp(noise(.05), 800) * env_exp(.05, .01) * .09, .4, .3), t, 1, 0)
 for i in range(5): add(fx, bp(noise(.11), 500, 1800) * np.sin(np.pi * t_(.11) / .11) * .05, H1('laugh') + i * .16, 1, -.3)
 for t in sorted(42.8 + rng.random(22) * 11.5): add(fx, verb(clink(.03 + rng.random() * .03, .8 + rng.random() * .6), .6, .3), t, 1, rng.random() - .5)
+# 11: the queue outside: a low happy chatter, the door, the bell
+add(fx, fade(lp(murmur(DUR - H1('queue'), .04, 4), 1400), .6, .3), H1('queue'), 1, .2)
 add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)
 
 # —— mix ——
 music = verb(music, 1.2, .3) * duck[:, None]
-mix = voice * 1.0 + music * .55 + fx * .9
+mix = voice * 1.3 + music * .26 + fx * .7
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(mix[:, 0], .95), limit(mix[:, 1], .95)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)

@@ -231,3 +231,64 @@ export function insideFromStreet(lookName) {
   for (const [px, py] of [[1000, 1250], [1180, 1240], [720, 1245]]) { x.fillStyle = rad(x, px, py, 0, 200, [[0, 'rgba(255,190,110,.55)'], [1, 'rgba(255,190,110,0)']]); x.fillRect(px - 200, py - 200, 400, 400); x.fillStyle = '#ffe2a8'; x.beginPath(); x.arc(px, py, 16, 0, 7); x.fill(); x.strokeStyle = '#111'; x.lineWidth = 2; x.beginPath(); x.moveTo(px, 1100); x.lineTo(px, py - 16); x.stroke(); }
   return c;
 }
+
+// —— the owner's flat: a desk with his savings and a sketch of the dream, and his bed by the window ——
+export const HOME = { floor: 1500, desk: [200, 600, 1415], jar: [556, 1415], sketch: [240, 860, 560, 1150], bed: [820, 1380], pillow: [1320, 1300], clock: [1305, 1258], win: [980, 1260, 640, 1040] };
+export function homeSet(lookName) {
+  const night = lookName === 'night', R = mulberry(17), [c, x] = cnv(1500, 2500), w = HOME.win;
+  x.fillStyle = lin(x, 0, 0, 0, HOME.floor, [[0, night ? '#151d4a' : '#2a3a7a'], [1, night ? '#24306a' : '#3d4f92']]); x.fillRect(0, 0, 1500, HOME.floor);
+  x.fillStyle = 'rgba(255,255,255,.035)'; for (let yy = 40; yy < HOME.floor; yy += 80) for (let xx = (yy / 80 % 2) * 40; xx < 1500; xx += 80) { x.beginPath(); x.arc(xx, yy, 6, 0, 7); x.fill(); }
+  x.fillStyle = '#e6d6b2'; x.fillRect(0, HOME.floor - 40, 1500, 40);
+  x.fillStyle = lin(x, 0, HOME.floor, 0, 2500, [[0, '#7a4a24'], [1, '#a8682f']]); x.fillRect(0, HOME.floor, 1500, 1000);
+  for (let yy = HOME.floor + 20, k = 0; yy < 2500; k++, yy += 20 + k * 8) { x.fillStyle = 'rgba(40,20,5,.25)'; x.fillRect(0, yy, 1500, 2); }
+  // window with the sky
+  x.fillStyle = '#e6d6b2'; x.fillRect(w[0] - 24, w[2] - 24, w[1] - w[0] + 48, w[3] - w[2] + 48);
+  x.fillStyle = lin(x, 0, w[2], 0, w[3], night ? [[0, '#050b2c'], [1, '#14246a']] : [[0, '#3b5bb0'], [.7, '#9db3e6'], [1, '#f2c7a2']]); x.fillRect(w[0], w[2], w[1] - w[0], w[3] - w[2]);
+  if (night) { for (let i = 0; i < 30; i++) { x.fillStyle = `rgba(255,255,255,${.3 + R() * .6})`; x.beginPath(); x.arc(w[0] + R() * (w[1] - w[0]), w[2] + R() * 250, 1 + R() * 1.5, 0, 7); x.fill(); } x.fillStyle = '#fff6dc'; x.beginPath(); x.arc(w[1] - 70, w[2] + 80, 26, 0, 7); x.fill(); }
+  x.fillStyle = night ? '#0d1540' : '#26346e'; for (let i = 0; i < 4; i++) { const bx = w[0] + i * 75, bh = 60 + R() * 90; x.fillRect(bx, w[3] - bh, 70, bh); }
+  x.fillStyle = '#e6d6b2'; x.fillRect((w[0] + w[1]) / 2 - 6, w[2], 12, w[3] - w[2]); x.fillRect(w[0], (w[2] + w[3]) / 2 - 6, w[1] - w[0], 12);
+  x.fillStyle = '#f2e6c8'; x.fillRect(w[0] - 40, w[3] + 20, w[1] - w[0] + 80, 16);
+  // the sketch of the restaurant pinned to the wall
+  { const [a, b, cc, d] = HOME.sketch; x.fillStyle = '#f4ecd8'; x.save(); x.translate((a + cc) / 2, (b + d) / 2); x.rotate(-.025); x.translate(-(a + cc) / 2, -(b + d) / 2); x.fillRect(a, b, cc - a, d - b);
+    x.strokeStyle = '#4a4a5a'; x.lineWidth = 3; const cx = (a + cc) / 2;
+    x.strokeRect(a + 40, b + 70, cc - a - 80, d - b - 90); x.strokeRect(a + 70, b + 20, cc - a - 140, 40);
+    x.fillStyle = '#4a4a5a'; x.font = '26px "Lilita One"'; x.textAlign = 'center'; x.fillText('RESTAURANT', cx, b + 50);
+    for (let i = 0; i < 8; i++) { x.beginPath(); x.moveTo(a + 45 + i * 30, b + 75); x.lineTo(a + 40 + i * 30, b + 105); x.stroke(); }
+    x.strokeRect(a + 60, b + 130, 60, 130); x.beginPath(); x.moveTo(a + 150, d - 20); x.lineTo(a + 150, b + 180); x.arc(a + 210, b + 180, 60, Math.PI, 0); x.lineTo(a + 270, d - 20); x.stroke();
+    x.fillStyle = '#c4566a'; x.beginPath(); x.moveTo(cc - 34, b + 14); x.bezierCurveTo(cc - 50, b - 2, cc - 70, b + 20, cc - 34, b + 40); x.bezierCurveTo(cc + 2, b + 20, cc - 18, b - 2, cc - 34, b + 14); x.fill();
+    x.restore(); x.fillStyle = '#c4364a'; x.beginPath(); x.arc((a + cc) / 2, b + 6, 9, 0, 7); x.fill(); }
+  // desk
+  { const [a, b, top] = HOME.desk; x.fillStyle = '#5a3418'; x.fillRect(a + 10, top, 20, HOME.floor - top); x.fillRect(b - 30, top, 20, HOME.floor - top); x.fillStyle = lin(x, 0, top - 18, 0, top + 6, [[0, '#b47a40'], [1, '#7a4a24']]); x.fillRect(a - 10, top - 18, b - a + 20, 24);
+    x.fillStyle = '#2a2a33'; x.fillRect(a + 40, top - 26, 50, 8); x.fillStyle = '#d9b45a'; x.fillRect(a + 52, top - 120, 8, 100); x.beginPath(); x.moveTo(a + 30, top - 120); x.lineTo(a + 100, top - 120); x.lineTo(a + 82, top - 170); x.lineTo(a + 46, top - 170); x.fill(); }
+  // bed and nightstand
+  { const [a, b] = HOME.bed; x.fillStyle = '#5a3418'; x.fillRect(b - 10, 1120, 46, HOME.floor - 1120); x.fillRect(a, 1330, 22, HOME.floor - 1330); x.fillStyle = lin(x, 0, 1330, 0, 1420, [[0, '#7a4a24'], [1, '#5a3418']]); x.fillRect(a, 1380, b - a, 60);
+    x.fillStyle = '#efe8da'; x.beginPath(); x.roundRect(a + 10, 1325, b - a - 20, 60, 20); x.fill();
+    x.fillStyle = '#ffffff'; x.beginPath(); x.ellipse(HOME.pillow[0] + 10, HOME.pillow[1] + 12, 62, 26, 0, 0, 7); x.fill();
+    x.fillStyle = '#6b4526'; x.fillRect(1405, 1350, 90, 150); x.fillStyle = '#7a5030'; x.fillRect(1400, 1342, 100, 14); x.fillStyle = '#5c9a45'; x.beginPath(); x.arc(1450, 1320, 22, 0, 7); x.fill(); x.fillStyle = '#2b3b7a'; x.fillRect(1436, 1322, 28, 22); }
+  if (night) { x.fillStyle = 'rgba(5,8,40,.3)'; x.globalCompositeOperation = 'multiply'; x.fillRect(0, 0, 1500, 2500); x.globalCompositeOperation = 'source-over'; }
+  return c;
+}
+export function blanket(x, a, b, sitUp) {   // the blanket over the sleeper (drawn after him)
+  x.fillStyle = lin(x, 0, 1300, 0, 1400, [[0, '#3a5ad0'], [1, '#22348a']]); x.beginPath(); x.moveTo(a + 14, 1400); x.lineTo(a + 14, 1330);
+  x.bezierCurveTo(a + 200, 1300 - 10 * sitUp, b - 300, 1295, b - 150 - 40 * sitUp, 1320 + 20 * sitUp); x.lineTo(b - 120 - 40 * sitUp, 1400); x.closePath(); x.fill();
+  x.strokeStyle = 'rgba(255,255,255,.18)'; x.lineWidth = 4; for (let i = 1; i < 6; i++) { x.beginPath(); x.moveTo(a + i * 80, 1318); x.lineTo(a + i * 80, 1398); x.stroke(); }
+}
+
+// —— the kitchen behind the counter ——
+export const KIT = { counterTop: 1385, board: [630, 810], stove: [1060, 1340], pot: [1200, 1220] };
+export function kitchenSet() {
+  const R = mulberry(23), [c, x] = cnv(1500, 2500);
+  x.fillStyle = '#efe9dc'; x.fillRect(0, 0, 1500, 1500);
+  for (let yy = 0; yy < 1500; yy += 60) for (let xx = (yy / 60 % 2) * 30; xx < 1500; xx += 60) { x.strokeStyle = 'rgba(120,130,170,.25)'; x.lineWidth = 2; x.strokeRect(xx, yy, 60, 60); if (R() < .08) { x.fillStyle = 'rgba(40,70,170,.35)'; x.fillRect(xx + 4, yy + 4, 52, 52); } }
+  x.fillStyle = lin(x, 0, 0, 0, 1500, [[0, 'rgba(255,190,110,.0)'], [1, 'rgba(255,190,110,.18)']]); x.fillRect(0, 0, 1500, 1500);
+  // shelves with jars and pans
+  for (const sy of [760, 980]) { x.fillStyle = '#6b4526'; x.fillRect(120, sy, 760, 18);
+    for (let i = 0; i < 9; i++) { const jx = 150 + i * 80; x.fillStyle = ['#d9b45a', '#c8743a', '#5c9a45', '#e8e2d0', '#b8673a'][i % 5]; x.beginPath(); x.roundRect(jx, sy - 70 + (i % 3) * 8, 46, 70 - (i % 3) * 8, 8); x.fill(); x.fillStyle = 'rgba(255,255,255,.3)'; x.fillRect(jx + 6, sy - 60 + (i % 3) * 8, 8, 40); } }
+  for (let i = 0; i < 4; i++) { x.strokeStyle = '#2a2a33'; x.lineWidth = 6; x.beginPath(); x.moveTo(980 + i * 90, 560); x.lineTo(980 + i * 90, 640); x.stroke(); x.fillStyle = '#9aa0ae'; x.beginPath(); x.arc(980 + i * 90, 680, 34 + i * 4, 0, 7); x.fill(); x.fillStyle = '#6a7080'; x.beginPath(); x.arc(980 + i * 90, 680, 22 + i * 4, 0, 7); x.fill(); }
+  x.fillStyle = '#9aa0ae'; x.beginPath(); x.moveTo(1010, 860); x.lineTo(1390, 860); x.lineTo(1340, 960); x.lineTo(1060, 960); x.fill();
+  x.fillStyle = '#2a2a33'; x.fillRect(1050, 1240, 300, 30);
+  x.fillStyle = lin(x, 1120, 0, 1280, 0, [[0, '#6a7080'], [.5, '#b8bdc8'], [1, '#5a6070']]); x.beginPath(); x.roundRect(1120, 1140, 160, 100, 10); x.fill(); x.fillStyle = '#4a5060'; x.fillRect(1110, 1132, 180, 14);
+  x.fillStyle = 'rgba(255,120,40,.6)'; for (let i = 0; i < 5; i++) { x.beginPath(); x.ellipse(1140 + i * 30, 1238, 10, 6, 0, 0, 7); x.fill(); }
+  x.fillStyle = lin(x, 0, 1500, 0, 2500, [[0, '#7a4a24'], [1, '#a8682f']]); x.fillRect(0, 1500, 1500, 1000);
+  return c;
+}
