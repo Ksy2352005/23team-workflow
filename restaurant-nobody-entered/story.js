@@ -76,7 +76,7 @@ function homeSave(t) {
   const up = ss(seg(t, 2.25, 2.6));
   const ow = { id: 'owner', skin: OW, x: 612, y: 1500, s: 1, f: lerp(-.85, -.45, up), sit: 1, ...idle(t, 1), handL: up < .5 ? hand : undefined, armL: .3, coinAt: coin,
     look: lerp(.5, -1, up), headUp: .015 * up, smile: lerp(.45, 1, up) };
-  return { set: 'home', look: 'night', cam: V([[0, [430, 1265, 1.55]], [2.2, [430, 1240, 1.6]], [2.9, [400, 1010, 2.45]]])(t), chars: [ow], jar: .28 + .6 * seg(t, .3, 2.25), month: 6 * seg(t, .8, 2.3) };
+  return { set: 'home', look: 'night', cam: V([[0, [556, 1335, 4.0]], [.75, [545, 1320, 3.2]], [1.5, [440, 1268, 1.65]], [2.2, [430, 1240, 1.6]], [2.9, [400, 1010, 2.45]]])(t), chars: [ow], jar: .28 + .6 * seg(t, .3, 2.25), month: 6 * seg(t, .8, 2.3) };
 }
 // —— 1b: dawn. The real storefront: the key turns, the sign lights, he steps back to look at it ——
 function storefront(t) {
@@ -143,7 +143,10 @@ function doorOpens(t) {
   if (t < 23.1) Object.assign(g, { x: 262, y: 1372, s: sOf(1372), f: .1, handR: handleIn(door) });
   if (t >= 24.3) { const ph = seg(t, 24.35, 25.2); g.f = Math.sin(ph * Math.PI * 2) * .6; if (t > 25.2) g.f = lerp(0, .8, ss(seg(t, 25.2, 25.6))); g.back = false; }
   Object.assign(g, { id: 'guest', skin: 'blue1', vis: t > 22.62, ...idle(t, 2), o: .4 * ss(seg(t, 24.3, 24.6)) * (1 - ss(seg(t, 25.3, 25.7))), smile: .4 * ss(seg(t, 25.4, 25.9)) });
-  return { set: 'in', look: 'night', cam: V([[21, [610, 1262, 1.12]], [26.1, [625, 1268, 1.15]]])(t), chars: [ow, g], items: [cupItem('A', 1), jarOnA(.08)], door, rain: 1, drops: .6, lamps: .95, plaque: 1, calendar: 2 };
+  let cam = V([[21, [610, 1262, 1.12]], [22.75, [620, 1265, 1.15]]])(t);
+  if (t >= 22.8 && t < 23.35) cam = V([[22.8, [620, 1265, 1.15]], [22.98, [995, 1290, 3.1]], [23.35, [995, 1292, 3.25]]])(t);    // snap zoom: his face
+  else if (t >= 23.35) cam = V([[23.35, [995, 1292, 3.25]], [23.6, [360, 1262, 1.75]], [26.1, [420, 1272, 1.5]]])(t);            // whip to the door
+  return { set: 'in', look: 'night', cam, shake: t > 22.75 && t < 22.98 ? (22.98 - t) * 40 : 0, chars: [ow, g], items: [cupItem('A', 1), jarOnA(.08)], door, rain: 1, drops: .6, lamps: .95, plaque: 1, calendar: 2 };
 }
 // —— 6: welcomed like a hundred guests: a handshake, the best seat (he pulls it from behind), a menu ——
 function welcome(t) {
@@ -262,7 +265,7 @@ function finale(t) {
     const ow = { id: 'owner', skin: OW, x: 700, y: 1748, s: sOf(1748), ...idle(t, 1), hold: 'tray', trayItems: [], armL: -.55, armR: -.55,
       f: .55 * Math.sin(seg(t, 51.2, 53.4) * Math.PI) - .55 * Math.sin(seg(t, 52.3, 53.6) * Math.PI), smile: lerp(.4, 1, ss(seg(t, 53.9, 54.4))), look: -.2 };
     ow.blink = t > 53.5 && t < 54.1 ? 1 : blinkAt(t, 1);
-    return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.6, [700, 1560, 2.0]], [53.0, [700, 1600, 2.6]], [54.6, [700, 1605, 2.8]]])(t), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
+    return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.4, [700, 1565, 2.0]], [53.4, [700, 1590, 3.2]], [54.6, [700, 1594, 4.6]]])(t), sparkle: ss(seg(t, 52.8, 54.2)), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
   }
   const op = ss(seg(t, 58.0, 58.4)) * .8 * (1 - ss(seg(t, 58.5, 58.7)) * .3);
   const step = ss(seg(t, 58.15, 58.6)) * 120;
@@ -276,7 +279,7 @@ function finale(t) {
   if (t >= 56.3) Object.assign(w, { f: lerp(-.9, -.3, ss(seg(t, 56.3, 56.6))), look: -1, headUp: .01, smile: ss(seg(t, 56.7, 57.1)), x: 1352 - step });
   if (t >= 58.15) Object.assign(w, { phi: step / 120 * Math.PI * 1.5, walk: t < 58.6 ? 1 : 0, f: -.7, look: 0, headUp: 0 });
   const inside = [...crowdSmall(t), inGuest(t, 54.6), { id: 'passer', skin: 'blue2', x: WT + 92, y: WY, s: WS, f: -.8, sit: 1, ...idle(t, 3), smile: .8 }, inOwner(t, WT + 175)];
-  return { set: 'ex', look: 'night', cam: V([[54.6, [1040, 1440, 1.0]], [58.7, [1030, 1410, .9]]])(t), chars: [...Q, w], inside, inItems: [winPlate(-1, .3), winPlate(1, .5)], exDoor: op, wet: 1, sign: 1 };
+  return { set: 'ex', look: 'night', cam: V([[54.6, [1040, 1440, 1.0]], [56.3, [1020, 1420, 1.0]], [58.7, [955, 1320, 1.18]]])(t), chars: [...Q, w], inside, inItems: [winPlate(-1, .3), winPlate(1, .5)], exDoor: op, wet: 1, sign: 1 };
 }
 
 export const SCENES = [[0, homeSave], [2.9, storefront], [5.0, bedroom], [6.95, kitchen], [8.85, wiping], [12.3, flipSign], [13.2, day1], [16.0, day2], [21.0, doorOpens], [26.1, welcome], [31.5, seen], [36.9, entersToo], [38.9, andMore], [42.6, fullRoom], [50.85, finale]];

@@ -229,11 +229,7 @@ from scipy.signal import resample_poly
 def vox(name):
     a, sr = sf.read(os.path.join(HERE, 'vox', name + '.wav')); a = a if a.ndim == 1 else a.mean(1)
     return resample_poly(a, SR, sr) if sr != SR else a
-VOX = [('ow_hm', 2.35, .45, -.2), ('ow_ooh', 4.62, .9, 0), ('ow_wake', 5.35, .5, .1), ('ow_yawn', 6.05, .6, .1), ('ow_hum', 7.25, .35, 0),
-       ('ow_hup', 12.6, .8, -.2), ('ow_sigh1', 15.55, .65, 0), ('ow_sigh', 17.1, .7, .1), ('ow_gasp', 22.85, .9, .3), ('g_hi', 25.38, .7, -.3),
-       ('ow_welcome', 26.18, .55, .3), ('ow_laugh', 28.3, .8, 0), ('g_ahh', 29.95, .45, .1), ('ow_hehe', 30.55, .7, .2),
-       ('p_oh', 34.38, 1.0, .2), ('g_mmm', 35.55, .55, 0), ('p_ooh', 36.58, .8, .2), ('c_yay', 45.2, .75, -.2), ('c_wow', 45.5, .6, .25),
-       ('c_laugh', 47.0, .55, -.3), ('g_mmm2', 48.3, .55, .2), ('ow_hehe', 50.3, .75, 0), ('q_ooh', 56.35, .8, .4)]
+VOX = [('ow_ooh', 4.62, .9, 0), ('ow_gasp', 22.85, 1.0, .3), ('p_oh', 34.38, 1.0, .2), ('c_yay', 45.2, .75, -.2), ('c_wow', 45.5, .6, .25)]   # strong emotions only
 for name, at, g, pan in VOX:
     x = vox(name); inside = at > 5 and not (31.5 <= at < 42.6 or at > 54.6)
     if 35.3 <= at < 36.3: x = lp(x, 2200)   # heard through the glass

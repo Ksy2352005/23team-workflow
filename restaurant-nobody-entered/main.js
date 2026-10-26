@@ -12,7 +12,7 @@ const cache = {}; const get = (k, f) => cache[k] || (cache[k] = f());
 const GLOW = SET.glowSprite();
 const { IN, EX, HOME, KIT } = SET;
 
-function camera(c, cam) { const z = cam[2] * K; c.setTransform(z, 0, 0, z, W / 2 - cam[0] * z, H / 2 - cam[1] * z); }
+function camera(c, cam, sh = 0, t = 0) { const z = cam[2] * K, dx = sh * (hash(Math.floor(t * 60)) - .5), dy = sh * (hash(Math.floor(t * 60) + 7) - .5); c.setTransform(z, 0, 0, z, W / 2 - cam[0] * z + dx * K, H / 2 - cam[1] * z + dy * K); }
 function glow(c, x, y, r, a = 1) { if (a <= 0) return; c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = Math.min(1, a); c.drawImage(GLOW, x - r, y - r, 2 * r, 2 * r); c.restore(); }
 const lin = (c, x0, y0, x1, y1, stops) => { const g = c.createLinearGradient(x0, y0, x1, y1); stops.forEach(([o, s]) => g.addColorStop(o, s)); return g; };
 
@@ -137,6 +137,11 @@ function drawInterior(c, S, t) {
   for (const it of S.items || []) if (!(it.k === 'cup' && lifted.has(it.of))) items.push({ y: it.d ?? it.y, f: () => item(c, it, t) });
   for (const p of S.chars) if (p.vis !== false) items.push({ y: p.sit ? p.y - .5 : p.y, f: () => drawChar(c, p, t) });
   items.sort((a, b) => a.y - b.y).forEach(it => it.f());
+  if (S.sparkle > 0) { const o = S.chars.find(p => p.id === 'owner'), hx = o.x, hy = o.y - .74 * BASE_H * o.s;
+    glow(c, hx, hy, 260, .45 * S.sparkle);
+    for (let i = 0; i < 26; i++) { const ph = (t * (.25 + hash(i) * .2) + hash(i + 3)) % 1, a = hash(i * 7) * 6.283, r = 70 + hash(i * 5) * 150;
+      const x = hx + Math.cos(a) * r, y = hy + 60 - ph * 260 + Math.sin(a) * 30, al = S.sparkle * Math.sin(ph * Math.PI) * .9, rr = 3 + hash(i * 9) * 5;
+      c.fillStyle = `rgba(255,224,150,${al})`; c.beginPath(); c.arc(x, y, rr, 0, 7); c.fill(); glow(c, x, y, rr * 5, al * .5); } }
 }
 
 // —— the flat: desk with the savings jar, the bed ——
@@ -238,7 +243,7 @@ function drawCar(c, car, x, t, look) {
 function draw(c, t) {
   const S = sceneAt(t);
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#060c2c'; c.fillRect(0, 0, W, H);
-  camera(c, S.cam);
+  camera(c, S.cam, S.shake || 0, t);
   if (S.set === 'in') drawInterior(c, S, t); else if (S.set === 'ex') drawExterior(c, S, t); else if (S.set === 'home') drawHome(c, S, t); else drawKitchen(c, S, t);
   c.setTransform(1, 0, 0, 1, 0, 0);
   const g = c.createRadialGradient(W / 2, H * .48, H * .25, W / 2, H * .5, H * .78); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, 'rgba(4,6,30,.45)'); c.fillStyle = g; c.fillRect(0, 0, W, H);
