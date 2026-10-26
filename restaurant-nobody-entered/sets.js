@@ -103,13 +103,13 @@ export function interiorWall(lookName) {
   x.fillRect(w.x0, w.spring - 6, w.x1 - w.x0, 12);
   // floor: honey planks in perspective
   const vp = [750, 760];
-  x.fillStyle = lin(x, 0, IN.floor, 0, IN.H, [[0, '#a8682f'], [.5, '#c88a48'], [1, '#d99c58']]); x.fillRect(0, IN.floor, IN.W, IN.H - IN.floor);
-  for (let i = -30; i <= 30; i++) { const bx = 750 + i * 70; x.strokeStyle = 'rgba(70,35,10,.35)'; x.lineWidth = 2; x.beginPath(); x.moveTo(vp[0] + (bx - vp[0]) * (IN.floor - vp[1]) / (IN.H - vp[1]), IN.floor); x.lineTo(bx, IN.H); x.stroke(); }
-  for (let k = 0, yy = IN.floor + 14; yy < IN.H; k++, yy += 14 + k * 9) { x.strokeStyle = 'rgba(70,35,10,.18)'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(0, yy); x.lineTo(IN.W, yy); x.stroke(); }
-  for (const [px] of IN.pendants) { x.fillStyle = rad(x, px, 1560, 10, 420, [[0, `rgba(255,190,110,${.32 * L.lampK})`], [1, 'rgba(255,190,110,0)']]); x.save(); x.translate(px, 1560); x.scale(1, .35); x.translate(-px, -1560); x.fillRect(px - 450, 1100, 900, 900); x.restore(); }
+  x.fillStyle = lin(x, 0, IN.floor, 0, IN.H, [[0, '#24285a'], [.5, '#2e3066'], [1, '#383870']]); x.fillRect(0, IN.floor, IN.W, IN.H - IN.floor);
+  for (let i = -30; i <= 30; i++) { const bx = 750 + i * 70; x.strokeStyle = 'rgba(8,10,40,.45)'; x.lineWidth = 2; x.beginPath(); x.moveTo(vp[0] + (bx - vp[0]) * (IN.floor - vp[1]) / (IN.H - vp[1]), IN.floor); x.lineTo(bx, IN.H); x.stroke(); }
+  for (let k = 0, yy = IN.floor + 14; yy < IN.H; k++, yy += 14 + k * 9) { x.strokeStyle = 'rgba(8,10,40,.3)'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(0, yy); x.lineTo(IN.W, yy); x.stroke(); }
+  x.globalCompositeOperation = 'lighter'; for (const [px] of IN.pendants) { x.fillStyle = rad(x, px, 1560, 10, 440, [[0, `rgba(255,170,90,${.34 * L.lampK})`], [.6, `rgba(255,170,90,${.1 * L.lampK})`], [1, 'rgba(255,170,90,0)']]); x.save(); x.translate(px, 1560); x.scale(1, .35); x.translate(-px, -1560); x.fillRect(px - 450, 1100, 900, 900); x.restore(); } x.globalCompositeOperation = 'source-over';
   // plants
   const plant = (px, py, s) => { x.fillStyle = lin(x, 0, py - 70 * s, 0, py, [[0, '#2f3f86'], [1, '#1c2658']]); x.beginPath(); x.moveTo(px - 45 * s, py - 80 * s); x.lineTo(px + 45 * s, py - 80 * s); x.lineTo(px + 35 * s, py); x.lineTo(px - 35 * s, py); x.fill();
-    for (let i = 0; i < 14; i++) { const a = -Math.PI / 2 + (R() - .5) * 2.4, l = (90 + R() * 90) * s; x.fillStyle = ['#3f7f3a', '#5b9a45', '#2f6a33'][i % 3]; x.save(); x.translate(px, py - 80 * s); x.rotate(a + Math.PI / 2); x.beginPath(); x.ellipse(0, -l / 2, 16 * s, l / 2, 0, 0, 7); x.fill(); x.restore(); } };
+    for (let i = 0; i < 14; i++) { const a = -Math.PI / 2 + (R() - .5) * 2.4, l = (90 + R() * 90) * s; x.fillStyle = ['#2e5e5a', '#3d7068', '#244a4c'][i % 3]; x.save(); x.translate(px, py - 80 * s); x.rotate(a + Math.PI / 2); x.beginPath(); x.ellipse(0, -l / 2, 16 * s, l / 2, 0, 0, 7); x.fill(); x.restore(); } };
   plant(60, IN.floor + 40, 1.0);
 
   // cool tint for the morning, deeper navy at night
@@ -125,7 +125,7 @@ export function interiorWall(lookName) {
 export function interiorOutside(lookName) {
   const L = LOOK[lookName], R = mulberry(9), [c, x] = cnv(IN.W, IN.H);
   x.fillStyle = lin(x, 0, 200, 0, 1240, [[0, L.sky[0]], [.6, L.sky[1]], [1, L.sky[2]]]); x.fillRect(0, 0, IN.W, IN.H);
-  const cols = ['#d9c39a', '#c9a465', '#d7b3a0', '#cfc4a6'];
+  const cols = ['#3d4a88', '#34407a', '#46529a', '#2f3a72'];
   for (let bx = -40, i = 0; bx < IN.W; i++) { const bw = 240 + R() * 140, top = 470 + R() * 160, col = cols[i % 4];
     x.fillStyle = col; x.fillRect(bx, top, bw, 1240 - top); x.fillStyle = `rgba(10,15,60,${.25 + .45 * L.night})`; x.fillRect(bx, top, bw, 1240 - top);
     windowsGrid(x, R, bx + 10, top + 30, bw - 20, 1180 - top, 3, 4, col, L.outLit); x.fillStyle = `rgba(10,15,60,${.15 * L.night})`; x.fillRect(bx, top, bw, 1240 - top);
@@ -170,7 +170,7 @@ export function exteriorStreet(lookName) {
     windowsGrid(x, RR, x0 + 20, top + 50, x1 - x0 - 40, 1140 - top - 60, cols, 4, col, L.outLit);
     x.fillStyle = 'rgba(0,0,0,.18)'; x.fillRect(x0, 1140, x1 - x0, EX.ground - 1140);
     for (let i = 0; i < cols; i++) { const sx = x0 + 30 + i * (x1 - x0 - 60) / cols; x.fillStyle = '#1a2350'; x.fillRect(sx + 20, 1300, (x1 - x0 - 60) / cols - 40, 300); x.fillStyle = `rgba(255,190,110,${RR() < .5 ? .5 * L.outLit : 0})`; x.fillRect(sx + 26, 1306, (x1 - x0 - 60) / cols - 52, 288); } };
-  bld(-300, 560, 380, '#d6ad68', 3, 31); bld(1320, 2100, 270, '#dcb6a0', 4, 37);
+  bld(-300, 560, 380, '#4a5694', 3, 31); bld(1320, 2100, 270, '#3e4a8a', 4, 37);
   // the restaurant building
   x.fillStyle = lin(x, 0, 300, 0, EX.ground, [[0, '#efdcb0'], [1, '#e2c995']]); x.fillRect(F.x0, 300, F.x1 - F.x0, EX.ground - 300);
   x.fillStyle = '#f7ecd2'; x.fillRect(F.x0 - 16, 286, F.x1 - F.x0 + 32, 26); x.fillRect(F.x0 - 10, 1120, F.x1 - F.x0 + 20, 22);
@@ -191,7 +191,7 @@ export function exteriorStreet(lookName) {
   x.fillStyle = 'rgba(0,0,20,.25)'; x.fillRect(ax0, ay1 + 18, ax1 - ax0, 30);
   // potted trees
   const tree = (tx) => { x.fillStyle = '#26347a'; x.beginPath(); x.moveTo(tx - 34, 1600); x.lineTo(tx + 34, 1600); x.lineTo(tx + 26, 1666); x.lineTo(tx - 26, 1666); x.fill(); x.fillStyle = '#5a4330'; x.fillRect(tx - 4, 1440, 8, 160);
-    for (let i = 0; i < 16; i++) { x.fillStyle = ['#3f6f3a', '#57894a', '#6e9a4f'][i % 3]; x.beginPath(); x.arc(tx + (R() - .5) * 90, 1420 + (R() - .5) * 90, 26 + R() * 16, 0, 7); x.fill(); } };
+    for (let i = 0; i < 16; i++) { x.fillStyle = ['#2e5e5a', '#3d7068', '#4a7d72'][i % 3]; x.beginPath(); x.arc(tx + (R() - .5) * 90, 1420 + (R() - .5) * 90, 26 + R() * 16, 0, 7); x.fill(); } };
   tree(588); tree(1318);
   // the sign above the awning
   { const sx0 = 640, sx1 = 1240, sy0 = 985, sy1 = 1105;
@@ -206,7 +206,7 @@ export function exteriorStreet(lookName) {
   // lanterns by the door
   for (const [lx, ly] of EX.lanterns) { x.fillStyle = '#151826'; x.fillRect(lx - 3, ly - 50, 6, 20); x.fillRect(lx - 20, ly - 34, 40, 8); x.fillStyle = '#ffd796'; x.fillRect(lx - 14, ly - 26, 28, 40); x.fillStyle = '#151826'; x.fillRect(lx - 16, ly + 14, 32, 6); }
   // pavement, kerb, road
-  x.fillStyle = lin(x, 0, EX.ground, 0, 1790, [[0, '#6e7496'], [1, '#5d6386']]); x.fillRect(-300, EX.ground, 2400, 130);
+  x.fillStyle = lin(x, 0, EX.ground, 0, 1790, [[0, '#3c4272'], [1, '#323864']]); x.fillRect(-300, EX.ground, 2400, 130);
   for (let px = -300; px < 2100; px += 120) { x.strokeStyle = 'rgba(20,25,60,.35)'; x.lineWidth = 2; x.beginPath(); x.moveTo(px, EX.ground); x.lineTo(px - 20, 1790); x.stroke(); }
   x.fillStyle = '#9095b0'; x.fillRect(-300, 1784, 2400, 16); x.fillStyle = '#2b3052'; x.fillRect(-300, 1800, 2400, 700);
   cobbles(x, R, 1806, 2500, -300, 2100, L.night > .5);
@@ -237,7 +237,7 @@ export function homeSet(lookName) {
   x.fillStyle = lin(x, 0, 0, 0, HOME.floor, [[0, night ? '#151d4a' : '#2a3a7a'], [1, night ? '#24306a' : '#3d4f92']]); x.fillRect(0, 0, 1500, HOME.floor);
   x.fillStyle = 'rgba(255,255,255,.035)'; for (let yy = 40; yy < HOME.floor; yy += 80) for (let xx = (yy / 80 % 2) * 40; xx < 1500; xx += 80) { x.beginPath(); x.arc(xx, yy, 6, 0, 7); x.fill(); }
   x.fillStyle = '#e6d6b2'; x.fillRect(0, HOME.floor - 40, 1500, 40);
-  x.fillStyle = lin(x, 0, HOME.floor, 0, 2500, [[0, '#7a4a24'], [1, '#a8682f']]); x.fillRect(0, HOME.floor, 1500, 1000);
+  x.fillStyle = lin(x, 0, HOME.floor, 0, 2500, [[0, '#24285a'], [1, '#34356c']]); x.fillRect(0, HOME.floor, 1500, 1000);
   for (let yy = HOME.floor + 20, k = 0; yy < 2500; k++, yy += 20 + k * 8) { x.fillStyle = 'rgba(40,20,5,.25)'; x.fillRect(0, yy, 1500, 2); }
   // window with the sky
   x.fillStyle = '#e6d6b2'; x.fillRect(w[0] - 24, w[2] - 24, w[1] - w[0] + 48, w[3] - w[2] + 48);
@@ -276,8 +276,8 @@ export function blanket(x, a, b, sitUp) {   // the blanket over the sleeper (dra
 export const KIT = { counterTop: 1385, board: [630, 810], stove: [1060, 1340], pot: [1200, 1220] };
 export function kitchenSet() {
   const R = mulberry(23), [c, x] = cnv(1500, 2500);
-  x.fillStyle = '#efe9dc'; x.fillRect(0, 0, 1500, 1500);
-  for (let yy = 0; yy < 1500; yy += 60) for (let xx = (yy / 60 % 2) * 30; xx < 1500; xx += 60) { x.strokeStyle = 'rgba(120,130,170,.25)'; x.lineWidth = 2; x.strokeRect(xx, yy, 60, 60); if (R() < .08) { x.fillStyle = 'rgba(40,70,170,.35)'; x.fillRect(xx + 4, yy + 4, 52, 52); } }
+  x.fillStyle = '#26326e'; x.fillRect(0, 0, 1500, 1500);
+  for (let yy = 0; yy < 1500; yy += 60) for (let xx = (yy / 60 % 2) * 30; xx < 1500; xx += 60) { x.strokeStyle = 'rgba(230,220,195,.22)'; x.lineWidth = 2; x.strokeRect(xx, yy, 60, 60); if (R() < .06) { x.fillStyle = 'rgba(232,190,110,.35)'; x.fillRect(xx + 4, yy + 4, 52, 52); } }
   x.fillStyle = lin(x, 0, 0, 0, 1500, [[0, 'rgba(255,190,110,.0)'], [1, 'rgba(255,190,110,.18)']]); x.fillRect(0, 0, 1500, 1500);
   // shelves with jars and pans
   for (const sy of [760, 980]) { x.fillStyle = '#6b4526'; x.fillRect(120, sy, 760, 18);
@@ -287,6 +287,6 @@ export function kitchenSet() {
   x.fillStyle = '#2a2a33'; x.fillRect(1050, 1240, 300, 30);
   x.fillStyle = lin(x, 1120, 0, 1280, 0, [[0, '#6a7080'], [.5, '#b8bdc8'], [1, '#5a6070']]); x.beginPath(); x.roundRect(1120, 1140, 160, 100, 10); x.fill(); x.fillStyle = '#4a5060'; x.fillRect(1110, 1132, 180, 14);
   x.fillStyle = 'rgba(255,120,40,.6)'; for (let i = 0; i < 5; i++) { x.beginPath(); x.ellipse(1140 + i * 30, 1238, 10, 6, 0, 0, 7); x.fill(); }
-  x.fillStyle = lin(x, 0, 1500, 0, 2500, [[0, '#7a4a24'], [1, '#a8682f']]); x.fillRect(0, 1500, 1500, 1000);
+  x.fillStyle = lin(x, 0, 1500, 0, 2500, [[0, '#24285a'], [1, '#34356c']]); x.fillRect(0, 1500, 1500, 1000);
   return c;
 }

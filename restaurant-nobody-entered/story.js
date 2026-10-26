@@ -40,6 +40,12 @@ const handleIn = op => [lerp(390, 390 - 240 * Math.cos(op * 1.3), .85), 1250];
 const handleEx = op => [lerp(640, 640 + 170 * Math.cos(op * 1.25), .86), 1590];
 
 const V = keys => track(keys);
+// a spring like Motion's { type: 'spring', visualDuration, bounce }: 0 → 1 over time τ, overshooting by 'bounce'
+export function sp(tau, d = .4, b = .2) {
+  if (tau <= 0) return 0; const z = Math.max(.05, 1 - b);
+  if (z >= .999) { const w = 4.7 / d; return 1 - Math.exp(-w * tau) * (1 + w * tau); }
+  const wd = Math.PI / d, w0 = wd / Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w0 * tau) * (Math.cos(wd * tau) + z * w0 / wd * Math.sin(wd * tau));
+}
 function blinkAt(t, seed) { const per = 2.6 + hash(seed) * 1.8, ph = (t + seed * 3.7) % per; return ph < .14 ? Math.sin(ph / .14 * Math.PI) : 0; }
 const idle = (t, seed, o = {}) => ({ bob: Math.sin(t * 2.2 + seed) * .006, blink: blinkAt(t, seed), ...o });
 // walk along a path of points at an even pace (eased at both ends)
@@ -49,7 +55,8 @@ function route(t, t0, t1, pts, inside = true, stride = 58) {
   let acc = 0, i = 0; while (i < L.length - 1 && acc + L[i] < e) acc += L[i++];
   const k = L[i] ? (e - acc) / L[i] : 1, A = pts[i], B = pts[i + 1], x = lerp(A[0], B[0], clamp(k)), y = lerp(A[1], B[1], clamp(k));
   const dx = B[0] - A[0], dy = B[1] - A[1], d = Math.hypot(dx, dy) || 1;
-  return { x, y, s: inside ? sOf(y) : 1, f: clamp(dx / d * 1.1, -.95, .95), back: dy < -Math.abs(dx) * .7, phi: e / stride * Math.PI, walk: moving ? Math.min(1, Math.sin(u * Math.PI) * 2.2) : 0 };
+  const st = t - t1, settle = st > 0 && st < .5 ? Math.sin(st * 20) * Math.exp(-st * 9) * .07 : 0;
+  return { x, y, s: inside ? sOf(y) : 1, f: clamp(dx / d * 1.1, -.95, .95), back: dy < -Math.abs(dx) * .7, phi: e / stride * Math.PI, walk: moving ? Math.min(1, Math.sin(u * Math.PI) * 2.2) : 0, squash: settle };
 }
 const walk = (t, t0, t1, A, B, inside = true) => route(t, t0, t1, [A, B], inside);
 function diner(t, id, i, skin, seed, mode = 'eat') {
@@ -138,14 +145,15 @@ function day2(t) {
 function doorOpens(t) {
   const [sx, sy, , s] = seatPos('A', 1), turn = ss(seg(t, 22.7, 23.0));
   const ow = { id: 'owner', skin: OW, x: sx, y: sy, s, f: lerp(-.75, -.95, turn), sit: 1, ...idle(t, 1), sad: 1 - turn, o: turn * (1 - ss(seg(t, 24.6, 25.4))), smile: .4 * ss(seg(t, 25.0, 25.8)), chin: turn < .5 ? 'L' : null, armL: .3, armR: .3, look: turn ? -.2 : .5 };
-  const door = ss(seg(t, 22.6, 23.15)) * (1 - ss(seg(t, 24.5, 25.5)));
+  const door = sp(t - 22.6, .45, .25) * (1 - sp(t - 24.5, .6, .15));
   const g = walk(t, 23.1, 24.3, [262, 1372], [470, 1462]);
   if (t < 23.1) Object.assign(g, { x: 262, y: 1372, s: sOf(1372), f: .1, handR: handleIn(door) });
   if (t >= 24.3) { const ph = seg(t, 24.35, 25.2); g.f = Math.sin(ph * Math.PI * 2) * .6; if (t > 25.2) g.f = lerp(0, .8, ss(seg(t, 25.2, 25.6))); g.back = false; }
   Object.assign(g, { id: 'guest', skin: 'blue1', vis: t > 22.62, ...idle(t, 2), o: .4 * ss(seg(t, 24.3, 24.6)) * (1 - ss(seg(t, 25.3, 25.7))), smile: .4 * ss(seg(t, 25.4, 25.9)) });
   let cam = V([[21, [610, 1262, 1.12]], [22.75, [620, 1265, 1.15]]])(t);
-  if (t >= 22.8 && t < 23.35) cam = V([[22.8, [620, 1265, 1.15]], [22.98, [995, 1290, 3.1]], [23.35, [995, 1292, 3.25]]])(t);    // snap zoom: his face
-  else if (t >= 23.35) cam = V([[23.35, [995, 1292, 3.25]], [23.6, [360, 1262, 1.75]], [26.1, [420, 1272, 1.5]]])(t);            // whip to the door
+  const mix3 = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+  if (t >= 22.8 && t < 23.35) cam = mix3([620, 1265, 1.15], [995, 1292, 3.15], sp(t - 22.8, .2, .3));                          // snap zoom: his face
+  else if (t >= 23.35) { const w = mix3([995, 1292, 3.15], [360, 1262, 1.75], sp(t - 23.35, .25, .1)); cam = t < 23.9 ? w : V([[23.9, w], [26.1, [420, 1272, 1.5]]])(t); }   // whip to the door
   return { set: 'in', look: 'night', cam, shake: t > 22.75 && t < 22.98 ? (22.98 - t) * 40 : 0, chars: [ow, g], items: [cupItem('A', 1), jarOnA(.08)], door, rain: 1, drops: .6, lamps: .95, plaque: 1, calendar: 2 };
 }
 // —— 6: welcomed like a hundred guests: a handshake, the best seat (he pulls it from behind), a menu ——
@@ -153,7 +161,7 @@ function welcome(t) {
   const [ox, oy, , os] = seatPos('A', 1), [gx, gy, , gs] = seatPos('A', 0), gStart = [470, 1462], meet = [548, 1462], chairBack = [gx - .15 * BASE_H * gs, gy - .7 * BASE_H * gs];
   const pull = 30 * (ss(seg(t, 29.05, 29.45)) - ss(seg(t, 29.95, 30.35))), holdAt = [802, 1372], behind = [930, 1372];
   let ow;
-  if (t < 26.6) { const u = seg(t, 26.1, 26.55); ow = { x: ox, y: oy, s: os, f: -.85, sit: 1 - ss(u), bob: Math.sin(u * Math.PI) * .08, o: 1 - ss(seg(t, 26.2, 26.5)), smile: ss(seg(t, 26.25, 26.55)) }; }
+  if (t < 26.6) { const u = seg(t, 26.18, 26.55), crouch = t < 26.18 ? Math.sin(seg(t, 26.1, 26.18) * Math.PI) * .1 : 0; ow = { x: ox, y: oy, s: os, f: -.85, sit: 1 - sp(t - 26.18, .25, .3), bob: Math.sin(u * Math.PI) * .1, squash: crouch - .06 * Math.sin(u * Math.PI), o: 1 - ss(seg(t, 26.2, 26.5)), smile: ss(seg(t, 26.25, 26.55)) }; }
   else if (t < 27.4) ow = { ...route(t, 26.6, 27.4, [[ox, oy + 32], [700, 1462], meet]), smile: 1 };
   else if (t < 28.35) { const sh = Math.sin((t - 27.4) * Math.PI * 2 / .3) * 7 * (t < 28.2 ? 1 : 0); ow = { x: meet[0], y: meet[1], s: sOf(meet[1]), f: -.75, smile: 1, handL: [510, 1390 + sh], armR: .2 }; }
   else if (t < 29.0) ow = { ...route(t, 28.35, 29.0, [meet, [700, 1452], [705, 1385], holdAt]), smile: 1 };
@@ -188,7 +196,7 @@ function seen(t) {
   const y = { id: 'passer', ...walk(t, 31.5, 33.6, [140, 1722], [1340, 1722], false), skin: 'blue2', ...idle(t, 3) };
   if (t >= 33.6) {
     const wob = Math.sin(seg(t, 33.6, 34.0) * Math.PI * 2) * .05 * (1 - seg(t, 33.6, 34.0));
-    Object.assign(y, { f: lerp(.9, -.7, ss(seg(t, 33.8, 34.3))), lean: wob, o: ss(seg(t, 34.3, 34.5)) * (1 - ss(seg(t, 35.4, 35.8))), smile: .7 * ss(seg(t, 35.5, 36.0)), headDX: -.02 * ss(seg(t, 34.6, 35.4)), bang: t > 34.4 && t < 35.6 ? Math.min(1, (t - 34.4) / .25) : 0 });
+    Object.assign(y, { f: lerp(.9, -.7, ss(seg(t, 33.8, 34.3))), lean: wob, o: ss(seg(t, 34.3, 34.5)) * (1 - ss(seg(t, 35.4, 35.8))), smile: .7 * ss(seg(t, 35.5, 36.0)), headDX: -.02 * ss(seg(t, 34.6, 35.4)), bang: t > 34.4 && t < 35.6 ? Math.max(.01, sp(t - 34.4, .22, .55)) : 0 });
     if (t > 36.0) Object.assign(y, walk(t, 36.0, 36.9, [1340, 1722], [1000, 1722], false));
   }
   let ow, pl;
@@ -202,7 +210,7 @@ function seen(t) {
   return { set: 'ex', look: 'night', cam, chars: [y], inside: [g, ow], inItems: [pl], wet: 1, sign: 1 };
 }
 function entersToo(t) {
-  const op = ss(seg(t, 37.42, 37.8)) * (1 - ss(seg(t, 38.5, 38.9)) * .5), h = handleEx(op);
+  const op = sp(t - 37.42, .35, .25) * (1 - sp(t - 38.5, .4, .15) * .5), h = handleEx(op);
   const y = { id: 'passer', ...walk(t, 36.9, 37.38, [1000, 1722], [800, 1716], false), skin: 'blue2', ...idle(t, 3), smile: .5 };
   if (t >= 37.3 && t < 37.62) Object.assign(y, { f: -.6, handL: h });
   if (t >= 37.62) { const u = seg(t, 37.62, 38.6); Object.assign(y, { x: lerp(800, 730, u), y: lerp(1716, 1668, u), s: lerp(1, .86, u), back: true, f: -.1, alpha: 1 - ss(seg(t, 38.15, 38.6)), phi: u * 6, walk: u > 0 && u < 1 ? 1 : 0 }); }
@@ -212,7 +220,7 @@ function entersToo(t) {
 function andMore(t) {
   let door = 0;
   const enter = (id, t0, t1, from, sk, seed) => { const p = { id, ...walk(t, t0, t1, from, [800, 1716], false), skin: sk, ...idle(t, seed), smile: .45 };
-    const op = ss(seg(t, t1 - .02, t1 + .3)) * (1 - ss(seg(t, t1 + .8, t1 + 1.2))); door = Math.max(door, op);
+    const op = sp(t - t1 + .02, .3, .25) * (1 - sp(t - t1 - .8, .4, .1)); door = Math.max(door, op);
     if (t >= t1 - .08 && t < t1 + .2) Object.assign(p, { f: -.6, handL: handleEx(op) });
     if (t >= t1 + .2) { const u = seg(t, t1 + .2, t1 + 1.0); Object.assign(p, { x: lerp(800, 730, u), y: lerp(1716, 1668, u), s: lerp(1, .86, u), back: true, f: 0, alpha: 1 - ss(seg(t, t1 + .6, t1 + 1.0)), phi: u * 6, walk: u < 1 ? 1 : 0 }); }
     return p; };
@@ -267,7 +275,7 @@ function finale(t) {
     ow.blink = t > 53.5 && t < 54.1 ? 1 : blinkAt(t, 1);
     return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.4, [700, 1565, 2.0]], [53.4, [700, 1590, 3.2]], [54.6, [700, 1594, 4.6]]])(t), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
   }
-  const op = ss(seg(t, 58.0, 58.4)) * .8 * (1 - ss(seg(t, 58.5, 58.7)) * .3);
+  const op = sp(t - 58.0, .35, .25) * .8;
   const step = ss(seg(t, 58.15, 58.6)) * 120;
   const Q = [870, 990, 1110, 1230].map((x, i) => {
     const p = { id: 'q' + i, skin: ['blue3', 'blue1', 'blue2', 'blue3'][i], x: x - step, y: 1722 + (i % 2) * 10, s: 1, f: -.7, ...idle(t, 30 + i), smile: .5 + .3 * Math.sin(t * 2 + i), look: i === 2 ? -.6 : 0, phi: step / 120 * Math.PI * 1.5, walk: t > 58.15 && t < 58.6 ? 1 : 0 };

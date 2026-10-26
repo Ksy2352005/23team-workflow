@@ -21,8 +21,8 @@ function table(c, x, y, s, lamps, low) {
   const h = BASE_H * s, top = y - .5 * h;
   c.fillStyle = 'rgba(5,6,25,.28)'; c.beginPath(); c.ellipse(x, y, .45 * h, .07 * h, 0, 0, 7); c.fill();
   c.fillStyle = '#1d1f2b'; c.beginPath(); c.ellipse(x, y - .01 * h, .16 * h, .035 * h, 0, 0, 7); c.fill(); c.fillRect(x - .025 * h, top, .05 * h, .5 * h);
-  c.fillStyle = '#7a4a24'; c.beginPath(); c.ellipse(x, top + .025 * h, .5 * h, .1 * h, 0, 0, 7); c.fill();
-  c.fillStyle = lin(c, x - .5 * h, top, x + .5 * h, top, [[0, '#c48a4e'], [.5, '#e0a866'], [1, '#b47a40']]); c.beginPath(); c.ellipse(x, top, .5 * h, .095 * h, 0, 0, 7); c.fill();
+  c.fillStyle = '#6a4a34'; c.beginPath(); c.ellipse(x, top + .025 * h, .5 * h, .1 * h, 0, 0, 7); c.fill();
+  c.fillStyle = lin(c, x - .5 * h, top, x + .5 * h, top, [[0, '#b08660'], [.5, '#cba27a'], [1, '#a07650']]); c.beginPath(); c.ellipse(x, top, .5 * h, .095 * h, 0, 0, 7); c.fill();
   c.fillStyle = 'rgba(255,230,180,.25)'; c.beginPath(); c.ellipse(x - .1 * h, top - .02 * h, .25 * h, .03 * h, 0, 0, 7); c.fill();
   const ch = (low ? .05 : .08) * h; c.fillStyle = 'rgba(240,230,210,.7)'; c.fillRect(x - .025 * h, top - ch - .01 * h, .05 * h, ch);
   if (lamps > .5) { c.fillStyle = '#ffd27a'; c.beginPath(); c.ellipse(x, top - ch - .03 * h, .01 * h, .022 * h, 0, 0, 7); c.fill(); glow(c, x, top - ch - .03 * h, .18 * h, .55); }
