@@ -223,6 +223,31 @@ for e in EVS:
     eng = norm(eng) * env * (.16 if e.get('lane', 0) == 0 else .11)
     half = len(eng) // 2; dirn = e.get('dir', 1)
     add(fx, eng[:half], e['t'] - d / 2, 1, -.8 * dirn); add(fx, eng[half:], e['t'], 1, .8 * dirn)
+# —— the characters' own sounds (no words): hums, yawns, gasps, laughs, "mmm", cheers; placed in the gaps of the narration ——
+import soundfile as sf
+from scipy.signal import resample_poly
+def vox(name):
+    a, sr = sf.read(os.path.join(HERE, 'vox', name + '.wav')); a = a if a.ndim == 1 else a.mean(1)
+    return resample_poly(a, SR, sr) if sr != SR else a
+VOX = [('ow_hm', 2.35, .45, -.2), ('ow_ooh', 4.62, .9, 0), ('ow_wake', 5.35, .5, .1), ('ow_yawn', 6.05, .6, .1), ('ow_hum', 7.25, .35, 0),
+       ('ow_hup', 12.6, .8, -.2), ('ow_sigh1', 15.55, .65, 0), ('ow_sigh', 17.1, .7, .1), ('ow_gasp', 22.85, .9, .3), ('g_hi', 25.38, .7, -.3),
+       ('ow_welcome', 26.18, .55, .3), ('ow_laugh', 28.3, .8, 0), ('g_ahh', 29.95, .45, .1), ('ow_hehe', 30.55, .7, .2),
+       ('p_oh', 34.38, 1.0, .2), ('g_mmm', 35.55, .55, 0), ('p_ooh', 36.58, .8, .2), ('c_yay', 45.2, .75, -.2), ('c_wow', 45.5, .6, .25),
+       ('c_laugh', 47.0, .55, -.3), ('g_mmm2', 48.3, .55, .2), ('ow_hehe', 50.3, .75, 0), ('q_ooh', 56.35, .8, .4)]
+for name, at, g, pan in VOX:
+    x = vox(name); inside = at > 5 and not (31.5 <= at < 42.6 or at > 54.6)
+    if 35.3 <= at < 36.3: x = lp(x, 2200)   # heard through the glass
+    add(fx, verb(x, .5 if inside else .3, .18 if inside else .08) * g * .5, at, 1, pan)
+# a room full of people: soft, overlapping chatter (low-passed so no words come through), then the queue outside
+walla = np.zeros(int((54.6 - 42.6) * SR))
+for k, (name, off) in enumerate([('w1', 0), ('w2', 1.3), ('w3', 2.7), ('w4', 4.1), ('w5', 5.2), ('w6', 6.6), ('w1', 7.9), ('w3', 9.0), ('w2', 10.0)]):
+    x = vox(name); a = int(off * SR); walla[a:a + len(x)] += x[:len(walla) - a] * (.6 + .4 * (k % 2))
+walla = lp(walla, 1600); tw = np.arange(len(walla)) / SR + 42.6
+walla *= np.clip((tw - 42.6) / .5, 0, 1) * np.where((tw > 50.85) & (tw < 53.3), .5, 1.0) * np.clip((54.6 - tw) / .4, 0, 1)
+add(fx, verb(walla, .7, .35) * .22, 42.6, 1, -.1)
+qw = np.zeros(int((DUR - 54.6) * SR))
+for name, off in [('w3', 0.3), ('w5', 1.4), ('w6', 2.6)]: x = vox(name); a = int(off * SR); qw[a:a + len(x)] += x[:len(qw) - a]
+add(fx, lp(qw, 1400) * .14, 54.6, 1, .3)
 # 11: the queue outside: a low happy chatter, the door, the bell
 add(fx, fade(lp(murmur(DUR - H1('queue'), .04, 4), 1400), .6, .3), H1('queue'), 1, .2)
 add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)

@@ -26,7 +26,7 @@ export const HIT = {
   standUp: 26.15, handshake: [27.55, 27.85, 28.15], chairPull: 29.15, sit: 29.85, chairPush: 30.05, menuDown: 31.15,
   plateDown1: 33.1, clap1: [33.35, 33.55, 33.75], bang: 34.4, forks: bites(34.2, 36.9, .75, 3),
   handle2: 37.38, bell2: 37.5, handle3: 39.35, bell3: 39.45, handle4: 40.68, bell4: 40.75,
-  plateDown2: 45.0, plateDown3: 45.6, clap2: [45.85, 46.05, 46.25], laugh: 46.4, queue: 55.0, bell5: 58.05,
+  plateDown2: 45.0, plateDown3: 45.6, clap2: [45.95, 46.15, 46.35], laugh: 47.05, queue: 55.0, bell5: 58.05,
 };
 
 // interior depth rows: feet line and scale; the aisles between rows are y ≈ 1515 and 1745
@@ -62,7 +62,7 @@ function diner(t, id, i, skin, seed, mode = 'eat') {
   if (lift > .6) p.o = .5;
   return p;
 }
-const plateItem = (id, i, steam = 0) => { const [x, y, s] = spot(id, i); return { k: 'plate', x, y, s: BASE_H * s * .55, steam, d: ROWS[TABLES[id][1]][0] + .5 }; };
+const plateItem = (id, i, steam = .7) => { const [x, y, s] = spot(id, i); return { k: 'plate', x, y, s: BASE_H * s * .55, steam, d: ROWS[TABLES[id][1]][0] + .5 }; };
 const cupItem = (id, i) => { const [x, y, s] = spot(id, i); return { k: 'cup', of: id + i, x: x + (i ? -1 : 1) * .2 * BASE_H * s, y, s: BASE_H * s * .2, d: ROWS[TABLES[id][1]][0] + .6 }; };
 const jarOnA = level => ({ k: 'jar', x: 868, y: topY('A') + 2, s: .75, level, d: 1400.7 });
 const OW = 'owner';
@@ -192,7 +192,11 @@ function seen(t) {
   if (t < 32.6) { ow = { ...inOwner(t), ...walk(t, 31.5, 32.6, [1250, WY - 6], [1150, WY - 6], false), s: WS }; pl = { k: 'plate', x: ow.x - 30, y: WY - .62 * WH, s: WH * .55, steam: 1, d: WY + .7 }; ow.handR = [pl.x + 8, pl.y + 2]; }
   else { const u = ss(seg(t, 32.6, 33.1)); ow = { ...inOwner(t, 1150) }; const px = lerp(1120, WT - 42, u), py = lerp(WY - .62 * WH, WTOP + 3, u); pl = { k: 'plate', x: px, y: py, s: WH * .55, steam: 1, d: WY + .7 }; if (t < 33.25) ow.handR = [px + 8, py + 2]; else ow.armR = .2; }
   const g = inGuest(t, 34.2); if (t > 33.3 && t < 33.9) { const c = Math.sin((t - 33.3) * Math.PI * 2 / .2); g.handL = [WT - 70 + c * 3, WY - .62 * WH]; g.handR = [WT - 70 - c * 3, WY - .62 * WH]; g.smile = 1; }
-  return { set: 'ex', look: 'night', cam: V([[31.5, [520, 1480, 1.5]], [33.6, [960, 1480, 1.5]], [36.9, [1060, 1485, 1.6]]])(t), chars: [y], inside: [g, ow], inItems: [pl], wet: 1, sign: 1 };
+  let cam = V([[31.5, [520, 1480, 1.5]], [33.6, [960, 1480, 1.5]], [34.35, [1000, 1480, 1.55]]])(t);
+  if (t >= 34.35 && t < 35.3) cam = V([[34.35, [1300, 1585, 2.9]], [35.3, [1305, 1580, 3.1]]])(t);          // close: his face, the "!"
+  else if (t >= 35.3 && t < 36.3) cam = V([[35.3, [1015, 1525, 2.7]], [36.3, [1012, 1528, 2.95]]])(t);       // what he sees: the guest eating, delighted
+  else if (t >= 36.3) cam = V([[36.3, [1060, 1485, 1.6]], [36.9, [1050, 1485, 1.65]]])(t);
+  return { set: 'ex', look: 'night', cam, chars: [y], inside: [g, ow], inItems: [pl], wet: 1, sign: 1 };
 }
 function entersToo(t) {
   const op = ss(seg(t, 37.42, 37.8)) * (1 - ss(seg(t, 38.5, 38.9)) * .5), h = handleEx(op);
@@ -244,7 +248,13 @@ function fullRoom(t) {
   else { const u = seg(t, 47.6, 50.85); ow = { x: 700, y: 1748, s: sOf(1748), f: Math.sin(u * Math.PI * 1.5) * .6, ...idle(t, 1), hold: 'tray', trayItems: [] }; }
   if (placed[0]) items.push(plateItem('D', 1, 1)); if (placed[1]) items.push(plateItem('D', 0, 1));
   ow = { id: 'owner', skin: OW, smile: 1, ...ow }; if (ow.hold === 'tray') { ow.armL = -.55; ow.armR = -.55; }
-  return { set: 'in', look: 'night', cam: V([[42.6, [760, 1290, .95]], [46, [745, 1310, 1.0]], [50.85, [715, 1390, 1.12]]])(t), chars: [ow, ...crowd(t)], items, lamps: 1.15, plaque: 1, calendar: 2, clock: 20 + (t - 42.6) / 60 };
+  let cam = V([[42.6, [760, 1290, .95]], [44.4, [755, 1300, 1.0]]])(t);
+  if (t >= 44.4 && t < 45.9) cam = V([[44.4, [760, 1440, 1.9]], [45.9, [760, 1450, 2.05]]])(t);            // serving table D
+  else if (t >= 45.9 && t < 46.9) cam = V([[45.9, [760, 1480, 2.5]], [46.9, [760, 1485, 2.6]]])(t);        // they clap
+  else if (t >= 46.9 && t < 47.9) cam = V([[46.9, [520, 1285, 2.6]], [47.9, [510, 1288, 2.75]]])(t);      // a laugh at table B
+  else if (t >= 47.9 && t < 49.1) cam = V([[47.9, [868, 1262, 3.3]], [49.1, [866, 1272, 3.7]]])(t);       // the food, a happy bite
+  else if (t >= 49.1) cam = V([[49.1, [705, 1520, 1.45]], [50.85, [702, 1545, 1.6]]])(t);                  // the owner takes it in
+  return { set: 'in', look: 'night', cam, chars: [ow, ...crowd(t)], items, lamps: 1.15, plaque: 1, calendar: 2, clock: 20 + (t - 42.6) / 60 };
 }
 // —— 11: trust. Then outside: a queue has formed; one more joins it; the door opens and the line steps forward ——
 function finale(t) {
@@ -252,7 +262,7 @@ function finale(t) {
     const ow = { id: 'owner', skin: OW, x: 700, y: 1748, s: sOf(1748), ...idle(t, 1), hold: 'tray', trayItems: [], armL: -.55, armR: -.55,
       f: .55 * Math.sin(seg(t, 51.2, 53.4) * Math.PI) - .55 * Math.sin(seg(t, 52.3, 53.6) * Math.PI), smile: lerp(.4, 1, ss(seg(t, 53.9, 54.4))), look: -.2 };
     ow.blink = t > 53.5 && t < 54.1 ? 1 : blinkAt(t, 1);
-    return { set: 'in', look: 'night', cam: V([[50.85, [715, 1390, 1.12]], [52.5, [705, 1520, 1.55]], [54.6, [702, 1545, 1.75]]])(t), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
+    return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.6, [700, 1560, 2.0]], [53.0, [700, 1600, 2.6]], [54.6, [700, 1605, 2.8]]])(t), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
   }
   const op = ss(seg(t, 58.0, 58.4)) * .8 * (1 - ss(seg(t, 58.5, 58.7)) * .3);
   const step = ss(seg(t, 58.15, 58.6)) * 120;
