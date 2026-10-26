@@ -279,9 +279,16 @@ def logo_tone():
     bell = lp(bell * np.minimum(1, tt / .02), 3500)
     air = bp(noise(.6), 3000, 9000) * np.sin(np.pi * t_(.6) / .6) ** 2 * .25
     o = np.zeros(int(.45 * SR) + len(bell)); o[:len(air)] += air; o[int(.45 * SR):] += bell; return o
-# the logo: just a soft airy swell that rises with the white and fades away
-_d = 2.6; _tt = t_(_d); _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 5000) * np.minimum(1, _tt / .9) ** 2 * np.exp(-np.maximum(0, _tt - .9) / .55)
-add(fx, verb(norm(_air) * .14, 1.4, .35), 58.0, 1, 0)
+# the white: everything else fades out with the picture, so the end sounds stand alone
+_n0, _n1 = int(W(58.2) * SR), int(W(58.8) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
+# "Social Proof": a soft tick as each letter lands (rising a little), a light swish as the gold line draws, a breath as it lifts away
+for i, ch in enumerate('Social Proof'):
+    if ch != ' ': add(fx, mx(click(.12, 1.1 + i * .035), lp(thump(.06, 160 + i * 6), 900) * .25), 58.95 + i * .065 + .06, 1, (i - 5.5) * .06)
+add(fx, whoosh(.5, .05), 59.83, 1, 0)
+add(fx, whoosh(.45, .035), 61.2, 1, 0)
+# the logo: just a soft airy swell that rises as it appears and fades away
+_d = 2.4; _tt = t_(_d); _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 5000) * np.minimum(1, _tt / .8) ** 2 * np.exp(-np.maximum(0, _tt - .8) / .55)
+add(fx, verb(norm(_air) * .12, 1.4, .35), 61.4, 1, 0)
 
 # —— mix ——
 music = music * 0   # no music in this cut: voice and sound effects only

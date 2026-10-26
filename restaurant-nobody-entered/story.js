@@ -4,7 +4,7 @@
 import { clamp, lerp, seg, ss, track, hash } from '/core/lib.js';
 import { BASE_H } from './char2d.js';
 
-export const DUR = 60.9;   // 58.7 s of story, then the 23 logo
+export const DUR = 64.0;   // 58.7 s of story, then "Social Proof" in type, then the 23 logo
 // cars passing on the street (outside shots only): start time, direction, colour, lane
 export const CARS = [{ t0: 2.95, dir: 1, col: '#c0392b', lane: 0 }, { t0: 31.6, dir: -1, col: '#e9dcc0', lane: 1 }, { t0: 35.0, dir: 1, col: '#2f7a8a', lane: 0 },
   { t0: 39.6, dir: -1, col: '#d9a03a', lane: 1 }, { t0: 55.0, dir: 1, col: '#e9dcc0', lane: 0 }, { t0: 57.2, dir: -1, col: '#c0392b', lane: 1 }];

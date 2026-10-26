@@ -2,9 +2,9 @@
 import { lerp, seg, ss, hash } from '/core/lib.js';
 import { drawMascot, cup, plate, BASE_H } from './char2d.js';
 import * as SET from './sets.js';
-import { DUR, HIT, DISSOLVES, sceneAt, TABLES, ROWS, seatPos, CARS, CAR_V } from './story.js';
+import { DUR, HIT, DISSOLVES, sp, sceneAt, TABLES, ROWS, seatPos, CARS, CAR_V } from './story.js';
 
-await Promise.all(['74px "Lilita One"', '30px "Fredoka"'].map(f => document.fonts.load(f, 'RESTAURANTÉÜÁÚ')));
+await Promise.all(['74px "Lilita One"', '500 30px "Fredoka"'].map(f => document.fonts.load(f, 'RESTAURANTÉÜÁÚSocial Proof')));
 const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const [buf, bctx] = (() => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; })();
@@ -259,9 +259,24 @@ function drawCar(c, car, x, t, look) {
 
 // the 23 logo, exactly as supplied, centred on white; it settles in softly (fade, a breath of scale, a little blur clearing)
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
+// the name of the technique, set in type on white: letter by letter, a gold line drawn under it, then it lifts away for the logo
+export const TYPE = { text: 'Social Proof', t0: 58.95, step: .065, line: [59.85, 60.3], out: [61.2, 61.6] };
+function typeCard(c, t) {
+  const out = ss(seg(t, ...TYPE.out)); if (out >= 1) return;
+  const size = Math.round(W * .135); c.font = `500 ${size}px "Fredoka"`; c.textBaseline = 'alphabetic';
+  const chars = [...TYPE.text], widths = chars.map(ch => c.measureText(ch).width), tw = widths.reduce((a, b) => a + b, 0);
+  let x = W / 2 - tw / 2; const y = H / 2 + size * .3 - out * 40 * K;
+  c.save(); c.globalAlpha = 1 - out; if (out > 0) c.filter = `blur(${out * 8 * K}px)`;
+  chars.forEach((ch, i) => { const k = sp(t - (TYPE.t0 + i * TYPE.step), .38, .3);
+    if (k > 0) { c.save(); c.globalAlpha = (1 - out) * Math.min(1, k * 1.6); c.fillStyle = '#1c2450'; c.translate(x + widths[i] / 2, y + (1 - k) * size * .35); c.fillText(ch, -widths[i] / 2, 0); c.restore(); }
+    x += widths[i]; });
+  const lu = ss(seg(t, ...TYPE.line)), lw = tw * .62 * lu; c.fillStyle = '#d9a83e'; c.beginPath(); c.roundRect(W / 2 - lw / 2, y + size * .3, lw, 7 * K, 3.5 * K); c.fill();
+  c.restore();
+}
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
-  const u = ss(seg(t, 58.85, 59.75)), w = W * .36, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
+  typeCard(c, t);
+  const u = ss(seg(t, 61.75, 62.65)), w = W * .36, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
   c.save(); c.globalAlpha = u; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
   c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO, -w / 2, -h / 2, w, h); c.restore();
 }
@@ -287,7 +302,7 @@ for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.pu
 // cars: a pass-by sound centred on when each car crosses the middle of the frame (outside shots only)
 for (const car of CARS) { for (let t = car.t0; t < car.t0 + 4.5; t += 1 / 60) { const S = sceneAt(t); if (S.set !== 'ex') continue; if (Math.abs(carX(car, t) - S.cam[0]) < CAR_V / 60) { EV.push({ t: +t.toFixed(3), type: 'car', dir: car.dir, lane: car.lane }); break; } } }
 // a test version on another voiceover: the same film, retimed scene by scene to that voice (?warp=fa)
-const WARPS = { fa: [[76.8, 60.9], [0, 0], [6.2, 5.0], [9.6, 6.95], [12.15, 8.85], [17.9, 12.3], [19.6, 13.2], [23.6, 16.0], [25.85, 17.8], [30.7, 21.0], [33.85, 22.75], [34.24, 23.78],
+const WARPS = { fa: [[79.9, 64.0], [0, 0], [6.2, 5.0], [9.6, 6.95], [12.15, 8.85], [17.9, 12.3], [19.6, 13.2], [23.6, 16.0], [25.85, 17.8], [30.7, 21.0], [33.85, 22.75], [34.24, 23.78],
   [36.96, 26.1], [44.16, 31.5], [47.96, 34.87], [52.2, 36.9], [54.0, 38.9], [56.4, 40.71], [59.36, 42.6], [63.0, 45.87], [68.52, 50.85], [71.0, 54.6], [74.6, 58.7]] };
 const WARP = WARPS[new URLSearchParams(location.search).get('warp')];
 const _w = WARPS.fa; _w.push(_w.shift());
