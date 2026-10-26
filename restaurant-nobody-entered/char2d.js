@@ -1,0 +1,132 @@
+// The 23 Team mascot in 2D: round head, small rounded body, mitten arms, short legs, glossy eyes, a simple mouth.
+// Soft "animated feature" shading: a radial body gradient, a contact shadow and a warm rim light. Posed from a plain object.
+export const BASE_H = 210;   // standing height at scale 1, in world pixels
+
+export const SKIN = {
+  owner: { base: '#eeeeea', hi: '#ffffff', lo: '#aeb4c8' },
+  blue1: { base: '#2448bb', hi: '#5a80f0', lo: '#13246a' },
+  blue2: { base: '#2a52c9', hi: '#6189f5', lo: '#152a78' },
+  blue3: { base: '#1f3fa6', hi: '#5272dd', lo: '#101f5e' },
+};
+const INK = '#151018';
+
+function bodyGrad(ctx, cx, cy, r, sk, light = -1) {
+  const g = ctx.createRadialGradient(cx + light * r * .38, cy - r * .45, r * .05, cx, cy, r * 1.08);
+  g.addColorStop(0, sk.hi); g.addColorStop(.45, sk.base); g.addColorStop(1, sk.lo); return g;
+}
+function capsule(ctx, x1, y1, x2, y2, w) {
+  const a = Math.atan2(y2 - y1, x2 - x1), nx = Math.cos(a + Math.PI / 2) * w / 2, ny = Math.sin(a + Math.PI / 2) * w / 2;
+  ctx.beginPath(); ctx.moveTo(x1 + nx, y1 + ny); ctx.lineTo(x2 + nx, y2 + ny); ctx.arc(x2, y2, w / 2, a + Math.PI / 2, a - Math.PI / 2, true);
+  ctx.lineTo(x1 - nx, y1 - ny); ctx.arc(x1, y1, w / 2, a - Math.PI / 2, a + Math.PI / 2, true); ctx.closePath();
+}
+function rim(ctx, cx, cy, r, side, col, a = .55, w = .07) {
+  if (!side) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = col; ctx.globalAlpha = a; ctx.lineWidth = r * w;
+  ctx.beginPath(); const mid = side > 0 ? 0 : Math.PI; ctx.arc(cx, cy, r * .96, mid - 1.0, mid + 1.0); ctx.stroke(); ctx.restore();
+}
+
+// P: { x, y (feet), s, skin, f (-1 left .. 1 right), back, phi, walk, armL, armR, lean, bob, squash, sit, smile, sad, o, blink, tilt, look, rimSide, rimCol, hold, alpha }
+export function drawMascot(ctx, P) {
+  if (P.vis === false) return;
+  const sk = SKIN[P.skin] || SKIN.blue1, H = BASE_H * (P.s || 1), f = Math.max(-1, Math.min(1, P.f || 0));
+  const sit = P.sit || 0, sq = P.squash || 0, walk = P.walk || 0, phi = P.phi || 0;
+  const bob = (P.bob || 0) * H + Math.abs(Math.cos(phi)) * .035 * H * walk;
+  const x = P.x, y = P.y;
+  ctx.save(); if (P.alpha !== undefined) ctx.globalAlpha = P.alpha;
+  // contact shadow
+  const sg = ctx.createRadialGradient(x, y, 0, x, y, H * .3); sg.addColorStop(0, 'rgba(5,6,25,.45)'); sg.addColorStop(1, 'rgba(5,6,25,0)');
+  ctx.fillStyle = sg; ctx.save(); ctx.translate(x, y); ctx.scale(1, .2); ctx.translate(-x, -y); ctx.beginPath(); ctx.arc(x, y, H * .3, 0, 7); ctx.fill(); ctx.restore();
+  ctx.translate(x, y); ctx.rotate(P.lean || 0); ctx.translate(-x, -y);
+  const lift = sit * .13 * H, yb = y - lift - bob;       // body baseline
+  const hipY = yb - .2 * H, shY = yb - .47 * H, headY = yb - .74 * H * (1 - sq * .6), R = .245 * H;
+  const legW = .115 * H, legDX = .075 * H * (1 - .55 * Math.abs(f)), fwd = Math.sign(f || 1);
+  const light = P.lightSide ?? -1;
+  // legs
+  const leg = (side, swing) => {
+    const lx = x + side * legDX;
+    if (sit > .5) {
+      const dir = Math.abs(f) > .3 ? fwd : 0, kx = lx + dir * .17 * H, ky = hipY + .05 * H;
+      ctx.fillStyle = bodyGrad(ctx, lx, hipY, .2 * H, sk, light); capsule(ctx, lx, hipY, kx, ky, legW); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(kx + dir * .02 * H, ky + .06 * H, .075 * H, .05 * H, 0, 0, 7); ctx.fill();
+    } else {
+      const sx = swing * .1 * H * Math.max(Math.abs(f), .25) * fwd, up = Math.max(0, -swing) * .05 * H;
+      ctx.fillStyle = bodyGrad(ctx, lx, hipY + .1 * H, .2 * H, sk, light); capsule(ctx, lx, hipY, lx + sx, yb - .05 * H - up, legW); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(lx + sx + f * .03 * H, yb - .035 * H - up, .085 * H, .048 * H, 0, 0, 7); ctx.fill();
+    }
+  };
+  const s1 = Math.sin(phi) * walk;
+  if (f >= 0) { leg(1, -s1); leg(-1, s1); } else { leg(-1, s1); leg(1, -s1); }
+  // arms: angle 0 hangs down, positive swings outward on its own side of the screen
+  const arm = (side, ang) => {
+    const ax = x + side * .165 * H * (1 - .45 * Math.abs(f)), ay = shY, L = .24 * H, a = ang * side;
+    const ex = ax + Math.sin(a) * L, ey = ay + Math.cos(a) * L;
+    ctx.fillStyle = bodyGrad(ctx, ax, ay + L / 2, L * .8, sk, light); capsule(ctx, ax, ay, ex, ey, .092 * H); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex, ey, .062 * H, 0, 7); ctx.fill();
+    return [ex, ey];
+  };
+  const armL = P.armL ?? (.12 + s1 * .35 * Math.max(.4, Math.abs(f)) * -fwd), armR = P.armR ?? (.12 + s1 * .35 * Math.max(.4, Math.abs(f)) * fwd);
+  // the far arm goes behind the body when turned
+  let hands = {};
+  if (f > .25) hands.L = arm(-1, armL); if (f < -.25) hands.R = arm(1, armR);
+  // body
+  const bx = x, by = yb - .345 * H;
+  ctx.fillStyle = bodyGrad(ctx, bx, by, .24 * H, sk, light);
+  ctx.beginPath(); ctx.ellipse(bx, by, .185 * H * (1 + sq * .4) * (1 - .1 * Math.abs(f)), .19 * H * (1 - sq), 0, 0, 7); ctx.fill();
+  rim(ctx, bx, by, .19 * H, P.rimSide, P.rimCol || '#ffc27a', .35, .06);
+  if (!(f > .25)) hands.L = arm(-1, armL); if (!(f < -.25)) hands.R = arm(1, armR);
+  // held props
+  if (P.hold) drawHeld(ctx, P.hold, hands, H, x, shY, f);
+  // head
+  const hx = x + (P.headDX || 0) * H, hy = headY - (P.headUp || 0) * H;
+  ctx.save(); ctx.translate(hx, hy); ctx.rotate(P.tilt || 0); ctx.translate(-hx, -hy);
+  ctx.fillStyle = 'rgba(0,0,20,.22)'; ctx.beginPath(); ctx.ellipse(hx, hy + R * .9, R * .55, R * .16, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = bodyGrad(ctx, hx, hy, R, sk, light); ctx.beginPath(); ctx.arc(hx, hy, R, 0, 7); ctx.fill();
+  rim(ctx, hx, hy, R, P.rimSide, P.rimCol || '#ffc27a', .6, .08);
+  if (!P.back) face(ctx, hx, hy, R, Math.max(-1, Math.min(1, f + (P.headTurn || 0))), P);
+  ctx.restore();
+  ctx.restore();
+}
+
+function face(ctx, cx, cy, R, f, P) {
+  const lookY = (P.look || 0) * R * .12, fx = cx + f * .42 * R, sep = .34 * R * (1 - .5 * Math.abs(f));
+  const blink = 1 - .92 * (P.blink || 0), happy = Math.max(0, (P.smile || 0) - .55) * .55;
+  for (const s of [-1, 1]) {
+    const far = (s === Math.sign(-f)) ? 1 - .35 * Math.abs(f) : 1;
+    const ex = fx + s * sep, ey = cy - .02 * R + lookY, w = .095 * R * far, h = .145 * R * blink * (1 - happy);
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.ellipse(ex, ey, w, Math.max(h, .012 * R), 0, 0, 7); ctx.fill();
+    if (h > .05 * R) { ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.arc(ex - w * .3, ey - h * .45, w * .32, 0, 7); ctx.fill(); }
+  }
+  const sm = P.smile || 0, sd = P.sad || 0, o = P.o || 0, mx = fx, my = cy + .32 * R + lookY * .5, mw = .2 * R * (1 - .3 * Math.abs(f));
+  ctx.fillStyle = INK; ctx.strokeStyle = INK; ctx.lineCap = 'round'; ctx.lineWidth = .035 * R;
+  if (o > .3) { ctx.beginPath(); ctx.ellipse(mx, my, .06 * R * o, .08 * R * o, 0, 0, 7); ctx.fill(); }
+  else if (sm > .45) {
+    const k = (sm - .45) / .55; ctx.beginPath(); ctx.moveTo(mx - mw * .75, my - .02 * R); ctx.quadraticCurveTo(mx, my + (.06 + .16 * k) * R, mx + mw * .75, my - .02 * R); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#c4566a'; ctx.beginPath(); ctx.ellipse(mx, my + .07 * R * k, .07 * R * k, .03 * R * k, 0, 0, 7); ctx.fill();
+  } else if (sm > .1) { ctx.beginPath(); ctx.moveTo(mx - mw * .6, my); ctx.quadraticCurveTo(mx, my + .07 * R * sm * 2, mx + mw * .6, my); ctx.stroke(); }
+  else if (sd > .2) { ctx.beginPath(); ctx.moveTo(mx - mw * .55, my + .04 * R); ctx.quadraticCurveTo(mx, my - .07 * R * sd, mx + mw * .55, my + .04 * R); ctx.stroke(); }
+  else { ctx.beginPath(); ctx.moveTo(mx - mw * .45, my); ctx.lineTo(mx + mw * .45, my); ctx.stroke(); }
+}
+
+function drawHeld(ctx, what, hands, H, x, shY, f) {
+  const hR = hands.R || hands.L, hL = hands.L || hands.R;
+  if (what === 'key' && hR) {
+    ctx.strokeStyle = '#e2b955'; ctx.lineWidth = .025 * H; ctx.beginPath(); ctx.arc(hR[0], hR[1] - .05 * H, .035 * H, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hR[0], hR[1] - .015 * H); ctx.lineTo(hR[0], hR[1] + .09 * H); ctx.lineTo(hR[0] + .03 * H, hR[1] + .09 * H); ctx.stroke();
+  }
+  if (what === 'cloth' && hR) { ctx.fillStyle = '#f7f5ee'; ctx.beginPath(); ctx.ellipse(hR[0], hR[1] + .03 * H, .07 * H, .03 * H, .2, 0, 7); ctx.fill(); }
+  if ((what === 'tray' || what === 'tray2') && hL && hR) {
+    const ty = Math.min(hL[1], hR[1]) - .02 * H, tx = (hL[0] + hR[0]) / 2;
+    if (what === 'tray2') for (const d of [-.06, .06]) cup(ctx, tx + d * H, ty, H * .5);
+    ctx.fillStyle = '#c9ccd6'; ctx.beginPath(); ctx.ellipse(tx, ty, .2 * H, .028 * H, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#eef0f6'; ctx.beginPath(); ctx.ellipse(tx, ty - .008 * H, .19 * H, .018 * H, 0, 0, 7); ctx.fill();
+  }
+  if (what === 'cup' && hR) cup(ctx, hR[0], hR[1] - .02 * H, H * .5);
+}
+export function cup(ctx, x, y, s) {
+  ctx.fillStyle = '#f4f1ea'; ctx.beginPath(); ctx.ellipse(x, y, .16 * s, .035 * s, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(x - .09 * s, y - .17 * s); ctx.lineTo(x + .09 * s, y - .17 * s); ctx.lineTo(x + .07 * s, y - .02 * s); ctx.lineTo(x - .07 * s, y - .02 * s); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#5a321a'; ctx.beginPath(); ctx.ellipse(x, y - .17 * s, .09 * s, .022 * s, 0, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = .025 * s; ctx.beginPath(); ctx.arc(x + .1 * s, y - .1 * s, .04 * s, -1.4, 1.4); ctx.stroke();
+}
+
+export function walkPose(phi, amt = 1) { return { phi, walk: amt }; }

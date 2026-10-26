@@ -1,222 +1,175 @@
-// The film's timeline: eleven scenes cut to the Hungarian voiceover (measured from the pauses in refs/voiceover-hu.mp3).
-// Each scene returns everything for its frame: camera, light state, who is where doing what, props and effects.
-import { clamp, lerp, seg, ss, eio, monotone, track, hash } from '/core/lib.js';
-import { walkPose } from './mascot.js';
-import { TABLES } from './world.js';
+// The film's timeline (2D): eleven scenes cut to the Hungarian voiceover, measured from the pauses in refs/voiceover-hu.mp3.
+// The owner is always white; every customer is dark blue.
+import { clamp, lerp, seg, ss, track, hash } from '/core/lib.js';
 
 export const DUR = 58.7;
 export const T = { s1: 0, s2: 5.0, s3: 13.2, s4: 16.0, s5: 21.0, s6: 26.1, s7: 31.5, s8: 36.9, s9: 38.9, s10: 42.6, s11: 50.85 };
-// moments the sound follows
 export const HIT = {
   keyJingle: 3.4, lockClick: 4.9, wipe1: 5.4, wipe2: 6.3, wipe3: 8.0, chairUp: 9.95, chairDown: 10.45, doorCreak: 12.25,
   bell1: 22.75, guestSteps: 23.1, doorShut1: 25.4, chairPull: 28.7, sit: 29.9, cupClink: 31.2, sip: 33.4,
   ystop: 33.6, bell2: 37.5, bell3: 39.45, bell4: 40.75, trayDown: 45.0, laugh: 46.1, bell5: 58.05,
 };
-export const DISSOLVES = [{ at: T.s3, d: .5, blur: 0 }, { at: T.s10, d: .45, blur: 6 }];
+export const DISSOLVES = [{ at: T.s3, d: .5, blur: 0 }, { at: T.s10, d: .45, blur: 8 }, { at: 54.6, d: .55, blur: 0 }];
 
-const K = keys => monotone(keys), V = keys => track(keys);
-const P0 = { vis: false };
-const seat = (id, i) => TABLES.find(t => t.id === id).seats[i];
+// interior depth rows: feet line and scale
+export const ROWS = [[1400, .82], [1620, .92], [1860, 1.02]];
+export const sOf = y => lerp(.82, 1.02, (y - 1400) / 460);
+export const TABLES = { A: [910, 0], B: [500, 0], C: [280, 1], D: [760, 1], E: [1230, 1], F: [1010, 2] };
+export function seatPos(id, i) { const [x, r] = TABLES[id], [y, s] = ROWS[r]; return [x + (i ? 1 : -1) * 108 * s, y - 1, i ? -.8 : .8, s]; }
+
+const V = keys => track(keys);
 function blinkAt(t, seed) { const per = 2.6 + hash(seed) * 1.8, ph = (t + seed * 3.7) % per; return ph < .14 ? Math.sin(ph / .14 * Math.PI) : 0; }
-function idle(t, seed, o = {}) { return { bob: Math.sin(t * 2.2 + seed) * .006, blink: blinkAt(t, seed), ...o }; }
-// a walk between two points: position, facing, phase
-function walk(t, t0, t1, A, B, stride = .34) {
-  const u = seg(t, t0, t1), e = ss(u), x = lerp(A[0], B[0], e), z = lerp(A[1], B[1], e);
-  const d = Math.hypot(B[0] - A[0], B[1] - A[1]), moving = t > t0 && t < t1;
-  return { x, z, ry: Math.atan2(B[0] - A[0], B[1] - A[1]), moving, phi: e * d / stride * Math.PI, amt: moving ? Math.min(1, Math.sin(u * Math.PI) * 2.2) : 0 };
+const idle = (t, seed, o = {}) => ({ bob: Math.sin(t * 2.2 + seed) * .006, blink: blinkAt(t, seed), ...o });
+// a walk from A to B (world x, y): position, facing and phase; scale follows depth when inside
+function walk(t, t0, t1, A, B, inside = true, stride = 60) {
+  const u = seg(t, t0, t1), e = ss(u), x = lerp(A[0], B[0], e), y = lerp(A[1], B[1], e), moving = t > t0 && t < t1;
+  const dx = B[0] - A[0], dy = B[1] - A[1], d = Math.hypot(dx, dy) || 1;
+  return { x, y, s: inside ? sOf(y) : 1, f: clamp(dx / d * 1.1, -.95, .95), back: dy < -Math.abs(dx) * .7, phi: e * d / stride * Math.PI, walk: moving ? Math.min(1, Math.sin(u * Math.PI) * 2.2) : 0 };
 }
-function walker(t, t0, t1, A, B, extra = {}) { const w = walk(t, t0, t1, A, B); return { x: w.x, z: w.z, ry: w.ry, ...(w.moving ? walkPose(w.phi, w.amt) : {}), ...extra }; }
-const angTo = (a, b) => Math.atan2(b[0] - a[0], b[1] - a[1]);
-const lerpAng = (a, b, u) => { let d = ((b - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI; return a + d * u; };
-function seated(t, id, i, seed, o = {}) { const [x, z, ry] = seat(id, i); return { x, z, ry, sit: 1, ...idle(t, seed), armL: [.55, .12], armR: [.55, .12], ...o }; }
+function seated(t, id, i, skin, seed, o = {}) { const [x, y, f, s] = seatPos(id, i); return { x, y, s, f, sit: 1, skin, ...idle(t, seed), armL: .25, armR: .25, ...o }; }
+const OW = 'owner';
 
-// —— Scene 1: dawn, the owner at his door with the key ——
-const s1cam = V([[0, [2.7, 3.3, 5.8]], [1.6, [2.3, 2.5, 5.1]], [3.2, [1.0, 1.1, 3.6]], [5.0, [.4, .62, 2.85]]]);
-const s1tgt = V([[0, [-60, 6, 4.4]], [1.6, [-40, 4.5, 3.6]], [3.2, [-5, 1.5, 1.6]], [5.0, [-1.9, .84, 1.0]]]);
+// —— 1: dawn, the owner with his key ——
+const s1cam = V([[0, [1000, 60, .95]], [2.0, [930, 640, .95]], [3.6, [780, 1300, 1.2]], [5, [735, 1440, 1.35]]]);
 function scene1(t) {
-  const step = ss(seg(t, 4.2, 5.0));
-  const ow = { x: lerp(-1.95, -2.15, step), z: lerp(1.35, .85, step), ry: lerpAng(1.25, 3.0, ss(seg(t, 4.0, 4.7))), headYaw: .75 * (1 - ss(seg(t, 2.9, 3.4))) , ...idle(t, 1),
-    ...(t > 4.2 && t < 5.0 ? walkPose(step * 3 * Math.PI, .5) : {}),
-    headPitch: lerp(.38, -.32, ss(seg(t, 2.9, 3.5))) + .12 * Math.sin(seg(t, 3.9, 4.3) * Math.PI) * -1 + lerp(0, .3, ss(seg(t, 4.2, 4.7))),
-    armL: [1.05, -.42], armR: [lerp(1.05, 1.45, ss(seg(t, 4.3, 4.9))), lerp(-.42, -.2, ss(seg(t, 4.3, 4.9)))],
-    smile: .15 + .2 * ss(seg(t, 3.9, 4.4)), blink: t > 3.55 && t < 3.85 ? Math.sin(seg(t, 3.55, 3.85) * Math.PI) : blinkAt(t, 1),
-    bob: Math.sin(seg(t, 1.4, 2.4) * Math.PI) * .02 };
-  return { look: 'dawn', cam: { pos: s1cam(t), tgt: s1tgt(t), fov: lerp(54, 46, ss(seg(t, 1, 5))), focus: t < 2.5 ? 30 : lerp(30, 2.9, ss(seg(t, 2.5, 4))), aper: 9 },
-    chars: { owner: ow }, props: { key: 'owner' }, tram: seg(t, 0, 5), birds: seg(t, .4, 4.4), mist: t, lanternOn: lerp(.45, 1, ss(seg(t, 3.4, 3.8))), interior: .08, chairsUp: true };
+  const turn = ss(seg(t, 4.0, 4.7));
+  const ow = { skin: OW, x: lerp(730, 700, turn), y: 1722, s: 1, f: lerp(.35, -.2, turn), back: turn > .5, ...idle(t, 1),
+    look: lerp(-1, .3, ss(seg(t, 2.9, 3.4))), headUp: .01 * (1 - ss(seg(t, 2.9, 3.4))), armL: lerp(-.7, .1, turn), armR: lerp(-.7, 1.4, turn),
+    smile: .25 + .35 * ss(seg(t, 3.8, 4.3)), hold: 'key', blink: t > 3.55 && t < 3.85 ? Math.sin(seg(t, 3.55, 3.85) * Math.PI) : blinkAt(t, 1) };
+  return { set: 'ex', look: 'dawn', cam: s1cam(t), chars: [ow], inside: [], birds: seg(t, .2, 4.6), lanterns: lerp(.5, 1, ss(seg(t, 3.4, 3.8))), interiorLit: .15 };
 }
 
-// —— Scene 2: morning prep: wipe, wipe again, a chair tucked in, the door opened ——
-const s2cam = V([[5, [-.5, .95, -2.95]], [9.1, [-.6, .97, -2.9]], [10.4, [-.9, 1.0, -2.75]], [13.2, [-1.25, 1.02, -2.25]]]);
-const s2tgt = V([[5, [-1.15, .66, -1.25]], [9.1, [-1.2, .66, -1.2]], [10.4, [-1.6, .72, -.9]], [13.2, [-2.3, .86, -.15]]]);
+// —— 2: morning prep ——
+const s2cam = V([[5, [520, 1240, 1.7]], [9.9, [500, 1245, 1.7]], [12.4, [360, 1230, 1.6]], [13.2, [345, 1225, 1.6]]]);
 function scene2(t) {
-  const A = [-1.15, -1.06], tb = [-1.15, -1.6], door = [-2.25, -.5];
-  let ow = { ...idle(t, 1) };
+  let ow = { skin: OW, x: 500, y: 1378, s: .815, f: 0, ...idle(t, 1), smile: .35 };
   if (t < 9.1) {
-    const wipeOn = (t < 7.1) || (t > 7.6), ph = (t < 7.1 ? (t - 5.2) / .95 : (t - 7.7) / 1.1) * Math.PI * 2;
-    Object.assign(ow, { x: A[0], z: A[1], ry: Math.PI, lean: t > 7.1 && t < 7.6 ? .48 : .3,
-      armL: wipeOn ? [1.2 + Math.sin(ph) * .16, -.1 + Math.cos(ph) * .22] : [1.05, -.15], armR: [.4, .12],
-      headPitch: -.32 - (t > 7.1 && t < 7.6 ? .12 : 0), headYaw: wipeOn ? Math.cos(ph) * .1 : 0, smile: .3 });
-  } else if (t < 9.9) {
-    const u = seg(t, 9.1, 9.9);
-    Object.assign(ow, { x: A[0] - .25 * ss(u), z: A[1], ry: lerpAng(Math.PI, Math.PI * 1.35, ss(u)), lean: .2 * Math.sin(u * Math.PI), armL: [.9 * Math.sin(u * Math.PI), .1], armR: [.9 * Math.sin(u * Math.PI), .1], smile: .3 });
-  } else if (t < 12.2) Object.assign(ow, walker(t, 9.9, 12.2, [A[0] - .25, A[1]], door), { smile: .3 });
-  else { const u = seg(t, 12.2, 12.9); Object.assign(ow, { x: door[0] + .02, z: door[1], ry: lerpAng(angTo([A[0] - .25, A[1]], door), .5, ss(u)), armR: [lerp(.2, .95, Math.sin(seg(t, 12.2, 12.8) * Math.PI)), .2], smile: lerp(.3, .8, ss(seg(t, 12.6, 13.1))), headPitch: .1 }); }
-  const tuck = ss(seg(t, 9.3, 9.8)) * .16;
-  return { look: 'morning', cam: { pos: s2cam(t), tgt: s2tgt(t), fov: 46, focus: Math.hypot(...s2cam(t).map((v, i) => v - [ow.x, .8, ow.z][i])), aper: 10 },
-    chars: { owner: ow }, props: { cloth: t < 9.05 ? 'owner' : 'tableB' }, chairTuck: tuck, door: ss(seg(t, 12.25, 13.0)) * 1.05, interior: lerp(.4, 1, ss(seg(t, 5, 9))), chairsUp: true };
+    const on = t < 7.1 || t > 7.6, ph = (t < 7.1 ? (t - 5.2) / .95 : (t - 7.7) / 1.1) * Math.PI * 2;
+    Object.assign(ow, { armR: on ? .55 + Math.sin(ph) * .22 : .45, armL: .2, look: .6, lean: on ? Math.cos(ph) * .04 : 0, headDX: on ? Math.cos(ph) * .015 : 0, hold: 'cloth', f: on ? Math.cos(ph) * .15 : .1 });
+  } else if (t < 9.9) { const u = seg(t, 9.1, 9.9); Object.assign(ow, { f: -.6, armL: .3 + .6 * Math.sin(u * Math.PI), lean: -.05 * Math.sin(u * Math.PI) }); }
+  else if (t < 12.2) Object.assign(ow, walk(t, 9.9, 12.2, [500, 1378], [300, 1376]), { smile: .35 });
+  else Object.assign(ow, { x: 300, y: 1376, s: sOf(1376), f: -.25, back: true, armR: lerp(.2, 1.1, Math.sin(seg(t, 12.2, 12.8) * Math.PI)) });
+  return { set: 'in', look: 'morning', cam: s2cam(t), chars: [ow], chairsUp: ['A', 'C', 'D', 'E', 'F'], tuck: ss(seg(t, 9.3, 9.8)), cloth: t >= 9.1 ? 'B' : null, door: ss(seg(t, 12.25, 13.0)) * .95, lamps: lerp(.45, 1, ss(seg(t, 5, 9))) };
 }
 
-// —— Scene 3: day one, the empty room ——
-const s3cam = V([[13.2, [2.8, 1.95, -4.6]], [16, [2.62, 1.88, -4.35]]]);
+// —— 3: day one, the empty room ——
 function scene3(t) {
-  const me = [.3, -2.0], door = [-2.3, 0];
-  const ow = { x: me[0], z: me[1], ry: angTo(me, door) + .15 * Math.sin(seg(t, 13.6, 14.6) * Math.PI), ...idle(t, 1), armL: [.55, -.32], armR: [.55, -.32],
-    headYaw: .25 * Math.sin(seg(t, 13.8, 14.8) * Math.PI), squash: .05 * Math.sin(seg(t, 15.0, 15.9) * Math.PI), headPitch: -.12 * ss(seg(t, 15.1, 15.7)), sad: .35 * ss(seg(t, 15, 15.8)) };
-  const p1 = walker(t, 13.2, 16, [-4.4, 1.35], [-.4, 1.35], { ...idle(t, 4) }), p2 = walker(t, 13.2, 16, [1.4, 1.75], [5.2, 1.75], { ...idle(t, 6) });
-  return { look: 'dusk', cam: { pos: s3cam(t), tgt: [-.9, .55, -.75], fov: 60, focus: 4.2, aper: 7 }, chars: { owner: ow, g2: p1, y2: p2 }, interior: 1 };
+  const ow = { skin: OW, x: 640, y: 1640, s: sOf(1640), f: -.45, back: true, ...idle(t, 1), squash: .05 * Math.sin(seg(t, 15.0, 15.9) * Math.PI), headDX: -.01 * Math.sin(seg(t, 13.8, 14.8) * Math.PI) };
+  const out = [walk(t, 13.2, 16, [520, 1330], [1260, 1330], false), walk(t, 13.2, 16, [1250, 1335], [600, 1335], false)].map((p, i) => ({ ...p, s: .8, skin: i ? 'blue3' : 'blue2', ...idle(t, 4 + i), dim: .55 }));
+  return { set: 'in', look: 'dusk', cam: V([[13.2, [760, 1290, .95]], [16, [760, 1300, .98]]])(t), chars: [ow], outside: out, lamps: 1 };
 }
 
-// —— Scene 4: day two, rain, doubt ——
-const s4cam = V([[16, [-.32, .84, -.32]], [21, [.08, .9, -.52]]]);
+// —— 4: day two, rain, doubt ——
 function scene4(t) {
-  const [sx, sz] = seat('A', 1);
-  const look = ss(seg(t, 17.9, 18.7)) - ss(seg(t, 19.0, 19.6)), shake = t > 19.6 && t < 20.3 ? Math.sin(seg(t, 19.6, 20.3) * Math.PI * 2) * .18 : 0;
-  const ow = { x: sx, z: sz, ry: -Math.PI / 2, sit: 1, ...idle(t, 1), lean: .22 - .1 * look,
-    armL: [lerp(2.05, 1.2, look), lerp(-.45, -.2, look)], armR: [.7, .1], headRoll: lerp(.22, 0, look), headPitch: lerp(-.28, .08, look) - .06 * ss(seg(t, 20.2, 20.9)),
-    headYaw: .45 * look + shake, sad: 1, squash: .07 * Math.sin(seg(t, 20.2, 21) * Math.PI),
+  const [sx, sy, , s] = seatPos('A', 1), look = ss(seg(t, 17.9, 18.7)) - ss(seg(t, 19.0, 19.6)), shake = t > 19.6 && t < 20.3 ? Math.sin(seg(t, 19.6, 20.3) * Math.PI * 2) * .25 : 0;
+  const ow = { skin: OW, x: sx, y: sy, s, f: -.75 - .2 * look + shake, sit: 1, ...idle(t, 1), sad: 1, armL: lerp(-2.55, .3, look), armR: .3,
+    tilt: lerp(-.18, 0, look), look: lerp(.5, -.3, look) + .3 * ss(seg(t, 20.2, 20.9)), squash: .06 * Math.sin(seg(t, 20.2, 21) * Math.PI), headDX: lerp(-.03, 0, look),
     blink: t > 16.8 && t < 17.4 ? Math.sin(seg(t, 16.8, 17.4) * Math.PI) : blinkAt(t, 1) };
-  const c = s4cam(t), head = [sx, .98, sz];
-  return { look: 'night', rain: 1, drops: 1, cam: { pos: c, tgt: [sx, .9, sz], fov: 40, focus: Math.hypot(c[0] - head[0], c[1] - head[1], c[2] - head[2]), aper: 13 },
-    chars: { owner: ow }, props: { cloth: 'table' }, interior: .82, candleLow: 1, wet: 1 };
+  return { set: 'in', look: 'night', cam: V([[16, [985, 1265, 2.15]], [21, [990, 1275, 2.35]]])(t), chars: [ow], rain: 1, drops: 1, lamps: .8, cloth: 'A', candleLow: true };
 }
 
-// —— Scene 5: the door opens ——
+// —— 5: the door opens ——
 function scene5(t) {
-  const [sx, sz] = seat('A', 1), turn = ss(seg(t, 22.65, 23.0));
-  const ow = { x: sx, z: sz, ry: -Math.PI / 2, sit: 1, ...idle(t, 1), lean: lerp(.18, 0, turn), armL: [lerp(1.6, .6, turn), -.25], armR: [.6, .1],
-    headYaw: lerp(0, .35, turn), headPitch: lerp(-.2, .05, turn), sad: 1 - turn, o: turn * (1 - ss(seg(t, 24.5, 25.5))) * .9, smile: .25 * ss(seg(t, 25.0, 26)) };
-  const g = walker(t, 23.0, 24.3, [-2.3, 1.0], [-1.95, -.7], { ...idle(t, 2) });
-  if (t >= 24.3) { const ph = seg(t, 24.4, 25.4); g.headYaw = Math.sin(ph * Math.PI * 2) * .5; g.ry = lerpAng(g.ry, angTo([-1.95, -.7], [sx, sz]), ss(seg(t, 25.3, 25.8))); }
-  g.vis = t > 22.55; g.o = .35 * ss(seg(t, 24.3, 24.8));
-  const door = ss(seg(t, 22.55, 23.2)) * 1.15 * (1 - ss(seg(t, 24.4, 25.6)));
-  const focus = lerp(.6, 4.0, ss(seg(t, 22.7, 23.3)));
-  return { look: 'night', rain: 1, drops: .7, cam: { pos: V([[21, [-.25, 1.0, -2.1]], [26.1, [-.45, 1.0, -1.9]]])(t), tgt: [-2.2, .8, -.2], fov: 42, focus: 2.6, aper: 8 },
-    chars: { guest: g }, door, bellAt: HIT.bell1, interior: .95, wet: 1 };
+  const g = walk(t, 23.0, 24.3, [270, 1372], [540, 1470]);
+  if (t >= 24.3) { const ph = seg(t, 24.4, 25.3); g.f = Math.sin(ph * Math.PI * 2) * .6; if (t > 25.3) g.f = lerp(0, .75, ss(seg(t, 25.3, 25.7))); g.back = false; }
+  Object.assign(g, { skin: 'blue1', vis: t > 22.6, ...idle(t, 2), o: .45 * ss(seg(t, 24.3, 24.7)) });
+  if (t < 23.0) { g.x = 270; g.y = 1372; g.s = sOf(1372); g.f = .1; }
+  const door = ss(seg(t, 22.55, 23.2)) * (1 - ss(seg(t, 24.4, 25.6)));
+  return { set: 'in', look: 'night', cam: V([[21, [400, 1235, 1.55]], [26.1, [430, 1250, 1.5]]])(t), chars: [g], door, rain: 1, drops: .6, lamps: .95 };
 }
 
-// —— Scene 6: welcomed like a hundred guests ——
-const s6cam = V([[26.1, [-2.15, 1.02, -2.75]], [28.5, [-1.95, 1.04, -2.85]], [29.6, [-.8, 1.06, -3.3]], [31.5, [.05, 1.08, -3.55]]]);
-const s6tgt = V([[26.1, [-.7, .68, -.95]], [28.5, [-1.1, .66, -.95]], [29.6, [.45, .64, -1.2]], [31.5, [.65, .66, -1.15]]]);
+// —— 6: welcomed like a hundred guests ——
 function scene6(t) {
-  const [ox, oz] = seat('A', 1), [sx, sz] = seat('A', 1), gStart = [-1.5, -.78], meet = [-.75, -1.2], host = [.0, -1.32], via = [.62, -1.5];
-  let ow = { ...idle(t, 1) };
-  if (t < 26.6) { const u = seg(t, 26.1, 26.55); Object.assign(ow, { x: ox, z: oz, ry: -Math.PI / 2, sit: 1 - ss(u), bob: Math.sin(u * Math.PI) * .07, o: 1 - ss(seg(t, 26.2, 26.5)), smile: ss(seg(t, 26.25, 26.55)), headYaw: .3 }); }
-  else if (t < 27.5) Object.assign(ow, walker(t, 26.6, 27.5, [ox - .05, oz - .5], meet), { smile: 1 });
+  const [ox, oy, , os] = seatPos('A', 1), [gx, gy, , gs] = seatPos('A', 0), meet = [700, 1462], host = [1080, 1432], gStart = [540, 1470];
+  let ow;
+  if (t < 26.6) { const u = seg(t, 26.1, 26.55); ow = { x: ox, y: oy, s: os, f: -.8, sit: 1 - ss(u), bob: Math.sin(u * Math.PI) * .08, o: 1 - ss(seg(t, 26.2, 26.5)), smile: ss(seg(t, 26.25, 26.55)) }; }
+  else if (t < 27.5) ow = { ...walk(t, 26.6, 27.5, [ox + 20, oy + 25], meet), smile: 1 };
   else if (t < 28.5) { const u = seg(t, 27.5, 28.4), open = Math.sin(Math.min(1, u * 1.4) * Math.PI / 2) * (1 - ss(seg(t, 28.2, 28.5)) * .6);
-    Object.assign(ow, { x: meet[0], z: meet[1], ry: angTo(meet, gStart), smile: 1, armL: [.55 * open, .15 + 1.15 * open], armR: [.55 * open, .15 + 1.15 * open], bob: Math.abs(Math.sin(u * Math.PI * 2)) * .03, headPitch: .1 }); }
-  else if (t < 29.5) { Object.assign(ow, walker(t, 28.5, 29.1, meet, host), { smile: 1 }); if (t > 29.1) { ow.ry = angTo(host, [sx, sz]); ow.armR = [1.0, -.1]; ow.armL = [.5, .5]; ow.lean = .15; } }
-  else if (t < 30.4) Object.assign(ow, { x: host[0], z: host[1], ry: angTo(host, [sx, sz]), ...idle(t, 1), smile: 1, armL: [.9, .6], armR: [.4, .1] });
-  else { const u = seg(t, 30.6, 31.4); Object.assign(ow, { x: host[0], z: host[1], ry: angTo(host, [sx, sz]), smile: 1, armL: [.75, -.55], armR: [.75, -.55], lean: .2 * Math.sin(u * Math.PI), headPitch: -.12 * Math.sin(u * Math.PI) }); }
+    ow = { x: meet[0], y: meet[1], s: sOf(meet[1]), f: -.55, smile: 1, armL: .2 + 1.7 * open, armR: .2 + 1.7 * open, bob: Math.abs(Math.sin(u * Math.PI * 2)) * .025 }; }
+  else if (t < 29.2) ow = { ...walk(t, 28.5, 29.2, meet, [gx - 40, gy + 30]), smile: 1 };
+  else if (t < 30.4) ow = { x: gx - 40, y: gy + 30, s: sOf(gy + 30), f: .5, smile: 1, armL: .9, armR: .3 };
+  else if (t < 31.0) ow = { ...walk(t, 30.4, 31.0, [gx - 40, gy + 30], host), smile: 1 };
+  else { const u = seg(t, 31.0, 31.5); ow = { x: host[0], y: host[1], s: sOf(host[1]), f: -.55, smile: 1, armL: -.45, armR: -.45, lean: -.05 * Math.sin(u * Math.PI) }; }
+  ow = { skin: OW, ...idle(t, 1), ...ow };
   let g;
-  if (t < 29.2) g = { x: gStart[0], z: gStart[1], ry: angTo(gStart, meet), ...idle(t, 2), o: .4 * (1 - ss(seg(t, 27.0, 27.8))), smile: .6 * ss(seg(t, 27.6, 28.3)) };
-  else if (t < 29.75) g = walker(t, 29.2, 29.75, gStart, via, { smile: .6 });
-  else if (t < 30.15) g = walker(t, 29.75, 30.15, via, [sx + .02, sz - .05], { smile: .6 });
-  else { const u = ss(seg(t, 30.15, 30.55)); g = { x: sx, z: sz, ry: lerpAng(angTo(via, [sx, sz]), -Math.PI / 2, u), sit: u, ...idle(t, 2), smile: .6, armL: [.55, .12], armR: [.55, .12] }; }
-  const pull = Math.sin(seg(t, 28.9, 30.1) * Math.PI) * .22;
-  return { look: 'night', rain: 1, drops: .7, cam: { pos: s6cam(t), tgt: s6tgt(t), fov: 52, focus: 2.3, aper: 8 }, chars: { owner: ow, guest: g }, chairPull: pull, interior: lerp(.95, 1.1, ss(seg(t, 26.3, 28))), wet: 1 };
+  if (t < 29.4) g = { x: gStart[0], y: gStart[1], s: sOf(gStart[1]), f: .7, ...idle(t, 2), o: .4 * (1 - ss(seg(t, 27.0, 27.8))), smile: .6 * ss(seg(t, 27.6, 28.3)) };
+  else if (t < 30.15) g = { ...walk(t, 29.4, 30.15, gStart, [gx, gy]), smile: .6 };
+  else { const u = ss(seg(t, 30.15, 30.55)); g = { x: gx, y: gy, s: gs, f: .8, sit: u, ...idle(t, 2), smile: .6 }; }
+  g.skin = 'blue1';
+  return { set: 'in', look: 'night', cam: V([[26.1, [760, 1300, 1.32]], [31.5, [860, 1300, 1.42]]])(t), chars: [ow, g], pull: Math.sin(seg(t, 28.9, 30.1) * Math.PI) * 30, rain: 1, drops: .6, lamps: lerp(.95, 1.1, ss(seg(t, 26.3, 28))), cups: t > 31.2 ? ['A0'] : [] };
 }
 
-// —— Scene 7: someone stops at the window ——
-const s7cam = V([[31.5, [-3.6, .78, 3.7]], [33.6, [-.7, .85, 3.5]], [35, [.35, 1.05, 3.2]], [36.9, [.9, 1.15, 2.85]]]);
-const s7tgt = V([[31.5, [-3.0, .62, 1.2]], [33.6, [.15, .72, 1.05]], [35, [.35, .74, -.2]], [36.9, [.42, .74, -.9]]]);
-function guestInside(t, sip = []) {
-  const g = seated(t, 'A', 1, 2, { smile: .55 });
-  for (const [a, b] of sip) { const u = Math.sin(seg(t, a, b) * Math.PI); if (u > 0) { g.armR = [lerp(.55, 1.55, u), lerp(.12, -.35, u)]; g.headPitch = .12 * u; g.cupUp = u; } }
+// —— the window table as seen from the street ——
+const WT = 1080, WY = 1640, WS = .78;
+function inGuest(t, sip = []) {
+  const g = { skin: 'blue1', x: WT - 92, y: WY, s: WS, f: .8, sit: 1, ...idle(t, 2), smile: .55, armL: .25, armR: .25 };
+  for (const [a, b] of sip) { const u = Math.sin(seg(t, a, b) * Math.PI); if (u > 0) { g.armR = .25 - 1.9 * u; g.hold = u > .3 ? 'cup' : null; g.look = -.3 * u; } }
   return g;
 }
+const inOwner = (t, x = WT + 110) => ({ skin: OW, x, y: WY - 6, s: WS, f: -.6, ...idle(t, 1), smile: 1, armL: .25 + .35 * Math.max(0, Math.sin(t * 3.1)), armR: .2 });
+function crowdSmall(t) { return [[960, 'blue3'], [1230, 'blue2'], [700, 'blue1'], [1170, 'blue1']].map(([x, sk], i) => ({ skin: sk, x, y: 1565, s: .5, f: i % 2 ? -.7 : .7, sit: 1, ...idle(t, 20 + i), smile: .6 + .3 * Math.sin(t + i) })); }
+
+// —— 7: someone stops at the window ——
 function scene7(t) {
-  const y = walker(t, 31.5, 33.6, [-4.3, 1.28], [.38, 1.18], { ...idle(t, 3) });
+  const y = { ...walk(t, 31.5, 33.6, [140, 1722], [1340, 1722], false), skin: 'blue2', ...idle(t, 3) };
   if (t >= 33.6) {
-    const wob = Math.sin(seg(t, 33.6, 34.0) * Math.PI * 2) * .06 * (1 - seg(t, 33.6, 34.0));
-    y.ry = lerpAng(Math.PI / 2, Math.PI, ss(seg(t, 33.8, 34.4))); y.tilt = wob; y.headYaw = .45 * (1 - ss(seg(t, 33.8, 34.4)));
-    y.o = ss(seg(t, 34.3, 34.6)) * (1 - ss(seg(t, 35.8, 36.4))) * .9; y.smile = .5 * ss(seg(t, 35.9, 36.6)); y.lean = .14 * ss(seg(t, 34.8, 35.8));
-  } else y.headYaw = -.4 * ss(seg(t, 32.6, 33.4));
-  const ow = { x: .62, z: -1.58, ry: angTo([.62, -1.58], seat('A', 1)), ...idle(t, 1), smile: 1, armL: [.25 + .35 * Math.max(0, Math.sin(t * 3.1)), .2], armR: [.2, .12], headYaw: .1 * Math.sin(t * 1.7) };
-  const c = s7cam(t);
-  return { look: 'night', wet: 1, drops: .35, cam: { pos: c, tgt: s7tgt(t), fov: t < 33.6 ? 42 : lerp(42, 38, ss(seg(t, 33.6, 36.9))), focus: t < 34.5 ? Math.hypot(c[0] - y.x, c[2] - y.z) : lerp(1.9, 3.6, ss(seg(t, 34.5, 35.6))), aper: 11 },
-    chars: { owner: ow, guest: guestInside(t, [[32.9, 34.3]]), y1: y }, cups: { A1: true }, interior: 1.1 };
-}
-
-// —— Scene 8: he enters too ——
-function scene8(t) {
-  const y = t < 37.45 ? walker(t, 36.9, 37.45, [-1.25, 1.05], [-2.25, .6], { ...idle(t, 3) }) : walker(t, 37.6, 38.9, [-2.25, .6], [-2.3, -.45], { ...idle(t, 3) });
-  if (t >= 37.45 && t < 37.6) { y.x = -2.25; y.z = .6; y.ry = Math.PI; }
-  y.armR = t > 37.3 && t < 37.9 ? [1.2, -.15] : y.armR; y.smile = .35;
-  const c = V([[36.9, [-1.0, .85, 2.35]], [38.9, [-1.65, .92, 1.6]]])(t);
-  return { look: 'night', wet: 1, cam: { pos: c, tgt: [-2.3, .9, 0], fov: 42, focus: Math.hypot(c[0] - y.x, c[2] - y.z), aper: 9 },
-    chars: { y1: y, guest: guestInside(t), owner: { x: .62, z: -1.58, ry: -2.4, ...idle(t, 1), smile: 1 } }, door: ss(seg(t, 37.42, 37.8)) * 1.0 * (1 - ss(seg(t, 38.4, 38.9)) * .4), interior: 1.1, cups: { A1: true } };
-}
-
-// —— Scene 9: then another, and another ——
-const s9cam = V([[38.9, [.25, 2.35, 9.1]], [42.25, [.2, 2.95, 8.45]], [42.6, [.35, 1.6, 3.2]]]);
-const s9tgt = V([[38.9, [-.55, 1.45, 0]], [42.25, [-.6, 1.5, 0]], [42.6, [.5, 1.05, -.5]]]);
-function scene9(t) {
-  const g2 = t < 39.45 ? walker(t, 38.9, 39.45, [-3.05, .95], [-2.3, .55], { ...idle(t, 4), smile: .4 }) : walker(t, 39.5, 40.3, [-2.3, .55], [-2.3, -.6], { ...idle(t, 4), smile: .4 });
-  g2.vis = t < 40.3;
-  const y2 = t < 40.7 ? walker(t, 38.9, 40.7, [-.15, 1.25], [-2.2, .6], { ...idle(t, 6), smile: .5 }) : walker(t, 40.75, 41.5, [-2.2, .6], [-2.3, -.6], { ...idle(t, 6), smile: .5 });
-  y2.vis = t < 41.5;
-  const ow = walker(t, 39.2, 40.6, [.62, -1.58], [-1.6, -.9], { ...idle(t, 1), smile: 1 });
-  if (t > 40.6) { ow.ry = angTo([-1.6, -.9], [-2.3, -.3]); ow.armL = [.6, 1.0]; ow.armR = [.6, 1.0]; }
-  const door = Math.max(ss(seg(t, 39.4, 39.7)) * (1 - ss(seg(t, 40.2, 40.6))), ss(seg(t, 40.7, 41.0)) * (1 - ss(seg(t, 41.5, 42.0)))) * .95;
-  return { look: 'night', wet: 1, cam: { pos: s9cam(t), tgt: s9tgt(t), fov: 54, focus: 8.5, aper: 4 },
-    chars: { owner: ow, guest: guestInside(t), y1: seated(t, 'A', 0, 3, { smile: .7 }), g2, y2 }, door, interior: 1.15, cups: { A0: true, A1: true } };
-}
-
-// —— Scene 10: the full room ——
-const s10cam = V([[42.6, [2.95, 2.42, -4.7]], [46, [2.7, 2.3, -4.5]], [50.85, [2.05, 1.95, -4.2]]]);
-const s10tgt = V([[42.6, [-.7, .5, -1.1]], [46, [-.3, .55, -1.5]], [50.85, [.45, .7, -2.0]]]);
-export const FULL = [['guest', 'A', 1, 2], ['y1', 'A', 0, 3], ['g2', 'B', 0, 4], ['y2', 'B', 1, 6], ['w2', 'C', 0, 7], ['g3', 'C', 1, 8], ['y3', 'D', 0, 9], ['w3', 'D', 1, 10], ['g4', 'E', 0, 11], ['y4', 'E', 1, 12]];
-function crowd(t, laughAt = HIT.laugh) {
-  const out = {};
-  for (const [name, id, i, seed] of FULL) {
-    const p = seated(t, id, i, seed, { smile: .45 + .4 * Math.max(0, Math.sin(t * .9 + seed)), headYaw: .28 * Math.sin(t * 1.3 + seed * 2), headPitch: .05 * Math.sin(t * 2.1 + seed) });
-    if (name === 'y2') { const u = seg(t, laughAt, laughAt + 1); if (u > 0 && u < 1) { p.bob = Math.abs(Math.sin(u * Math.PI * 4)) * .04 * (1 - u); p.smile = 1; p.headPitch = .15; } }
-    out[name] = p;
+    const wob = Math.sin(seg(t, 33.6, 34.0) * Math.PI * 2) * .05 * (1 - seg(t, 33.6, 34.0));
+    Object.assign(y, { f: lerp(.9, -.7, ss(seg(t, 33.8, 34.4))), lean: wob, o: ss(seg(t, 34.3, 34.6)) * (1 - ss(seg(t, 35.4, 35.8))), smile: .5 * ss(seg(t, 35.5, 36.0)), headDX: -.02 * ss(seg(t, 34.6, 35.4)) });
+    if (t > 36.0) Object.assign(y, walk(t, 36.0, 36.9, [1340, 1722], [1000, 1722], false));
   }
-  return out;
+  return { set: 'ex', look: 'night', cam: V([[31.5, [520, 1480, 1.5]], [33.6, [960, 1480, 1.5]], [36.9, [1060, 1485, 1.6]]])(t), chars: [y], inside: [inGuest(t, [[32.9, 34.3]]), inOwner(t)], wet: 1, cupsIn: 1 };
 }
+// —— 8: he enters too ——
+function scene8(t) {
+  const y = { ...walk(t, 36.9, 37.45, [1000, 1722], [760, 1716], false), skin: 'blue2', ...idle(t, 3), smile: .35 };
+  if (t >= 37.45) { const u = seg(t, 37.6, 38.6); Object.assign(y, { x: lerp(760, 728, u), y: lerp(1716, 1668, u), s: lerp(1, .86, u), back: true, f: -.1, alpha: 1 - ss(seg(t, 38.1, 38.6)), phi: u * 6, walk: u > 0 && u < 1 ? 1 : 0 }); if (t < 37.9) y.armR = 1.2; }
+  return { set: 'ex', look: 'night', cam: V([[36.9, [820, 1480, 1.5]], [38.9, [770, 1470, 1.62]]])(t), chars: [y], inside: [inGuest(t), inOwner(t)], exDoor: ss(seg(t, 37.42, 37.8)) * (1 - ss(seg(t, 38.5, 38.9)) * .5), wet: 1, cupsIn: 1 };
+}
+// —— 9: then another, and another ——
+function scene9(t) {
+  const enter = (t0, t1, from, sk, seed) => { const p = { ...walk(t, t0, t1, from, [725, 1716], false), skin: sk, ...idle(t, seed), smile: .4 };
+    if (t >= t1) { const u = seg(t, t1 + .05, t1 + .8); Object.assign(p, { x: 725, y: lerp(1716, 1668, u), s: lerp(1, .86, u), back: true, f: 0, alpha: 1 - ss(seg(t, t1 + .45, t1 + .8)), phi: u * 6, walk: u < 1 ? 1 : 0 }); }
+    return p; };
+  const a = enter(38.9, 39.45, [470, 1722], 'blue3', 4), b = enter(38.9, 40.7, [1560, 1730], 'blue1', 6);
+  const door = Math.max(ss(seg(t, 39.4, 39.7)) * (1 - ss(seg(t, 40.2, 40.6))), ss(seg(t, 40.7, 41.0)) * (1 - ss(seg(t, 41.5, 42.0))));
+  const second = { skin: 'blue2', x: WT + 92, y: WY, s: WS, f: -.8, sit: 1, ...idle(t, 3), smile: .7 };
+  return { set: 'ex', look: 'night', cam: V([[38.9, [930, 1340, .95]], [42.2, [930, 1360, .93]], [42.6, [1080, 1420, 1.6]]])(t), chars: [a, b], inside: [...crowdSmall(t).slice(0, 2), inGuest(t), second], exDoor: door, wet: 1, cupsIn: 2 };
+}
+
+// —— 10: the full room ——
+export const FULL = [['A', 0, 'blue1', 2], ['A', 1, 'blue2', 3], ['B', 0, 'blue3', 4], ['B', 1, 'blue1', 6], ['C', 0, 'blue2', 7], ['C', 1, 'blue3', 8], ['E', 0, 'blue1', 11], ['E', 1, 'blue3', 12], ['F', 0, 'blue2', 9], ['F', 1, 'blue1', 10]];
+function crowd(t, laughAt = HIT.laugh) {
+  return FULL.map(([id, i, sk, seed]) => { const p = seated(t, id, i, sk, seed, { smile: .5 + .45 * Math.max(0, Math.sin(t * .9 + seed)) });
+    p.f += .25 * Math.sin(t * 1.3 + seed * 2); p.look = .2 * Math.sin(t * 2.1 + seed);
+    if (id === 'B' && i === 1) { const u = seg(t, laughAt, laughAt + 1); if (u > 0 && u < 1) { p.bob = Math.abs(Math.sin(u * Math.PI * 4)) * .05 * (1 - u); p.smile = 1; } }
+    return p; });
+}
+const ALLCUPS = ['A0', 'A1', 'B0', 'B1', 'C0', 'C1', 'F0', 'F1'];
 function scene10(t) {
-  const E = [.45, -2.42], mid = [.6, -1.85];
+  const E = [1230, 1600], mid = [720, 1720];
   let ow;
-  if (t < 44.6) ow = walker(t, 42.6, 44.6, [1.25, -4.0], E, { smile: 1 });
-  else if (t < 45.9) { const u = seg(t, 44.6, 45.8); ow = { x: E[0], z: E[1], ry: Math.PI, ...idle(t, 1), smile: 1, lean: .3 * Math.sin(u * Math.PI), armL: [lerp(1.1, 1.35, Math.sin(u * Math.PI)), -.4], armR: [lerp(1.1, 1.35, Math.sin(u * Math.PI)), -.4] }; }
-  else if (t < 47.6) ow = walker(t, 46.0, 47.6, E, mid, { smile: .9 });
-  else { const u = seg(t, 47.6, 50.85); ow = { x: mid[0], z: mid[1], ry: lerpAng(angTo(E, mid), 0, ss(seg(t, 47.6, 48.2))), ...idle(t, 1), headYaw: Math.sin(u * Math.PI * 1.5) * .45, smile: .55 }; }
-  if (!(t >= 44.6 && t < 45.9)) { ow.armL = [1.1, -.42]; ow.armR = [1.1, -.42]; }
-  const tray = t < 45.0 ? 2 : 0;
-  const c = s10cam(t);
-  return { look: 'night', wet: 1, cam: { pos: c, tgt: s10tgt(t), fov: 58, focus: Math.hypot(c[0] - ow.x, c[2] - ow.z), aper: 6 },
-    chars: { owner: ow, ...crowd(t) }, props: { tray: 'owner', trayCups: tray }, cups: { A0: true, A1: true, B0: true, B1: true, C0: true, C1: true, D0: true, D1: true, E0: t > 45.0, E1: t > 45.0 }, plates: true, interior: 1.15 };
+  if (t < 44.6) ow = { ...walk(t, 42.6, 44.6, [1440, 1520], E), hold: 'tray2' };
+  else if (t < 45.9) { const u = seg(t, 44.6, 45.8); ow = { x: E[0], y: E[1], s: sOf(E[1]), f: 0, ...idle(t, 1), armL: .55 + .3 * Math.sin(u * Math.PI), armR: .55 + .3 * Math.sin(u * Math.PI), hold: t < 45.0 ? 'tray2' : 'tray' }; }
+  else if (t < 47.6) ow = { ...walk(t, 46.0, 47.6, E, mid), hold: 'tray' };
+  else { const u = seg(t, 47.6, 50.85); ow = { x: mid[0], y: mid[1], s: sOf(mid[1]), f: Math.sin(u * Math.PI * 1.5) * .6, ...idle(t, 1), hold: 'tray' }; }
+  ow = { skin: OW, smile: .9, ...ow }; if (!(t >= 44.6 && t < 45.9)) { ow.armL = -.55; ow.armR = -.55; }
+  return { set: 'in', look: 'night', cam: V([[42.6, [760, 1290, .95]], [46, [745, 1310, 1.0]], [50.85, [725, 1380, 1.12]]])(t), chars: [ow, ...crowd(t)], cups: [...ALLCUPS, ...(t > 45 ? ['E0', 'E1'] : [])], plates: true, lamps: 1.15 };
 }
-
-// —— Scene 11: trust — close-up, then out through the window to the street ——
-const s11cam = V([[50.85, [.6, 1.0, -.74]], [53.3, [.6, 1.01, -.7]], [54.4, [.6, 1.2, -.55]], [55.2, [.6, 1.34, .05]], [56.3, [.55, 1.62, 2.3]], [57.6, [.3, 2.0, 6.0]], [58.7, [.2, 2.15, 7.3]]]);
-const s11tgt = V([[50.85, [.6, .84, -1.85]], [53.3, [.6, .84, -1.85]], [55.2, [.6, .9, -1.8]], [57.6, [-.4, 1.4, -.4]], [58.7, [-.5, 1.5, -.2]]]);
+// —— 11: trust ——
 function scene11(t) {
-  const ow = { x: .6, z: -1.85, ry: 0, ...idle(t, 1), armL: [1.1, -.42], armR: [1.1, -.42],
-    headYaw: .5 * Math.sin(seg(t, 51.2, 53.7) * Math.PI) - .45 * Math.sin(seg(t, 52.5, 53.9) * Math.PI) * .9,
-    smile: lerp(.25, .8, ss(seg(t, 54.0, 55.6))), blink: t > 54.0 && t < 54.7 ? Math.sin(seg(t, 54.0, 54.7) * Math.PI) * 1 : blinkAt(t, 1), headPitch: .06 * ss(seg(t, 53.9, 54.5)) };
-  if (t > 54.0 && t < 54.7) ow.blink = 1;
-  const w = t < 56.2 ? walker(t, 54.6, 56.2, [3.6, 1.3], [.95, 1.12], { ...idle(t, 13) }) : { x: .95, z: 1.12, ry: Math.PI, ...idle(t, 13), o: .8 * ss(seg(t, 56.2, 56.5)) * (1 - ss(seg(t, 57.0, 57.3))), smile: .6 * ss(seg(t, 57.1, 57.5)) };
-  if (t > 57.2) Object.assign(w, walker(t, 57.25, 58.6, [.95, 1.12], [-1.55, .78], { smile: .6 }));
-  w.vis = t > 54.6;
-  const c = s11cam(t), outside = c[2] > 0;
-  return { look: 'night', wet: 1, cam: { pos: c, tgt: s11tgt(t), fov: lerp(46, 52, ss(seg(t, 53.3, 57.6))), focus: Math.max(.6, Math.hypot(c[0] - ow.x, c[1] - .85, c[2] - ow.z)), aper: lerp(15, 5, ss(seg(t, 53.3, 57))) },
-    chars: { owner: ow, ...crowd(t, 999), w4: w }, props: { tray: 'owner', trayCups: 0 }, cups: { A0: true, A1: true, B0: true, B1: true, C0: true, C1: true, D0: true, D1: true, E0: true, E1: true }, plates: true, interior: 1.15, outside };
+  if (t < 54.6) {
+    const ow = { skin: OW, x: 720, y: 1720, s: sOf(1720), ...idle(t, 1), hold: 'tray', armL: -.55, armR: -.55,
+      f: .55 * Math.sin(seg(t, 51.2, 53.7) * Math.PI) - .55 * Math.sin(seg(t, 52.5, 53.9) * Math.PI), smile: lerp(.35, 1, ss(seg(t, 53.9, 54.5))), look: -.2 };
+    ow.blink = t > 53.6 && t < 54.2 ? 1 : blinkAt(t, 1);
+    return { set: 'in', look: 'night', cam: V([[50.85, [725, 1380, 1.12]], [52.5, [722, 1500, 1.6]], [54.6, [720, 1530, 1.85]]])(t), chars: [ow, ...crowd(t, 999)], cups: [...ALLCUPS, 'E0', 'E1'], plates: true, lamps: 1.15 };
+  }
+  const w = { ...walk(t, 54.9, 55.9, [1640, 1728], [1345, 1722], false), skin: 'blue3', ...idle(t, 13) };
+  if (t >= 55.9) Object.assign(w, { f: lerp(-.9, -.6, ss(seg(t, 55.9, 56.2))), o: ss(seg(t, 56.1, 56.4)) * (1 - ss(seg(t, 56.8, 57.1))), smile: .6 * ss(seg(t, 56.9, 57.3)) });
+  if (t >= 57.0) Object.assign(w, walk(t, 57.0, 58.05, [1345, 1722], [835, 1718], false), { smile: .6 });
+  if (t >= 58.05) Object.assign(w, { x: 835, f: -.4, armL: .2 + 1.0 * ss(seg(t, 58.0, 58.3)), walk: 0 });
+  const inside = [...crowdSmall(t), inGuest(t), { skin: 'blue2', x: WT + 92, y: WY, s: WS, f: -.8, sit: 1, ...idle(t, 3), smile: .7 }, inOwner(t, WT + 175)];
+  return { set: 'ex', look: 'night', cam: V([[54.6, [960, 1400, .98]], [58.7, [950, 1370, .9]]])(t), chars: [w], inside, wet: 1, cupsIn: 2 };
 }
 
-export const SCENES = [
-  [T.s1, scene1], [T.s2, scene2], [T.s3, scene3], [T.s4, scene4], [T.s5, scene5], [T.s6, scene6],
-  [T.s7, scene7], [T.s8, scene8], [T.s9, scene9], [T.s10, scene10], [T.s11, scene11],
-];
-export function sceneAt(t) { let i = 0; while (i + 1 < SCENES.length && t >= SCENES[i + 1][0]) i++; return { i, S: SCENES[i][1](Math.min(t, DUR - 1e-3)) }; }
+export const SCENES = [[T.s1, scene1], [T.s2, scene2], [T.s3, scene3], [T.s4, scene4], [T.s5, scene5], [T.s6, scene6], [T.s7, scene7], [T.s8, scene8], [T.s9, scene9], [T.s10, scene10], [T.s11, scene11]];
+export function sceneAt(t) { let i = 0; while (i + 1 < SCENES.length && t >= SCENES[i + 1][0]) i++; return SCENES[i][1](Math.min(t, DUR - 1e-3)); }
