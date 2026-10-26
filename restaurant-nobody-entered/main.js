@@ -259,9 +259,16 @@ for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.pu
       else delete last[key]; } } }
 // cars: a pass-by sound centred on when each car crosses the middle of the frame (outside shots only)
 for (const car of CARS) { for (let t = car.t0; t < car.t0 + 4.5; t += 1 / 60) { const S = sceneAt(t); if (S.set !== 'ex') continue; if (Math.abs(carX(car, t) - S.cam[0]) < CAR_V / 60) { EV.push({ t: +t.toFixed(3), type: 'car', dir: car.dir, lane: car.lane }); break; } } }
-window.DUR = DUR;
+// a test version on another voiceover: the same film, retimed scene by scene to that voice (?warp=fa)
+const WARPS = { fa: [[0, 0], [6.2, 5.0], [9.6, 6.95], [12.15, 8.85], [17.9, 12.3], [19.6, 13.2], [23.6, 16.0], [25.85, 17.8], [30.7, 21.0], [33.85, 22.75], [34.24, 23.78],
+  [36.96, 26.1], [44.16, 31.5], [47.96, 34.87], [52.2, 36.9], [54.0, 38.9], [56.4, 40.71], [59.36, 42.6], [63.0, 45.87], [68.52, 50.85], [71.0, 54.6], [74.6, 58.7]] };
+const WARP = WARPS[new URLSearchParams(location.search).get('warp')];
+const storyT = t => { if (!WARP) return t; let i = 0; while (i < WARP.length - 2 && t > WARP[i + 1][0]) i++; const [a, b] = [WARP[i], WARP[i + 1]]; return b[1] + 0 === a[1] ? a[1] : a[1] + (b[1] - a[1]) * Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0]))); };
+if (WARP) EV.push({ t: 0, type: 'warp', pairs: WARP });
+window.DUR = WARP ? WARP[WARP.length - 1][0] : DUR;
 window.EV = EV.sort((a, b) => a.t - b.t);
-window.render = t => {
+window.render = T => {
+  const t = storyT(T);
   draw(ctx, t);
   const D = DISSOLVES.find(d => t >= d.at && t < d.at + d.d);
   if (D) { draw(bctx, D.at - 1 / 48); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1 - ss(seg(t, D.at, D.at + D.d)); if (D.blur) ctx.filter = `blur(${D.blur * K * seg(t, D.at, D.at + D.d)}px)`; ctx.drawImage(buf, 0, 0); ctx.restore(); }

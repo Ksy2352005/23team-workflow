@@ -5,10 +5,22 @@ import numpy as np
 from scipy.signal import fftconvolve
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.environ.get('LIB', os.path.expanduser('~/lemo-opuscar')), 'core', 'audio'))
-from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, creak, thump, ding, whoosh, compress, limit, add
+from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, creak, thump, ding, whoosh, compress, limit
+from sfx import add as _add
+from scipy.signal import resample as _resample
+def add(buf, x, at, gain=1.0, pan=0.0, raw=False):
+    if raw or not _wp: return _add(buf, x, at, gain, pan)
+    a, d = W(at), len(x) / SR
+    if d > 1.5: n = int((W(at + d) - a) * SR); x = _resample(x, max(n, 1)) if abs(n - len(x)) > SR * .05 else x
+    _add(buf, x, a, gain, pan)
 
-ev = json.load(open(os.path.join(HERE, 'events.json')))
-DUR = ev['dur']; EVS = ev['ev']
+ev = json.load(open(os.path.join(HERE, os.environ.get('EVENTS', 'events.json'))))
+DUR = ev['dur']; EVS = [e for e in ev['ev'] if e['type'] != 'warp']
+# a retimed version: every sound is placed in story time and moved to the voice's time; long beds are stretched to fit
+_wp = next((e['pairs'] for e in ev['ev'] if e['type'] == 'warp'), None)
+def W(th):
+    if not _wp: return th
+    xs = [b for a, b in _wp]; ys = [a for a, b in _wp]; return float(np.interp(th, xs, ys))
 HIT = {}
 for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
@@ -101,11 +113,11 @@ tremolo(mid('F#5'), 55.0, 57.6, .22, music, .25)
 for i, n in enumerate(['D4', 'A4', 'D5', 'F#5']): add(music, cimbalom(mid(n), .4, 3.5), 57.0 + i * .08, 1, -.2 + i * .15)
 
 # —— voice ——
-vo_path = os.path.join(HERE, 'refs', 'voiceover-hu.mp3')
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu.mp3'))
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
-voice = buf(); add(voice, vo, 0, 1)
+voice = buf(); add(voice, vo, 0, 1, raw=True)
 venv = np.convolve(np.abs(vo), np.ones(int(.12 * SR)) / int(.12 * SR), 'same'); venv = np.minimum(1, venv / (np.percentile(venv, 90) + 1e-9))
 duck = np.ones(N); duck[:len(venv)] = 1 - .7 * np.clip(venv * 1.8, 0, 1)
 duck = np.convolve(duck, np.ones(int(.08 * SR)) / int(.08 * SR), 'same')
@@ -259,5 +271,5 @@ end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, i
 mix = np.stack([limit(mix[:, 0], .95), limit(mix[:, 1], .95)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 import soundfile as sf
-sf.write(os.path.join(HERE, 'out', 'mix.wav'), mix.astype(np.float32), SR)
+sf.write(os.path.join(HERE, 'out', os.environ.get('OUT', 'mix.wav')), mix.astype(np.float32), SR)
 print('mix.wav', mix.shape[0] / SR, 's, peak', np.abs(mix).max())
