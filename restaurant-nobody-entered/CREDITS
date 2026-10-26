@@ -2,9 +2,14 @@ The Restaurant Nobody Entered — 23 Team
 
 Voiceover (Hungarian): supplied by 23 Team (refs/voiceover-hu.mp3).
 Characters and world: designed after 23 Team's own character and world sheets (refs/).
+Picture: drawn in code (HTML canvas), rendered with the Lemo-Opuscar tools.
 
-Picture: built in code with three.js (MIT licence, https://threejs.org).
-Score: original, synthesised in code (cimbalom, guitar, pizzicato, bass and brush voices made by modal synthesis). No samples.
-Sound effects: synthesised in code. No recordings.
-
-No third-party images, footage, fonts or music are used.
+Sound effects — recorded, all CC0 (public domain, free for commercial use, no attribution required), files in sfx/:
+- Kenney "Impact Sounds", "RPG Audio", "Casino Audio" — www.kenney.nl — CC0 1.0 (sfx/LICENSE-kenney-CC0.txt)
+  footsteps (wood, concrete), plates, glass, cutlery, wood impacts, cloth, knife/chop, doors, creaks, coins, book/paper, latch.
+- "AMB Rain Loop 1" — opengameart.org/content/amb-rain-loop-1 — CC0 1.0
+- "30 CC0 SFX loops" (water_boiling) — opengameart.org/content/30-cc0-sfx-loops — CC0 1.0
+- "Fireworks With Applause Happy People" (a short applause excerpt) — opengameart.org/content/fireworks-with-applause-happy-people — offered under CC0 1.0 among other licences; used under CC0.
+Synthesized in code: doorbell, alarm clock, sign buzz, cars, time-lapse ticks, room tone, "!" pop.
+Character exclamations and background chatter: Kokoro text-to-speech (offline, Apache-2.0 model).
+No music.

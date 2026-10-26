@@ -149,8 +149,11 @@ add(fx, fade(bed(5.2, 60, 400, .12), .5, .4), 0, 1); add(fx, fade(bed(5.2, 800, 
 for t in (.8, 1.05, 2.0, 2.15): add(fx, chirp(.05), t, 1, -.4)
 add(fx, fade(bed(DUR - 5, 80, 500, .025), .4, .5), 5, 1)
 add(fx, fade(bed(3.0, 80, 600, .05), .3, .3), 13.2, 1, .2)
-rain_d = 31.5 - 15.5; rain = bp(noise(rain_d), 900, 7000) * .045
-ticks = (rng.random(len(rain)) > .9993) * rng.random(len(rain)); rain += hp(np.convolve(ticks, np.exp(-np.arange(200) / 30), 'same'), 2000) * .5
+rain_d = 31.5 - 15.5
+_r, _sr = __import__('soundfile').read(os.path.join(HERE, 'sfx', 'amb_rain_loop_1.ogg')); _r = _r if _r.ndim == 1 else _r.mean(1)
+from scipy.signal import resample_poly as _rp0
+_r = _rp0(_r, SR, _sr) if _sr != SR else _r
+rain = _r[int(5 * SR):int(5 * SR) + int(round(rain_d * SR))]; rain = rain / (np.abs(rain).max() + 1e-9) * .09
 tt = np.arange(len(rain)) / SR + 15.5; renv = np.clip((tt - 15.5) / .5, 0, 1) * np.where(tt > 20.3, np.where(tt < H1('bell1') - .05, .45, 1.0), 1.0)
 renv *= 1 + 1.2 * np.exp(-((tt - 23.6) / 1.2) ** 2); renv *= np.where(tt > 25.4, .55, 1.0); renv *= np.clip((31.5 - tt) / .4, 0, 1)
 add(fx, rain * renv, 15.5, 1, .25)
@@ -166,67 +169,67 @@ def mx(*xs):
     for x in xs: o[:len(x)] += x
     return o
 
-# footsteps, from the picture: wood inside, stone or wet stone outside
-for e in EVS:
-    if e['type'] != 'step': continue
-    surf, pan, v = e.get('surf', 'wood'), e.get('pan', 0), e.get('v', 1)
-    if surf == 'wood': x = mx(soft_step(.075 * v), lp(click(.02, .4), 2500))
-    elif surf == 'wet': x = wet_step(.085)
-    else: x = mx(soft_step(.06), hp(noise(.04), 3000) * env_exp(.04, .006) * .02)
-    add(fx, x, e['t'], 1, pan * .7)
-
-# 1: saving — a coin into the jar each time, the calendar pages flipping, a happy hum of the sketch
-for t in HIT['coins']: add(fx, verb(mx(clink(.11, 1.25 + rng.random() * .2), clink(.06, 1.7)), .4, .25), t, 1, -.2)
-for t in HIT['pages']: add(fx, lp(hp(noise(.12), 1500), 6000) * np.sin(np.pi * t_(.12) / .12) * .05, t, 1, .3)
-add(fx, verb(ding(.08), 1.2, .5), H1('sketch'), 1, -.3)
-# the key, the lock, the sign coming on
-for i in range(6): add(fx, clink(.05 + rng.random() * .04, 1.4 + rng.random() * .5), H1('keyJingle') + i * .06 + rng.random() * .03, 1, .1)
-add(fx, click(.25, .7), H1('keyIn'), 1, .1); add(fx, click(.4, .5), H1('lockClick'), 1, .1); add(fx, thump(.1, 90), H1('lockClick') + .03, 1)
+# —— recorded CC0 sounds (Kenney, OpenGameArt; see sfx/ and CREDITS), placed on the picture's events ——
+import soundfile as _sf
+from scipy.signal import resample_poly as _rp
+_cache = {}
+def S(name, level=1.0, lowpass=None):
+    if name not in _cache:
+        a, sr = _sf.read(os.path.join(HERE, 'sfx', name + ('' if '.' in name else '.ogg'))); a = a if a.ndim == 1 else a.mean(1)
+        if sr != SR: a = _rp(a, SR, sr)
+        _cache[name] = a / (np.abs(a).max() + 1e-9)
+    x = _cache[name]; x = lp(x, lowpass) if lowpass else x
+    return x * level
+pick = lambda base, n, i: f'{base}{i % n}'
+STEP = {'wood': ('footstep_wood_00', 5, .42), 'stone': ('footstep_concrete_00', 5, .36), 'wet': ('footstep_concrete_00', 5, .38)}
+for k, e in enumerate(e for e in EVS if e['type'] == 'step'):
+    base, n, lv = STEP[e.get('surf', 'wood')]; x = S(pick(base, n, k), lv * e.get('v', 1))
+    if e.get('surf') == 'wet': x = mx(x, hp(noise(.12), 2500) * env_exp(.12, .03) * .06)
+    add(fx, x, e['t'], 1, e.get('pan', 0) * .7)
+# 1: coins into the glass jar, calendar pages, the key, the latch, the sign coming on
+for k, t in enumerate(HIT['coins']): add(fx, verb(mx(S(pick('impactGlass_light_00', 5, k), .55), S('chips-collide-1', .35)), .4, .2), t, 1, -.2)
+for k, t in enumerate(HIT['pages']): add(fx, S(f'bookFlip{k % 3 + 1}', .5), t - .05, 1, .3)
+add(fx, S('handleCoins2', .55), H1('keyJingle'), 1, .1); add(fx, S('metalClick', .6), H1('keyIn'), 1, .1); add(fx, S('metalLatch', .8), H1('lockClick'), 1, .1)
 buzz = np.sin(2 * np.pi * 100 * t_(.5)) * .3 + np.sin(2 * np.pi * 200 * t_(.5)) * .2; buzz *= (rng.random(len(buzz)) > .5) * .5 + .5
 add(fx, lp(buzz, 1500) * env_exp(.5, .2) * .06, H1('signOn'), 1, .2)
 for i in range(5): add(fx, click(.08, 2 + i * .2), H1('signOn') + i * .07, 1, -.3 + i * .15)
-# 2a: the alarm clock, the blanket, the stretch
+# 2a: the alarm clock, the blanket thrown back, the stretch
 ring_d = H1('alarmOff') - H1('alarm'); rt = t_(ring_d)
 ring = (np.sin(2 * np.pi * 2200 * rt) + .5 * np.sin(2 * np.pi * 3300 * rt)) * (np.sin(2 * np.pi * 24 * rt) > 0) * .12
-add(fx, ring, H1('alarm'), 1, .2); add(fx, thump(.12, 120), H1('alarmOff'), 1, .2); add(fx, click(.15, .7), H1('alarmOff'), 1, .2)
-add(fx, lp(noise(.45), 1800) * np.sin(np.pi * t_(.45) / .45) * .05, H1('popUp') - .05, 1, 0)
-add(fx, lp(noise(.6), 900) * np.sin(np.pi * t_(.6) / .6) * .03, H1('stretch'), 1, 0)
-# 2b: chopping on the board, a pot bubbling
-for t in HIT['chops']: add(fx, mx(thump(.12, 160), lp(click(.12, .5), 3000)), t, 1, 0)
-bub = np.zeros(int(1.9 * SR))
-for k in range(26): at = int(rng.random() * (len(bub) - 4000)); bb = np.sin(2 * np.pi * (300 + rng.random() * 400) * t_(.03)) * env_exp(.03, .008); bub[at:at + len(bb)] += bb * .03
-add(fx, bub, 6.95, 1, .5)
-# 2c/2d: cloth strokes, the plaque flip
-for t in HIT['wipes']: add(fx, squeak(.08), t - .12, 1, -.1)
-add(fx, click(.12, 1.3), H1('flip'), 1, -.4); add(fx, lp(noise(.08), 3000) * env_exp(.08, .02) * .05, H1('flip') + .03, 1, -.4)
-# 3: day one — the calendar, the time-lapse (a fast clock and a whoosh), day two — the page tears
-add(fx, verb(clink(.05, .7), .6, .3), H1('calendar1'), 1, -.5)
+add(fx, ring, H1('alarm'), 1, .2); add(fx, S('impactGeneric_light_000' if False else 'impactWood_light_001', .5), H1('alarmOff'), 1, .2)
+add(fx, S('cloth3', .6), H1('popUp') - .05, 1, 0); add(fx, S('cloth1', .35), H1('stretch'), 1, 0)
+# 2b: the knife on the board, a pot boiling
+for k, t in enumerate(HIT['chops']): add(fx, mx(S('chop' if k % 2 == 0 else 'knifeSlice', .7), S(pick('impactWood_light_00', 5, k), .3)), t, 1, 0)
+add(fx, fade(S('water_boiling', .25)[:int(1.95 * SR)], .2, .3), 6.95, 1, .5)
+# 2c/2d: the cloth on the tables, the plaque
+for k, t in enumerate(HIT['wipes']): add(fx, S(f'cloth{k % 4 + 1}', .45), t - .12, 1, -.1)
+add(fx, S('bookPlace1', .55), H1('flip'), 1, -.4)
+# 3: the calendar, the time-lapse, the page torn off, the coins in the near-empty jar
+add(fx, S('bookPlace1', .3), H1('calendar1'), 1, -.5)
 for k in range(int(2.0 / .09)): add(fx, click(.05, 1.5 + (k % 2) * .4), H1('timelapse') + k * .09, 1, .3)
 add(fx, whoosh(1.9, .06), H1('timelapse'), 1, 0)
-add(fx, lp(hp(noise(.35), 1200), 7000) * (np.abs(np.sin(2 * np.pi * 40 * t_(.35))) ** 2) * np.sin(np.pi * t_(.35) / .35) * .12, H1('tear'), 1, -.4)
-add(fx, mx(*[clink(.035, .9 + .1 * k) for k in range(2)]), H1('jarLook'), 1, -.2)
-add(fx, lp(noise(.8), 600) * np.sin(np.pi * t_(.8) / .8) * .03, H1('sigh'), 1, .1)
-# 5: the door opens: the bell
-add(fx, creak(.08), H1('bell1') - .12, 1, -.4); add(fx, verb(ding(.55), 1.1, .5), H1('bell1'), 1, -.4)
-add(fx, thump(.1, 80), H1('doorShut1'), 1, -.4); add(fx, click(.12, .6), H1('doorShut1') + .04, 1, -.4)
-# 6: the welcome
-add(fx, scrape(.12, .35), H1('standUp'), 1, .3)
-for t in HIT['handshake']: add(fx, lp(noise(.06), 1500) * env_exp(.06, .015) * .05, t, 1, -.1)
-add(fx, scrape(.14, .45), H1('chairPull'), 1, .1); add(fx, lp(noise(.2), 900) * env_exp(.2, .06) * .08, H1('sit'), 1, .1); add(fx, scrape(.1, .35), H1('chairPush'), 1, .1)
-add(fx, lp(noise(.12), 2500) * env_exp(.12, .03) * .06, H1('menuDown'), 1, .2)
-# 7: through the glass; the "!"
-add(fx, lp(clink(.09, 1.0), 2200), H1('plateDown1'), 1, .2)
-for t in HIT['clap1']: add(fx, lp(hp(noise(.05), 800) * env_exp(.05, .01), 2500) * .05, t, 1, .2)
-for t in HIT['forks']: add(fx, lp(clink(.035, 1.5), 2500), t, 1, .2)
+add(fx, mx(S('bookFlip2', .6), lp(hp(noise(.35), 1200), 7000) * (np.abs(np.sin(2 * np.pi * 40 * t_(.35))) ** 2) * np.sin(np.pi * t_(.35) / .35) * .1), H1('tear'), 1, -.4)
+add(fx, S('impactGlass_light_002', .4), H1('jarLook'), 1, -.2)
+# 5: the door opens: the bell; it closes
+add(fx, S('doorOpen_1', .6), H1('bell1') - .2, 1, -.4); add(fx, verb(ding(.55), 1.1, .5), H1('bell1'), 1, -.4)
+add(fx, S('doorClose_1', .7), H1('doorShut1'), 1, -.4)
+# 6: the welcome: the chair, the handshake, the chair pulled and pushed, the guest sits, the menu
+add(fx, mx(S('impactWood_medium_000', .5), S('cloth2', .3)), H1('standUp'), 1, .3)
+for k, t in enumerate(HIT['handshake']): add(fx, S(pick('impactSoft_medium_00', 3, k), .25), t, 1, -.1)
+add(fx, mx(S('creak2', .45), scrape(.08, .45)), H1('chairPull'), 1, .1); add(fx, S('impactSoft_medium_001', .5), H1('sit'), 1, .1); add(fx, mx(S('creak1', .35), scrape(.06, .35)), H1('chairPush'), 1, .1)
+add(fx, S('bookPlace1', .5), H1('menuDown'), 1, .2)
+# 7: through the glass: the plate, a little applause, the fork; the "!"
+add(fx, S('impactPlate_light_001', .55, 2500), H1('plateDown1'), 1, .2)
+add(fx, fade(S('applause', .3, 2500)[:int(.8 * SR)], .05, .3), HIT['clap1'][0], 1, .2)
+for k, t in enumerate(HIT['forks']): add(fx, S(pick('impactMetal_light_00', 5, k), .3, 2500), t, 1, .2)
 pp = np.sin(2 * np.pi * np.cumsum(np.linspace(500, 1400, int(.12 * SR))) / SR) * env_exp(.12, .04) * .12; add(fx, pp, H1('bang'), 1, .3)
-# 8–9: new guests: handle, bell
+# 8–9: each new guest: the handle, the door, the bell
 for k, b in (('handle2', 'bell2'), ('handle3', 'bell3'), ('handle4', 'bell4')):
-    add(fx, click(.2, .8), H1(k), 1, -.3); add(fx, verb(ding(.35), 1.0, .45), H1(b), 1, -.3)
-# 10: the full room
-for k in ('plateDown2', 'plateDown3'): add(fx, verb(clink(.12, .9), .5, .3), H1(k), 1, 0); add(fx, thump(.05, 180), H1(k), 1, 0)
-for t in HIT['clap2']: add(fx, verb(hp(noise(.05), 800) * env_exp(.05, .01) * .09, .4, .3), t, 1, 0)
-for i in range(5): add(fx, bp(noise(.11), 500, 1800) * np.sin(np.pi * t_(.11) / .11) * .05, H1('laugh') + i * .16, 1, -.3)
-for t in sorted(42.8 + rng.random(22) * 11.5): add(fx, verb(clink(.03 + rng.random() * .03, .8 + rng.random() * .6), .6, .3), t, 1, rng.random() - .5)
+    add(fx, S('metalClick', .55), H1(k), 1, -.3); add(fx, S('doorOpen_2', .4), H1(k) + .03, 1, -.3); add(fx, verb(ding(.35), 1.0, .45), H1(b), 1, -.3)
+# 10: the full room: plates down, applause, cutlery all around
+for k, n in (('plateDown2', 'impactPlate_medium_000'), ('plateDown3', 'impactPlate_medium_002')): add(fx, verb(S(n, .8), .5, .25), H1(k), 1, 0)
+add(fx, verb(fade(S('applause', .65)[:int(1.3 * SR)], .05, .4), .5, .3), HIT['clap2'][0] - .05, 1, 0)
+for k, t in enumerate(sorted(42.8 + rng.random(24) * 11.5)): add(fx, verb(S(pick('impactMetal_light_00' if k % 2 else 'impactGlass_light_00', 5, k), .18 + .1 * rng.random()), .6, .3), t, 1, rng.random() - .5)
 # cars passing (engine hum and tyres on cobbles, panned across)
 for e in EVS:
     if e['type'] != 'car': continue
