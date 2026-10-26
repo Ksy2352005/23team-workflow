@@ -63,14 +63,15 @@ function bubble(c, p) {   // a "!" pops over a head
 const FEM = { guest: 'bow', A0: 'bow', B0: 'bob', C1: 'long', D0: 'glasses', E0: 'beret', F1: 'band', c3: 'pony', q0: 'bun', q2: 'hat', s0: 'bun', s2: 'long', last: 'long' };
 // banknotes and coins settling onto the tray one after another: each springs in from a little above, a pile building up
 function cashOnTray(c, p) {
-  const h = BASE_H * p.s, ty = p.y - .25 * h;
+  const h0 = BASE_H * p.s;
+  const h = BASE_H * p.s, ty = p.y - .33 * h;
   p.cash.forEach((k, i) => { if (k <= 0) return;
-    const coinIt = i % 3 === 2, x = p.x + (hash(i * 3.7) - .5) * .26 * h, y = ty - .012 * h - Math.floor(i / 2) * .012 * h - (1 - Math.min(k, 1)) * .12 * h, r = (hash(i * 5.1) - .5) * .5;
+    const coinIt = i % 3 === 2, x = p.x + (hash(i * 3.7) - .5) * .16 * h, y = ty - .012 * h - Math.floor(i / 2) * .012 * h - (1 - Math.min(k, 1)) * .12 * h, r = (hash(i * 5.1) - .5) * .5;
     c.save(); c.translate(x, y); c.rotate(r * .3); c.scale(k, k); c.globalAlpha = Math.min(1, k * 1.5);
     if (coinIt) { c.fillStyle = '#b8902e'; c.beginPath(); c.ellipse(0, 1.5, .045 * h, .018 * h, 0, 0, 7); c.fill(); c.fillStyle = '#f2cf6a'; c.beginPath(); c.ellipse(0, 0, .045 * h, .018 * h, 0, 0, 7); c.fill(); }
-    else { const w = .13 * h, d = .028 * h; c.fillStyle = '#c9b98a'; c.beginPath(); c.moveTo(-w, d * .6); c.lineTo(w * .9, d * .9); c.lineTo(w, -d * .3); c.lineTo(-w * .9, -d * .6); c.closePath(); c.fill();
-      c.fillStyle = '#efe2bc'; c.beginPath(); c.moveTo(-w, d * .2); c.lineTo(w * .9, d * .5); c.lineTo(w, -d * .7); c.lineTo(-w * .9, -d); c.closePath(); c.fill();
-      c.strokeStyle = '#c9a04a'; c.lineWidth = .006 * h; c.stroke(); c.fillStyle = '#2b3b7a'; c.beginPath(); c.ellipse(0, -d * .25, .028 * h, .008 * h, .03, 0, 7); c.fill(); }
+    else { const w = .13 * h, d = .028 * h; c.fillStyle = '#3f7a3c'; c.beginPath(); c.moveTo(-w, d * .6); c.lineTo(w * .9, d * .9); c.lineTo(w, -d * .3); c.lineTo(-w * .9, -d * .6); c.closePath(); c.fill();
+      c.fillStyle = '#74b45e'; c.beginPath(); c.moveTo(-w, d * .2); c.lineTo(w * .9, d * .5); c.lineTo(w, -d * .7); c.lineTo(-w * .9, -d); c.closePath(); c.fill();
+      c.strokeStyle = '#d9ecc8'; c.lineWidth = .006 * h; c.stroke(); c.fillStyle = '#d9ecc8'; c.beginPath(); c.ellipse(0, -d * .25, .028 * h, .008 * h, .03, 0, 7); c.fill(); }
     c.restore(); });
 }
 function drawChar(c, p, t) {
@@ -81,7 +82,7 @@ function drawChar(c, p, t) {
   if (p.cupAt) cup(c, p.cupAt[0], p.cupAt[1] + 4, BASE_H * p.s * .2);
   if (p.coinAt) { c.fillStyle = '#f2cf6a'; c.beginPath(); c.ellipse(p.coinAt[0], p.coinAt[1] + 6, 8, 6, 0, 0, 7); c.fill(); c.strokeStyle = '#b8902e'; c.lineWidth = 2; c.stroke(); }
   if (p.clothAt) { c.fillStyle = '#f7f5ee'; c.beginPath(); c.ellipse(p.clothAt[0], p.clothAt[1] + 6, 16, 9, .3, 0, 7); c.fill(); }
-  if (p.cash) cashOnTray(c, p);
+  if (p.cash) { const h = BASE_H * p.s; plate(c, p.x, p.y - .33 * h + .004 * h, h * .75, false); cashOnTray(c, p); }
   if (p.hold === 'tray' && p.trayItems && p.trayItems.length) { const h = BASE_H * p.s, ty = p.y - .25 * h; p.trayItems.forEach((k, i, a) => plate(c, p.x + (i - (a.length - 1) / 2) * .17 * h, ty - .06 * h, h * .55, true, 1, t)); }
   c.restore();
   if (p.bang > 0) bubble(c, p);

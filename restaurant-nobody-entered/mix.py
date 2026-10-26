@@ -279,7 +279,9 @@ def logo_tone():
     bell = lp(bell * np.minimum(1, tt / .02), 3500)
     air = bp(noise(.6), 3000, 9000) * np.sin(np.pi * t_(.6) / .6) ** 2 * .25
     o = np.zeros(int(.45 * SR) + len(bell)); o[:len(air)] += air; o[int(.45 * SR):] += bell; return o
-add(fx, verb(norm(logo_tone()) * .22, 1.6, .4), 58.85 - .45, 1, 0)
+# the logo: just a soft airy swell that rises with the white and fades away
+_d = 2.6; _tt = t_(_d); _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 5000) * np.minimum(1, _tt / .9) ** 2 * np.exp(-np.maximum(0, _tt - .9) / .55)
+add(fx, verb(norm(_air) * .14, 1.4, .35), 58.0, 1, 0)
 
 # —— mix ——
 music = music * 0   # no music in this cut: voice and sound effects only
@@ -287,6 +289,8 @@ music = music * 0   # no music in this cut: voice and sound effects only
 fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
 fxg = np.ones(len(fxc)); tg = np.arange(len(fxc)) / SR; fxg *= 1 - .45 * np.clip((tg - W(29.5)) / (W(31.5) - W(29.5)), 0, 1)   # from 0:30 on, the effects sit lower under the voice
+ramp = lambda a, b: np.clip((tg - W(a)) / (W(b) - W(a)), 0, 1)
+fxg *= 1 - .4 * ramp(42.3, 42.9) * (1 - ramp(54.4, 54.9))   # the busy room (chatter, cutlery, plates, applause) sits lower still
 fxc = fxc * fxg[:, None]
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
