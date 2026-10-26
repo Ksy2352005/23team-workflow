@@ -60,8 +60,10 @@ function bubble(c, p) {   // a "!" pops over a head
   c.fillStyle = '#ffffff'; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.beginPath(); c.moveTo(x - r * .3, y + r * .8); c.lineTo(x - r * .1, y + r * 1.35); c.lineTo(x + r * .25, y + r * .85); c.fill();
   c.fillStyle = '#e8573a'; c.font = `${Math.round(r * 1.5)}px "Lilita One"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('!', x, y + r * .08);
 }
+const FEM = { guest: 'bow', A0: 'bow', B0: 'bob', C1: 'long', D0: 'glasses', E0: 'beret', F1: 'band', c3: 'pony', q0: 'bun', q2: 'hat', s0: 'bun', s2: 'long', last: 'long' };
 function drawChar(c, p, t) {
   if (p.vis === false) return;
+  if (p.skin !== 'owner' && !p.fem && FEM[p.id]) p = { ...p, fem: FEM[p.id] };
   c.save(); if (p.alpha !== undefined) c.globalAlpha = p.alpha;
   drawMascot(c, { ...p, alpha: undefined });
   if (p.cupAt) cup(c, p.cupAt[0], p.cupAt[1] + 4, BASE_H * p.s * .2);
@@ -255,7 +257,7 @@ for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.pu
 { const last = {};
   for (let t = 0; t < DUR; t += 1 / 60) { const S = sceneAt(t);
     for (const p of S.chars) { if (!p.id || p.vis === false) continue; const key = S.set + p.id;
-      if (p.walk > .15) { const k = Math.floor(p.phi / Math.PI); if (last[key] !== undefined && k !== last[key]) EV.push({ t: +t.toFixed(3), type: 'step', surf: S.set === 'ex' ? (S.wet ? 'wet' : 'stone') : 'wood', pan: Math.max(-1, Math.min(1, (p.x - S.cam[0]) * S.cam[2] / 540)), v: p.s || 1 }); last[key] = k; }
+      if (p.walk > .15) { const k = Math.floor(p.phi / Math.PI); if (last[key] !== undefined && k !== last[key]) EV.push({ t: +t.toFixed(3), type: 'step', who: p.skin === 'owner' ? 'owner' : 'guest', surf: S.set === 'ex' ? (S.wet ? 'wet' : 'stone') : 'wood', pan: Math.max(-1, Math.min(1, (p.x - S.cam[0]) * S.cam[2] / 540)), v: p.s || 1 }); last[key] = k; }
       else delete last[key]; } } }
 // cars: a pass-by sound centred on when each car crosses the middle of the frame (outside shots only)
 for (const car of CARS) { for (let t = car.t0; t < car.t0 + 4.5; t += 1 / 60) { const S = sceneAt(t); if (S.set !== 'ex') continue; if (Math.abs(carX(car, t) - S.cam[0]) < CAR_V / 60) { EV.push({ t: +t.toFixed(3), type: 'car', dir: car.dir, lane: car.lane }); break; } } }

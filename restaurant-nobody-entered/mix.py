@@ -183,7 +183,8 @@ def S(name, level=1.0, lowpass=None):
 pick = lambda base, n, i: f'{base}{i % n}'
 STEP = {'wood': ('footstep_wood_00', 5, .42), 'stone': ('footstep_concrete_00', 5, .36), 'wet': ('footstep_concrete_00', 5, .38)}
 for k, e in enumerate(e for e in EVS if e['type'] == 'step'):
-    base, n, lv = STEP[e.get('surf', 'wood')]; x = S(pick(base, n, k), lv * e.get('v', 1))
+    base, n, lv = STEP[e.get('surf', 'wood')]; owner = e.get('who') == 'owner'
+    x = S(pick(base, n, k), lv * (1.7 if owner else .55) * e.get('v', 1))   # his steps clear and close; the customers' softer
     if e.get('surf') == 'wet': x = mx(x, hp(noise(.12), 2500) * env_exp(.12, .03) * .06)
     add(fx, x, e['t'], 1, e.get('pan', 0) * .7)
 # 1: coins into the glass jar, calendar pages, the key, the latch, the sign coming on

@@ -188,7 +188,7 @@ function inGuest(t, eatFrom = 99) {
   return g;
 }
 const inOwner = (t, x = WT + 110) => ({ id: 'owner', skin: OW, x, y: WY - 6, s: WS, f: -.6, ...idle(t, 1), smile: 1, armL: .25, armR: .2 });
-function crowdSmall(t) { return [[960, 'blue3'], [1230, 'blue2'], [700, 'blue1'], [1170, 'blue1']].map(([x, sk], i) => ({ skin: sk, x, y: 1565, s: .5, f: i % 2 ? -.7 : .7, sit: 1, ...idle(t, 20 + i), smile: .6 + .3 * Math.sin(t + i) })); }
+function crowdSmall(t) { return [[960, 'blue3'], [1230, 'blue2'], [700, 'blue1'], [1170, 'blue1']].map(([x, sk], i) => ({ id: 's' + i, skin: sk, x, y: 1565, s: .5, f: i % 2 ? -.7 : .7, sit: 1, ...idle(t, 20 + i), smile: .6 + .3 * Math.sin(t + i) })); }
 const winPlate = (side, steam = 0) => ({ k: 'plate', x: WT + side * 42, y: WTOP + 3, s: WH * .55, steam, d: WY + .5 });
 
 // —— 7: the owner serves; a passer-by stops, sees the guest eating — "!" ——
