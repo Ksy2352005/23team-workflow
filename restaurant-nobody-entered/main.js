@@ -260,11 +260,11 @@ function drawCar(c, car, x, t, look) {
 // the 23 logo, its shape exactly as supplied, in white on the film's dark blue; it settles in softly (fade, a breath of scale, a little blur clearing)
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
 const END_BLUE = '#0b1438';
-const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height); return c; })();   // the same logo, in white
+const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();   // the same logo, in a soft pale blue: subtle on the dark blue
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   const u = ss(seg(t, 58.85, 59.75)), w = W * .36, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
-  c.save(); c.globalAlpha = u; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
+  c.save(); c.globalAlpha = u * .75; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
   c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO_W, -w / 2, -h / 2, w, h); c.restore();
 }
 function draw(c, t) {
