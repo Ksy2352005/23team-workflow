@@ -247,7 +247,7 @@ export function homeSet(lookName) {
   x.fillStyle = '#e6d6b2'; x.fillRect((w[0] + w[1]) / 2 - 6, w[2], 12, w[3] - w[2]); x.fillRect(w[0], (w[2] + w[3]) / 2 - 6, w[1] - w[0], 12);
   x.fillStyle = '#f2e6c8'; x.fillRect(w[0] - 40, w[3] + 20, w[1] - w[0] + 80, 16);
   // the sketch of the restaurant pinned to the wall
-  { const [a, b, cc, d] = HOME.sketch; x.fillStyle = '#f4ecd8'; x.save(); x.translate((a + cc) / 2, (b + d) / 2); x.rotate(-.025); x.translate(-(a + cc) / 2, -(b + d) / 2); x.fillRect(a, b, cc - a, d - b);
+  { const [a, b, cc, d] = HOME.sketch; x.fillStyle = '#f4ecd8'; x.save(); x.fillRect(a, b, cc - a, d - b);
     x.strokeStyle = '#4a4a5a'; x.lineWidth = 3; const cx = (a + cc) / 2;
     x.strokeRect(a + 40, b + 70, cc - a - 80, d - b - 90); x.strokeRect(a + 70, b + 20, cc - a - 140, 40);
     x.fillStyle = '#4a4a5a'; x.font = '26px "Lilita One"'; x.textAlign = 'center'; x.fillText('RESTAURANT', cx, b + 50);
@@ -266,10 +266,12 @@ export function homeSet(lookName) {
   if (night) { x.fillStyle = 'rgba(5,8,40,.3)'; x.globalCompositeOperation = 'multiply'; x.fillRect(0, 0, 1500, 2500); x.globalCompositeOperation = 'source-over'; }
   return c;
 }
-export function blanket(x, a, b, sitUp) {   // the blanket over the sleeper (drawn after him)
+export function blanket(x, a, b, sitUp, off = 0) {   // the blanket over the sleeper (drawn after him); 'off' throws it back towards the foot of the bed
+  x.save(); x.translate(a, 0); x.scale(1 - .55 * off, 1); x.translate(-a, 0);
   x.fillStyle = lin(x, 0, 1300, 0, 1400, [[0, '#3a5ad0'], [1, '#22348a']]); x.beginPath(); x.moveTo(a + 14, 1400); x.lineTo(a + 14, 1330);
   x.bezierCurveTo(a + 200, 1300 - 10 * sitUp, b - 300, 1295, b - 150 - 40 * sitUp, 1320 + 20 * sitUp); x.lineTo(b - 120 - 40 * sitUp, 1400); x.closePath(); x.fill();
   x.strokeStyle = 'rgba(255,255,255,.18)'; x.lineWidth = 4; for (let i = 1; i < 6; i++) { x.beginPath(); x.moveTo(a + i * 80, 1318); x.lineTo(a + i * 80, 1398); x.stroke(); }
+  x.restore();
 }
 
 // —— the kitchen behind the counter ——

@@ -61,6 +61,18 @@ function bubble(c, p) {   // a "!" pops over a head
   c.fillStyle = '#e8573a'; c.font = `${Math.round(r * 1.5)}px "Lilita One"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('!', x, y + r * .08);
 }
 const FEM = { guest: 'bow', A0: 'bow', B0: 'bob', C1: 'long', D0: 'glasses', E0: 'beret', F1: 'band', c3: 'pony', q0: 'bun', q2: 'hat', s0: 'bun', s2: 'long', last: 'long' };
+// banknotes and coins settling onto the tray one after another: each springs in from a little above, a pile building up
+function cashOnTray(c, p) {
+  const h = BASE_H * p.s, ty = p.y - .25 * h;
+  p.cash.forEach((k, i) => { if (k <= 0) return;
+    const coinIt = i % 3 === 2, x = p.x + (hash(i * 3.7) - .5) * .26 * h, y = ty - .012 * h - Math.floor(i / 2) * .012 * h - (1 - Math.min(k, 1)) * .12 * h, r = (hash(i * 5.1) - .5) * .5;
+    c.save(); c.translate(x, y); c.rotate(r * .3); c.scale(k, k); c.globalAlpha = Math.min(1, k * 1.5);
+    if (coinIt) { c.fillStyle = '#b8902e'; c.beginPath(); c.ellipse(0, 1.5, .045 * h, .018 * h, 0, 0, 7); c.fill(); c.fillStyle = '#f2cf6a'; c.beginPath(); c.ellipse(0, 0, .045 * h, .018 * h, 0, 0, 7); c.fill(); }
+    else { const w = .13 * h, d = .028 * h; c.fillStyle = '#c9b98a'; c.beginPath(); c.moveTo(-w, d * .6); c.lineTo(w * .9, d * .9); c.lineTo(w, -d * .3); c.lineTo(-w * .9, -d * .6); c.closePath(); c.fill();
+      c.fillStyle = '#efe2bc'; c.beginPath(); c.moveTo(-w, d * .2); c.lineTo(w * .9, d * .5); c.lineTo(w, -d * .7); c.lineTo(-w * .9, -d); c.closePath(); c.fill();
+      c.strokeStyle = '#c9a04a'; c.lineWidth = .006 * h; c.stroke(); c.fillStyle = '#2b3b7a'; c.beginPath(); c.ellipse(0, -d * .25, .028 * h, .008 * h, .03, 0, 7); c.fill(); }
+    c.restore(); });
+}
 function drawChar(c, p, t) {
   if (p.vis === false) return;
   if (p.skin !== 'owner' && !p.fem && FEM[p.id]) p = { ...p, fem: FEM[p.id] };
@@ -69,6 +81,7 @@ function drawChar(c, p, t) {
   if (p.cupAt) cup(c, p.cupAt[0], p.cupAt[1] + 4, BASE_H * p.s * .2);
   if (p.coinAt) { c.fillStyle = '#f2cf6a'; c.beginPath(); c.ellipse(p.coinAt[0], p.coinAt[1] + 6, 8, 6, 0, 0, 7); c.fill(); c.strokeStyle = '#b8902e'; c.lineWidth = 2; c.stroke(); }
   if (p.clothAt) { c.fillStyle = '#f7f5ee'; c.beginPath(); c.ellipse(p.clothAt[0], p.clothAt[1] + 6, 16, 9, .3, 0, 7); c.fill(); }
+  if (p.cash) cashOnTray(c, p);
   if (p.hold === 'tray' && p.trayItems && p.trayItems.length) { const h = BASE_H * p.s, ty = p.y - .25 * h; p.trayItems.forEach((k, i, a) => plate(c, p.x + (i - (a.length - 1) / 2) * .17 * h, ty - .06 * h, h * .55, true, 1, t)); }
   c.restore();
   if (p.bang > 0) bubble(c, p);
@@ -162,8 +175,9 @@ function drawHome(c, S, t) {
     c.fillStyle = '#c0392b'; for (const s of [-1, 1]) { c.beginPath(); c.arc(s * 20, -62, 10, 0, 7); c.fill(); c.fillRect(s * 16 - 3, -4, 6, 8); } c.restore();
     if (ring) { c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 3; for (let k = 1; k <= 3; k++) { c.beginPath(); c.arc(ax, ay - 40, 34 + k * 12 + (t * 60 % 12), -2.4, -.7); c.stroke(); } } }
   if (S.look === 'night') chair(c, 625, 1500, 1, false);
+  if (S.bed && S.bed.behind) SET.blanket(c, HOME.bed[0], HOME.bed[1], S.bed.up, S.bed.off || 0);
   for (const p of S.chars) drawChar(c, p, t);
-  if (S.bed) SET.blanket(c, HOME.bed[0], HOME.bed[1], S.bed.up);
+  if (S.bed && !S.bed.behind) SET.blanket(c, HOME.bed[0], HOME.bed[1], S.bed.up, S.bed.off || 0);
 }
 // —— the kitchen: chopping on the board, a pot steaming ——
 function drawKitchen(c, S, t) {

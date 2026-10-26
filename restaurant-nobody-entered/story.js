@@ -9,8 +9,10 @@ export const DUR = 60.9;   // 58.7 s of story, then the 23 logo
 export const CARS = [{ t0: 2.95, dir: 1, col: '#c0392b', lane: 0 }, { t0: 31.6, dir: -1, col: '#e9dcc0', lane: 1 }, { t0: 35.0, dir: 1, col: '#2f7a8a', lane: 0 },
   { t0: 39.6, dir: -1, col: '#d9a03a', lane: 1 }, { t0: 55.0, dir: 1, col: '#e9dcc0', lane: 0 }, { t0: 57.2, dir: -1, col: '#c0392b', lane: 1 }];
 export const CAR_V = 1150;   // world px per second
-export const DISSOLVES = [{ at: 2.9, d: .45, blur: 0 }, { at: 42.6, d: .45, blur: 8 }, { at: 54.6, d: .55, blur: 0 }];
+export const DISSOLVES = [{ at: 2.9, d: .6, blur: 0 }, { at: 42.6, d: .45, blur: 8 }, { at: 54.6, d: .55, blur: 0 }];
 
+// banknotes and coins landing on his empty tray at the end, faster and faster
+export const CASH = [52.7, 53.08, 53.38, 53.62, 53.82, 54.0, 54.14, 54.26, 54.36, 54.45, 54.53];
 const COINS = [.45, 1.0, 1.4, 1.7, 1.95, 2.15];
 const CHOPS = [...Array(8)].map((_, k) => +(7.12 + k * .19).toFixed(3));
 const wipesOf = (a, b, p) => { const o = []; for (let t = a + p * .25; t < b; t += p / 2) o.push(+t.toFixed(3)); return o; };
@@ -19,14 +21,14 @@ const bites = (t0, t1, per, seed) => { const o = []; for (let t = t0 + hash(seed
 export const HIT = {
   coins: COINS.map(t => t + .05), pages: [.95, 1.25, 1.55, 1.8, 2.05, 2.25], sketch: 2.4,
   keyJingle: 3.05, keyIn: 3.3, lockClick: 4.35, signOn: 4.5,
-  alarm: 5.05, alarmOff: 5.62, popUp: 5.32, stretch: 5.95,
+  alarm: 5.05, alarmOff: 5.62, popUp: 5.32, blanketOff: 5.86, hopDown: 6.33, stretch: 6.45,
   chops: CHOPS, wipes: [...wipesOf(...WIPE_D), ...wipesOf(...WIPE_E)], flip: 12.68,
   calendar1: 13.25, timelapse: 14.0, tear: 16.12, rainIn: 16.4, jarLook: 18.1, sigh: 20.25,
   bell1: 22.75, doorShut1: 25.45,
   standUp: 26.15, handshake: [27.55, 27.85, 28.15], chairPull: 29.15, sit: 29.85, chairPush: 30.05, menuDown: 31.15,
   plateDown1: 33.1, clap1: [33.35, 33.55, 33.75], bang: 34.4, forks: bites(34.2, 36.9, .75, 3),
   handle2: 37.38, bell2: 37.5, handle3: 39.35, bell3: 39.45, handle4: 40.68, bell4: 40.75,
-  plateDown2: 45.0, plateDown3: 45.6, clap2: [45.95, 46.15, 46.35], laugh: 47.05, queue: 55.0, bell5: 58.05,
+  plateDown2: 45.0, plateDown3: 45.6, clap2: [45.95, 46.15, 46.35], laugh: 47.05, queue: 55.0, bell5: 58.05, cash: CASH,
 };
 
 // interior depth rows: feet line and scale; the aisles between rows are y ≈ 1515 and 1745
@@ -83,22 +85,24 @@ function homeSave(t) {
   const up = ss(seg(t, 2.25, 2.6));
   const ow = { id: 'owner', skin: OW, x: 612, y: 1500, s: 1, f: lerp(-.85, -.45, up), sit: 1, ...idle(t, 1), handL: up < .5 ? hand : undefined, armL: .3, coinAt: coin,
     look: lerp(.5, -1, up), headUp: .015 * up, smile: lerp(.45, 1, up) };
-  return { set: 'home', look: 'night', cam: V([[0, [556, 1335, 4.0]], [.75, [545, 1320, 3.2]], [1.5, [440, 1268, 1.65]], [2.2, [430, 1240, 1.6]], [2.9, [400, 1010, 2.45]]])(t), chars: [ow], jar: .28 + .6 * seg(t, .3, 2.25), month: 6 * seg(t, .8, 2.3) };
+  return { set: 'home', look: 'night', cam: V([[0, [556, 1335, 4.0]], [.75, [545, 1320, 3.2]], [1.5, [440, 1268, 1.65]], [2.3, [430, 1220, 1.6]], [2.9, [400, 1000, 3.6]]])(t), chars: [ow], jar: .28 + .6 * seg(t, .3, 2.25), month: 6 * seg(t, .8, 2.3) };
 }
 // —— 1b: dawn. The real storefront: the key turns, the sign lights, he steps back to look at it ——
 function storefront(t) {
   const back = ss(seg(t, 4.5, 4.95));
   const ow = { id: 'owner', skin: OW, x: lerp(752, 772, back), y: lerp(1722, 1738, back), s: 1, f: lerp(.25, .1, back), back: back < .5, ...idle(t, 1), hold: back < .5 ? 'key' : null,
     handR: back < .5 ? [800 + (t > 3.9 ? 4 * ss(seg(t, 3.9, 4.3)) : 0), 1603] : undefined, armL: .1, armR: back < .5 ? undefined : -.5, look: -1 * back, headUp: .01 * back, smile: .4 + .6 * back };
-  return { set: 'ex', look: 'dawn', cam: V([[2.9, [930, 1190, 1.25]], [3.6, [850, 1380, 1.3]], [5, [785, 1455, 1.35]]])(t), chars: [ow], inside: [], sign: ss(seg(t, 4.5, 4.85)), signFlick: t > 4.5 && t < 4.85, lanterns: lerp(.5, 1, ss(seg(t, 4.55, 4.8))), interiorLit: .15 };
+  return { set: 'ex', look: 'dawn', cam: V([[2.9, [940, 1361, 1.14]], [3.7, [850, 1390, 1.28]], [5, [785, 1455, 1.35]]])(t), chars: [ow], inside: [], sign: ss(seg(t, 4.5, 4.85)), signFlick: t > 4.5 && t < 4.85, lanterns: lerp(.5, 1, ss(seg(t, 4.55, 4.8))), interiorLit: .15 };
 }
 // —— 2a: every morning, early: the alarm, up from under the blanket, a big stretch ——
 function bedroom(t) {
-  const up = ss(seg(t, 5.3, 5.55)), slap = Math.sin(seg(t, 5.5, 5.75) * Math.PI), st = Math.sin(seg(t, 5.9, 6.6) * Math.PI);
-  const ow = { id: 'owner', skin: OW, x: 1207, y: 1347, s: 1, rot: (1 - up) * Math.PI / 2, sit: 1, f: 0, ...idle(t, 1), shadow: false,
+  // lying asleep; the alarm; he sits up, slaps it quiet, throws the blanket back, slides off the bed to the floor and stretches, facing us
+  const up = ss(seg(t, 5.3, 5.55)), slap = Math.sin(seg(t, 5.5, 5.75) * Math.PI), off = ss(seg(t, 5.8, 6.0)), down = ss(seg(t, 6.02, HIT.hopDown)), st = Math.sin(seg(t, 6.4, 6.9) * Math.PI);
+  const land = t > HIT.hopDown && t < HIT.hopDown + .35 ? Math.sin(seg(t, HIT.hopDown, HIT.hopDown + .35) * Math.PI) * .07 : 0;
+  const ow = { id: 'owner', skin: OW, x: lerp(1207, 1180, down), y: lerp(lerp(1347, 1394, up), 1520, down), s: 1, rot: (1 - up) * Math.PI / 2, sit: 1 - down, f: 0, look: 0, ...idle(t, 1), shadow: down > .9,
     blink: t < 5.32 ? 1 : (t > 6.65 && t < 6.8 ? 1 : blinkAt(t, 1)), o: up * (1 - ss(seg(t, 5.7, 5.9))) * .8, smile: .9 * ss(seg(t, 6.3, 6.6)),
-    handR: slap > .05 ? [1300, 1225] : undefined, armR: .2 + 2.6 * st, armL: .2 + 2.6 * st, squash: -.05 * st };
-  return { set: 'home', look: 'dawn', cam: V([[5, [1160, 1260, 1.75]], [6.95, [1165, 1255, 1.85]]])(t), chars: [ow], ring: t > 5.05 && t < 5.62 ? 1 : 0, bed: { up }, jar: .88, month: 6 };
+    handR: slap > .05 ? [1300, 1225] : off > 0 && off < 1 ? [lerp(1150, 1000, off), 1345] : undefined, armR: .2 + 2.6 * st, armL: .2 + 2.6 * st, squash: land - .05 * st };
+  return { set: 'home', look: 'dawn', cam: V([[5, [1160, 1260, 1.75]], [6.0, [1165, 1275, 1.75]], [6.95, [1170, 1330, 1.7]]])(t), chars: [ow], ring: t > 5.05 && t < 5.62 ? 1 : 0, bed: { up, off, behind: down > .5 }, jar: .88, month: 6 };
 }
 // —— 2b: he prepares everything himself: chopping a carrot, a pot on the stove ——
 function kitchen(t) {
@@ -139,7 +143,7 @@ function day2(t) {
   const ow = { id: 'owner', skin: OW, x: sx, y: sy, s, f: -.75 - .2 * look + shake, sit: 1, ...idle(t, 1), sad: 1, chin: 'L', armL: .3, armR: .3,
     tilt: -.12, look: lerp(.3, .9, look) + .2 * ss(seg(t, 20.2, 20.9)), squash: .06 * Math.sin(seg(t, 20.2, 21) * Math.PI), headDX: -.02,
     blink: t > 17.2 && t < 17.7 ? Math.sin(seg(t, 17.2, 17.7) * Math.PI) : blinkAt(t, 1) };
-  return { set: 'in', look: 'night', cam: V([[16.9, [945, 1268, 1.9]], [21, [955, 1275, 2.05]]])(t), chars: [ow], items: [cupItem('A', 1), jarOnA(.08)], rain: 1, drops: 1, lamps: .8, candleLow: true, plaque: 1, calendar: 2 };
+  return { set: 'in', look: 'night', cam: V([[16.9, [975, 1250, 2.6]], [18.4, [980, 1248, 3.3]], [21, [985, 1246, 4.0]]])(t), chars: [ow], items: [cupItem('A', 1), jarOnA(.08)], rain: 1, drops: 1, lamps: .8, candleLow: true, plaque: 1, calendar: 2 };
 }
 // —— 5: the door opens ——
 function doorOpens(t) {
@@ -271,7 +275,7 @@ function fullRoom(t) {
 function finale(t) {
   if (t < 54.6) {
     const ow = { id: 'owner', skin: OW, x: 700, y: 1748, s: sOf(1748), ...idle(t, 1), hold: 'tray', trayItems: [], armL: -.55, armR: -.55,
-      f: .55 * Math.sin(seg(t, 51.2, 53.4) * Math.PI) - .55 * Math.sin(seg(t, 52.3, 53.6) * Math.PI), smile: lerp(.4, 1, ss(seg(t, 53.9, 54.4))), look: -.2 };
+      f: .55 * Math.sin(seg(t, 51.2, 53.4) * Math.PI) - .55 * Math.sin(seg(t, 52.3, 53.6) * Math.PI), smile: lerp(.4, 1, ss(seg(t, 53.9, 54.4))), look: t < 52.6 ? -.2 : lerp(.75, -.2, ss(seg(t, 54.05, 54.45))), cash: CASH.map(c => sp(t - c, .32, .4)) };
     ow.blink = t > 53.5 && t < 54.1 ? 1 : blinkAt(t, 1);
     return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.4, [700, 1565, 2.0]], [53.4, [700, 1590, 3.2]], [54.6, [700, 1594, 4.6]]])(t), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
   }

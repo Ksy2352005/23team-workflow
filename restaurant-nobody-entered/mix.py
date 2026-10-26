@@ -189,7 +189,11 @@ for k, e in enumerate(e for e in EVS if e['type'] == 'step'):
     if e.get('surf') == 'wet': x = mx(x, hp(noise(.12), 2500) * env_exp(.12, .03) * .06)
     add(fx, x, e['t'], 1, e.get('pan', 0) * .7)
 # 1: coins into the glass jar, calendar pages, the key, the latch, the sign coming on
-for k, t in enumerate(HIT['coins']): add(fx, verb(mx(S(pick('impactGlass_light_00', 5, k), .55), S('chips-collide-1', .35)), .4, .2), t, 1, -.2)
+def coin_ring(v=1.0, p=1.0):   # a coin: a bright metallic ring with inharmonic partials over a tiny strike
+    d = .45; tt = t_(d); x = sum(a * np.sin(2 * np.pi * f * p * tt + k) * np.exp(-tt / tau) for k, (f, a, tau) in enumerate([(2950, 1, .2), (4810, .6, .14), (6930, .4, .09), (9150, .2, .06)]))
+    return norm(x + hp(noise(d), 3000) * env_exp(d, .004) * .6) * v
+# each coin: its ring, landing on the coins in the glass jar
+for k, t in enumerate(HIT['coins']): add(fx, verb(mx(coin_ring(.8, 1 + .04 * (k % 3)), S(pick('impactGlass_light_00', 5, k), .35), S('chips-collide-1', .3)), .4, .18), t, 1, -.2)
 for k, t in enumerate(HIT['pages']): add(fx, S(f'bookFlip{k % 3 + 1}', .5), t - .05, 1, .3)
 add(fx, S('handleCoins2', .55), H1('keyJingle'), 1, .1); add(fx, S('metalClick', .6), H1('keyIn'), 1, .1); add(fx, S('metalLatch', .8), H1('lockClick'), 1, .1)
 buzz = np.sin(2 * np.pi * 100 * t_(.5)) * .3 + np.sin(2 * np.pi * 200 * t_(.5)) * .2; buzz *= (rng.random(len(buzz)) > .5) * .5 + .5
@@ -199,7 +203,8 @@ for i in range(5): add(fx, click(.08, 2 + i * .2), H1('signOn') + i * .07, 1, -.
 ring_d = H1('alarmOff') - H1('alarm'); rt = t_(ring_d)
 ring = (np.sin(2 * np.pi * 2200 * rt) + .5 * np.sin(2 * np.pi * 3300 * rt)) * (np.sin(2 * np.pi * 24 * rt) > 0) * .12
 add(fx, ring, H1('alarm'), 1, .2); add(fx, S('impactGeneric_light_000' if False else 'impactWood_light_001', .5), H1('alarmOff'), 1, .2)
-add(fx, S('cloth3', .6), H1('popUp') - .05, 1, 0); add(fx, S('cloth1', .35), H1('stretch'), 1, 0)
+add(fx, S('cloth3', .6), H1('popUp') - .05, 1, 0); add(fx, mx(S('cloth2', .6), S('cloth4', .4)), H1('blanketOff') - .05, 1, -.2)
+add(fx, mx(S('footstep_wood_001', .6), S('impactSoft_medium_001', .35)), H1('hopDown'), 1, 0); add(fx, S('cloth1', .35), H1('stretch'), 1, 0)
 # 2b: the knife on the board, a pot boiling
 # the knife meets the board a moment before each chop mark: a short wooden tap and a tiny blade tick
 for k, t in enumerate(HIT['chops']): add(fx, mx(S(pick('impactWood_light_00', 5, k), .6, 4000), hp(click(.04, 1.6), 3000)), t - .076, 1, 0)
@@ -240,7 +245,8 @@ for e in EVS:
     eng = norm(eng) * env * (.16 if e.get('lane', 0) == 0 else .11)
     half = len(eng) // 2; dirn = e.get('dir', 1)
     add(fx, eng[:half], e['t'] - d / 2, 1, -.8 * dirn); add(fx, eng[half:], e['t'], 1, .8 * dirn)
-add(fx, verb(ding(.12), 1.8, .6), 58.9, 1, 0)   # a soft, airy tone as the logo appears
+# the money landing on the tray: a soft paper flick for a note, a small clear ring for a coin
+for k, t in enumerate(HIT['cash']): add(fx, verb(coin_ring(.3, 1.1 + .03 * k) if k % 3 == 2 else S(f'bookFlip{k % 3 + 1}', .3, 5000), .5, .2), t - .02, 1, .1)
 # —— the characters' own sounds (no words): hums, yawns, gasps, laughs, "mmm", cheers; placed in the gaps of the narration ——
 import soundfile as sf
 from scipy.signal import resample_poly
@@ -266,15 +272,26 @@ add(fx, lp(qw, 1400) * .14, 54.6, 1, .3)
 add(fx, fade(lp(murmur(DUR - H1('queue'), .04, 4), 1400), .6, .3), H1('queue'), 1, .2)
 add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)
 
+# —— the logo: a soft, warm bell with an airy breath before it (not a synth beep) ——
+def logo_tone():
+    d = 3.0; tt = t_(d); f = 659.25
+    bell = sum(a * np.sin(2 * np.pi * f * m * tt) * np.exp(-tt / tau) for m, a, tau in [(1, 1, 1.6), (2, .22, .9), (3.01, .06, .5), (.5, .3, 1.8)])
+    bell = lp(bell * np.minimum(1, tt / .02), 3500)
+    air = bp(noise(.6), 3000, 9000) * np.sin(np.pi * t_(.6) / .6) ** 2 * .25
+    o = np.zeros(int(.45 * SR) + len(bell)); o[:len(air)] += air; o[int(.45 * SR):] += bell; return o
+add(fx, verb(norm(logo_tone()) * .22, 1.6, .4), 58.85 - .45, 1, 0)
+
 # —— mix ——
 music = music * 0   # no music in this cut: voice and sound effects only
 # effects nearly as loud as the voice: a punchy bus (fast compression lifts the hits), then a level just under the voice
 fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
+fxg = np.ones(len(fxc)); tg = np.arange(len(fxc)) / SR; fxg *= 1 - .45 * np.clip((tg - W(29.5)) / (W(31.5) - W(29.5)), 0, 1)   # from 0:30 on, the effects sit lower under the voice
+fxc = fxc * fxg[:, None]
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
-mix = np.stack([limit(mix[:, 0], .95), limit(mix[:, 1], .95)], 1)
+mix = np.stack([limit(compress(mix[:, c], thr=.22, ratio=2.5, att=.003, rel=.12), .8) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 import soundfile as sf
 sf.write(os.path.join(HERE, 'out', os.environ.get('OUT', 'mix.wav')), mix.astype(np.float32), SR)
