@@ -39,3 +39,4 @@ Code: `endCard()` in `restaurant-nobody-entered/main.js` (`LOGO_W`, `END_BLUE`, 
 ## Format
 
 - 9:16 Instagram Reel, 1080 × 1920, 24 fps. Preview at 540 × 960 first, then the final render.
+- Deliver the final as the highest-quality master: `sh tools/master.sh <film folder> <name>`, run after the film's `build.sh`. It writes `<name>-MASTER.mp4` from lossless PNG frames and encodes once: H.264 High, CRF 12, veryslow, tuned for animation, BT.709-tagged colour, AAC 320 kb/s, −14 LUFS.
