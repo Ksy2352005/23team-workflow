@@ -4,7 +4,7 @@
 import { clamp, lerp, seg, ss, track, hash } from '/core/lib.js';
 import { BASE_H } from './char2d.js';
 
-export const DUR = 64.0;   // 58.7 s of story, then "Social Proof" in type, then the 23 logo
+export const DUR = 60.9;   // 58.7 s of story, then the 23 logo on dark blue
 // cars passing on the street (outside shots only): start time, direction, colour, lane
 export const CARS = [{ t0: 2.95, dir: 1, col: '#c0392b', lane: 0 }, { t0: 31.6, dir: -1, col: '#e9dcc0', lane: 1 }, { t0: 35.0, dir: 1, col: '#2f7a8a', lane: 0 },
   { t0: 39.6, dir: -1, col: '#d9a03a', lane: 1 }, { t0: 55.0, dir: 1, col: '#e9dcc0', lane: 0 }, { t0: 57.2, dir: -1, col: '#c0392b', lane: 1 }];
@@ -14,7 +14,7 @@ export const DISSOLVES = [{ at: 2.9, d: .6, blur: 0 }, { at: 42.6, d: .45, blur:
 // banknotes and coins landing on his empty tray at the end, faster and faster
 export const CASH = [52.7, 53.08, 53.38, 53.62, 53.82, 54.0, 54.14, 54.26, 54.36, 54.45, 54.53];
 const COINS = [.45, 1.0, 1.4, 1.7, 1.95, 2.15];
-const CHOPS = [...Array(8)].map((_, k) => +(7.12 + k * .19).toFixed(3));
+const CHOPS = [...Array(10)].map((_, k) => +(7.12 + k * .19).toFixed(3));
 const wipesOf = (a, b, p) => { const o = []; for (let t = a + p * .25; t < b; t += p / 2) o.push(+t.toFixed(3)); return o; };
 const WIPE_D = [8.95, 10.2, .62], WIPE_E = [11.3, 12.25, .62];
 const bites = (t0, t1, per, seed) => { const o = []; for (let t = t0 + hash(seed) * per; t < t1; t += per) o.push(+(t + per * .45).toFixed(3)); return o; };
@@ -108,7 +108,7 @@ function bedroom(t) {
 function kitchen(t) {
   const n = CHOPS.filter(c => t >= c).length, last = [...CHOPS].reverse().find(c => t >= c - .19) ?? 7.12, ph = clamp((t - (last - .19)) / .19), cut = n / CHOPS.length;
   const cl = 110 * (1 - cut * .7), kx = 660 + cl, ky = lerp(1300, 1362, ph < .6 ? ph / .6 : 1 - (ph - .6) / .4);
-  const ow = { id: 'owner', skin: OW, x: 720, y: 1430, s: 1, f: 0, ...idle(t, 1), handL: [655, 1360], handR: [kx, t < 7.05 || t > 8.5 ? 1310 : ky], hold: 'knife', look: .8, smile: .6 };
+  const ow = { id: 'owner', skin: OW, x: 720, y: 1430, s: 1, f: 0, ...idle(t, 1), handL: [655, 1360], handR: [kx, t < 7.05 ? 1310 : ky], hold: 'knife', look: .8, smile: .6 };
   return { set: 'kitchen', cam: V([[6.95, [760, 1290, 1.6]], [8.85, [740, 1300, 1.7]]])(t), chars: [ow], cut };
 }
 // —— 2c: wiping the tables, more than once ——
