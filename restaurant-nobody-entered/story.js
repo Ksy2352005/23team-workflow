@@ -265,7 +265,7 @@ function finale(t) {
     const ow = { id: 'owner', skin: OW, x: 700, y: 1748, s: sOf(1748), ...idle(t, 1), hold: 'tray', trayItems: [], armL: -.55, armR: -.55,
       f: .55 * Math.sin(seg(t, 51.2, 53.4) * Math.PI) - .55 * Math.sin(seg(t, 52.3, 53.6) * Math.PI), smile: lerp(.4, 1, ss(seg(t, 53.9, 54.4))), look: -.2 };
     ow.blink = t > 53.5 && t < 54.1 ? 1 : blinkAt(t, 1);
-    return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.4, [700, 1565, 2.0]], [53.4, [700, 1590, 3.2]], [54.6, [700, 1594, 4.6]]])(t), sparkle: ss(seg(t, 52.8, 54.2)), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
+    return { set: 'in', look: 'night', cam: V([[50.85, [702, 1545, 1.6]], [52.4, [700, 1565, 2.0]], [53.4, [700, 1590, 3.2]], [54.6, [700, 1594, 4.6]]])(t), chars: [ow, ...crowd(t, false)], items: [...crowdItems(), plateItem('D', 0), plateItem('D', 1)], lamps: 1.15, plaque: 1, calendar: 2, clock: 20.2 };
   }
   const op = ss(seg(t, 58.0, 58.4)) * .8 * (1 - ss(seg(t, 58.5, 58.7)) * .3);
   const step = ss(seg(t, 58.15, 58.6)) * 120;
