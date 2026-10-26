@@ -4,12 +4,12 @@
 import { clamp, lerp, seg, ss, track, hash } from '/core/lib.js';
 import { BASE_H } from './char2d.js';
 
-export const DUR = 58.7;
+export const DUR = 60.9;   // 58.7 s of story, then the 23 logo
 // cars passing on the street (outside shots only): start time, direction, colour, lane
 export const CARS = [{ t0: 2.95, dir: 1, col: '#c0392b', lane: 0 }, { t0: 31.6, dir: -1, col: '#e9dcc0', lane: 1 }, { t0: 35.0, dir: 1, col: '#2f7a8a', lane: 0 },
   { t0: 39.6, dir: -1, col: '#d9a03a', lane: 1 }, { t0: 55.0, dir: 1, col: '#e9dcc0', lane: 0 }, { t0: 57.2, dir: -1, col: '#c0392b', lane: 1 }];
 export const CAR_V = 1150;   // world px per second
-export const DISSOLVES = [{ at: 2.9, d: .45, blur: 0 }, { at: 42.6, d: .45, blur: 8 }, { at: 54.6, d: .55, blur: 0 }];
+export const DISSOLVES = [{ at: 2.9, d: .45, blur: 0 }, { at: 42.6, d: .45, blur: 8 }, { at: 54.6, d: .55, blur: 0 }, { at: 58.7, d: .4, blur: 0 }];
 
 const COINS = [.45, 1.0, 1.4, 1.7, 1.95, 2.15];
 const CHOPS = [...Array(8)].map((_, k) => +(7.12 + k * .19).toFixed(3));
@@ -291,4 +291,4 @@ function finale(t) {
 }
 
 export const SCENES = [[0, homeSave], [2.9, storefront], [5.0, bedroom], [6.95, kitchen], [8.85, wiping], [12.3, flipSign], [13.2, day1], [16.0, day2], [21.0, doorOpens], [26.1, welcome], [31.5, seen], [36.9, entersToo], [38.9, andMore], [42.6, fullRoom], [50.85, finale]];
-export function sceneAt(t) { let i = 0; while (i + 1 < SCENES.length && t >= SCENES[i + 1][0]) i++; return SCENES[i][1](Math.min(t, DUR - 1e-3)); }
+export function sceneAt(t) { let i = 0; while (i + 1 < SCENES.length && t >= SCENES[i + 1][0]) i++; return SCENES[i][1](Math.min(t, 58.7 - 1e-3)); }

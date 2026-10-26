@@ -242,7 +242,15 @@ function drawCar(c, car, x, t, look) {
     c.beginPath(); c.moveTo(hx, hy - 8 * s); c.lineTo(hx + d * 420 * s, hy - 60 * s); c.lineTo(hx + d * 420 * s, hy + 50 * s); c.lineTo(hx, hy + 8 * s); c.fill(); c.restore(); glow(c, x - d * L / 2, y - 58 * s, 40 * s, .6); }
 }
 
+function endCard(c, t) {
+  c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
+  const u = t - 58.7, k = u <= 0 ? 0 : 1 - Math.exp(-7 * u) * Math.cos(11 * u), sc = .6 + .4 * k, a = Math.min(1, u / .25);
+  c.save(); c.globalAlpha = a; c.translate(W / 2, H * .47); c.scale(sc, sc);
+  c.fillStyle = '#1e2f7c'; c.font = `${Math.round(360 * K)}px "Lilita One"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('23', 0, 0);
+  c.fillStyle = '#2448bb'; c.font = `${Math.round(92 * K)}px "Lilita One"`; c.fillText('Team', 0, 230 * K); c.restore();
+}
 function draw(c, t) {
+  if (t >= 58.7) return endCard(c, t);
   const S = sceneAt(t);
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#060c2c'; c.fillRect(0, 0, W, H);
   camera(c, S.cam, S.shake || 0, t);
@@ -257,14 +265,15 @@ for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.pu
 { const last = {};
   for (let t = 0; t < DUR; t += 1 / 60) { const S = sceneAt(t);
     for (const p of S.chars) { if (!p.id || p.vis === false) continue; const key = S.set + p.id;
-      if (p.walk > .15) { const k = Math.floor(p.phi / Math.PI); if (last[key] !== undefined && k !== last[key]) EV.push({ t: +t.toFixed(3), type: 'step', who: p.skin === 'owner' ? 'owner' : 'guest', surf: S.set === 'ex' ? (S.wet ? 'wet' : 'stone') : 'wood', pan: Math.max(-1, Math.min(1, (p.x - S.cam[0]) * S.cam[2] / 540)), v: p.s || 1 }); last[key] = k; }
+      if (p.walk > .15) { const k = Math.floor((p.phi - Math.PI / 2) / Math.PI); if (last[key] !== undefined && k !== last[key]) EV.push({ t: +t.toFixed(3), type: 'step', who: p.skin === 'owner' ? 'owner' : 'guest', surf: S.set === 'ex' ? (S.wet ? 'wet' : 'stone') : 'wood', pan: Math.max(-1, Math.min(1, (p.x - S.cam[0]) * S.cam[2] / 540)), v: p.s || 1 }); last[key] = k; }
       else delete last[key]; } } }
 // cars: a pass-by sound centred on when each car crosses the middle of the frame (outside shots only)
 for (const car of CARS) { for (let t = car.t0; t < car.t0 + 4.5; t += 1 / 60) { const S = sceneAt(t); if (S.set !== 'ex') continue; if (Math.abs(carX(car, t) - S.cam[0]) < CAR_V / 60) { EV.push({ t: +t.toFixed(3), type: 'car', dir: car.dir, lane: car.lane }); break; } } }
 // a test version on another voiceover: the same film, retimed scene by scene to that voice (?warp=fa)
-const WARPS = { fa: [[0, 0], [6.2, 5.0], [9.6, 6.95], [12.15, 8.85], [17.9, 12.3], [19.6, 13.2], [23.6, 16.0], [25.85, 17.8], [30.7, 21.0], [33.85, 22.75], [34.24, 23.78],
+const WARPS = { fa: [[76.8, 60.9], [0, 0], [6.2, 5.0], [9.6, 6.95], [12.15, 8.85], [17.9, 12.3], [19.6, 13.2], [23.6, 16.0], [25.85, 17.8], [30.7, 21.0], [33.85, 22.75], [34.24, 23.78],
   [36.96, 26.1], [44.16, 31.5], [47.96, 34.87], [52.2, 36.9], [54.0, 38.9], [56.4, 40.71], [59.36, 42.6], [63.0, 45.87], [68.52, 50.85], [71.0, 54.6], [74.6, 58.7]] };
 const WARP = WARPS[new URLSearchParams(location.search).get('warp')];
+const _w = WARPS.fa; _w.push(_w.shift());
 const storyT = t => { if (!WARP) return t; let i = 0; while (i < WARP.length - 2 && t > WARP[i + 1][0]) i++; const [a, b] = [WARP[i], WARP[i + 1]]; return b[1] + 0 === a[1] ? a[1] : a[1] + (b[1] - a[1]) * Math.min(1, Math.max(0, (t - a[0]) / (b[0] - a[0]))); };
 if (WARP) EV.push({ t: 0, type: 'warp', pairs: WARP });
 window.DUR = WARP ? WARP[WARP.length - 1][0] : DUR;

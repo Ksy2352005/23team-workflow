@@ -184,7 +184,8 @@ pick = lambda base, n, i: f'{base}{i % n}'
 STEP = {'wood': ('footstep_wood_00', 5, .42), 'stone': ('footstep_concrete_00', 5, .36), 'wet': ('footstep_concrete_00', 5, .38)}
 for k, e in enumerate(e for e in EVS if e['type'] == 'step'):
     base, n, lv = STEP[e.get('surf', 'wood')]; owner = e.get('who') == 'owner'
-    x = S(pick(base, n, k), lv * (1.7 if owner else .55) * e.get('v', 1))   # his steps clear and close; the customers' softer
+    if owner: x = mx(hp(S(pick('footstep_wood_00', 5, k), .95), 140), lp(thump(.22, 95), 300) * .5)   # his steps: a clear wooden heel-strike with a little weight
+    else: x = S(pick(base, n, k), lv * .55 * e.get('v', 1))
     if e.get('surf') == 'wet': x = mx(x, hp(noise(.12), 2500) * env_exp(.12, .03) * .06)
     add(fx, x, e['t'], 1, e.get('pan', 0) * .7)
 # 1: coins into the glass jar, calendar pages, the key, the latch, the sign coming on
@@ -200,8 +201,8 @@ ring = (np.sin(2 * np.pi * 2200 * rt) + .5 * np.sin(2 * np.pi * 3300 * rt)) * (n
 add(fx, ring, H1('alarm'), 1, .2); add(fx, S('impactGeneric_light_000' if False else 'impactWood_light_001', .5), H1('alarmOff'), 1, .2)
 add(fx, S('cloth3', .6), H1('popUp') - .05, 1, 0); add(fx, S('cloth1', .35), H1('stretch'), 1, 0)
 # 2b: the knife on the board, a pot boiling
-for k, t in enumerate(HIT['chops']): add(fx, mx(S('chop' if k % 2 == 0 else 'knifeSlice', .7), S(pick('impactWood_light_00', 5, k), .3)), t, 1, 0)
-add(fx, fade(S('water_boiling', .25)[:int(1.95 * SR)], .2, .3), 6.95, 1, .5)
+# the knife meets the board a moment before each chop mark: a short wooden tap and a tiny blade tick
+for k, t in enumerate(HIT['chops']): add(fx, mx(S(pick('impactWood_light_00', 5, k), .6, 4000), hp(click(.04, 1.6), 3000)), t - .076, 1, 0)
 # 2c/2d: the cloth on the tables, the plaque
 for k, t in enumerate(HIT['wipes']): add(fx, S(f'cloth{k % 4 + 1}', .45), t - .12, 1, -.1)
 add(fx, S('bookPlace1', .55), H1('flip'), 1, -.4)
@@ -239,6 +240,7 @@ for e in EVS:
     eng = norm(eng) * env * (.16 if e.get('lane', 0) == 0 else .11)
     half = len(eng) // 2; dirn = e.get('dir', 1)
     add(fx, eng[:half], e['t'] - d / 2, 1, -.8 * dirn); add(fx, eng[half:], e['t'], 1, .8 * dirn)
+add(fx, verb(ding(.25), 1.4, .5), 58.75, 1, 0)
 # —— the characters' own sounds (no words): hums, yawns, gasps, laughs, "mmm", cheers; placed in the gaps of the narration ——
 import soundfile as sf
 from scipy.signal import resample_poly
