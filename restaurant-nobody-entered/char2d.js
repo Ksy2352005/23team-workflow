@@ -28,7 +28,7 @@ function rim(ctx, cx, cy, r, side, col, a = .55, w = .07) {
 // P: { x, y (feet), s, skin, f (-1 left .. 1 right), back, phi, walk, armL, armR, lean, bob, squash, sit, smile, sad, o, blink, tilt, look, rimSide, rimCol, hold, alpha }
 export function drawMascot(ctx, P) {
   if (P.vis === false) return;
-  const sk = SKIN[P.skin] || SKIN.blue1, H = BASE_H * (P.s || 1), f = Math.max(-1, Math.min(1, P.f || 0));
+  const sk = SKIN[P.skin] || SKIN.blue1, H = BASE_H * (P.s || 1) * 1.08, f = Math.max(-1, Math.min(1, P.f || 0));
   const sit = P.sit || 0, sq = P.squash || 0, walk = P.walk || 0, phi = P.phi || 0;
   const bob = (P.bob || 0) * H + Math.abs(Math.cos(phi)) * .035 * H * walk;
   const x = P.x, y = P.y;
@@ -38,21 +38,21 @@ export function drawMascot(ctx, P) {
   ctx.fillStyle = sg; ctx.save(); ctx.translate(x, y); ctx.scale(1, .2); ctx.translate(-x, -y); ctx.beginPath(); ctx.arc(x, y, H * .3, 0, 7); ctx.fill(); ctx.restore();
   ctx.translate(x, y); ctx.rotate(P.lean || 0); ctx.translate(-x, -y);
   if (P.rot) { const px = x, py = y - .2 * H; ctx.translate(px, py); ctx.rotate(P.rot); ctx.translate(-px, -py); }
-  const lift = sit * .13 * H, yb = y - lift - bob;       // body baseline
-  const hipY = yb - .2 * H, shY = yb - .47 * H, headY = yb - .74 * H * (1 - sq * .6), R = .245 * H;
-  const legW = .115 * H, legDX = .075 * H * (1 - .55 * Math.abs(f)), fwd = Math.sign(f || 1);
+  const lift = sit * .05 * H, yb = y - lift - bob;       // body baseline
+  const hipY = yb - .26 * H, shY = yb - .5 * H, headY = yb - .76 * H * (1 - sq * .6), R = .225 * H;
+  const legW = .078 * H, legDX = .055 * H * (1 - .55 * Math.abs(f)), fwd = Math.sign(f || 1);
   const light = P.lightSide ?? -1;
   // legs
   const leg = (side, swing) => {
     const lx = x + side * legDX;
     if (sit > .5) {
-      const dir = Math.abs(f) > .3 ? fwd : 0, kx = lx + dir * .17 * H, ky = hipY + .05 * H;
+      const dir = Math.abs(f) > .3 ? fwd : 0, kx = lx + dir * .2 * H, ky = hipY + .04 * H;
       ctx.fillStyle = bodyGrad(ctx, lx, hipY, .2 * H, sk, light); capsule(ctx, lx, hipY, kx, ky, legW); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(kx + dir * .02 * H, ky + .06 * H, .075 * H, .05 * H, 0, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(kx + dir * .02 * H, ky + .05 * H, .062 * H, .04 * H, 0, 0, 7); ctx.fill();
     } else {
       const sx = swing * .1 * H * Math.max(Math.abs(f), .25) * fwd, up = Math.max(0, -swing) * .05 * H;
       ctx.fillStyle = bodyGrad(ctx, lx, hipY + .1 * H, .2 * H, sk, light); capsule(ctx, lx, hipY, lx + sx, yb - .05 * H - up, legW); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(lx + sx + f * .03 * H, yb - .035 * H - up, .085 * H, .048 * H, 0, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(lx + sx + f * .03 * H, yb - .03 * H - up, .07 * H, .04 * H, 0, 0, 7); ctx.fill();
     }
   };
   const s1 = Math.sin(phi) * walk;
@@ -60,14 +60,14 @@ export function drawMascot(ctx, P) {
   // arms: angle 0 hangs down, positive swings outward on its own side of the screen
   // an arm either swings to an angle, or reaches for a point in the world (a hand target)
   const arm = (side, ang) => {
-    const ax = x + side * .165 * H * (1 - .45 * Math.abs(f)), ay = shY, L0 = .24 * H;
+    const ax = x + side * .125 * H * (1 - .45 * Math.abs(f)), ay = shY, L0 = .27 * H;
     let tgt = side < 0 ? P.handL : P.handR;
     if (P.chin && ((P.chin === 'L') === (side < 0))) tgt = [x + (P.headDX || 0) * H + side * .05 * H, headY + .2 * H];
     let a = ang * side, L = L0;
     if (tgt) { const dx = tgt[0] - ax, dy = tgt[1] - ay; a = Math.atan2(dx, dy); L = Math.min(Math.hypot(dx, dy), L0 * 1.35); }
     const ex = ax + Math.sin(a) * L, ey = ay + Math.cos(a) * L;
-    ctx.fillStyle = bodyGrad(ctx, ax, ay + L / 2, L * .8, sk, light); capsule(ctx, ax, ay, ex, ey, .092 * H); ctx.fill();
-    ctx.beginPath(); ctx.arc(ex, ey, .062 * H, 0, 7); ctx.fill();
+    ctx.fillStyle = bodyGrad(ctx, ax, ay + L / 2, L * .8, sk, light); capsule(ctx, ax, ay, ex, ey, .062 * H); ctx.fill();
+    ctx.beginPath(); ctx.arc(ex, ey, .046 * H, 0, 7); ctx.fill();
     return [ex, ey];
   };
   const armL = P.armL ?? (.12 + s1 * .35 * Math.max(.4, Math.abs(f)) * -fwd), armR = P.armR ?? (.12 + s1 * .35 * Math.max(.4, Math.abs(f)) * fwd);
@@ -75,9 +75,9 @@ export function drawMascot(ctx, P) {
   let hands = {};
   if (f > .25) hands.L = arm(-1, armL); if (f < -.25) hands.R = arm(1, armR);
   // body
-  const bx = x, by = yb - .345 * H;
+  const bx = x, by = yb - .38 * H;
   ctx.fillStyle = bodyGrad(ctx, bx, by, .24 * H, sk, light);
-  ctx.beginPath(); ctx.ellipse(bx, by, .185 * H * (1 + sq * .4) * (1 - .1 * Math.abs(f)), .19 * H * (1 - sq), 0, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(bx, by, .135 * H * (1 + sq * .4) * (1 - .1 * Math.abs(f)), .15 * H * (1 - sq), 0, 0, 7); ctx.fill();
   if (!(f > .25)) hands.L = arm(-1, armL); if (!(f < -.25)) hands.R = arm(1, armR);
   // held props
   P_tray = P; if (P.hold) drawHeld(ctx, P.hold, hands, H, x, shY, f);
