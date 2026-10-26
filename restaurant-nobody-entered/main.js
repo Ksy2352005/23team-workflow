@@ -2,7 +2,7 @@
 import { lerp, seg, ss, hash } from '/core/lib.js';
 import { drawMascot, cup, plate, BASE_H } from './char2d.js';
 import * as SET from './sets.js';
-import { DUR, HIT, DISSOLVES, sceneAt, TABLES, ROWS, seatPos } from './story.js';
+import { DUR, HIT, DISSOLVES, sceneAt, TABLES, ROWS, seatPos, CARS, CAR_V } from './story.js';
 
 await Promise.all(['74px "Lilita One"', '30px "Fredoka"'].map(f => document.fonts.load(f, 'RESTAURANTÉÜÁÚ')));
 const W = innerWidth, H = innerHeight, K = W / 1080;
@@ -209,6 +209,30 @@ function drawExterior(c, S, t) {
   for (const [lx, ly] of EX.lamps) glow(c, lx, ly, 300, .7);
   if (lit > .5) { glow(c, EX.win.cx, 1420, 420, .35); c.save(); c.globalCompositeOperation = 'lighter'; c.fillStyle = lin(c, 0, 1660, 0, 1800, [[0, 'rgba(255,180,100,.22)'], [1, 'rgba(255,180,100,0)']]); c.fillRect(EX.win.x0 - 40, 1660, EX.win.x1 - EX.win.x0 + 80, 140); c.restore(); }
   [...S.chars].sort((a, b) => a.y - b.y).forEach(p => drawChar(c, p, t));
+  for (const car of CARS) { const x = carX(car, t); if (x > -800 && x < 2800) drawCar(c, car, x, t, S.look); }
+}
+const carX = (car, t) => car.dir > 0 ? -700 + (t - car.t0) * CAR_V : 2700 - (t - car.t0) * CAR_V;
+// a small rounded retro car, side view, wheels turning, headlights on
+function drawCar(c, car, x, t, look) {
+  const y = car.lane ? 1930 : 2045, s = car.lane ? .88 : 1.0, d = car.dir, L = 330 * s, Hh = 110 * s, wr = 34 * s;
+  c.save(); c.translate(x, y); c.scale(d, 1);
+  c.fillStyle = 'rgba(5,6,25,.35)'; c.beginPath(); c.ellipse(0, 6, L * .55, 14 * s, 0, 0, 7); c.fill();
+  const body = c.createLinearGradient(0, -Hh - 70 * s, 0, 0); body.addColorStop(0, car.col); body.addColorStop(1, '#1a1a2a');
+  c.fillStyle = car.col; c.beginPath(); c.roundRect(-L / 2, -Hh, L, Hh - 12 * s, 34 * s); c.fill();
+  c.fillStyle = 'rgba(0,0,30,.25)'; c.fillRect(-L / 2, -40 * s, L, 28 * s);
+  c.fillStyle = car.col; c.beginPath(); c.moveTo(-L * .3, -Hh + 4); c.quadraticCurveTo(-L * .22, -Hh - 70 * s, 0, -Hh - 72 * s); c.quadraticCurveTo(L * .2, -Hh - 70 * s, L * .26, -Hh + 4); c.fill();
+  c.fillStyle = look === 'night' ? '#ffd796' : '#a9c3ec'; c.beginPath(); c.moveTo(-L * .25, -Hh + 2); c.quadraticCurveTo(-L * .19, -Hh - 56 * s, -L * .03, -Hh - 58 * s); c.lineTo(-L * .03, -Hh + 2); c.fill();
+  c.beginPath(); c.moveTo(L * .01, -Hh + 2); c.lineTo(L * .01, -Hh - 58 * s); c.quadraticCurveTo(L * .16, -Hh - 56 * s, L * .21, -Hh + 2); c.fill();
+  if (look === 'night') { c.globalAlpha = .55; c.fillStyle = '#ffd796'; c.fillRect(-L * .25, -Hh - 50 * s, L * .45, 50 * s); c.globalAlpha = 1; }
+  c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(-L / 2 + 20 * s, -Hh + 14 * s, L - 40 * s, 6 * s);
+  c.fillStyle = '#fff6d0'; c.beginPath(); c.ellipse(L / 2 - 10 * s, -60 * s, 12 * s, 14 * s, 0, 0, 7); c.fill();
+  c.fillStyle = '#e04a3a'; c.fillRect(-L / 2, -66 * s, 10 * s, 16 * s);
+  for (const wx of [-L * .3, L * .3]) { c.fillStyle = '#16161e'; c.beginPath(); c.arc(wx, -wr * .6, wr, 0, 7); c.fill(); c.fillStyle = '#9aa0ae'; c.beginPath(); c.arc(wx, -wr * .6, wr * .5, 0, 7); c.fill();
+    const a = (t * CAR_V / wr) % 6.283; c.strokeStyle = '#4a4f5a'; c.lineWidth = 4 * s; c.beginPath(); c.moveTo(wx + Math.cos(a) * wr * .45, -wr * .6 + Math.sin(a) * wr * .45); c.lineTo(wx - Math.cos(a) * wr * .45, -wr * .6 - Math.sin(a) * wr * .45); c.stroke(); }
+  c.restore();
+  if (look === 'night') { const hx = x + d * (L / 2 - 10 * s), hy = y - 60 * s; glow(c, hx, hy, 70 * s, .9);
+    c.save(); c.globalCompositeOperation = 'lighter'; const g = c.createLinearGradient(hx, 0, hx + d * 420 * s, 0); g.addColorStop(0, 'rgba(255,230,170,.35)'); g.addColorStop(1, 'rgba(255,230,170,0)'); c.fillStyle = g;
+    c.beginPath(); c.moveTo(hx, hy - 8 * s); c.lineTo(hx + d * 420 * s, hy - 60 * s); c.lineTo(hx + d * 420 * s, hy + 50 * s); c.lineTo(hx, hy + 8 * s); c.fill(); c.restore(); glow(c, x - d * L / 2, y - 58 * s, 40 * s, .6); }
 }
 
 function draw(c, t) {
@@ -228,6 +252,8 @@ for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.pu
     for (const p of S.chars) { if (!p.id || p.vis === false) continue; const key = S.set + p.id;
       if (p.walk > .15) { const k = Math.floor(p.phi / Math.PI); if (last[key] !== undefined && k !== last[key]) EV.push({ t: +t.toFixed(3), type: 'step', surf: S.set === 'ex' ? (S.wet ? 'wet' : 'stone') : 'wood', pan: Math.max(-1, Math.min(1, (p.x - S.cam[0]) * S.cam[2] / 540)), v: p.s || 1 }); last[key] = k; }
       else delete last[key]; } } }
+// cars: a pass-by sound centred on when each car crosses the middle of the frame (outside shots only)
+for (const car of CARS) { for (let t = car.t0; t < car.t0 + 4.5; t += 1 / 60) { const S = sceneAt(t); if (S.set !== 'ex') continue; if (Math.abs(carX(car, t) - S.cam[0]) < CAR_V / 60) { EV.push({ t: +t.toFixed(3), type: 'car', dir: car.dir, lane: car.lane }); break; } } }
 window.DUR = DUR;
 window.EV = EV.sort((a, b) => a.t - b.t);
 window.render = t => {

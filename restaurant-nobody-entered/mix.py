@@ -102,7 +102,7 @@ for i, n in enumerate(['D4', 'A4', 'D5', 'F#5']): add(music, cimbalom(mid(n), .4
 
 # —— voice ——
 vo_path = os.path.join(HERE, 'refs', 'voiceover-hu.mp3')
-raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-af', 'rubberband=pitch=0.89:formant=preserved,bass=g=4:f=120:w=0.8,equalizer=f=3000:t=q:w=1:g=1.5,acompressor=threshold=0.1:ratio=3:attack=10:release=150:makeup=2', '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
 voice = buf(); add(voice, vo, 0, 1)
@@ -215,13 +215,21 @@ for k in ('plateDown2', 'plateDown3'): add(fx, verb(clink(.12, .9), .5, .3), H1(
 for t in HIT['clap2']: add(fx, verb(hp(noise(.05), 800) * env_exp(.05, .01) * .09, .4, .3), t, 1, 0)
 for i in range(5): add(fx, bp(noise(.11), 500, 1800) * np.sin(np.pi * t_(.11) / .11) * .05, H1('laugh') + i * .16, 1, -.3)
 for t in sorted(42.8 + rng.random(22) * 11.5): add(fx, verb(clink(.03 + rng.random() * .03, .8 + rng.random() * .6), .6, .3), t, 1, rng.random() - .5)
+# cars passing (engine hum and tyres on cobbles, panned across)
+for e in EVS:
+    if e['type'] != 'car': continue
+    d = 2.6; tt = t_(d); env = np.exp(-((tt - d / 2) / .45) ** 2)
+    eng = lp(np.sin(2 * np.pi * (70 + 8 * np.sin(2 * np.pi * 3 * tt)) * tt) + .5 * np.sin(2 * np.pi * 140 * tt), 400) + bp(noise(d), 300, 2500) * .6
+    eng = norm(eng) * env * (.16 if e.get('lane', 0) == 0 else .11)
+    half = len(eng) // 2; dirn = e.get('dir', 1)
+    add(fx, eng[:half], e['t'] - d / 2, 1, -.8 * dirn); add(fx, eng[half:], e['t'], 1, .8 * dirn)
 # 11: the queue outside: a low happy chatter, the door, the bell
 add(fx, fade(lp(murmur(DUR - H1('queue'), .04, 4), 1400), .6, .3), H1('queue'), 1, .2)
 add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)
 
 # —— mix ——
-music = verb(music, 1.2, .3) * duck[:, None]
-mix = voice * 1.3 + music * .26 + fx * .7
+music = music * 0   # no music in this cut: voice and sound effects only
+mix = voice * 1.45 + fx * .62
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(mix[:, 0], .95), limit(mix[:, 1], .95)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)

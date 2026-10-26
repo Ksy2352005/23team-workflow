@@ -217,8 +217,6 @@ export function exteriorStreet(lookName) {
   // night: wash the whole set in navy, keep the lit things lit
   if (L.night > 0) { x.fillStyle = `rgba(12,20,75,${.42 * L.night})`; x.globalCompositeOperation = 'multiply'; x.fillRect(-300, -1000, 2400, 3500); x.globalCompositeOperation = 'source-over'; }
   else { x.fillStyle = 'rgba(40,60,150,.2)'; x.globalCompositeOperation = 'multiply'; x.fillRect(-300, -1000, 2400, 3500); x.globalCompositeOperation = 'source-over'; }
-  // wet reflections on the road
-  if (L.night > .5) for (const [rx, a] of [[420, .4], [1490, .4], [1080, .5], [725, .35], [612, .25], [838, .25]]) { x.fillStyle = lin(x, 0, 1800, 0, 2300, [[0, `rgba(255,190,110,${a})`], [1, 'rgba(255,190,110,0)']]); x.fillRect(rx - 26, 1800, 52, 500); x.fillStyle = `rgba(255,190,110,${a * .4})`; x.fillRect(rx - 60, 1800, 120, 40); }
   return c;
 }
 // the warm room as seen through the glass from the street (characters are drawn on top by the caller)
