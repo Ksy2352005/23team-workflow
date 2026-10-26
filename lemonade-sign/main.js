@@ -114,8 +114,8 @@ function box(c, n) {   // the cardboard box behind the stand, the cups go in
   if (n) for (let i = 0; i < 3; i++) { c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 2; c.beginPath(); c.ellipse(x - 2 + i, y - 44 - i * 3, 9, 2.5, 0, 0, 7); c.stroke(); }
 }
 function gate(c, open) {   // the garden gate, hinged on its left post, swinging in towards the house
-  const [g0, g1] = G.gate, fy = G.fenceY, fh = G.fenceH, w = (g1 - g0) * Math.cos(open * 1.25), col = '#efe4cb';
-  c.fillStyle = '#cdbd9a'; c.fillRect(g0, fy - fh * .72 - open * 8, w, 9); c.fillRect(g0, fy - fh * .28 - open * 8, w, 9);
+  const [g0, g1] = G.gate, fy = G.fenceY, fh = G.fenceH, w = (g1 - g0) * Math.cos(open * 1.25), col = '#aaa49a';
+  c.fillStyle = '#918878'; c.fillRect(g0, fy - fh * .72 - open * 8, w, 9); c.fillRect(g0, fy - fh * .28 - open * 8, w, 9);
   for (let i = 0; i < 3; i++) { const px = g0 + (6 + i * 32) / (g1 - g0) * w, pw = 20 * Math.cos(open * 1.25); c.fillStyle = col; c.beginPath(); c.moveTo(px, fy - open * 8); c.lineTo(px, fy - fh + 10 - open * 8); c.lineTo(px + pw / 2, fy - fh - open * 8); c.lineTo(px + pw, fy - fh + 10 - open * 8); c.lineTo(px + pw, fy - open * 8); c.closePath(); c.fill(); }
 }
 function houseDoor(c, open, look) {

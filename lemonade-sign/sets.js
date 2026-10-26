@@ -20,6 +20,8 @@ export function glowSprite(col = '255,190,110') {
   const [c, x] = cnv(256, 256); const g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
   g.addColorStop(0, `rgba(${col},1)`); g.addColorStop(.25, `rgba(${col},.45)`); g.addColorStop(1, `rgba(${col},0)`); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c;
 }
+// the whole setting sits a step darker than the characters and the stand, so they stand out
+function dim(x, look) { x.save(); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgba(6,10,40,${look === 'dusk' ? .14 : .3})`; x.fillRect(0, 0, WW, WH); x.restore(); }
 function blob(x, cx, cy, r, n, rnd) { x.beginPath(); for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, rr = r * (.82 + .3 * rnd()); x[i ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * .85); } x.closePath(); x.fill(); }
 function canopy(x, cx, cy, r, cols, seed) {   // a round tree crown: dark mass, mid clumps, a few lit clumps on the sun side
   const rnd = mulberry(seed);
@@ -43,6 +45,7 @@ export function skySet(look) {
     x.fillStyle = look === 'dusk' ? '#2b3a74' : '#3b55a0'; x.fillRect(x0, 1490 - h + 120, w, h - 120);
     x.fillStyle = look === 'dusk' ? '#f0c060' : '#1b2a62'; for (const wx of [x0 + 40, x0 + w - 100]) x.fillRect(wx, 1490 - h + 170, 60, 80);
   }
+  dim(x, look);
   return c;
 }
 
@@ -96,6 +99,7 @@ export function streetSet(look) {
   x.fillStyle = '#56649a'; x.fillRect(0, G.road[1], WW, 20); x.fillStyle = '#44528a'; x.fillRect(0, G.road[1] + 20, WW, 200);
   x.fillStyle = L.tree[0]; for (let i = 0; i < 16; i++) { x.beginPath(); x.arc(i * 115 + 40, G.road[1] + 300, 95, Math.PI, 0); x.fill(); } x.fillRect(0, G.road[1] + 300, WW, 400);
   if (L.tint) { x.fillStyle = L.tint; x.fillRect(0, 0, WW, WH); }
+  dim(x, look);
   return c;
 }
 // the fence in front of the garden (the gate is drawn live, it opens)
@@ -107,6 +111,7 @@ export function fenceSet(look) {
     x.fillStyle = 'rgba(0,0,40,.12)'; x.fillRect(px + 15, fy - fh + 10, 7, fh - 10); }
   for (const gx of [G.gate[0] - 14, G.gate[1] + 2]) { x.fillStyle = shade; x.fillRect(gx, fy - fh - 14, 14, fh + 14); x.fillStyle = col; x.fillRect(gx - 2, fy - fh - 20, 18, 8); }
   if (L.tint) { x.globalCompositeOperation = 'source-atop'; x.fillStyle = L.tint; x.fillRect(0, 0, WW, WH); }
+  dim(x, look);
   return c;
 }
 // the tree's crown, drawn over everything behind the fence
@@ -114,6 +119,7 @@ export function crownSet(look) {
   const L = LOOK[look], [c, x] = cnv(WW, WH);
   canopy(x, G.tree[0], 980, 260, L.tree, 11);
   if (L.tint) { x.globalCompositeOperation = 'source-atop'; x.fillStyle = L.tint; x.fillRect(0, 0, WW, WH); }
+  dim(x, look);
   return c;
 }
 // top-down close-ups: a wooden table (for the writing and the painting)

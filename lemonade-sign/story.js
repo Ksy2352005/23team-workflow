@@ -44,7 +44,7 @@ function route(t, t0, t1, pts, stride = 46, ease = true) {
   return { x, y, f: clamp(dx / d * 1.1, -.95, .95), back: dy < -Math.abs(dx) * .7, phi: e / stride * Math.PI, walk: moving ? Math.min(1, Math.sin(u * Math.PI) * (ease ? 2.2 : 6)) : 0, squash: settle };
 }
 const B = 'blue1', B2 = 'blue2', B3 = 'blue3', W = 'owner';
-const boy = (t, o = {}) => ({ id: 'boy', skin: W, cap: 1, x: 880, y: BOY.y, s: BOY.s, f: 0, ...idle(t, 1), smile: .6, armL: .12, armR: .12, ...o });
+const boy = (t, o = {}) => ({ id: 'boy', skin: W, x: 880, y: BOY.y, s: BOY.s, f: 0, ...idle(t, 1), smile: .6, armL: .12, armR: .12, ...o });
 const reach = (a, b, u) => [lerp(a[0], b[0], u), lerp(a[1], b[1], u)];
 const stand0 = { pitcher: 1, cups: 6, served: [], tin: 0, stacks: [0, 0, 0], paper: true, box: 0 };
 
