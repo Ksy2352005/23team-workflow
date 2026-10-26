@@ -102,7 +102,7 @@ for i, n in enumerate(['D4', 'A4', 'D5', 'F#5']): add(music, cimbalom(mid(n), .4
 
 # —— voice ——
 vo_path = os.path.join(HERE, 'refs', 'voiceover-hu.mp3')
-raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-af', 'rubberband=pitch=0.89:formant=preserved,bass=g=4:f=120:w=0.8,equalizer=f=3000:t=q:w=1:g=1.5,acompressor=threshold=0.1:ratio=3:attack=10:release=150:makeup=2', '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
 voice = buf(); add(voice, vo, 0, 1)
@@ -229,7 +229,11 @@ add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, 
 
 # —— mix ——
 music = music * 0   # no music in this cut: voice and sound effects only
-mix = voice * 1.45 + fx * .62
+# effects nearly as loud as the voice: a punchy bus (fast compression lifts the hits), then a level just under the voice
+fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
+vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
+mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
+print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(mix[:, 0], .95), limit(mix[:, 1], .95)], 1)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
