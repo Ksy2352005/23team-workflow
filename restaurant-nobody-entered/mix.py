@@ -8,7 +8,10 @@ sys.path.insert(0, os.path.join(os.environ.get('LIB', os.path.expanduser('~/lemo
 from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, creak, thump, ding, compress, limit, add
 
 ev = json.load(open(os.path.join(HERE, 'events.json')))
-DUR = ev['dur']; HIT = {e['type']: e['t'] for e in ev['ev']}
+DUR = ev['dur']; EVS = ev['ev']
+HIT = {}
+for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
+H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
 
@@ -71,7 +74,7 @@ for t, n in [(4.4, 'F#5'), (5.9, 'E5'), (7.4, 'D5'), (8.9, 'C#5'), (10.4, 'B4'),
 for t, n, v in [(13.3, 'B4', .38), (15.0, 'A4', .3), (16.8, 'F#4', .24), (18.6, 'G4', .18)]: add(music, cimbalom(mid(n), v, 3.2), t, 1, .15)
 add(music, bass(mid('B1'), .5, 3), 13.3, 1); add(music, bass(mid('G1'), .35, 3), 18.6, 1)
 # the answer to the first bell
-add(music, cimbalom(mid('A5'), .32, 3.4), HIT['bell1'] + .55, 1, .2)
+add(music, cimbalom(mid('A5'), .32, 3.4), H1('bell1') + .55, 1, .2)
 # 26.1–31.5 warmth returns
 for i, c in enumerate(['D', 'G']): arpeggio(music, 26.1 + i * 3, c, step=.75, v=.4)
 for t, n in [(26.4, 'D5'), (27.9, 'F#5'), (29.4, 'G5'), (30.6, 'F#5')]: add(music, cimbalom(mid(n), .34), t, 1, .25)
@@ -129,56 +132,70 @@ def murmur(d, v=1.0, voices=6):
         lo = 250 + rng.random() * 300; out += bp(noise(d), lo, lo * 3.2) * am
     return norm(lp(out, 2500)) * v
 
-# scene 1: dawn street
-add(fx, fade(bed(5.4, 60, 400, .12), .5, .4), 0, 1); add(fx, fade(bed(5.4, 800, 3000, .03), .5, .4), 0, 1)
-for t in (1.0, 1.25, 2.3, 2.45): add(fx, chirp(.06), t, 1, -.4)
-add(fx, lp(ding(.06), 2500), 1.8, 1, -.6); add(fx, lp(ding(.06), 2500), 2.05, 1, -.6)
-for i in range(7): add(fx, clink(.05 + rng.random() * .04, 1.4 + rng.random() * .5), HIT['keyJingle'] + i * .07 + rng.random() * .04, 1, .1)
-add(fx, click(.35, .5), HIT['lockClick'], 1); add(fx, thump(.12, 90), HIT['lockClick'] + .03, 1)
-# scene 2: the room in the morning
-room = fade(bed(DUR - 5, 80, 500, .025), .4, .5); add(fx, room, 5, 1)
-for t in (HIT['wipe1'], HIT['wipe1'] + .95, HIT['wipe3'], HIT['wipe3'] + 1.1): add(fx, squeak(.09), t, 1, -.1)
-add(fx, scrape(.12, .45), 9.35, 1); add(fx, thump(.08, 120), 9.8, 1)
-for t in np.arange(10.0, 12.2, .42): add(fx, soft_step(.07), t, 1, -.2)
-add(fx, creak(.12), HIT['doorCreak'], 1, -.3); add(fx, fade(bed(1.4, 300, 2500, .05), .3, .5), 12.4, 1, -.3)
-# scene 3: muffled street outside
-add(fx, fade(bed(2.9, 80, 600, .05), .3, .3), 13.2, 1, .2)
-for t in np.arange(13.4, 16, .5): add(fx, lp(soft_step(.035), 700), t, 1, .4 - (t - 13.4) * .3)
-# scene 4/5/6: rain (J-cut in), the near-silence, the first bell
+# beds: dawn street, the room, rain, the night street, the full room
+add(fx, fade(bed(5.2, 60, 400, .12), .5, .4), 0, 1); add(fx, fade(bed(5.2, 800, 3000, .03), .5, .4), 0, 1)
+for t in (.8, 1.05, 2.0, 2.15): add(fx, chirp(.05), t, 1, -.4)
+add(fx, fade(bed(DUR - 5, 80, 500, .025), .4, .5), 5, 1)
+add(fx, fade(bed(3.0, 80, 600, .05), .3, .3), 13.2, 1, .2)
 rain_d = 31.5 - 15.5; rain = bp(noise(rain_d), 900, 7000) * .045
 ticks = (rng.random(len(rain)) > .9993) * rng.random(len(rain)); rain += hp(np.convolve(ticks, np.exp(-np.arange(200) / 30), 'same'), 2000) * .5
-renv = np.ones(len(rain)); tt = np.arange(len(rain)) / SR + 15.5
-renv *= np.clip((tt - 15.5) / .5, 0, 1); renv *= np.where(tt > 20.3, np.where(tt < HIT['bell1'] - .05, .45, 1.0), 1.0)
+tt = np.arange(len(rain)) / SR + 15.5; renv = np.clip((tt - 15.5) / .5, 0, 1) * np.where(tt > 20.3, np.where(tt < H1('bell1') - .05, .45, 1.0), 1.0)
 renv *= 1 + 1.2 * np.exp(-((tt - 23.6) / 1.2) ** 2); renv *= np.where(tt > 25.4, .55, 1.0); renv *= np.clip((31.5 - tt) / .4, 0, 1)
 add(fx, rain * renv, 15.5, 1, .25)
-add(fx, lp(thump(.05, 45), 200), 18.4, 1); add(fx, lp(noise(.25), 3000) * env_exp(.25, .05) * .02, 19.5, 1)
-add(fx, verb(ding(.55), 1.1, .5), HIT['bell1'], 1, -.3)
-add(fx, creak(.08), HIT['bell1'] - .1, 1, -.3)
-for t in np.arange(HIT['guestSteps'], 24.4, .38): add(fx, soft_step(.07), t, 1, -.3)
-add(fx, thump(.1, 80), HIT['doorShut1'], 1, -.3); add(fx, click(.12, .6), HIT['doorShut1'] + .04, 1, -.3)
-# scene 6
-for t in np.arange(26.6, 27.5, .22): add(fx, soft_step(.08), t, 1, -.1)
-add(fx, scrape(.13, .5), HIT['chairPull'] + .2, 1, .2); add(fx, lp(noise(.2), 900) * env_exp(.2, .06) * .08, HIT['sit'] + .4, 1, .2)
-add(fx, verb(clink(.12), .5, .3), HIT['cupClink'], 1, .2)
-# scene 7–9: the wet street at night
 add(fx, fade(bed(42.6 - 31.5, 80, 600, .07), .3, .4), 31.5, 1); add(fx, fade(bed(42.6 - 31.5, 2000, 7000, .015), .3, .4), 31.5, 1)
-for i, t in enumerate(np.arange(31.6, HIT['ystop'], .4)): add(fx, wet_step(.09 * (1 - i * .03)), t, 1, -.5 + i * .12)
-add(fx, fade(lp(murmur(42.6 - 31.5, .03, 3), 900), .4, .1), 31.5, 1, .1)
-add(fx, lp(clink(.05), 1500), HIT['sip'], 1, .1)
-for t in np.arange(36.95, 37.45, .3): add(fx, wet_step(.08), t, 1, -.3)
-add(fx, creak(.08), HIT['bell2'] - .08, 1, -.3); add(fx, verb(ding(.4) , 1.0, .45), HIT['bell2'], 1, -.3)
-for t in np.arange(38.95, 39.45, .28): add(fx, wet_step(.06), t, 1, -.4)
-for t in np.arange(38.95, 40.7, .4): add(fx, wet_step(.05), t, 1, .3)
-add(fx, verb(ding(.3), 1.0, .45), HIT['bell3'], 1, -.35); add(fx, verb(lp(ding(.3), 6000), 1.0, .45) * .95, HIT['bell4'], 1, -.25)
-# scene 10–11: the full room
-crowd = murmur(DUR - 42.6, .09, 8); cenv = np.ones(len(crowd)); tc = np.arange(len(crowd)) / SR + 42.6
-cenv *= np.clip((tc - 42.6) / .4, 0, 1); cenv *= np.where((tc > 50.85) & (tc < 53.3), .5, 1.0); cenv *= np.where(tc > 55.2, np.clip(1 - (tc - 55.2) / 1.5, .25, 1), 1.0)
+add(fx, fade(lp(murmur(42.6 - 31.5, .025, 3), 900), .4, .1), 31.5, 1, .1)
+crowd = murmur(DUR - 42.6, .085, 8); tc = np.arange(len(crowd)) / SR + 42.6
+cenv = np.clip((tc - 42.6) / .4, 0, 1) * np.where((tc > 50.85) & (tc < 53.3), .5, 1.0) * np.where(tc > 54.6, np.clip(1 - (tc - 54.6) / 1.2, .25, 1), 1.0)
 add(fx, verb(crowd * cenv, .8, .3), 42.6, 1)
-for t in sorted(42.8 + rng.random(14) * 7.8): add(fx, verb(clink(.04 + rng.random() * .03, .8 + rng.random() * .5), .6, .3), t, 1, rng.random() - .5)
-add(fx, verb(clink(.12, 1.0), .5, .3), HIT['trayDown'], 1); add(fx, verb(clink(.1, 1.15), .5, .3), HIT['trayDown'] + .18, 1)
-for i in range(5): add(fx, bp(noise(.11), 500, 1800) * np.sin(np.pi * t_(.11) / .11) * .05, HIT['laugh'] + i * .16, 1, -.3)
-add(fx, fade(bed(DUR - 55.2, 80, 600, .06), 1.2, .5), 55.2, 1)
-add(fx, verb(ding(.3), 1.3, .5), HIT['bell5'], 1, -.3)
+add(fx, fade(bed(DUR - 54.6, 80, 600, .06), 1.0, .5), 54.6, 1)
+
+def mx(*xs):
+    n = max(len(x) for x in xs); o = np.zeros(n)
+    for x in xs: o[:len(x)] += x
+    return o
+
+# footsteps, from the picture: wood inside, stone or wet stone outside
+for e in EVS:
+    if e['type'] != 'step': continue
+    surf, pan, v = e.get('surf', 'wood'), e.get('pan', 0), e.get('v', 1)
+    if surf == 'wood': x = mx(soft_step(.075 * v), lp(click(.02, .4), 2500))
+    elif surf == 'wet': x = wet_step(.085)
+    else: x = mx(soft_step(.06), hp(noise(.04), 3000) * env_exp(.04, .006) * .02)
+    add(fx, x, e['t'], 1, pan * .7)
+
+# the key, the lock, the sign coming on
+for i in range(6): add(fx, clink(.05 + rng.random() * .04, 1.4 + rng.random() * .5), H1('keyJingle') + i * .06 + rng.random() * .03, 1, .1)
+add(fx, click(.25, .7), H1('keyIn'), 1, .1); add(fx, click(.4, .5), H1('lockClick'), 1, .1); add(fx, thump(.1, 90), H1('lockClick') + .03, 1)
+buzz = np.sin(2 * np.pi * 100 * t_(.5)) * .3 + np.sin(2 * np.pi * 200 * t_(.5)) * .2; buzz *= (rng.random(len(buzz)) > .5) * .5 + .5
+add(fx, lp(buzz, 1500) * env_exp(.5, .2) * .06, H1('signOn'), 1, .2)
+for i in range(5): add(fx, click(.08, 2 + i * .2), H1('signOn') + i * .07, 1, -.3 + i * .15)
+# morning: cloth strokes, the chair, the handle, the door, the plaque
+for t in HIT['wipes']: add(fx, squeak(.08), t - .12, 1, -.1)
+add(fx, scrape(.12, .4), H1('chairTuck'), 1, -.2)
+add(fx, click(.2, .8), H1('handle1'), 1, -.4); add(fx, creak(.12), H1('doorCreak'), 1, -.4); add(fx, fade(bed(1.0, 300, 2500, .05), .3, .4), 12.5, 1, -.4)
+add(fx, click(.12, 1.3), H1('flip'), 1, -.4); add(fx, lp(noise(.08), 3000) * env_exp(.08, .02) * .05, H1('flip') + .03, 1, -.4)
+for t in HIT['polish']: add(fx, verb(mx(squeak(.05) * .6, clink(.03, 1.6)), .5, .3), t, 1, .4)
+# the door opens: the bell
+add(fx, creak(.08), H1('bell1') - .12, 1, -.4); add(fx, verb(ding(.55), 1.1, .5), H1('bell1'), 1, -.4)
+add(fx, thump(.1, 80), H1('doorShut1'), 1, -.4); add(fx, click(.12, .6), H1('doorShut1') + .04, 1, -.4)
+# the welcome: chair, handshake, the chair pulled and pushed, the menu
+add(fx, scrape(.12, .35), H1('standUp'), 1, .3)
+for t in HIT['handshake']: add(fx, lp(noise(.06), 1500) * env_exp(.06, .015) * .05, t, 1, -.1)
+add(fx, scrape(.14, .45), H1('chairPull'), 1, .1); add(fx, lp(noise(.2), 900) * env_exp(.2, .06) * .08, H1('sit'), 1, .1); add(fx, scrape(.1, .35), H1('chairPush'), 1, .1)
+add(fx, lp(noise(.12), 2500) * env_exp(.12, .03) * .06, H1('menuDown'), 1, .2)
+# serving at the window (heard muffled through the glass), the guest's delight, the fork
+add(fx, lp(clink(.09, 1.0), 2200), H1('plateDown1'), 1, .2)
+for t in HIT['clap1']: add(fx, lp(hp(noise(.05), 800) * env_exp(.05, .01), 2500) * .05, t, 1, .2)
+for t in HIT['forks']: add(fx, lp(clink(.035, 1.5), 2500), t, 1, .2)
+# new guests: handle, bell
+for k, b in (('handle2', 'bell2'), ('handle3', 'bell3'), ('handle4', 'bell4')):
+    add(fx, click(.2, .8), H1(k), 1, -.3); add(fx, verb(ding(.35), 1.0, .45), H1(b), 1, -.3)
+# the full room: plates down, clapping, a laugh, cutlery all around
+for k in ('plateDown2', 'plateDown3'): add(fx, verb(clink(.12, .9), .5, .3), H1(k), 1, .5); add(fx, thump(.05, 180), H1(k), 1, .5)
+for t in HIT['clap2']: add(fx, verb(hp(noise(.05), 800) * env_exp(.05, .01) * .09, .4, .3), t, 1, .5)
+for i in range(5): add(fx, bp(noise(.11), 500, 1800) * np.sin(np.pi * t_(.11) / .11) * .05, H1('laugh') + i * .16, 1, -.3)
+for t in sorted(42.8 + rng.random(22) * 11.5): add(fx, verb(clink(.03 + rng.random() * .03, .8 + rng.random() * .6), .6, .3), t, 1, rng.random() - .5)
+add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)
 
 # —— mix ——
 music = verb(music, 1.2, .3) * duck[:, None]

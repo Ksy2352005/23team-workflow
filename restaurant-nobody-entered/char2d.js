@@ -57,8 +57,13 @@ export function drawMascot(ctx, P) {
   const s1 = Math.sin(phi) * walk;
   if (f >= 0) { leg(1, -s1); leg(-1, s1); } else { leg(-1, s1); leg(1, -s1); }
   // arms: angle 0 hangs down, positive swings outward on its own side of the screen
+  // an arm either swings to an angle, or reaches for a point in the world (a hand target)
   const arm = (side, ang) => {
-    const ax = x + side * .165 * H * (1 - .45 * Math.abs(f)), ay = shY, L = .24 * H, a = ang * side;
+    const ax = x + side * .165 * H * (1 - .45 * Math.abs(f)), ay = shY, L0 = .24 * H;
+    let tgt = side < 0 ? P.handL : P.handR;
+    if (P.chin && ((P.chin === 'L') === (side < 0))) tgt = [x + (P.headDX || 0) * H + side * .05 * H, headY + .2 * H];
+    let a = ang * side, L = L0;
+    if (tgt) { const dx = tgt[0] - ax, dy = tgt[1] - ay; a = Math.atan2(dx, dy); L = Math.min(Math.hypot(dx, dy), L0 * 1.35); }
     const ex = ax + Math.sin(a) * L, ey = ay + Math.cos(a) * L;
     ctx.fillStyle = bodyGrad(ctx, ax, ay + L / 2, L * .8, sk, light); capsule(ctx, ax, ay, ex, ey, .092 * H); ctx.fill();
     ctx.beginPath(); ctx.arc(ex, ey, .062 * H, 0, 7); ctx.fill();
@@ -75,7 +80,7 @@ export function drawMascot(ctx, P) {
   rim(ctx, bx, by, .19 * H, P.rimSide, P.rimCol || '#ffc27a', .35, .06);
   if (!(f > .25)) hands.L = arm(-1, armL); if (!(f < -.25)) hands.R = arm(1, armR);
   // held props
-  if (P.hold) drawHeld(ctx, P.hold, hands, H, x, shY, f);
+  P_tray = P; if (P.hold) drawHeld(ctx, P.hold, hands, H, x, shY, f);
   // head
   const hx = x + (P.headDX || 0) * H, hy = headY - (P.headUp || 0) * H;
   ctx.save(); ctx.translate(hx, hy); ctx.rotate(P.tilt || 0); ctx.translate(-hx, -hy);
@@ -107,6 +112,7 @@ function face(ctx, cx, cy, R, f, P) {
   else { ctx.beginPath(); ctx.moveTo(mx - mw * .45, my); ctx.lineTo(mx + mw * .45, my); ctx.stroke(); }
 }
 
+let P_tray = {};
 function drawHeld(ctx, what, hands, H, x, shY, f) {
   const hR = hands.R || hands.L, hL = hands.L || hands.R;
   if (what === 'key' && hR) {
@@ -114,13 +120,23 @@ function drawHeld(ctx, what, hands, H, x, shY, f) {
     ctx.beginPath(); ctx.moveTo(hR[0], hR[1] - .015 * H); ctx.lineTo(hR[0], hR[1] + .09 * H); ctx.lineTo(hR[0] + .03 * H, hR[1] + .09 * H); ctx.stroke();
   }
   if (what === 'cloth' && hR) { ctx.fillStyle = '#f7f5ee'; ctx.beginPath(); ctx.ellipse(hR[0], hR[1] + .03 * H, .07 * H, .03 * H, .2, 0, 7); ctx.fill(); }
-  if ((what === 'tray' || what === 'tray2') && hL && hR) {
+  if (what === 'tray' && hL && hR) {
     const ty = Math.min(hL[1], hR[1]) - .02 * H, tx = (hL[0] + hR[0]) / 2;
-    if (what === 'tray2') for (const d of [-.06, .06]) cup(ctx, tx + d * H, ty, H * .5);
+    (P_tray.items || []).forEach((it, i, a) => { const ix = tx + (i - (a.length - 1) / 2) * .13 * H; if (it === 'cup') cup(ctx, ix, ty, H * .5); else plate(ctx, ix, ty, H * .5, true); });
     ctx.fillStyle = '#c9ccd6'; ctx.beginPath(); ctx.ellipse(tx, ty, .2 * H, .028 * H, 0, 0, 7); ctx.fill();
     ctx.fillStyle = '#eef0f6'; ctx.beginPath(); ctx.ellipse(tx, ty - .008 * H, .19 * H, .018 * H, 0, 0, 7); ctx.fill();
   }
   if (what === 'cup' && hR) cup(ctx, hR[0], hR[1] - .02 * H, H * .5);
+}
+// a plate with food (steam when hot)
+export function plate(ctx, x, y, s, food = true, steam = 0, t = 0) {
+  ctx.fillStyle = '#d9d4c8'; ctx.beginPath(); ctx.ellipse(x, y + .01 * s, .22 * s, .05 * s, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#fbf8f1'; ctx.beginPath(); ctx.ellipse(x, y, .21 * s, .045 * s, 0, 0, 7); ctx.fill();
+  if (food) { ctx.fillStyle = '#c8783a'; ctx.beginPath(); ctx.ellipse(x - .03 * s, y - .03 * s, .1 * s, .045 * s, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#5c9a45'; ctx.beginPath(); ctx.arc(x + .08 * s, y - .025 * s, .035 * s, 0, 7); ctx.fill();
+    ctx.fillStyle = '#e8c35a'; ctx.beginPath(); ctx.arc(x + .02 * s, y - .05 * s, .03 * s, 0, 7); ctx.fill(); }
+  if (steam > 0) { ctx.save(); ctx.strokeStyle = `rgba(255,255,255,${.35 * steam})`; ctx.lineWidth = .02 * s; ctx.lineCap = 'round';
+    for (let i = -1; i <= 1; i++) { ctx.beginPath(); const bx = x + i * .06 * s; ctx.moveTo(bx, y - .06 * s); for (let k = 1; k <= 6; k++) ctx.lineTo(bx + Math.sin(t * 4 + k + i * 2) * .025 * s, y - .06 * s - k * .05 * s); ctx.stroke(); } ctx.restore(); }
 }
 export function cup(ctx, x, y, s) {
   ctx.fillStyle = '#f4f1ea'; ctx.beginPath(); ctx.ellipse(x, y, .16 * s, .035 * s, 0, 0, 7); ctx.fill();
