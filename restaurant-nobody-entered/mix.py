@@ -295,7 +295,7 @@ fxc = fxc * fxg[:, None]
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
-mix = np.stack([limit(compress(mix[:, c], thr=.22, ratio=2.5, att=.003, rel=.12), .8) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
+mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 import soundfile as sf
 sf.write(os.path.join(HERE, 'out', os.environ.get('OUT', 'mix.wav')), mix.astype(np.float32), SR)
