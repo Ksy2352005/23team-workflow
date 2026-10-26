@@ -240,7 +240,7 @@ for e in EVS:
     eng = norm(eng) * env * (.16 if e.get('lane', 0) == 0 else .11)
     half = len(eng) // 2; dirn = e.get('dir', 1)
     add(fx, eng[:half], e['t'] - d / 2, 1, -.8 * dirn); add(fx, eng[half:], e['t'], 1, .8 * dirn)
-add(fx, verb(ding(.25), 1.4, .5), 58.75, 1, 0)
+add(fx, verb(ding(.12), 1.8, .6), 58.9, 1, 0)   # a soft, airy tone as the logo appears
 # —— the characters' own sounds (no words): hums, yawns, gasps, laughs, "mmm", cheers; placed in the gaps of the narration ——
 import soundfile as sf
 from scipy.signal import resample_poly

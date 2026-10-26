@@ -242,12 +242,13 @@ function drawCar(c, car, x, t, look) {
     c.beginPath(); c.moveTo(hx, hy - 8 * s); c.lineTo(hx + d * 420 * s, hy - 60 * s); c.lineTo(hx + d * 420 * s, hy + 50 * s); c.lineTo(hx, hy + 8 * s); c.fill(); c.restore(); glow(c, x - d * L / 2, y - 58 * s, 40 * s, .6); }
 }
 
+// the 23 logo, exactly as supplied, centred on white; it settles in softly (fade, a breath of scale, a little blur clearing)
+const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
-  const u = t - 58.7, k = u <= 0 ? 0 : 1 - Math.exp(-7 * u) * Math.cos(11 * u), sc = .6 + .4 * k, a = Math.min(1, u / .25);
-  c.save(); c.globalAlpha = a; c.translate(W / 2, H * .47); c.scale(sc, sc);
-  c.fillStyle = '#1e2f7c'; c.font = `${Math.round(360 * K)}px "Lilita One"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('23', 0, 0);
-  c.fillStyle = '#2448bb'; c.font = `${Math.round(92 * K)}px "Lilita One"`; c.fillText('Team', 0, 230 * K); c.restore();
+  const u = ss(seg(t, 58.85, 59.75)), w = W * .36, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
+  c.save(); c.globalAlpha = u; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
+  c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO, -w / 2, -h / 2, w, h); c.restore();
 }
 function draw(c, t) {
   if (t >= 58.7) return endCard(c, t);
@@ -257,6 +258,7 @@ function draw(c, t) {
   if (S.set === 'in') drawInterior(c, S, t); else if (S.set === 'ex') drawExterior(c, S, t); else if (S.set === 'home') drawHome(c, S, t); else drawKitchen(c, S, t);
   c.setTransform(1, 0, 0, 1, 0, 0);
   const g = c.createRadialGradient(W / 2, H * .48, H * .25, W / 2, H * .5, H * .78); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, 'rgba(4,6,30,.45)'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  if (t > 58.0) { c.fillStyle = `rgba(255,255,255,${ss(seg(t, 58.0, 58.7))})`; c.fillRect(0, 0, W, H); }
 }
 
 // sound cues: the fixed hits, plus a footstep wherever a walking character's foot lands
