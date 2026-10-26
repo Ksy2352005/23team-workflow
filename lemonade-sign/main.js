@@ -114,15 +114,15 @@ function box(c, n) {   // the cardboard box behind the stand, the cups go in
   if (n) for (let i = 0; i < 3; i++) { c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = 2; c.beginPath(); c.ellipse(x - 2 + i, y - 44 - i * 3, 9, 2.5, 0, 0, 7); c.stroke(); }
 }
 function gate(c, open) {   // the garden gate, hinged on its left post, swinging in towards the house
-  const [g0, g1] = G.gate, fy = G.fenceY, fh = G.fenceH, w = (g1 - g0) * Math.cos(open * 1.25), col = '#aaa49a';
-  c.fillStyle = '#918878'; c.fillRect(g0, fy - fh * .72 - open * 8, w, 9); c.fillRect(g0, fy - fh * .28 - open * 8, w, 9);
+  const [g0, g1] = G.gate, fy = G.fenceY, fh = G.fenceH, w = (g1 - g0) * Math.cos(open * 1.25), col = '#8d887f';
+  c.fillStyle = '#797163'; c.fillRect(g0, fy - fh * .72 - open * 8, w, 9); c.fillRect(g0, fy - fh * .28 - open * 8, w, 9);
   for (let i = 0; i < 3; i++) { const px = g0 + (6 + i * 32) / (g1 - g0) * w, pw = 20 * Math.cos(open * 1.25); c.fillStyle = col; c.beginPath(); c.moveTo(px, fy - open * 8); c.lineTo(px, fy - fh + 10 - open * 8); c.lineTo(px + pw / 2, fy - fh - open * 8); c.lineTo(px + pw, fy - fh + 10 - open * 8); c.lineTo(px + pw, fy - open * 8); c.closePath(); c.fill(); }
 }
 function houseDoor(c, open, look) {
   const d = G.door, w = d.x1 - d.x0, ww = w * Math.cos(open * 1.2);
   if (open > .01) { c.fillStyle = look === 'dusk' ? '#5a3a20' : '#2a1d28'; c.fillRect(d.x0, d.y0, w, d.y1 - d.y0); }
-  c.fillStyle = lin(c, d.x0, 0, d.x0 + ww, 0, [[0, '#2a3a86'], [1, '#1d2b6a']]); c.fillRect(d.x0, d.y0, ww, d.y1 - d.y0);
-  if (ww > 20) { c.fillStyle = look === 'dusk' ? '#e9b860' : '#5a7cc4'; c.fillRect(d.x0 + ww * .25, d.y0 + 24, ww * .5, 60); c.fillStyle = GOLD; c.beginPath(); c.arc(d.x0 + ww * .82, d.y0 + 110, 5, 0, 7); c.fill(); }
+  c.fillStyle = lin(c, d.x0, 0, d.x0 + ww, 0, [[0, '#1f2c66'], [1, '#162152']]); c.fillRect(d.x0, d.y0, ww, d.y1 - d.y0);
+  if (ww > 20) { c.fillStyle = look === 'dusk' ? '#e9b860' : '#3f5592'; c.fillRect(d.x0 + ww * .25, d.y0 + 24, ww * .5, 60); c.fillStyle = GOLD; c.beginPath(); c.arc(d.x0 + ww * .82, d.y0 + 110, 5, 0, 7); c.fill(); }
 }
 // a bicycle, drawn to the mascots' proportions: front wheel to the left (it rides in from the right)
 function bike(c, bx, crank) {

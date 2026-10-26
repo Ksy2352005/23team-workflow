@@ -21,7 +21,7 @@ export function glowSprite(col = '255,190,110') {
   g.addColorStop(0, `rgba(${col},1)`); g.addColorStop(.25, `rgba(${col},.45)`); g.addColorStop(1, `rgba(${col},0)`); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c;
 }
 // the whole setting sits a step darker than the characters and the stand, so they stand out
-function dim(x, look) { x.save(); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgba(6,10,40,${look === 'dusk' ? .14 : .3})`; x.fillRect(0, 0, WW, WH); x.restore(); }
+function dim(x, look) { x.save(); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgba(6,10,40,${look === 'dusk' ? .2 : .42})`; x.fillRect(0, 0, WW, WH); x.restore(); }
 function blob(x, cx, cy, r, n, rnd) { x.beginPath(); for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, rr = r * (.82 + .3 * rnd()); x[i ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * .85); } x.closePath(); x.fill(); }
 function canopy(x, cx, cy, r, cols, seed) {   // a round tree crown: dark mass, mid clumps, a few lit clumps on the sun side
   const rnd = mulberry(seed);
