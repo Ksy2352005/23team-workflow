@@ -70,7 +70,7 @@ function carryCup(P, h) { const Hh = Hs(P.s), d = (P.f ?? 0) < -.1 ? -1 : 1, cx 
 // —— the minimal shop: a BOLT sign, a shelf of plain cups, the seller (white) behind a counter ——
 const CT = { x0: 400, x1: 1120, top: 1380, front: 1700 }, SPOT = [300, 1800], SELLER = { id: 'seller', skin: 'owner', tache: 1, s: 2.0, x: 860, y: 1560, f: -.4, smile: .8 };
 function shop(c, t, o = {}) {
-  bg(c, t, o.bg || {});
+  if (!o.noBg) bg(c, t, o.bg || {});
   c.save(); c.translate(540, 1100); c.scale(1.12, 1.12); c.translate(-630, -1420);
   c.fillStyle = 'rgba(5,8,30,.35)'; c.fillRect(-400, CT.front, 2000, 1200);
   c.fillStyle = '#121a46'; c.beginPath(); c.roundRect(640, 560, 300, 120, 22); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 6; c.stroke(); text(c, 'BOLT', 790, 624, 92, GOLD);
@@ -180,14 +180,17 @@ const SHOT = {
       const y = lerp(1240, 1420, u); scaled(c, 540, y, k, () => cup(c, 540, y, 220, { name: NAME, glow: 1, shine: seg(t, 33.6, 34.2), spin: t * .6 }));
       heart(c, 820, 600, E(t, HIT.heart, .35, .5), 70); });
   },
-  buy(c, t) {   // he decides to buy it: a low angle on the counter, the coin lands right in front of us; the focus pulls back to them
-    const rack = ss(seg(t, HIT.ching, HIT.ching + .5));
-    bg(c, t);
-    blurred(c, 6 * (1 - rack), () => cam(c, 640, 1250, .85, 0, () => shop(c, t, { seller: { smile: 1, look: .3, blink: t > HIT.ching && t < HIT.ching + .6 ? 1 : 0 }, front: [() => { const P = BOY({ smile: 1, look: -.2 }), [bx, base] = carryCup(P, 130); mascot(c, P); cup(c, bx, base, 130, { name: NAME }); }] })));
-    c.fillStyle = '#8a5d38'; c.beginPath(); c.moveTo(-50, 1500); c.lineTo(1130, 1500); c.lineTo(1300, 1980); c.lineTo(-220, 1980); c.closePath(); c.fill();
-    c.strokeStyle = 'rgba(40,20,5,.3)'; c.lineWidth = 4; for (let i = 0; i < 6; i++) { const y = 1530 + i * 75; c.beginPath(); c.moveTo(-100, y); c.lineTo(1180, y); c.stroke(); }
-    if (t > HIT.flip) { const u = clamp((t - HIT.flip) / (HIT.coin - HIT.flip)), y = t < HIT.coin ? lerp(200, 1640, u * u) : 1640 - Math.abs(Math.sin((t - HIT.coin) * 9)) * 40 * Math.exp(-(t - HIT.coin) * 5), ry = t < HIT.coin ? Math.abs(Math.cos(u * 14)) * 90 + 8 : 26;
-      blurred(c, 3 * rack, () => { c.fillStyle = 'rgba(0,0,0,.3)'; c.beginPath(); c.ellipse(560, 1680, 110, 22, 0, 0, 7); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.ellipse(540, y, 100, ry, 0, 0, 7); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 8; c.stroke(); }); }
+  buy(c, t) {   // he decides to buy it: back at the counter, he flips a coin to the seller, who catches it. Ka-ching
+    const z = 1 + .1 * ss(seg(t, 36.5, 39.3)), fly = seg(t, HIT.flip, HIT.coin), caught = t >= HIT.coin, yes = E(t, HIT.ching, .3, .45);
+    const P = BOY({ smile: 1, look: -.4 * (fly > 0 && !caught ? 1 : 0), squash: t > HIT.ching ? .04 * Math.sin((t - HIT.ching) * 18) * Math.exp(-(t - HIT.ching) * 3) : 0 }), [bx, base] = carryCup(P, 130);
+    if (t > HIT.flip - .3 && t < HIT.flip + .25) P.handL = reach([260, 1560], [380, 1450], Math.sin(seg(t, HIT.flip - .3, HIT.flip + .25) * Math.PI));
+    const catchAt = [700, 1290], S = { smile: caught ? 1 : .8, look: .2, blink: t > HIT.ching && t < HIT.ching + .7 ? 1 : 0 };
+    if (t > HIT.coin - .35 && t < HIT.coin + .5) S.handR = reach([800, 1360], catchAt, Math.sin(seg(t, HIT.coin - .35, HIT.coin + .5) * Math.PI));
+    bg(c, t, { rays: yes * .7, ry: 900 });
+    cam(c, 520, 1060, z, 0, () => shop(c, t, { noBg: 1, seller: S, front: [() => mascot(c, P), () => cup(c, bx, base, 130, { name: NAME, glow: yes * .6 }), () => {
+      if (fly > 0 && !caught) { const x = lerp(390, catchAt[0], fly), y = lerp(1440, catchAt[1], fly) - Math.sin(fly * Math.PI) * 300, ry = Math.abs(Math.cos(fly * 12)) * 26 + 4;
+        glow(c, x, y, 110, .5); c.fillStyle = GOLD; c.beginPath(); c.ellipse(x, y, 40, ry * 1.5, 0, 0, 7); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 5; c.stroke(); }
+      check(c, bx, base - 230, yes, 62); }] }));
   },
   detail(c, t) {   // sometimes one small detail is enough to see something completely differently
     const others = ss(seg(t, HIT.others, HIT.others + .6));
