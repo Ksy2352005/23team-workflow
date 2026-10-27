@@ -58,7 +58,7 @@ function carry(P, h) { const Hh = Hs(P.s), d = (P.f ?? 0) < -.1 ? -1 : 1, cx = P
 
 
 // —— a minimal cinema cashier: a counter with the cashier behind it, a POPCORN sign, the register; nothing else ——
-const CT = { x0: 400, x1: 1120, top: 1380, front: 1700 }, SPOT = [290, 1800], CASH0 = { id: 'cashier', skin: 'blue2', fem: 'bun', s: 2.0, x: 860, y: 1560, f: -.4, smile: .8 };
+const CT = { x0: 400, x1: 1120, top: 1380, front: 1700 }, SPOT = [290, 1800], CASH0 = { id: 'cashier', skin: 'owner', fem: 'bun', s: 2.0, x: 860, y: 1560, f: -.4, smile: .8 };
 const ON_COUNTER = { S: [480, 90], M: [580, 120], L: [700, 150] };
 function counter(c, t, o = {}) {
   bg(c, t, o.bg || {});
@@ -81,7 +81,7 @@ function counter(c, t, o = {}) {
 }
 
 // —— the shots ——
-const MAN = (o = {}) => ({ id: 'man', skin: 'owner', s: 2.3, x: 540, y: 1640, f: 0, ...o });
+const MAN = (o = {}) => ({ id: 'man', skin: 'blue1', s: 2.3, x: 540, y: 1640, f: 0, ...o });
 const SHOT = {
   intro(c, t) {   // a man goes to the cinema, and fancies some popcorn
     bg(c, t);
