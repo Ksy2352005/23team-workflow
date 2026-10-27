@@ -56,6 +56,30 @@ function star(c, x, y, k, r = 60) { scaled(c, x, y, k, () => { c.fillStyle = GOL
 function carry(P, h) { const Hh = Hs(P.s), d = (P.f ?? 0) < -.1 ? -1 : 1, cx = P.x + d * (.27 * Hh + h * .34), base = P.y - .03 * Hh;
   P[d > 0 ? 'handR' : 'handL'] = [cx - d * h * .3, base - Math.min(h * .62, .4 * Hh)]; return [cx, base]; }
 
+
+// —— a minimal cinema cashier: a counter with the cashier behind it, a POPCORN sign, the register; nothing else ——
+const CT = { x0: 400, x1: 1120, top: 1380, front: 1700 }, SPOT = [290, 1800], CASH0 = { id: 'cashier', skin: 'blue2', fem: 'bun', s: 2.0, x: 860, y: 1560, f: -.4, smile: .8 };
+const ON_COUNTER = { S: [480, 90], M: [580, 120], L: [700, 150] };
+function counter(c, t, o = {}) {
+  bg(c, t, o.bg || {});
+  c.save(); c.translate(540, 1100); c.scale(1.12, 1.12); c.translate(-630, -1420);   // the counter group sits in the middle of the frame, a little bigger
+  c.fillStyle = 'rgba(5,8,30,.35)'; c.fillRect(-400, CT.front, 2000, 1200);
+  c.fillStyle = '#121a46'; c.beginPath(); c.roundRect(650, 760, 420, 130, 22); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 6; c.stroke(); text(c, 'POPCORN', 860, 830, 88, GOLD);
+  for (let i = 0; i < 18; i++) { const u = i / 18, x = u < .5 ? 660 + u * 2 * 400 : 1060 - (u - .5) * 2 * 400, y = u < .5 ? 760 : 890, on = (Math.floor(t * 4) + i) % 3 !== 0; c.fillStyle = on ? '#ffe7a6' : '#8a7040'; c.beginPath(); c.arc(x, y, 6, 0, 7); c.fill(); if (on) glow(c, x, y, 26, .4); }
+  if (o.sign) { c.fillStyle = '#26368c'; c.beginPath(); c.roundRect(300, 470, 330, 100, 18); c.fill(); text(c, '← TEREM 1', 465, 522, 62); }
+  const C = { ...CASH0, blink: blinkAt(t, 2), ...(o.cashier || {}) }; drawMascot(c, { ...C, shadow: false });
+  if (o.cashHold) bucket(c, o.cashHold[0], o.cashHold[1], 150, 1.1, 72);
+  c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(CT.x0 + 10, CT.top + 14, CT.x1 - CT.x0, 24);
+  c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(CT.x0 - 20, CT.top - 14, CT.x1 - CT.x0 + 40, 30, 12); c.fill();
+  c.fillStyle = CREAM; c.fillRect(CT.x0, CT.top + 16, CT.x1 - CT.x0, CT.front - CT.top - 16); c.fillStyle = '#26368c'; c.fillRect(CT.x0, CT.top + 80, CT.x1 - CT.x0, 44); c.fillStyle = GOLD; c.fillRect(CT.x0, CT.top + 76, CT.x1 - CT.x0, 5); c.fillRect(CT.x0, CT.top + 124, CT.x1 - CT.x0, 5);
+  const dr = o.drawer || 0; c.fillStyle = '#121a46'; c.beginPath(); c.roundRect(970, CT.top - 110, 120, 100, 14); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(985, CT.top - 98, 90, 28, 6); c.fill();
+  c.fillStyle = CREAM; for (let i = 0; i < 3; i++) { c.beginPath(); c.roundRect(985 + i * 31, CT.top - 58, 24, 18, 4); c.fill(); }
+  if (dr > 0) { c.fillStyle = '#3a4580'; c.beginPath(); c.roundRect(960, CT.top - 16, 140, 20 + 50 * dr, 8); c.fill(); c.fillStyle = GOLD; for (let i = 0; i < 4; i++) c.fillRect(975 + i * 30, CT.top - 6, 20, 10 + 34 * dr); }
+  for (const [k, v] of Object.entries(o.items || {})) { if (!v) continue; const [x, h] = ON_COUNTER[k], [dy, sc] = typeof v === 'object' ? v : [0, 1]; scaled(c, x, CT.top + dy, sc, () => bucket(c, x, CT.top + dy, h, 1, 110 + h)); }
+  (o.front || []).forEach(f => f());
+  c.restore();
+}
+
 // —— the shots ——
 const MAN = (o = {}) => ({ id: 'man', skin: 'owner', s: 2.3, x: 540, y: 1640, f: 0, ...o });
 const SHOT = {
@@ -72,14 +96,10 @@ const SHOT = {
       for (let k = 0; k < 3; k++) { c.beginPath(); for (let i = 0; i <= 30; i++) { const u = i / 30, x = lerp(800, 610, u), y = lerp(960, 1150, u) + Math.sin(u * 8 + t * 4 + k * 2) * 24 - k * 26; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); } c.restore(); }
     HIT.kernels.forEach((k, i) => kernels(c, 850, 960, seg(t, k, k + .8), 9, 260, 10 + i * 20));
   },
-  sizes(c, t) {   // three sizes slam down onto the shelf
-    bg(c, t);
-    c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(110, 1282, 870, 20); c.fillStyle = CREAM; c.beginPath(); c.roundRect(100, 1262, 880, 26, 13); c.fill();
-    [[250, 170], [540, 240], [840, 320]].forEach(([x, h], i) => { const at = HIT.slams[i]; if (t < at - .28) return;
-      const fall = clamp((t - (at - .28)) / .28), y = 1262 - (1 - fall * fall) * 1300, land = t > at ? Math.sin(clamp((t - at) / .35) * Math.PI) * Math.exp(-(t - at) * 3) : 0;
-      c.save(); c.translate(x, y); c.scale(1 + .14 * land, 1 - .14 * land); bucket(c, 0, 0, h, 1, 30 + i); c.restore();
-      if (t > at) kernels(c, x, 1262 - h, seg(t, at, at + .6), 6, 160, 40 + i * 9, 10); });
-    mascot(c, MAN({ s: 1.5, x: 190, y: 1820, f: .5, look: -1, headUp: .03, smile: .8 }), E(t, 3.0, .3, .3));
+  sizes(c, t) {   // at the counter: three sizes slam down onto it
+    const items = {}; ['S', 'M', 'L'].forEach((k, i) => { const at = HIT.slams[i]; if (t < at - .28) return; const fall = clamp((t - (at - .28)) / .28), land = t > at ? Math.sin(clamp((t - at) / .35) * Math.PI) * Math.exp(-(t - at) * 3) : 0;
+      items[k] = [-(1 - fall * fall) * 1300, 1 + .12 * land]; });
+    counter(c, t, { items, cashier: { smile: .9, look: .2 }, front: [() => mascot(c, MAN({ s: 2.1, x: SPOT[0], y: SPOT[1], f: .5, look: -.4, smile: .8 }), E(t, 3.0, .3, .3))] });
   },
   price(c, t, i) {   // one size at a time, the price counting up and stamping down
     const t0 = SHOTS.find(s => s[1] === ['small', 'medium', 'large'][i])[0];
@@ -90,15 +110,16 @@ const SHOT = {
     const n = counted(t, HIT.counts[i], [900, 1650, 1850][i]), st = E(t, HIT.stamps[i], .28, .5);
     if (t > HIT.counts[i]) card(c, 540, 1560, 640, 210, `${n} Ft`, t < HIT.stamps[i] ? 1 : 1 + .12 * (1 - st));
   },
-  wanted(c, t) {   // he only meant to get the small one
-    bg(c, t);
-    const nod = t > HIT.check ? Math.sin(clamp((t - HIT.check) / .4) * Math.PI) * .05 : 0;
-    mascot(c, MAN({ s: 2.2, x: 330, y: 1720, f: .55, look: -.6, smile: .7, squash: nod }));
-    const k = E(t, 14.35, .35, .4); scaled(c, 720, 860, k, () => { c.fillStyle = '#ffffff';
-      for (const [dx, dy, r] of [[-120, -10, 130], [0, -70, 150], [120, -10, 130], [0, 60, 140]]) { c.beginPath(); c.arc(720 + dx, 860 + dy, r, 0, 7); c.fill(); }
-      c.beginPath(); c.arc(560, 1060, 34, 0, 7); c.fill(); c.beginPath(); c.arc(490, 1150, 18, 0, 7); c.fill(); bucket(c, 720, 960, 190, 1, 3); });
-    const ck = E(t, HIT.check, .3, .4); if (ck > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 16; c.lineCap = 'round'; c.beginPath(); c.arc(720, 860, 230, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, ck)); c.stroke();
-      c.beginPath(); c.moveTo(860, 1040); c.lineTo(900, 1090); c.lineTo(990, 990); c.globalAlpha = Math.min(1, ck); c.stroke(); c.restore(); }
+  wanted(c, t) {   // he only meant to get the small one: he points at it
+    const nod = t > HIT.check ? Math.sin(clamp((t - HIT.check) / .4) * Math.PI) * .05 : 0, pt = ss(seg(t, 14.4, 14.75));
+    const P = MAN({ s: 2.1, x: SPOT[0], y: SPOT[1], f: .5, look: -.2, smile: .7, squash: nod }); if (pt > 0) P.handR = reach([300, 1560], [480, 1330], pt);
+    const ck = E(t, HIT.check, .3, .4);
+    counter(c, t, { items: { S: [0, 1 + .15 * Math.sin(clamp((t - HIT.check) / .4) * Math.PI) * (t > HIT.check)], M: 1, L: 1 }, cashier: { look: .3 }, front: [() => mascot(c, P), () => {
+      const k = E(t, 14.35, .35, .4); scaled(c, 420, 780, k, () => { c.fillStyle = '#ffffff';
+        for (const [dx, dy, r] of [[-100, -10, 105], [0, -60, 125], [100, -10, 105], [0, 50, 115]]) { c.beginPath(); c.arc(420 + dx, 780 + dy, r, 0, 7); c.fill(); }
+        c.beginPath(); c.arc(340, 950, 26, 0, 7); c.fill(); c.beginPath(); c.arc(310, 1020, 14, 0, 7); c.fill(); bucket(c, 420, 870, 150, 1, 3); });
+      if (ck > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 14; c.lineCap = 'round'; c.beginPath(); c.arc(420, 780, 190, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, ck)); c.stroke();
+        c.beginPath(); c.moveTo(540, 930); c.lineTo(575, 970); c.lineTo(650, 885); c.globalAlpha = Math.min(1, ck); c.stroke(); c.restore(); } }] });
   },
   sees(c, t) {   // he sees something: a close-up, eyes wide
     bg(c, t, { rays: 1.2 });
@@ -118,46 +139,33 @@ const SHOT = {
       if (ar >= 1) { c.fillStyle = GOLD; c.beginPath(); c.moveTo(790, 850); c.lineTo(730, 800); c.lineTo(790, 780); c.closePath(); c.fill(); } c.restore(); }
     const ch = E(t, HIT.chip, .3, .5); scaled(c, 535, 520, ch, () => { c.fillStyle = GOLD; c.beginPath(); c.roundRect(535 - 210, 520 - 75, 420, 150, 75); c.fill(); text(c, '+200 Ft', 535, 526, 96, NAVY); });
   },
-  decide(c, t) {   // a moment's thought, the sizes circling his head... then the large drops into his arms
-    const got = t > HIT.drop, g = E(t, HIT.drop, .35, .45);
-    bg(c, t, { rays: g });
-    const P = MAN({ s: 2.3, x: 540, y: 1720, smile: got ? 1 : .35, look: got ? 0 : -.8 });
+  decide(c, t) {   // a moment's thought, the sizes circling his head... then the cashier hands him the large
+    const got = t > HIT.drop, g = E(t, HIT.drop, .35, .45), u = ss(seg(t, HIT.drop, HIT.drop + .45));
+    const P = MAN({ s: 2.1, x: SPOT[0], y: SPOT[1], f: .5, smile: got ? 1 : .35, look: got ? 0 : -.8 });
     if (!got) { P.chin = 'R'; P.headTurn = .4 * Math.sin((t - 22) * 2.4); P.tilt = -.06; }
-    const [bx, base] = got ? carry(P, 260) : [0, 0];
-    mascot(c, P);
-    const ob = E(t, HIT.orbit, .35, .4); [[0, 110], [1, 150], [2, 190]].forEach(([i, h]) => { const a = t * 1.7 + i * 2.094, x = 540 + Math.cos(a) * 300, y = 640 + Math.sin(a) * 110;
-      if (got && i < 2) { const u = ss(seg(t, HIT.drop, HIT.drop + .3)); scaled(c, x, y, ob * (1 - u), () => bucket(c, x, y, h, 1, 70 + i)); }
-      else if (!got) scaled(c, x, y, ob, () => bucket(c, x, y, h, 1, 70 + i)); });
-    if (got) { const u = ss(seg(t, HIT.drop - .02, HIT.drop + .22)), a = HIT.drop * 1.7 + 2 * 2.094, x0 = 540 + Math.cos(a) * 300, y0 = 640 + Math.sin(a) * 110;
-      bucket(c, lerp(x0, bx, u), lerp(y0, base, u), lerp(190, 260, u), 1.1, 72); }
+    const Pc = { ...P }; const [bx, base] = carry(Pc, 150); if (u >= 1) Object.assign(P, Pc);
+    const path = [lerp(700, bx, u), lerp(CT.top, base, u) - Math.sin(u * Math.PI) * 160], C = { smile: got ? 1 : .8, look: .3 };
+    if (got && u < .55) C.handL = [path[0] + 40, path[1] - 110];
+    counter(c, t, { bg: { rays: g * .8 }, items: { S: 1, M: 1, L: !got }, cashier: C, front: [() => mascot(c, P), () => { if (got) bucket(c, path[0], path[1], 150, 1.1, 72); },
+      () => { const ob = E(t, HIT.orbit, .35, .4); [[0, 80], [1, 105], [2, 130]].forEach(([i, h]) => { const a = t * 1.7 + i * 2.094, x = 300 + Math.cos(a) * 220, y = 900 + Math.sin(a) * 80; scaled(c, x, y, ob * (got ? 1 - u : 1), () => bucket(c, x, y, h, 1, 70 + i)); }); }] });
   },
   overflow(c, t) {   // so much more popcorn for the money: it bursts out over the top
-    bg(c, t, { rays: 1 });
     const gig = t > HIT.hehe ? Math.sin((t - HIT.hehe) * 22) * Math.exp(-(t - HIT.hehe) * 3) * .05 : 0;
-    const P = MAN({ s: 2.3, x: 540, y: 1720, smile: 1, blink: t > HIT.hehe - .1 && t < HIT.hehe + .6 ? 1 : blinkAt(t, 1), squash: gig }), [bx, base] = carry(P, 260);
-    mascot(c, P); bucket(c, bx, base, 260, 1.1 + .5 * ss(seg(t, HIT.burst, HIT.burst + .6)), 72);
-    for (let w = 0; w < 6; w++) kernels(c, bx, base - 300, seg(t, HIT.burst + w * .2, HIT.burst + w * .2 + 1.2), 16, 520, 200 + w * 31, 15);
+    const P = MAN({ s: 2.1, x: SPOT[0], y: SPOT[1], f: .5, smile: 1, blink: t > HIT.hehe - .1 && t < HIT.hehe + .6 ? 1 : blinkAt(t, 1), squash: gig }), [bx, base] = carry(P, 150);
+    counter(c, t, { bg: { rays: 1 }, items: { S: 1, M: 1 }, cashier: { smile: 1, look: .2 }, front: [() => mascot(c, P), () => bucket(c, bx, base, 150, 1.1 + .6 * ss(seg(t, HIT.burst, HIT.burst + .6)), 72),
+      () => { for (let w = 0; w < 6; w++) kernels(c, bx, base - 200, seg(t, HIT.burst + w * .2, HIT.burst + w * .2 + 1.2), 16, 480, 200 + w * 31, 14); }] });
   },
-  cashier(c, t) {   // the cashier smiles, satisfied: ka-ching
-    bg(c, t, { rays: E(t, HIT.ching, .4, .3) * .8 });
-    const press = Math.sin(seg(t, HIT.key - .2, HIT.key + .2) * Math.PI), happy = t > HIT.ching + .1;
-    const P = { id: 'cashier', skin: 'blue2', fem: 'bun', s: 2.2, x: 720, y: 1760, f: -.4, smile: happy ? 1 : .8, blink: happy && t < HIT.ching + 1.2 ? 1 : blinkAt(t, 2), look: .3 };
-    if (press > .05) P.handR = reach([640, 1480], [520, 1395], press);
-    const dr = E(t, HIT.ching, .25, .45);
-    c.fillStyle = '#121a46'; c.beginPath(); c.roundRect(280, 1400 + 10, 300, 220, 26); c.fill();
-    c.fillStyle = '#2a3566'; c.beginPath(); c.roundRect(300, 1300, 260, 130, 20); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(330, 1320, 200, 46, 10); c.fill();
-    c.fillStyle = CREAM; for (let i = 0; i < 6; i++) { c.beginPath(); c.roundRect(330 + (i % 3) * 70, 1380 + Math.floor(i / 3) * 0, 54, 30, 8); c.fill(); }
-    c.fillStyle = '#3a4580'; c.beginPath(); c.roundRect(270, 1600, 320, 40 + 70 * dr, 10); c.fill(); c.fillStyle = GOLD; for (let i = 0; i < 4; i++) c.fillRect(295 + i * 72, 1612, 48, 20 + 50 * dr);
-    mascot(c, P);
-    kernels(c, 430, 1600, seg(t, HIT.ching, HIT.ching + 1.0), 14, 420, 300, 16);
+  cashier(c, t) {   // closer on the cashier: she rings it up, pleased. Ka-ching
+    const press = Math.sin(seg(t, HIT.key - .2, HIT.key + .2) * Math.PI), happy = t > HIT.ching + .1, C = { smile: happy ? 1 : .8, blink: happy && t < HIT.ching + 1.2 ? 1 : blinkAt(t, 2), look: .2, f: .3 };
+    if (press > .05) C.handR = reach([900, 1340], [1030, CT.top - 50], press);
+    c.save(); c.translate(540, 900); c.scale(1.5, 1.5); c.translate(-700, -980);
+    counter(c, t, { bg: { rays: E(t, HIT.ching, .4, .3) * .8 }, items: { S: 1, M: 1, L: 1 }, cashier: C, drawer: E(t, HIT.ching, .25, .45), front: [() => kernels(c, 1030, CT.top, seg(t, HIT.ching, HIT.ching + 1.0), 12, 300, 300, 10)] });
+    c.restore();
   },
-  off(c, t) {   // and off he goes to the film, happy
-    bg(c, t);
-    c.fillStyle = '#efe4c8'; c.beginPath(); c.roundRect(700, 760, 300, 990, 20); c.fill(); c.fillStyle = '#ffd890'; c.beginPath(); c.roundRect(726, 790, 248, 960, 12); c.fill(); glow(c, 850, 1250, 520, .6);
-    c.fillStyle = '#26368c'; c.beginPath(); c.roundRect(700, 640, 300, 96, 16); c.fill(); text(c, 'TEREM 1', 850, 692, 70);
-    const u = seg(t, 30.2, 31.7), x = lerp(-180, 850, ss(u)), hop = Math.abs(Math.sin(u * Math.PI * 5)) * 40 * (u < 1 ? 1 : 0);
-    const P = MAN({ s: 1.9, x, y: 1750 - hop, f: u < 1 ? .7 : 0, back: u >= 1, smile: 1, phi: u * Math.PI * 10, walk: u > 0 && u < 1 ? 1 : 0, alpha: 1 - ss(seg(t, 31.75, 32.3)) }), [bx, base] = carry(P, 200);
-    c.save(); c.globalAlpha = P.alpha; mascot(c, { ...P, alpha: undefined }); bucket(c, bx, base, 200, 1.5, 72); c.restore();
+  off(c, t) {   // and off he goes to the film, happy; she waves
+    const u = seg(t, 30.2, 31.8), x = lerp(SPOT[0], -260, ss(u)), hop = Math.abs(Math.sin(u * Math.PI * 5)) * 36 * (u > 0 && u < 1 ? 1 : 0);
+    const P = MAN({ s: 2.1, x, y: SPOT[1] - hop, f: u > 0 ? -.7 : .5, smile: 1, phi: u * Math.PI * 10, walk: u > 0 && u < 1 ? 1 : 0 }), [bx, base] = carry(P, 150);
+    counter(c, t, { sign: 1, items: { S: 1, M: 1, L: 1 }, cashier: { smile: 1, armR: 2.4 + .3 * Math.sin(t * 14), look: 0 }, front: [() => mascot(c, P), () => bucket(c, bx, base, 150, 1.5, 72)] });
   },
   question(c, t) {   // but did he really want the large one?
     bg(c, t, { dark: ss(seg(t, 32.6, 33.2)) });
@@ -184,12 +192,11 @@ const SHOT = {
     if (sk > 0) { scaled(c, bar[0], bar[1], sk, () => { c.save(); c.translate(...bar); c.rotate(.25 * tug); c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(-110, -14, 220, 28, 14); c.fill(); c.beginPath(); c.roundRect(-14, -70, 28, 140, 14); c.fill();
       c.fillStyle = '#2448bb'; c.beginPath(); c.arc(0, -96, 46, 0, 7); c.fill(); c.strokeStyle = '#2448bb'; c.lineWidth = 60; c.lineCap = 'round'; c.beginPath(); c.moveTo(0, -110); c.lineTo(60, -400); c.stroke(); c.restore(); }); }
   },
-  everyone(c, t) {   // no one needs talking into it: everyone takes the large themselves
-    bg(c, t);
-    [[330, 1380, 1.35, 'blue3', 'long', 1], [800, 1380, 1.35, 'blue1', 'hat', 3], [120, 1740, 1.7, 'blue1', null, 0], [600, 1740, 1.7, 'blue2', 'bob', 2]].forEach(([x, y, sc, skin, fem, i]) => {
-      const k = E(t, HIT.people[i], .3, .45), got = E(t, HIT.buckets[i], .25, .5), P = { id: 'p' + i, skin, fem, s: sc, x, y, f: .3, smile: .6 + .4 * got, blink: blinkAt(t, 5 + i), look: -.2 };
-      const bh = 105 * sc, [bx, base] = got > 0 ? carry(P, bh) : [0, 0];
-      mascot(c, P, k); if (got > 0) scaled(c, bx, base, got, () => bucket(c, bx, base, bh, 1.1, 90 + i)); });
+  everyone(c, t) {   // no one needs talking into it: one after another, people take the large themselves
+    const people = [[280, 1850, 1.45, 'blue1', null, 0], [500, 1850, 1.45, 'blue3', 'long', 1], [720, 1850, 1.45, 'blue2', 'bob', 2], [940, 1850, 1.45, 'blue1', 'hat', 3]];
+    counter(c, t, { items: { S: 1, M: 1, L: 1 }, cashier: { smile: .9, armL: -.2, armR: -.2, look: .3 }, front: people.map(([x, y, sc, skin, fem, i]) => () => {
+      const k = E(t, HIT.people[i], .3, .45), got = E(t, HIT.buckets[i], .25, .5), P = { id: 'p' + i, skin, fem, s: sc, x, y, f: .4, smile: .6 + .4 * got, blink: blinkAt(t, 5 + i), look: -.2 };
+      const bh = 82 * sc, [bx, base] = got > 0 ? carry(P, bh) : [0, 0]; mascot(c, P, k); if (got > 0) scaled(c, bx, base, got, () => bucket(c, bx, base, bh, 1.1, 90 + i)); }) });
   },
   podium(c, t) {   // show the options so they choose the dearer one themselves
     const win = E(t, HIT.win, .4, .4);
