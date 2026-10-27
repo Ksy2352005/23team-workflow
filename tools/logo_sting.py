@@ -24,7 +24,7 @@ def logo_sting(SR):
     f = int(1.3 * SR); x[-f:] *= np.cos(np.linspace(0, np.pi / 2, f)) ** 2   # a long, smooth fade-out
     return x / (np.abs(x).max() + 1e-9)
 
-def place_logo(mix, at, SR, voice_rms):
-    x = logo_sting(SR) * PEAK * voice_rms; a = int((at - LEAD) * SR); n = max(0, min(len(x), len(mix) - a))
+def place_logo(mix, at, SR, voice_rms, trim_db=0.0):   # trim_db: a per-film match so the finished films all peak at about −11.5 dBFS here
+    x = logo_sting(SR) * PEAK * voice_rms * 10 ** (trim_db / 20); a = int((at - LEAD) * SR); n = max(0, min(len(x), len(mix) - a))
     mix[a:a + n] += x[:n, None]
     return mix

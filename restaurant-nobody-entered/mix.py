@@ -286,7 +286,7 @@ ramp = lambda a, b: np.clip((tg - W(a)) / (W(b) - W(a)), 0, 1)
 fxg *= 1 - .4 * ramp(42.3, 42.9) * (1 - ramp(54.4, 54.9))   # the busy room (chatter, cutlery, plates, applause) sits lower still
 fxc = fxc * fxg[:, None]
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
-mix = place_logo(mix, W(58.9), SR, vr)   # the locked logo sound, after the effects bus so it is the same level in every film
+mix = place_logo(mix, W(58.9), SR, vr, -2.7)   # the locked logo sound, after the effects bus so it is the same level in every film
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
