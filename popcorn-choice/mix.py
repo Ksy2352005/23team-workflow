@@ -16,7 +16,7 @@ for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
-STORY = 60.7
+STORY = 48.7
 def buf(): return np.zeros((N, 2))
 def verb(x, t60=.7, wet=.25):
     n = int(t60 * SR); ir = rng.standard_normal(n) * np.exp(-6.9 * np.arange(n) / n); ir = lp(ir, 5000) * .06
@@ -58,45 +58,52 @@ def chime(f=1760, v=1.0, d=1.2):   # a small bright bell (the register, the "bes
     tt = t_(d); return sum(a * np.sin(2 * np.pi * f * m * tt) * np.exp(-tt / tau) for m, a, tau in [(1, 1, .5), (2.01, .35, .25), (3.02, .12, .12)]) * np.minimum(1, tt / .003) * v
 
 fx = buf()
-# —— beds: the lobby (a low hum of people, the air), a film rumbling faintly behind the doors, the machine popping ——
-add(fx, fade(bed(STORY, 70, 500, .05), .6, .6), 0, 1)
-add(fx, fade(lp(bed(STORY, 40, 160, .03), 200), 1, 1), 0, 1, .4)
-add(fx, fade(popping(STORY, 6, .05), .4, .4), 0, 1, .45)
-w = np.zeros(int(STORY * SR))
-for k, (name, off) in enumerate([('w1', 1), ('w3', 5), ('w5', 11), ('w2', 18), ('w4', 26), ('w6', 33), ('w1', 41), ('w3', 48), ('w5', 54)]): x = vox(name); a = int(off * SR); w[a:a + len(x)] += x[:len(w) - a]
-add(fx, fade(lp(w, 1300) * .07, .5, .5), 0, 1, -.3)
-
-# —— footsteps on the carpet: his soft but clear, the others' softer ——
-for k, e in enumerate(e for e in EVS if e['type'] == 'step'):
-    x = lp(S(pick('footstep_concrete_00', 5, k), .55 if e.get('who') == 'man' else .3), 2200)
-    add(fx, x, e['t'], 1, e.get('pan', 0) * .7)
-
-add(fx, sniff(.22), H1('sniff'), 1, -.2)
-add(fx, verb(vox('ow_hum'), .3, .08) * .45, H1('mmm'), 1, -.1)   # a craving "mmm"
-for k, t in enumerate(HIT['sizes']): add(fx, mx(pop(.25 * (1 + k * .1)), S('impactSoft_medium_001', .25)), t, 1, .2)
-for k, t in enumerate(HIT['flips']): add(fx, mx(S(f'bookFlip{k % 3 + 1}', .55), click(.12, 1.2)), t - .04, 1, (k - 1) * .4)
-add(fx, pop(.2), H1('think'), 1, -.1)
-add(fx, verb(vox('ow_gasp'), .3, .08) * .55, H1('gasp'), 1, -.1)   # he sees it
-add(fx, whoosh(.45, .05), H1('arrow'), 1, .2)
-add(fx, mx(pop(.3), chime(2093, .08, .8)), H1('chip'), 1, .2)
-add(fx, mx(pop(.25), S('impactSoft_medium_000', .3)), H1('big'), 1, .3)
-for k, t in enumerate(HIT['eyes']): add(fx, click(.06, 1.0 + .1 * k), t, 1, .2 * (-1) ** k)
-add(fx, mx(click(.25, .9), pop(.25)), H1('choose'), 1, .1)
-add(fx, S('impactSoft_medium_002', .4), H1('take'), 1, .5)
-add(fx, fade(mx(popping(1.3, 70, .35), rustle(1.3, .12)), .1, .3), H1('fill'), 1, .5)
-add(fx, S('impactSoft_medium_001', .4), H1('handOff'), 1, -.1)
-add(fx, verb(vox('ow_hehe'), .3, .08) * .5, H1('hehe'), 1, -.1)   # joy, the bucket in his arms
-add(fx, click(.2, 1.3), H1('key'), 1, .1)
-add(fx, mx(verb(chime(1568, .18) + chime(2349, .12), .6, .3), S('handleCoins', .35), lp(bp(noise(.25), 300, 2000) * np.sin(np.pi * t_(.25) / .25) * .15, 3000)), H1('ching'), 1, .1)
-add(fx, S('doorOpen_2', .45), H1('door'), 1, .5)
-add(fx, lp(whoosh(.9, .05), 900), H1('hush'), 1, 0)
-add(fx, pop(.25), H1('qmark'), 1, .3)
-add(fx, verb(chime(1319, .05) + chime(1760, .04), .8, .3), H1('decoy'), 1, 0)
-add(fx, mx(S('bookPlace1', .4), click(.1, 1.1)), H1('nudge'), 1, 0)
-add(fx, mx(pop(.3), verb(chime(2093, .07), .8, .3)), H1('best'), 1, .3)
-add(fx, pop(.18), H1('best2'), 1, .3)
-add(fx, S('impactSoft_medium_001', .35), H1('give1'), 1, -.1)
-add(fx, verb(chime(1760, .05), 1.0, .4), H1('glow'), 1, .2)
+# —— motion-graphics sound: no room, no chatter; every move has its own sound ——
+def boing(v=1.0, f0=220, f1=520, d=.35): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(f0 + (f1 - f0) * (1 - np.exp(-tt * 9))) / SR) * np.exp(-tt * 6) * np.minimum(1, tt / .005) * v
+def stamp(v=1.0): return norm(mx(lp(thump(.25, 70), 400) * 1.0, bp(noise(.06), 600, 3000) * env_exp(.06, .01) * .7)) * v
+def swish(d=.28, v=1.0, up=True):
+    tt = t_(d); f = np.linspace(800, 4000, len(tt)) if up else np.linspace(4000, 800, len(tt)); x = noise(d); y = np.zeros_like(x)
+    for k in range(0, len(x), 480): y[k:k + 480] = bp(x[k:k + 480], f[k] * .6, f[k] * 1.6)
+    return norm(lp(y, 9000)) * np.sin(np.pi * tt / d) ** 1.5 * v
+def roll(d=.36, v=1.0):   # the price counting up: fast rising ticks
+    out = np.zeros(int(d * SR) + 2400); k = 0
+    while k * .045 < d: c = click(1, 1 + k * .08); a = int(k * .045 * SR); out[a:a + len(c)] += c; k += 1
+    return out * v
+add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
+for t in HIT['whips']: add(fx, swish(.3, .5), t - .08, 1, .3)
+for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
+add(fx, mx(pop(.4), lp(thump(.12, 120), 400) * .4), H1('manIn'), 1, 0)
+add(fx, mx(swish(.3, .35), pop(.3)), H1('ticket') - .05, 1, -.4)
+add(fx, mx(pop(.4), boing(.2, 300, 700)), H1('bucketIn'), 1, .4)
+for k, t in enumerate(HIT['kernels']): add(fx, popping(.5, 40, .4), t, 1, .4)
+add(fx, sniff(.3), H1('sniff'), 1, .1); add(fx, verb(vox('ow_hum'), .3, .08) * .5, H1('mmm'), 1, 0)
+for k, t in enumerate(HIT['slams']): add(fx, mx(stamp(.8), S(pick('impactWood_medium_00', 3, k), .5), popping(.25, 40, .2)), t, 1, (k - 1) * .5)
+for k, t in enumerate(HIT['counts']): add(fx, roll(.36, .35), t, 1, 0)
+for k, t in enumerate(HIT['stamps']): add(fx, mx(stamp(.9), chime(1568 + 300 * k, .08, .6)), t, 1, 0)
+add(fx, mx(pop(.3), chime(2093, .1, .8)), H1('check'), 1, .3)
+add(fx, verb(vox('ow_gasp'), .3, .08) * .6, H1('gasp'), 1, 0); add(fx, pop(.35), H1('bang'), 1, .3)
+add(fx, swish(.4, .4), H1('arrow'), 1, .2); add(fx, mx(stamp(.6), pop(.3)), H1('chip'), 1, 0)
+add(fx, boing(.5, 160, 640, .5), H1('grow'), 1, .3)
+add(fx, fade(swish(1.8, .15), .3, .4), H1('orbit'), 1, 0)
+add(fx, mx(pop(.4), S('impactSoft_medium_001', .5), boing(.25, 400, 250)), H1('drop'), 1, .2)
+add(fx, fade(mx(popping(1.6, 90, .55), rustle(1.6, .15)), .05, .5), H1('burst'), 1, .2)
+add(fx, verb(vox('ow_hehe'), .3, .08) * .55, H1('hehe'), 1, 0)
+add(fx, click(.3, 1.3), H1('key'), 1, -.3)
+add(fx, mx(verb(chime(1568, .3) + chime(2349, .2), .6, .3), S('handleCoins', .5), stamp(.5)), H1('ching'), 1, -.3)
+for e in EVS:
+    if e['type'] == 'step': add(fx, lp(S('footstep_concrete_001', .45), 3500), e['t'], 1, e.get('pan', 0) * .7)
+add(fx, mx(swish(.5, .3), chime(1175, .05, 1.0)), H1('door'), 1, .5)
+add(fx, mx(lp(thump(.4, 60), 250), boing(.35, 300, 140, .6)), H1('qdrop'), 1, 0)
+add(fx, mx(S('creak1', .4), swish(.3, .2)), H1('strings'), 1, 0)
+add(fx, mx(S('creak2', .5), click(.2, .8)), H1('tug'), 1, 0)
+add(fx, verb(chime(1319, .08) + chime(1760, .06), .8, .3), H1('decoy'), 1, 0)
+add(fx, boing(.45, 180, 560, .45), H1('big'), 1, .4)
+add(fx, mx(stamp(.6), chime(2093, .12, .8)), H1('star'), 1, .4)
+for k, t in enumerate(HIT['people']): add(fx, pop(.35 * (1 + .05 * k)), t, 1, -.6 + .4 * k)
+for k, t in enumerate(HIT['buckets']): add(fx, mx(pop(.3), popping(.15, 50, .25)), t, 1, -.6 + .4 * k)
+for k, t in enumerate(HIT['rise']): add(fx, mx(stamp(.55), boing(.15, 200 + 60 * k, 420 + 80 * k)), t, 1, -.5 + .5 * k)
+add(fx, click(.2, 1.2), H1('point'), 1, -.3)
+add(fx, mx(verb(chime(1568, .2) + chime(2093, .15) + chime(2637, .1), .9, .35), stamp(.6)), H1('win'), 1, .4)
 
 # the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only a soft airy swell as the logo appears
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
@@ -105,22 +112,21 @@ _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 4000) * _env
 add(fx, verb(norm(_air) * .06, 1.4, .3), STORY - .6, 1, 0)
 
 # —— voice ——
-vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu.mp3'))
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.25.mp3'))   # the voice at 1.25×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
 voice = buf(); add(voice, vo, 0, 1)
 
-# —— mix: effects close to the voice (a punchy bus), a step lower in the busy second half; no music ——
+# —— mix: effects close to the voice (a punchy bus); no music ——
 fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
-tg = np.arange(len(fxc)) / SR; fxc = fxc * (1 - .3 * np.clip((tg - 30) / 2, 0, 1))[:, None]
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 # 3.2 s of silence after the end: the muxer's decode check reads ~2.9 s short (the loudness filter's look-ahead); the mux cuts the audio to the picture (-shortest)
-mix = np.concatenate([mix, np.zeros((int(3.2 * SR), 2))])
+mix = np.concatenate([mix, np.zeros((int(max(3.2, 58.5 - DUR) * SR), 2))])   # short films: enough silence that the check's 5% tolerance covers the look-ahead
 sf.write(os.path.join(HERE, 'out', os.environ.get('OUT', 'mix.wav')), mix.astype(np.float32), SR)
 print('mix.wav', mix.shape[0] / SR, 's, peak', np.abs(mix).max())
