@@ -272,19 +272,7 @@ add(fx, lp(qw, 1400) * .14, 54.6, 1, .3)
 add(fx, fade(lp(murmur(DUR - H1('queue'), .04, 4), 1400), .6, .3), H1('queue'), 1, .2)
 add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)
 
-# —— the logo: a soft, warm bell with an airy breath before it (not a synth beep) ——
-def logo_tone():
-    d = 3.0; tt = t_(d); f = 659.25
-    bell = sum(a * np.sin(2 * np.pi * f * m * tt) * np.exp(-tt / tau) for m, a, tau in [(1, 1, 1.6), (2, .22, .9), (3.01, .06, .5), (.5, .3, 1.8)])
-    bell = lp(bell * np.minimum(1, tt / .02), 3500)
-    air = bp(noise(.6), 3000, 9000) * np.sin(np.pi * t_(.6) / .6) ** 2 * .25
-    o = np.zeros(int(.45 * SR) + len(bell)); o[:len(air)] += air; o[int(.45 * SR):] += bell; return o
-# the fade to blue: everything else fades out with the picture, so the end sounds stand alone
-_n0, _n1 = int(W(58.2) * SR), int(W(58.8) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
-# the logo: just a soft airy swell that rises as it appears and fades away
-_d = 2.7; _tt = t_(_d); _env = np.minimum(1, _tt / .7) ** 2 * np.cos(np.clip((_tt - .7) / 2.0, 0, 1) * np.pi / 2) ** 2   # rises, then fades out slowly and smoothly
-_air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 4000) * _env
-add(fx, verb(norm(_air) * .06, 1.4, .3), 58.1, 1, 0)
+sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— mix ——
 music = music * 0   # no music in this cut: voice and sound effects only
@@ -296,6 +284,7 @@ ramp = lambda a, b: np.clip((tg - W(a)) / (W(b) - W(a)), 0, 1)
 fxg *= 1 - .4 * ramp(42.3, 42.9) * (1 - ramp(54.4, 54.9))   # the busy room (chatter, cutlery, plates, applause) sits lower still
 fxc = fxc * fxg[:, None]
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
+mix = place_logo(mix, W(58.9), SR, vr)   # the locked logo sound, after the effects bus so it is the same level in every film
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
