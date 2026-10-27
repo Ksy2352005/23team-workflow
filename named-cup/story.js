@@ -1,12 +1,15 @@
-// The Named Cup: shot times and sound cues, on the voiceover at 1.25× (refs/voiceover-hu-x1.25.mp3, word times from Whisper).
-export const STORY = 39.3, DUR = 41.5;   // the story, then the locked 23 end card on dark blue
+// The Named Cup: shot times and sound cues, on the voiceover at 1.10× (refs/voiceover-hu-x1.10.mp3, word times from Whisper).
+export const STORY = 44.6, DUR = 46.8;   // the story, then the locked 23 end card on dark blue
+export const VO = 'refs/voiceover-hu-x1.10.mp3';
 export const NAME = 'Bence';             // the boy's name, written on his cup
-export const SHOTS = [[0, 'intro', 'cut'], [3.4, 'plain', 'punch'], [6.8, 'row', 'whip'], [9.6, 'ask', 'whip'], [14.3, 'think', 'punch'], [17.9, 'write', 'whip'],
-  [22.3, 'smile', 'punch'], [23.6, 'same', 'whip'], [28.5, 'special', 'punch'], [32.1, 'buy', 'whip'], [34.6, 'detail', 'punch']];
+// shots: start, name, and the way in (cut, whip = a fast slide with motion blur, punch = a snap zoom, clock = a clock-hand wipe for "a few minutes later")
+export const SHOTS = [[0, 'intro', 'cut'], [1.8, 'pov', 'punch'], [4.0, 'plain', 'punch'], [7.7, 'row', 'whip'], [11.1, 'ask', 'whip'], [16.4, 'think', 'punch'],
+  [20.4, 'write', 'clock'], [25.4, 'smile', 'punch'], [26.9, 'same', 'whip'], [32.4, 'special', 'punch'], [36.5, 'buy', 'whip'], [39.3, 'detail', 'punch']];
 export const HIT = {
-  bell: .1, look: 1.6, glint: 2.3, shrug: 3.85, tag: 5.5, passers: [7.0, 7.75, 8.5],
-  whips: [6.8, 9.6, 17.9, 23.6, 32.1], punches: [3.4, 14.3, 22.3, 28.5, 34.6],
-  seller: 10.0, bubble: 12.3, cloud: 14.6, nod: 16.75, clock: 18.05, write: [19.0, 20.6], hands: 20.7, shine: 21.42,
-  smile: 22.6, giggle: 23.15, pulse: 24.22, dims: [26.4, 26.8, 27.2, 27.6, 28.0], rise: 28.7, heart: 30.72, coin: 32.95, ching: 33.3,
-  lens: 34.9, reveal: 35.7, others: 36.9,
+  bell: .1, focus: 1.95, glint: 2.7, shrug: 4.4, tag: 6.3, passers: [8.0, 8.9, 9.7],
+  whips: [7.7, 11.1, 26.9, 36.5], punches: [1.8, 4.0, 16.4, 25.4, 32.4, 39.3],
+  seller: 11.4, lean: 12.2, bubble: 13.94, swings: [16.9, 17.4, 17.9, 18.35], yes: 19.02,
+  wipe: 20.4, write: [21.6, 23.2], hands: 23.3, shine: 24.34, smile: 25.62, giggle: 26.45,
+  pulse: 27.52, dims: [29.8, 30.2, 30.6, 31.0, 31.4], rise: 32.65, heart: 34.9, flip: 37.1, coin: 37.5, ching: 37.9,
+  lens: 39.6, reveal: 40.5, others: 41.92,
 };

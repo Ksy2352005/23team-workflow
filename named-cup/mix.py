@@ -16,7 +16,7 @@ for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
-STORY = 39.3
+STORY = 44.6
 def buf(): return np.zeros((N, 2))
 def verb(x, t60=.7, wet=.25):
     n = int(t60 * SR); ir = rng.standard_normal(n) * np.exp(-6.9 * np.arange(n) / n); ir = lp(ir, 5000) * .06
@@ -71,6 +71,8 @@ def roll(d=.36, v=1.0):   # the price counting up: fast rising ticks
 def scribble(d, v=1.0, rate=9):   # a marker on the cup: squeaky strokes
     tt = t_(d); am = np.abs(np.sin(np.pi * rate * tt + rng.random())) ** 1.5 * (.6 + .4 * rng.random(len(tt)) ** 4)
     return norm(bp(noise(d), 1800, 6500) * np.convolve(am, np.ones(240) / 240, 'same') + .15 * np.sin(2 * np.pi * (2400 + 300 * np.sin(2 * np.pi * 3 * tt)) * tt) * am) * v
+def coin_spin(d, v):   # a coin spinning through the air: a fast shimmering ring
+    tt = t_(d); return np.sin(2 * np.pi * 3300 * tt) * (.5 + .5 * np.sin(2 * np.pi * 22 * tt)) * np.exp(-tt * 2) * v
 def shimmer(v=1.0, d=.9): return mx(chime(2637, .5, d), chime(3136, .35, d)) * v
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
 for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
@@ -78,15 +80,18 @@ for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25,
 add(fx, verb(chime(1568, .3, 1.2) + chime(1976, .22, 1.2), .8, .35), H1('bell'), 1, -.5)   # the shop's door chime
 for e in EVS:
     if e['type'] == 'step': add(fx, lp(S(pick('footstep_concrete_00', 5, int(e['t'] * 7)), .45 if e.get('who') == 'boy' else .28), 3500), e['t'], 1, e.get('pan', 0) * .7)
-add(fx, verb(shimmer(.12), .8, .3), H1('glint'), 1, .2)
+add(fx, lp(swish(.5, .15), 2500), H1('focus'), 1, 0)   # the focus pulling in
+add(fx, verb(shimmer(.14), .8, .3), H1('glint'), 1, .2)
 add(fx, boing(.3, 260, 200, .4), H1('shrug'), 1, 0)
 add(fx, mx(swish(.25, .25), click(.2, 1.2)), H1('tag'), 1, .3)
 for t in HIT['passers']: add(fx, swish(.8, .12), t + .2, 1, 0)
 add(fx, mx(pop(.3), boing(.15, 300, 460)), H1('seller'), 1, .3)
+add(fx, mx(S('cloth2', .3), click(.12, 1.3)), H1('lean'), 1, .2)   # the marker's cap
 add(fx, pop(.35), H1('bubble'), 1, .2)
-add(fx, pop(.25), H1('cloud'), 1, -.2)
-add(fx, mx(pop(.3), chime(2093, .12, .7)), H1('nod'), 1, -.2)
-for k in range(int(.85 / .05)): add(fx, click(.05, 1.4 + (k % 2) * .3), H1('clock') + k * .05, 1, 0)   # a few minutes, in a blink
+for k, t in enumerate(HIT['swings']): add(fx, mx(swish(.22, .18), pop(.14 * (1 + .2 * (k % 2)))), t, 1, -.5 if k % 2 == 0 else .5)   # his eyes going from one cup to the other
+add(fx, mx(stamp(.45), chime(2093, .14, .8)), H1('yes'), 1, .3)
+for k in range(int(.55 / .05)): add(fx, click(.07, 1.4 + (k % 2) * .3), H1('wipe') + k * .05, 1, 0)   # a few minutes, in a blink: the clock-hand wipe
+add(fx, swish(.55, .2), H1('wipe'), 1, 0)
 a, b = HIT['write']; add(fx, scribble(b - a, .45, 8), a, 1, .1)
 add(fx, mx(pop(.25), S('impactSoft_medium_001', .3)), H1('hands'), 1, 0)
 add(fx, verb(shimmer(.18), 1.0, .35), H1('shine'), 1, 0)
@@ -95,7 +100,8 @@ add(fx, mx(pop(.25), boing(.12, 400, 520)), H1('pulse'), 1, 0)
 for k, t in enumerate(HIT['dims']): add(fx, click(.08, .9 - k * .05), t, 1, -.6 + .3 * k)
 add(fx, mx(swish(.6, .3), verb(chime(1319, .1) + chime(1760, .08), .8, .3)), H1('rise'), 1, 0)
 add(fx, mx(pop(.3), chime(2349, .1, .7)), H1('heart'), 1, .3)
-add(fx, mx(S('chip-lay-1', .5), click(.15, 1.6)), H1('coin'), 1, .1)
+add(fx, fade(coin_spin(.4, .25), .02, .1), H1('flip'), 1, 0)
+add(fx, mx(S('chip-lay-1', .6), stamp(.35), click(.15, 1.6)), H1('coin'), 1, 0)
 add(fx, mx(verb(chime(1568, .25) + chime(2349, .16), .6, .3), S('handleCoins', .35)), H1('ching'), 1, .3)
 add(fx, swish(.8, .25), H1('lens'), 1, -.4)
 add(fx, mx(pop(.3), verb(shimmer(.15), .8, .3)), H1('reveal'), 1, .3)
@@ -106,7 +112,7 @@ _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.lin
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— voice ——
-vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.25.mp3'))   # the voice at 1.25×, pitch kept
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.10.mp3'))   # the voice at 1.10×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
