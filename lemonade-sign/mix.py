@@ -148,11 +148,9 @@ for k, t in enumerate(HIT['ices']): add(fx, verb(S(pick('impactGlass_light_00', 
 add(fx, S('impactSoft_medium_001', .35), H1('lemon'), 1, -.3)
 add(fx, click(.18, .8), H1('straw'), 1, .3)
 add(fx, verb(pitch(vox('g_ahh'), .94), .3, .1) * .5, H1('finalAhh'), 1, -.2)
-# the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only a soft airy swell as the logo appears
+# the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only the locked logo sound
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
-_d = 2.7; _tt = t_(_d); _env = np.minimum(1, _tt / .7) ** 2 * np.cos(np.clip((_tt - .7) / 2.0, 0, 1) * np.pi / 2) ** 2   # rises, then fades out slowly and smoothly
-_air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 4000) * _env
-add(fx, verb(norm(_air) * .06, 1.4, .3), STORY - .6, 1, 0)
+sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 # the time-lapse: the wall clock ticking fast under the whoosh
 for k in range(int(4.4 / .1)): add(fx, mx(click(.07, 1.0 + (k % 2) * .25), lp(thump(.03, 900), 2500) * .2), H1('timelapse') + k * .1, 1, -.2)
 
@@ -167,6 +165,7 @@ voice = buf(); add(voice, vo, 0, 1)
 fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
+mix = place_logo(mix, STORY + .2, SR, vr)   # the locked logo sound, after the effects bus so it is the same level in every film
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks

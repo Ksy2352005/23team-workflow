@@ -13,7 +13,7 @@ Locked choices for every animation reel. Follow these unless the brief for a fil
 | Background | The film's dark blue `#0b1438` |
 | Into it | The last shot fades into `#0b1438` over 0.7 s |
 | Logo in | Starts 0.15 s after the fade ends. It fades in over 0.9 s, settling from 104% to 100% scale while a 6 px blur clears, then holds about 1.2 s to the end. |
-| Sound | Only a soft airy swell that rises with the fade and dies away. No bell, no beep. Every other sound fades out with the picture. |
+| Sound | **Locked:** a short reverse swell into a deep, soft cinematic boom, kept low, with a long smooth fade-out. It is `tools/logo_sting.py`, the same file in every film, and the boom lands as the logo starts to appear. Every other sound fades out with the picture before it. |
 | No title cards | No text cards before the logo. |
 
 Code: `endCard()` in `restaurant-nobody-entered/main.js` (`LOGO_W`, `END_BLUE`, `w = W * .30`).
