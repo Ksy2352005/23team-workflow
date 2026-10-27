@@ -282,8 +282,9 @@ def logo_tone():
 # the fade to blue: everything else fades out with the picture, so the end sounds stand alone
 _n0, _n1 = int(W(58.2) * SR), int(W(58.8) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
 # the logo: just a soft airy swell that rises as it appears and fades away
-_d = 2.4; _tt = t_(_d); _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 5000) * np.minimum(1, _tt / .8) ** 2 * np.exp(-np.maximum(0, _tt - .8) / .55)
-add(fx, verb(norm(_air) * .12, 1.4, .35), 58.1, 1, 0)
+_d = 2.7; _tt = t_(_d); _env = np.minimum(1, _tt / .7) ** 2 * np.cos(np.clip((_tt - .7) / 2.0, 0, 1) * np.pi / 2) ** 2   # rises, then fades out slowly and smoothly
+_air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 4000) * _env
+add(fx, verb(norm(_air) * .06, 1.4, .3), 58.1, 1, 0)
 
 # —— mix ——
 music = music * 0   # no music in this cut: voice and sound effects only
