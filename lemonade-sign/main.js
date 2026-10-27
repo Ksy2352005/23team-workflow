@@ -158,18 +158,37 @@ function drawChar(c, p, t, S) {
 
 // —— the street ——
 const ANCHOR = [850, 1500];
-function sunPos(tod) { return tod <= 1 ? [lerp(330, 170, tod), lerp(640, 1180, tod * tod)] : [170, 1180 + (tod - 1) * 300]; }
+// the sun crosses the sky through the afternoon: high on the right, setting low on the left
+function sunPos(tod) { return tod <= 1 ? [lerp(1180, 250, tod), lerp(560, 1200, .4 * tod + .6 * tod * tod)] : [250, 1200 + (tod - 1) * 300]; }
+// the clock on the house wall: the hour, from the story time (scenes can set their own)
+function clockAt(t) { if (t < 6.7) return 13.2; if (t < 11.3) return lerp(13.2, 18.2, ss(seg(t, 6.75, 11.25))); if (t < 37.2) return 18.2 + (t - 11.3) * .02; if (t < 40) return lerp(18.7, 20.5, ss(seg(t, 37.3, 39.7))); if (t < 52.36) return 20.6; return 14.1; }
+function wallClock(c, x, y, r, hours, dusk) {
+  c.fillStyle = 'rgba(0,0,30,.25)'; c.beginPath(); c.arc(x + 3, y + 4, r + 5, 0, 7); c.fill();
+  c.fillStyle = '#c9a04a'; c.beginPath(); c.arc(x, y, r + 5, 0, 7); c.fill(); c.fillStyle = dusk ? '#c9c4b4' : '#f7f0de'; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+  c.fillStyle = NAVY; for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; c.beginPath(); c.arc(x + Math.sin(a) * r * .8, y - Math.cos(a) * r * .8, i % 3 ? 1.6 : 2.6, 0, 7); c.fill(); }
+  const hand = (a, l, wd) => { c.lineWidth = wd; c.strokeStyle = NAVY; c.lineCap = 'round'; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.sin(a) * l, y - Math.cos(a) * l); c.stroke(); };
+  hand(hours / 12 * Math.PI * 2, r * .5, 4); hand((hours % 1) * Math.PI * 2, r * .75, 2.5); c.fillStyle = NAVY; c.beginPath(); c.arc(x, y, 3, 0, 7); c.fill();
+}
+// soft clouds drifting across; in a time-lapse they race
+function clouds(c, t, look) {
+  if (look === 'dusk') return; const off = 18 * t + 1700 * ss(seg(t, 6.75, 11.3)) + 900 * ss(seg(t, 37.2, 39.7));
+  c.fillStyle = look === 'gold' ? 'rgba(255,215,190,.38)' : 'rgba(225,235,255,.4)';
+  for (const [bx, by, s] of [[100, 520, 1], [900, 380, .75], [1600, 700, .9], [2200, 470, .7]]) { const cx = ((bx + off) % 2600) - 450;
+    for (let i = 0; i < 6; i++) { c.beginPath(); c.ellipse(cx + (i - 2.5) * 50 * s, by - Math.sin(i / 5 * Math.PI) * 36 * s, 66 * s, 36 * s, 0, 0, 7); c.fill(); } }
+}
 function drawStreet(c, S, t) {
   const cam = S.cam, looks = [[S.look, 1]]; if (S.blend && S.blend.u > 0) looks.push([S.blend.to, S.blend.u]);
   const each = (key, fn, dx = 0, dy = 0) => { for (const [L, a] of looks) { c.save(); c.globalAlpha = a; c.drawImage(get(key + L, () => fn(L)), dx, dy); c.restore(); } };
   const p = .3; each('sky', SET.skySet, (cam[0] - ANCHOR[0]) * (1 - p), (cam[1] - ANCHOR[1]) * (1 - p));
   const tod = S.tod ?? 0, [sx, sy] = sunPos(tod), sunA = clamp(1.6 - tod);
-  if (sunA > 0) { const r = lerp(46, 64, Math.min(1, tod)); glow(c, sx, sy, r * 9, .55 * sunA, GOLDGLOW); c.save(); c.globalAlpha = sunA; c.fillStyle = tod > .6 ? '#f2b04a' : '#f6d27a'; c.beginPath(); c.arc(sx, sy, r, 0, 7); c.fill(); c.restore(); glow(c, sx, sy, r * 3, .5 * sunA, GOLDGLOW); }
+  if (sunA > 0) { const r = lerp(46, 64, Math.min(1, tod)); glow(c, sx, sy, r * 10, .75 * sunA, GOLDGLOW); c.save(); c.globalAlpha = sunA; c.fillStyle = tod > .6 ? '#f2a03e' : '#f7c44e'; c.beginPath(); c.arc(sx, sy, r, 0, 7); c.fill(); c.restore(); glow(c, sx, sy, r * 3, .5 * sunA, GOLDGLOW); }
+  if (S.blend && S.blend.u > 0) { c.save(); c.globalAlpha = 1 - S.blend.u; clouds(c, t, S.look); c.globalAlpha = S.blend.u; clouds(c, t, S.blend.to); c.restore(); } else clouds(c, t, S.look);
   each('street', SET.streetSet);
   houseDoor(c, S.door || 0, S.look);
+  wallClock(c, 915, 1085, 34, S.clock ?? clockAt(t), S.look === 'dusk');
   if (S.look === 'dusk' || S.porch) { const d = G.door; glow(c, d.x1 + 34, d.y0 + 44, 160, .7); glow(c, 720 + 65, 1230, 220, .35); glow(c, 980 + 65, 1230, 220, .35); }
   // long afternoon shadows of the stand and the board, away from the sun
-  const sh = clamp(tod), dir = 1 + sh * 1.6;
+  const sh = clamp(tod), dir = clamp((880 - sx) / 300, -1.4, 2.4);   // the shadows swing round as the sun moves
   c.fillStyle = `rgba(8,12,45,${.18 + .12 * sh})`;
   c.beginPath(); c.moveTo(ST.x0, ST.front); c.lineTo(ST.x1, ST.front); c.lineTo(ST.x1 + 60 * dir, ST.front + 26); c.lineTo(ST.x0 + 60 * dir, ST.front + 26); c.fill();
   if (S.board) { c.beginPath(); c.moveTo(BOARD.x0, BOARD.feet); c.lineTo(BOARD.x1, BOARD.feet); c.lineTo(BOARD.x1 + 90 * dir, BOARD.feet + 30); c.lineTo(BOARD.x0 + 90 * dir, BOARD.feet + 30); c.fill(); }
@@ -269,11 +288,14 @@ function drawGlass(c, S, t) {
 
 // —— assembling a frame ——
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
-function endCard(c, t) {   // the 23 logo, exactly as supplied, settling softly onto white
-  c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#ffffff'; c.fillRect(0, 0, W, H);
-  const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = W * .36, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
-  c.save(); c.globalAlpha = u; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
-  c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO, -w / 2, -h / 2, w, h); c.restore();
+// the locked 23 Team end card (ANIMATION-STYLE.md): the logo's exact shape in soft pale blue at 75%, 30% of the frame width, centred on the dark blue
+const END_BLUE = '#0b1438';
+const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();
+function endCard(c, t) {
+  c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
+  const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = W * .30, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
+  c.save(); c.globalAlpha = u * .75; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
+  c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO_W, -w / 2, -h / 2, w, h); c.restore();
 }
 function vignette(c, a = .4) { c.setTransform(1, 0, 0, 1, 0, 0); const g = c.createRadialGradient(W / 2, H * .48, H * .25, W / 2, H * .5, H * .78); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, `rgba(4,6,30,${a})`); c.fillStyle = g; c.fillRect(0, 0, W, H); }
 function drawScene(c, S, t, cy = H / 2) {
@@ -290,7 +312,7 @@ function draw(c, t) {
     c.setTransform(1, 0, 0, 1, 0, 0); const lw = W * S.open; c.fillStyle = CREAM; c.fillRect((W - lw) / 2, H / 2 - 4 * K, lw, 8 * K);
   } else drawScene(c, S, t);
   vignette(c, S.set === 'glass' ? .3 : .4);
-  if (S.bloom > 0) { c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = `rgba(255,255,255,${S.bloom})`; c.fillRect(0, 0, W, H); }
+  if (S.bloom > 0) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = S.bloom; c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H); c.globalAlpha = 1; }   // the last shot fades into the dark blue
 }
 
 // sound cues: the fixed hits, plus a footstep wherever a walking character's foot lands

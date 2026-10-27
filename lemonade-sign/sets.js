@@ -21,7 +21,7 @@ export function glowSprite(col = '255,190,110') {
   g.addColorStop(0, `rgba(${col},1)`); g.addColorStop(.25, `rgba(${col},.45)`); g.addColorStop(1, `rgba(${col},0)`); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c;
 }
 // the whole setting sits a step darker than the characters and the stand, so they stand out
-function dim(x, look) { x.save(); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgba(6,10,40,${look === 'dusk' ? .2 : .42})`; x.fillRect(0, 0, WW, WH); x.restore(); }
+function dim(x, look, k = 1) { x.save(); x.globalCompositeOperation = 'source-atop'; x.fillStyle = `rgba(6,10,40,${(look === 'dusk' ? .2 : .42) * k})`; x.fillRect(0, 0, WW, WH); x.restore(); }
 function blob(x, cx, cy, r, n, rnd) { x.beginPath(); for (let i = 0; i <= n; i++) { const a = i / n * Math.PI * 2, rr = r * (.82 + .3 * rnd()); x[i ? 'lineTo' : 'moveTo'](cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * .85); } x.closePath(); x.fill(); }
 function canopy(x, cx, cy, r, cols, seed) {   // a round tree crown: dark mass, mid clumps, a few lit clumps on the sun side
   const rnd = mulberry(seed);
@@ -45,7 +45,7 @@ export function skySet(look) {
     x.fillStyle = look === 'dusk' ? '#2b3a74' : '#3b55a0'; x.fillRect(x0, 1490 - h + 120, w, h - 120);
     x.fillStyle = look === 'dusk' ? '#f0c060' : '#1b2a62'; for (const wx of [x0 + 40, x0 + w - 100]) x.fillRect(wx, 1490 - h + 170, 60, 80);
   }
-  dim(x, look);
+  dim(x, look, .45);   // the sky stays a summer afternoon; the street and the house sit darker
   return c;
 }
 

@@ -107,7 +107,6 @@ add(fx, mx(pop(.35), click(.3, .7)), H1('uncap'), 1, .2)
 for a, b in (HIT['write1'], HIT['write2']): add(fx, scribble(b - a, .5, 9 if b - a > .9 else 7), a, 1, 0)
 # —— C: the afternoon passing ——
 add(fx, whoosh(4.2, .05), H1('timelapse'), 1, 0)
-for k in range(int(4.2 / .12)): add(fx, click(.04, 1.4 + (k % 2) * .3), H1('timelapse') + k * .12, 1, .3)
 # —— D–E: the cups into the box, the door, the gate, a tap on the paper ——
 add(fx, S('cloth2', .35), H1('sigh'), 1, 0)
 add(fx, mx(S('impactSoft_medium_000', .4), click(.15, 1.1)), H1('stack'), 1, .2)
@@ -149,7 +148,12 @@ for k, t in enumerate(HIT['ices']): add(fx, verb(S(pick('impactGlass_light_00', 
 add(fx, S('impactSoft_medium_001', .35), H1('lemon'), 1, -.3)
 add(fx, click(.18, .8), H1('straw'), 1, .3)
 add(fx, verb(pitch(vox('g_ahh'), .94), .3, .1) * .5, H1('finalAhh'), 1, -.2)
-add(fx, verb(ding(.12), 1.8, .6), STORY + .2, 1, 0)   # a soft, airy tone as the logo appears
+# the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only a soft airy swell as the logo appears
+_n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
+_d = 2.4; _tt = t_(_d); _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 5000) * np.minimum(1, _tt / .8) ** 2 * np.exp(-np.maximum(0, _tt - .8) / .55)
+add(fx, verb(norm(_air) * .12, 1.4, .35), STORY - .6, 1, 0)
+# the time-lapse: the wall clock ticking fast under the whoosh
+for k in range(int(4.4 / .1)): add(fx, mx(click(.07, 1.0 + (k % 2) * .25), lp(thump(.03, 900), 2500) * .2), H1('timelapse') + k * .1, 1, -.2)
 
 # —— voice ——
 vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu.mp3'))
@@ -164,7 +168,7 @@ vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
-mix = np.stack([limit(mix[:, 0], .85), limit(mix[:, 1], .85)], 1)
+mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
 # 3.2 s of silence after the end: the muxer's decode check reads ~2.9 s short (the loudness filter's look-ahead); the mux cuts the audio to the picture (-shortest)
 mix = np.concatenate([mix, np.zeros((int(3.2 * SR), 2))])

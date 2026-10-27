@@ -4,7 +4,7 @@ import { clamp, lerp, seg, ss, track, hash } from '/core/lib.js';
 import { BASE_H } from './char2d.js';
 import { G } from './sets.js';
 
-export const STORY = 54.3, DUR = 56.6;   // the story, then the 23 logo on white
+export const STORY = 54.3, DUR = 56.5;   // the story, then the 23 logo on dark blue (the locked end card)
 export const DISSOLVES = [{ at: 6.7, d: .4 }, { at: 30.35, d: .3 }, { at: 37.2, d: .3 }, { at: 40.35, d: .35 }, { at: 45.85, d: .45 }];
 
 // the stand: front panel x 770..990, its front at y 1700, the top surface at y 1594..1612
@@ -63,13 +63,20 @@ function intro(t) {
 function writing(t) { return { set: 'desk', mode: 'write', w1: seg(t, ...WRITE1), w2: seg(t, ...WRITE2), cap: seg(t, HIT.uncap - .2, HIT.uncap), handIn: ss(seg(t, 3.15, 3.6)), handOut: ss(seg(t, 6.45, 6.7)), cam: [540, 960 + 30 * seg(t, 3.1, 6.7), 1 + .06 * seg(t, 3.1, 6.7)] }; }
 // —— C (6.7–11.45): the whole afternoon in a few seconds: the sun sinks, people walk past, nobody stops ——
 function afternoon(t) {
-  const passer = (id, skin, t0, t1, dir, y, o = {}) => { if (t < t0 - .01 || t > t1 + .01) return null; const r = route(t, t0, t1, dir > 0 ? [[-80, y], [1800, y]] : [[1800, y], [-80, y]], 46, false); return { id, skin, s: 1, ...idle(t, id.length), ...r, ...o }; };
-  const p2 = passer('p2', B2, 8.3, 10.1, -1, LANE + 8, { fem: 'bob' });
-  if (p2) { const g = Math.sin(seg(t, 8.95, 9.55) * Math.PI); p2.headTurn = .9 * g; p2.look = -.6 * g; }
-  const chin = t > 8.6, sad = ss(seg(t, 10.2, 10.8));
-  const b0 = boy(t, { chin: chin ? 'L' : undefined, tilt: chin ? -.08 : 0, look: chin ? .3 : 0, smile: chin ? lerp(.3, 0, sad) : .8, sad, headTurn: !chin ? .4 * Math.sin(t * 2) : 0 });
-  const chars = [b0, passer('p1', B, 6.75, 8.55, 1, LANE), p2, passer('p3', B3, 9.75, 11.45, 1, LANE - 6)].filter(Boolean);
-  return { set: 'st', look: 'day', blend: { to: 'gold', u: ss(seg(t, 7.0, 11.2)) }, tod: seg(t, 6.7, 11.2), timelapse: seg(t, 6.75, 11.3), cam: V([[6.7, [870, 1470, 1.45]], [11.45, [880, 1490, 1.55]]])(t), chars, stand: { ...stand0, served: [{ x: 858, y: 1604, lvl: 0 }, { x: 895, y: 1604, lvl: 0 }], cups: 4 } };
+  // a time-lapse: the sun crosses the sky, the clock's hands race, clouds fly over, the shadows swing round; people stream past; the boy jumps from pose to pose
+  const passer = (id, skin, t0, dir, y, o = {}) => { const t1 = t0 + 1.05; if (t < t0 - .01 || t > t1 + .01) return null; const r = route(t, t0, t1, dir > 0 ? [[-80, y], [1800, y]] : [[1800, y], [-80, y]], 52, false); return { id, skin, s: 1, ...idle(t, id.length), ...r, ...o }; };
+  const ps = [passer('p1', B, 6.8, 1, LANE), passer('p2', B2, 7.45, -1, LANE + 8, { fem: 'bob' }), passer('p3', B3, 8.1, 1, LANE - 6), passer('p4', B, 8.7, -1, LANE + 4, { fem: 'long' }),
+    passer('p5', B2, 9.35, 1, LANE + 10), passer('p6', B3, 10.0, -1, LANE, { fem: 'bun' }), passer('p7', B, 10.6, 1, LANE - 4)].filter(Boolean);
+  const g4 = ps.find(p => p.id === 'p4'); if (g4) { const g = Math.sin(seg(t, 9.0, 9.5) * Math.PI); g4.headTurn = .9 * g; g4.look = -.6 * g; }
+  const k = clamp(Math.floor((t - 6.75) / .92), 0, 4), POSE = [
+    { x: 880, smile: .9, armR: 2.3 + .3 * Math.sin(t * 14), look: .1 },                       // waving, hopeful
+    { x: 905, chin: 'L', tilt: -.08, look: .3, smile: .3 },                                   // leaning on the stand
+    { x: 860, f: .6, headTurn: .3, look: .1, smile: .2, armL: .5, armR: .5 },               // looking up the street
+    { x: 890, chin: 'R', tilt: .1, look: .4, smile: 0, sad: .4 },                             // bored
+    { x: 880, sad: 1, look: .9, smile: 0, squash: .03 }][k];                                  // head down
+  const b0 = boy(t, POSE);
+  return { set: 'st', look: 'day', blend: { to: 'gold', u: ss(seg(t, 7.0, 11.2)) }, tod: ss(seg(t, 6.75, 11.25)), timelapse: seg(t, 6.75, 11.3), cam: V([[6.7, [870, 1250, 1.05]], [11.45, [880, 1330, 1.15]]])(t), chars: [b0, ...ps],
+    stand: { ...stand0, served: [{ x: 858, y: 1604, lvl: 0 }, { x: 895, y: 1604, lvl: 0 }], cups: 4 } };
 }
 // —— D (11.45–16.3): he is about to pack up: the cups into the box; the door opens, his dad comes down the path and out of the gate ——
 const DAD = [[570, 1496], [598, 1540], [644, 1596], [668, 1662], [700, 1726], [720, 1768]];
@@ -198,7 +205,7 @@ function finale(t) {
     const h = reach(rest, mouth, d), p = { id: 'f' + seed, skin, fem, s: 1, x, y, f, ...idle(t, seed), smile: .9, tilt: -.2 * d * Math.sign(f), cupAt: h, cupLvl: .7 }; p[f > 0 ? 'handR' : 'handL'] = h; return p; };
   const kid = { id: 'fk', skin: B3, fem: 'pony', s: .55, x: 790, y: 1795, f: .3, ...idle(t, 44), smile: 1, squash: .04 * Math.sin(t * 8) };
   const chars = [boy(t, { x: 900, smile: 1, armR: .6 + .3 * Math.sin(t * 6), look: .2 }), sip(41, 700, 1786, B2, 'hat', .5), kid, sip(42, 1050, 1792, B, null, -.5), sip(43, 1250, 1800, B3, 'long', -.5), sip(45, 560, 1800, B, null, .5)];
-  return { set: 'st', look: 'day', tod: 0, board: 1, gate: 1, hot: 1, bloom: ss(seg(t, HIT.bloom, STORY)), cam: V([[52.36, [900, 1480, 1.35]], [STORY, [880, 1420, 1.15]]])(t), chars, stand: { ...stand0, paper: false, cups: 2, tin: 10, pitcher: .7 } };
+  return { set: 'st', look: 'day', tod: 0, board: 1, gate: 1, hot: 1, bloom: ss(seg(t, STORY - .7, STORY)), cam: V([[52.36, [900, 1480, 1.35]], [STORY, [880, 1420, 1.15]]])(t), chars, stand: { ...stand0, paper: false, cups: 2, tin: 10, pitcher: .7 } };
 }
 const SCENES = [[0, intro], [3.1, writing], [6.7, afternoon], [11.45, packing], [16.3, advice], [19.7, thinking], [21.66, painting], [23.45, board], [30.35, customers], [37.2, rush], [40.35, counting], [43.0, split], [45.85, glass], [52.36, finale]];
 export function sceneAt(t) { t = Math.min(t, STORY - 1e-3); let f = SCENES[0][1]; for (const [a, fn] of SCENES) if (t >= a) f = fn; return f(t); }
