@@ -272,6 +272,8 @@ add(fx, lp(qw, 1400) * .14, 54.6, 1, .3)
 add(fx, fade(lp(murmur(DUR - H1('queue'), .04, 4), 1400), .6, .3), H1('queue'), 1, .2)
 add(fx, click(.15, .8), H1('bell5') - .08, 1, -.3); add(fx, verb(ding(.3), 1.3, .5), H1('bell5'), 1, -.3)
 
+# the fade to blue: everything else fades out with the picture, so the end sounds stand alone
+_n0, _n1 = int(W(58.2) * SR), int(W(58.8) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— mix ——
