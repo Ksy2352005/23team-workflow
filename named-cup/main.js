@@ -25,8 +25,8 @@ const Hs = s => BASE_H * s * 1.08;
 // —— the stage and its pieces (all in a 1080 × 1920 frame) ——
 function bg(c, t, o = {}) {
   const g = c.createRadialGradient(540, 860, 80, 540, 960, 1400); g.addColorStop(0, '#26368c'); g.addColorStop(1, '#0a1034'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
-  c.fillStyle = 'rgba(255,255,255,.05)'; const off = (t * 24) % 60;
-  for (let y = -60; y < 1980; y += 60) for (let x = -60; x < 1140; x += 60) { c.beginPath(); c.arc(x + off + (y / 60 % 2) * 30, y + off, 3, 0, 7); c.fill(); }
+  if (o.shop) backdrop(c, t, o.shop, o.dim ?? .5); else { c.fillStyle = 'rgba(255,255,255,.05)'; const off = (t * 24) % 60;
+  for (let y = -60; y < 1980; y += 60) for (let x = -60; x < 1140; x += 60) { c.beginPath(); c.arc(x + off + (y / 60 % 2) * 30, y + off, 3, 0, 7); c.fill(); } }
   if (o.rays) { c.save(); c.translate(o.rx ?? 540, o.ry ?? 900); c.rotate(t * .25); c.fillStyle = `rgba(255,214,120,${.07 * o.rays})`;
     for (let i = 0; i < 14; i++) { c.rotate(Math.PI * 2 / 14); c.beginPath(); c.moveTo(0, 0); c.lineTo(1600, -120); c.lineTo(1600, 120); c.closePath(); c.fill(); } c.restore(); }
 }
@@ -67,14 +67,63 @@ function tag(c, x, y, k, label = '490 Ft') { if (k <= 0) return; const sw = Math
 function carryCup(P, h) { const Hh = Hs(P.s), d = (P.f ?? 0) < -.1 ? -1 : 1, cx = P.x + d * (.26 * Hh + h * .3), base = P.y - .2 * Hh;
   P[d > 0 ? 'handR' : 'handL'] = [cx - d * h * .3, base - h * .45]; return [cx, base]; }
 
+
+// —— the shop's back wall, painted once: patterned navy wallpaper, a shop window onto the evening street, shelves of cups, mugs, gift boxes and a plant ——
+// 60-30-10: navy and blue (wall, window, shadows) · cream and wood (shelves, panelling, frames, floor) · gold (lamps, ribbons, bulbs, lettering)
+const WALL = (() => {
+  const [cv0, x] = mk(); cv0.width = 1700; cv0.height = 2300; x.translate(300, -150);   // world coords: x −300..1400, y 150..2450
+  x.fillStyle = '#1a2766'; x.fillRect(-300, 150, 1700, 1600);
+  for (let px = -300; px < 1400; px += 60) { x.fillStyle = (px / 60) % 2 ? '#1e2c70' : '#1a2766'; x.fillRect(px, 330, 30, 1000); }
+  x.fillStyle = 'rgba(236,189,74,.18)'; for (let py = 380; py < 1300; py += 110) for (let px = -270 + (py / 110 % 2) * 55; px < 1400; px += 110) { x.save(); x.translate(px, py); x.rotate(Math.PI / 4); x.fillRect(-4, -4, 8, 8); x.restore(); }
+  x.fillStyle = '#0f1846'; x.fillRect(-300, 150, 1700, 180); x.fillStyle = '#e9dcc0'; x.fillRect(-300, 326, 1700, 10); x.fillStyle = '#c9b791'; x.fillRect(-300, 336, 1700, 6);
+  // the shop window: the evening street outside, lit windows across the road, a NYITVA sign hanging in it
+  x.fillStyle = '#efe4c8'; x.fillRect(-250, 620, 520, 730); const g = x.createLinearGradient(0, 640, 0, 1330); g.addColorStop(0, '#0d1745'); g.addColorStop(1, '#3b5fb0'); x.fillStyle = g; x.fillRect(-228, 642, 476, 686);
+  x.fillStyle = '#121c50'; for (const [bx, bw, bh] of [[-228, 120, 330], [-100, 150, 420], [60, 110, 300], [175, 90, 380]]) { x.fillRect(bx, 1328 - bh, bw, bh); for (let wy = 1328 - bh + 30; wy < 1300; wy += 60) for (let wx = bx + 18; wx < bx + bw - 20; wx += 38) { x.fillStyle = (wx * 7 + wy) % 3 ? '#e9b860' : '#26346f'; x.fillRect(wx, wy, 18, 26); x.fillStyle = '#121c50'; } }
+  x.fillStyle = '#efe4c8'; x.fillRect(5, 642, 14, 686); x.fillRect(-228, 960, 476, 14);
+  x.strokeStyle = '#c9b791'; x.lineWidth = 3; x.beginPath(); x.moveTo(40, 642); x.lineTo(70, 760); x.moveTo(170, 642); x.lineTo(140, 760); x.stroke();
+  x.fillStyle = '#f6efdc'; x.beginPath(); x.roundRect(40, 760, 130, 56, 10); x.fill(); x.font = '34px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#1c2450'; x.fillText('NYITVA', 105, 790);
+  // panelling below, behind the counter
+  x.fillStyle = '#6e4a2c'; x.fillRect(-300, 1350, 1700, 400); x.fillStyle = '#e9dcc0'; x.fillRect(-300, 1344, 1700, 10);
+  x.strokeStyle = 'rgba(30,15,5,.35)'; x.lineWidth = 4; for (let px = -280; px < 1400; px += 170) x.strokeRect(px, 1380, 140, 280);
+  // the top shelf: mugs, a plant, gift boxes, a little framed heart, a jar of gold stars
+  const plank = (x0, x1, y) => { x.fillStyle = 'rgba(0,0,20,.3)'; x.fillRect(x0 + 10, y + 14, x1 - x0, 14); x.fillStyle = '#8a5d38'; x.beginPath(); x.roundRect(x0, y, x1 - x0, 22, 8); x.fill(); x.fillStyle = 'rgba(255,230,190,.18)'; x.fillRect(x0, y, x1 - x0, 4); };
+  plank(420, 1130, 780); plank(420, 1130, 990);
+  for (const mx0 of [470, 560]) { x.fillStyle = '#f1e7cf'; x.beginPath(); x.roundRect(mx0 - 32, 700, 64, 80, 10); x.fill(); x.strokeStyle = '#f1e7cf'; x.lineWidth = 10; x.beginPath(); x.arc(mx0 + 36, 740, 18, -1.3, 1.3); x.stroke(); x.fillStyle = mx0 === 470 ? '#26346f' : '#d9a332'; x.fillRect(mx0 - 32, 720, 64, 12); }
+  x.fillStyle = '#efe4c8'; x.beginPath(); x.moveTo(632, 780); x.lineTo(688, 780); x.lineTo(698, 730); x.lineTo(622, 730); x.fill();
+  for (const [lx, ly, r, col] of [[640, 690, 34, '#2b6c7e'], [680, 680, 30, '#3f8a92'], [660, 650, 30, '#2f7180'], [625, 655, 24, '#3f8a92']]) { x.fillStyle = col; x.beginPath(); x.ellipse(lx, ly, r, r * .6, -.4, 0, 7); x.fill(); }
+  for (const [bx, by, bw, bh, col, rib] of [[740, 700, 110, 80, '#f1e7cf', '#d9a332'], [755, 640, 80, 60, '#26346f', '#efe4c8'], [770, 600, 50, 40, '#f1e7cf', '#d9a332']]) { x.fillStyle = col; x.fillRect(bx, by, bw, bh); x.fillStyle = rib; x.fillRect(bx + bw / 2 - 6, by, 12, bh); x.fillRect(bx, by + bh / 2 - 5, bw, 10); }
+  x.fillStyle = '#d9a332'; x.fillRect(880, 660, 110, 120); x.fillStyle = '#1c2450'; x.fillRect(892, 672, 86, 96); x.fillStyle = '#ecbd4a'; x.beginPath(); const hx = 935, hy = 712; x.moveTo(hx, hy + 30); x.bezierCurveTo(hx - 40, hy, hx - 24, hy - 26, hx, hy - 10); x.bezierCurveTo(hx + 24, hy - 26, hx + 40, hy, hx, hy + 30); x.fill();
+  x.fillStyle = 'rgba(230,240,255,.25)'; x.beginPath(); x.roundRect(1030, 690, 70, 90, 12); x.fill(); x.fillStyle = '#ecbd4a'; for (let i = 0; i < 9; i++) { x.beginPath(); x.arc(1045 + (i % 3) * 20, 765 - Math.floor(i / 3) * 20, 7, 0, 7); x.fill(); } x.fillStyle = '#8a5d38'; x.fillRect(1026, 682, 78, 12);
+  // a tall plant on the right, wooden floor boards
+  x.fillStyle = '#efe4c8'; x.beginPath(); x.moveTo(1180, 1700); x.lineTo(1300, 1700); x.lineTo(1280, 1560); x.lineTo(1200, 1560); x.fill();
+  for (let i = 0; i < 9; i++) { x.fillStyle = i % 2 ? '#2b6c7e' : '#3f8a92'; x.save(); x.translate(1240, 1560); x.rotate(-1.1 + i * .28); x.beginPath(); x.ellipse(0, -140, 26, 120, 0, 0, 7); x.fill(); x.restore(); }
+  const fg = x.createLinearGradient(0, 1700, 0, 2450); fg.addColorStop(0, '#5a3a22'); fg.addColorStop(1, '#24170e'); x.fillStyle = fg; x.fillRect(-300, 1700, 1700, 750);
+  x.strokeStyle = 'rgba(0,0,0,.25)'; x.lineWidth = 3; for (let py = 1730; py < 2450; py += 40 + (py - 1700) * .08) { x.beginPath(); x.moveTo(-300, py); x.lineTo(1400, py); x.stroke(); }
+  return cv0;
+})();
+// the live parts: hanging lamps, a string of bulbs, the BOLT sign on chains
+function shopLights(c, t) {
+  c.strokeStyle = '#2a2a33'; c.lineWidth = 3;
+  for (const lx of [260, 1100]) { c.beginPath(); c.moveTo(lx, 150); c.lineTo(lx, 430); c.stroke(); c.fillStyle = '#121a46'; c.beginPath(); c.moveTo(lx - 60, 480); c.lineTo(lx + 60, 480); c.lineTo(lx + 24, 430); c.lineTo(lx - 24, 430); c.fill(); c.fillStyle = '#ffe7a6'; c.beginPath(); c.ellipse(lx, 482, 40, 10, 0, 0, 7); c.fill(); glow(c, lx, 520, 260, .45); }
+  c.strokeStyle = 'rgba(20,20,30,.8)'; c.lineWidth = 2; c.beginPath(); for (let i = 0; i <= 30; i++) { const x = -250 + i * 55, y = 360 + Math.sin(i / 30 * Math.PI * 3) * -24 + 30; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
+  for (let i = 0; i <= 30; i++) { const x = -250 + i * 55, y = 368 + Math.sin(i / 30 * Math.PI * 3) * -24 + 30, on = .75 + .25 * Math.sin(t * 3 + i * 1.7); c.fillStyle = '#ffe2a0'; c.beginPath(); c.arc(x, y, 6, 0, 7); c.fill(); glow(c, x, y, 26, .45 * on); }
+  c.strokeStyle = '#8a7a60'; c.lineWidth = 3; for (const cx of [680, 900]) { c.beginPath(); c.moveTo(cx, 330); c.lineTo(cx, 540); c.stroke(); }
+  c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(648, 546, 300, 126, 18); c.fill();
+  c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(640, 536, 300, 126, 18); c.fill(); c.strokeStyle = '#efe4c8'; c.lineWidth = 6; c.beginPath(); c.roundRect(652, 548, 276, 102, 12); c.stroke();
+  text(c, 'BOLT', 790, 602, 86, GOLD); for (let i = 0; i < 8; i++) { const on = (Math.floor(t * 3) + i) % 3 !== 0; c.fillStyle = on ? '#ffe7a6' : '#8a7040'; c.beginPath(); c.arc(668 + i * 35, 536, 5, 0, 7); c.fill(); if (on) glow(c, 668 + i * 35, 536, 20, .4); }
+}
+// the same wall as a soft, out-of-focus backdrop for the close shots
+function backdrop(c, t, blur = 10, dim = .5) {
+  c.save(); c.filter = `blur(${blur * K}px)`; c.translate(540, 1100); c.scale(1.12, 1.12); c.translate(-630, -1420); c.drawImage(WALL, -300, 150); shopLights(c, t); c.restore();
+  c.fillStyle = `rgba(10,16,50,${dim})`; c.fillRect(0, 0, 1080, 1920);
+}
+
 // —— the minimal shop: a BOLT sign, a shelf of plain cups, the seller (white) behind a counter ——
 const CT = { x0: 400, x1: 1120, top: 1380, front: 1700 }, SPOT = [300, 1800], SELLER = { id: 'seller', skin: 'owner', tache: 1, s: 2.0, x: 860, y: 1560, f: -.4, smile: .8 };
 function shop(c, t, o = {}) {
   if (!o.noBg) bg(c, t, o.bg || {});
   c.save(); c.translate(540, 1100); c.scale(1.12, 1.12); c.translate(-630, -1420);
-  c.fillStyle = 'rgba(5,8,30,.35)'; c.fillRect(-400, CT.front, 2000, 1200);
-  c.fillStyle = '#121a46'; c.beginPath(); c.roundRect(640, 560, 300, 120, 22); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 6; c.stroke(); text(c, 'BOLT', 790, 624, 92, GOLD);
-  c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(440, 1004, 680, 16); c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(430, 990, 690, 22, 8); c.fill();
+  c.drawImage(WALL, -300, 150); shopLights(c, t);
   for (let i = 0; i < 6; i++) cup(c, 475 + i * 120, 990, 105, { dim: o.dimShelf || 0 });
   if (o.glintShelf) glow(c, 715, 930, 120, o.glintShelf);
   const S = { ...SELLER, blink: blinkAt(t, 2), ...(o.seller || {}) }; drawMascot(c, { ...S, shadow: false });
@@ -82,6 +131,10 @@ function shop(c, t, o = {}) {
   c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(CT.x0 + 10, CT.top + 14, CT.x1 - CT.x0, 24);
   c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(CT.x0 - 20, CT.top - 14, CT.x1 - CT.x0 + 40, 30, 12); c.fill();
   c.fillStyle = CREAM; c.fillRect(CT.x0, CT.top + 16, CT.x1 - CT.x0, CT.front - CT.top - 16); c.fillStyle = '#26368c'; c.fillRect(CT.x0, CT.top + 80, CT.x1 - CT.x0, 44); c.fillStyle = GOLD; c.fillRect(CT.x0, CT.top + 76, CT.x1 - CT.x0, 5); c.fillRect(CT.x0, CT.top + 124, CT.x1 - CT.x0, 5);
+  c.fillStyle = 'rgba(120,90,50,.14)'; for (let px = CT.x0 + 30; px < CT.x1 - 160; px += 240) { c.beginPath(); c.roundRect(px, CT.top + 150, 200, 140, 14); c.fill(); }
+  c.fillStyle = GOLD; for (let px = CT.x0 + 130; px < CT.x1 - 60; px += 240) { c.beginPath(); c.arc(px, CT.top + 220, 9, 0, 7); c.fill(); }
+  c.fillStyle = '#26346f'; c.beginPath(); c.roundRect(455, CT.top - 70, 50, 62, 8); c.fill(); for (const [dx, col] of [[-12, GOLD], [0, CREAM], [12, '#2448bb']]) { c.fillStyle = col; c.save(); c.translate(480 + dx, CT.top - 80); c.rotate(dx * .02); c.fillRect(-5, -30, 10, 40); c.restore(); }
+  c.fillStyle = '#efe4c8'; c.beginPath(); c.roundRect(1010, CT.top - 110, 100, 98, 12); c.fill(); c.fillStyle = '#26346f'; c.fillRect(1022, CT.top - 98, 76, 26); c.fillStyle = GOLD; c.fillRect(1030, CT.top - 92, 40, 14); c.fillStyle = '#c9b791'; for (let i = 0; i < 6; i++) c.fillRect(1022 + (i % 3) * 26, CT.top - 62 + Math.floor(i / 3) * 18, 20, 12);
   (o.onCounter || []).forEach(f => f());
   (o.front || []).forEach(f => f());
   c.restore();
@@ -100,7 +153,7 @@ const SHOT = {
     cam(c, 540, 960, 1 + .06 * seg(t, 0, 1.8), 0, () => shop(c, t, { front: [() => mascot(c, P)] }));
   },
   pov(c, t) {   // what he sees: the shelf, close; the focus pulls onto one plain cup, it glints
-    bg(c, t);
+    bg(c, t, { shop: 12, dim: .45 });
     const f = ss(seg(t, HIT.focus, HIT.focus + .5)), z = 1 + .08 * seg(t, 1.8, 4.0);
     cam(c, 540, 1100, z, 0, () => { plank(c, -100, 1180, 1420, 40);
       [[-80, 380], [160, 400], [920, 400], [1160, 380]].forEach(([x, h]) => blurred(c, 7, () => cup(c, x, 1420, h)));
@@ -108,7 +161,7 @@ const SHOT = {
       sparkle(c, 640, 990, seg(t, HIT.glint, HIT.glint + .7), 70); });
   },
   plain(c, t) {   // nothing special, not even expensive: a low angle, the cup turning slowly on the spot
-    bg(c, t);
+    bg(c, t, { shop: 14, dim: .55 });
     const k = E(t, 4.05, .35, .4), sh = t > HIT.shrug ? Math.sin(clamp((t - HIT.shrug) / .6) * Math.PI * 2) * .05 * Math.exp(-(t - HIT.shrug) * 2) : 0;
     cam(c, 540, 1000, 1.05, Math.sin(t * .6) * .03, () => {
       c.fillStyle = '#121a46'; c.beginPath(); c.ellipse(540, 1480, 380, 70, 0, 0, 7); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 6; c.stroke();
@@ -117,7 +170,7 @@ const SHOT = {
       tag(c, 775, 790, E(t, HIT.tag, .4, .45)); });
   },
   row(c, t) {   // most people would never notice it: they walk straight past, close to us, out of focus
-    bg(c, t);
+    bg(c, t, { shop: 9, dim: .45 });
     const pan = lerp(70, -70, seg(t, 7.7, 11.1));
     cam(c, 540 - pan, 1100, 1.05, 0, () => { plank(c, -40, 1120, 1240, 30); for (let i = 0; i < 6; i++) scaled(c, 70 + i * 190, 1240, E(t, 7.72 + i * .04, .3, .4), () => cup(c, 70 + i * 190, 1240, 220)); });
     HIT.passers.forEach((p, i) => { const u = seg(t, p, p + .9); if (u <= 0 || u >= 1) return; const dir = i % 2 ? -1 : 1, x = dir > 0 ? lerp(-500, 1580, u) : lerp(1580, -500, u);
@@ -127,7 +180,7 @@ const SHOT = {
     bg(c, t);
     const lean = ss(seg(t, HIT.lean, HIT.lean + .35)), hand = ss(seg(t, 11.7, 12.1)), b = E(t, HIT.bubble, .35, .45), z = 1 + .07 * seg(t, 11.1, 16.4);
     cam(c, 600, 1150, z, 0, () => {
-      plank(c, 60, 1060, 820, 24); for (let i = 0; i < 6; i++) cup(c, 140 + i * 160, 820, 130);
+      c.drawImage(WALL, -300, 150); shopLights(c, t); for (let i = 0; i < 6; i++) cup(c, 475 + i * 120, 990, 105);
       const S = { ...SELLER, x: 640, y: 1560, s: 2.6, f: -.15, smile: .9, look: .1, blink: blinkAt(t, 2), lean: .06 * lean, squash: -.03 * Math.sin(clamp((t - HIT.seller) / .35) * Math.PI) };
       S.handR = reach([700, 1300], [520, 1150], hand); drawMascot(c, { ...S, shadow: false });
       if (hand > .2) { const [hx, hy] = S.handR; c.save(); c.translate(hx, hy); c.rotate(-.5); c.fillStyle = NAVY; c.beginPath(); c.roundRect(-14, -84, 28, 104, 9); c.fill(); c.fillStyle = GOLD; c.fillRect(-14, -84, 28, 22); c.restore(); }
@@ -139,7 +192,7 @@ const SHOT = {
   think(c, t) {   // a tight, tilted close-up: his eyes go from the plain cup to the one with his name... yes
     const yes = t > HIT.yes, n = HIT.swings.filter(s => t > s).length, side = n % 2 ? 1 : -1, sw = yes ? 0 : (n ? side : 0);
     const tilt = yes ? lerp(.1 * side, 0, ss(seg(t, HIT.yes, HIT.yes + .25))) : .1 * Math.sin((t - 16.4) * 1.6), zp = yes ? 1 + .08 * E(t, HIT.yes, .3, .4) : 1 + .04 * seg(t, 16.4, 19);
-    bg(c, t, { rays: yes ? E(t, HIT.yes, .4, .3) : 0, ry: 600 });
+    bg(c, t, { shop: 16, dim: .55, rays: yes ? E(t, HIT.yes, .4, .3) : 0, ry: 600 });
     cam(c, 540, 960, zp, tilt, () => {
       const pk = k => (n && !yes && (n % 2 ? 1 : 0) === k) ? 1 + .1 * Math.sin(clamp((t - HIT.swings[n - 1]) / .35) * Math.PI) : 1;
       const lk = E(t, 16.55, .35, .4) * (yes ? 1 - ss(seg(t, HIT.yes, HIT.yes + .3)) : 1), rk = E(t, 16.7, .35, .4) * (yes ? 1 + .25 * E(t, HIT.yes, .3, .45) : 1);
@@ -150,7 +203,7 @@ const SHOT = {
       check(c, 870, 330, E(t, HIT.yes + .1, .3, .45), 70); });
   },
   write(c, t) {   // a few minutes later: his name on the cup, written by hand, and the cup in his hands
-    bg(c, t, { rays: ss(seg(t, HIT.shine - .4, HIT.shine)) });
+    bg(c, t, { shop: 16, dim: .55, rays: ss(seg(t, HIT.shine - .4, HIT.shine)) });
     const nk = seg(t, ...HIT.write), sh = seg(t, HIT.shine, HIT.shine + .5), z = 1 + .06 * seg(t, 20.4, 25.4);
     cam(c, 540, 1150, z, -.04 + .04 * seg(t, 20.4, 25.4), () => {
       cup(c, 540, 1500, 760, { name: NAME, nameK: nk, shine: sh });
@@ -161,11 +214,11 @@ const SHOT = {
       const hk = E(t, HIT.hands, .3, .4); if (hk > 0) for (const s of [-1, 1]) { const hx = 540 + s * 300, hy = lerp(2200, 1230, Math.min(1, hk)); c.strokeStyle = '#2448bb'; c.lineWidth = 92; c.lineCap = 'round'; c.beginPath(); c.moveTo(hx + s * 40, 2200); c.lineTo(hx, hy); c.stroke(); c.fillStyle = '#2a52c9'; c.beginPath(); c.arc(hx, hy, 66, 0, 7); c.fill(); } });
   },
   smile(c, t) {   // he smiles
-    bg(c, t, { rays: .8 });
+    bg(c, t, { shop: 14, dim: .5, rays: .8 });
     cam(c, 540, 960, 1 + .08 * seg(t, 25.4, 26.9), 0, () => mascot(c, { id: 'boy', skin: 'blue1', s: 4.8, x: 540, y: 1900, smile: lerp(.5, 1, ss(seg(t, HIT.smile - .1, HIT.smile + .2))), blink: t > HIT.giggle - .05 && t < HIT.giggle + .45 ? 1 : 0, squash: t > HIT.giggle ? .03 * Math.sin((t - HIT.giggle) * 22) * Math.exp(-(t - HIT.giggle) * 3) : 0 }));
   },
   same(c, t) {   // the same cup as the others, in a row going away from us; but it isn't just a plain cup on the shelf any more
-    bg(c, t);
+    bg(c, t, { shop: 11, dim: .5 });
     const pulse = t > HIT.pulse ? 1 + .06 * Math.sin(clamp((t - HIT.pulse) / .4) * Math.PI) : 1, dolly = seg(t, 26.9, 32.4);
     cam(c, lerp(580, 620, dolly), 1150, 1 + .06 * dolly, 0, () => {
       c.fillStyle = '#8a5d38'; c.beginPath(); c.moveTo(40, 1730); c.lineTo(1120, 1250); c.lineTo(1120, 1270); c.lineTo(40, 1780); c.closePath(); c.fill();
@@ -174,7 +227,7 @@ const SHOT = {
   },
   special(c, t) {   // but a cup made just for him: it rises, the camera turns around it
     const u = ss(seg(t, HIT.rise, HIT.rise + .7)), k = 1 + 1.1 * u;
-    bg(c, t, { rays: u, ry: 1000 });
+    bg(c, t, { shop: 13, dim: .5 + .2 * u, rays: u, ry: 1000 });
     cam(c, 540, 1100, 1, Math.sin((t - 32.4) * .7) * .05 * u, () => {
       c.save(); c.globalAlpha = 1 - u; plank(c, 60, 1020, 1240, 30); for (let i = 0; i < 5; i++) if (i !== 2) cup(c, 160 + i * 190, 1240, 220, { dim: .8 }); c.restore();
       const y = lerp(1240, 1420, u); scaled(c, 540, y, k, () => cup(c, 540, y, 220, { name: NAME, glow: 1, shine: seg(t, 33.6, 34.2), spin: t * .6 }));
@@ -194,7 +247,7 @@ const SHOT = {
   },
   detail(c, t) {   // sometimes one small detail is enough to see something completely differently
     const others = ss(seg(t, HIT.others, HIT.others + .6));
-    bg(c, t, { rays: others, ry: 1100 });
+    bg(c, t, { shop: 10, dim: .45 + .25 * others, rays: others, ry: 1100 });
     cam(c, 540, 1100, 1 + .06 * seg(t, 39.3, 44.6), 0, () => {
       c.fillStyle = `rgba(138,93,56,${1 - others * .7})`; c.beginPath(); c.roundRect(60, 1240, 960, 30, 10); c.fill();
       const xs = [160, 350, 540, 730, 920];
