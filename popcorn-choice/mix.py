@@ -107,8 +107,7 @@ add(fx, mx(verb(chime(1568, .2) + chime(2093, .15) + chime(2637, .1), .9, .35), 
 
 # the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only the locked logo sound
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
-sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import logo_sting, LEAD, LEVEL
-add(fx, logo_sting(SR) * LEVEL, STORY + .2 - LEAD, 1, 0)   # the locked logo sound: a reverse swell into a deep, soft boom as the logo appears
+sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— voice ——
 vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.25.mp3'))   # the voice at 1.25×, pitch kept
@@ -121,6 +120,7 @@ voice = buf(); add(voice, vo, 0, 1)
 fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
 mix = voice + fxc * (vr * 2.6 / max(fr, 1e-6))
+mix = place_logo(mix, STORY + .2, SR, vr)   # the locked logo sound, after the effects bus so it is the same level in every film
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks

@@ -1,6 +1,6 @@
 """The locked 23 Team logo sound (ANIMATION-STYLE.md): a short reverse swell into a deep, soft cinematic boom, low in level, with a long smooth fade-out.
-Rendered the same way every time (fixed seed). Each film adds it so the boom lands as the logo starts to appear:
-    x = logo_sting(SR)   →  add it at (logo appears) − LEAD
+Rendered the same way every time (fixed seed). Each film adds it to its final mix, after the effects bus, so the level is the same in every film:
+    place_logo(mix, when the logo starts to appear, SR, the voice's RMS)
 """
 import os, sys
 import numpy as np
@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.environ.get('LIB', '/root/lemo-opuscar'), 'co
 from sfx import t_, lp, hp, noise
 
 LEAD = .45    # seconds of swell before the boom
-LEVEL = .14   # its peak in a film's effects bus: low, it sits under everything else in the film
+PEAK = 1.2    # its peak, relative to the voice's RMS: low, about 10 dB under the voice's peaks, the same in every film
 
 def logo_sting(SR):
     rng = np.random.default_rng(23)
@@ -23,3 +23,8 @@ def logo_sting(SR):
     x = x + .25 * fftconvolve(x, ir)[:len(x)]
     f = int(1.3 * SR); x[-f:] *= np.cos(np.linspace(0, np.pi / 2, f)) ** 2   # a long, smooth fade-out
     return x / (np.abs(x).max() + 1e-9)
+
+def place_logo(mix, at, SR, voice_rms):
+    x = logo_sting(SR) * PEAK * voice_rms; a = int((at - LEAD) * SR); n = max(0, min(len(x), len(mix) - a))
+    mix[a:a + n] += x[:n, None]
+    return mix
