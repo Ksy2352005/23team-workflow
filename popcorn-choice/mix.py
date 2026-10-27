@@ -105,11 +105,10 @@ for k, t in enumerate(HIT['rise']): add(fx, mx(stamp(.55), boing(.15, 200 + 60 *
 add(fx, click(.2, 1.2), H1('point'), 1, -.3)
 add(fx, mx(verb(chime(1568, .2) + chime(2093, .15) + chime(2637, .1), .9, .35), stamp(.6)), H1('win'), 1, .4)
 
-# the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only a soft airy swell as the logo appears
+# the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only the locked logo sound
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
-_d = 2.7; _tt = t_(_d); _env = np.minimum(1, _tt / .7) ** 2 * np.cos(np.clip((_tt - .7) / 2.0, 0, 1) * np.pi / 2) ** 2   # rises, then fades out slowly and smoothly
-_air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 4000) * _env
-add(fx, verb(norm(_air) * .06, 1.4, .3), STORY - .6, 1, 0)
+sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import logo_sting, LEAD, LEVEL
+add(fx, logo_sting(SR) * LEVEL, STORY + .2 - LEAD, 1, 0)   # the locked logo sound: a reverse swell into a deep, soft boom as the logo appears
 
 # —— voice ——
 vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.25.mp3'))   # the voice at 1.25×, pitch kept
