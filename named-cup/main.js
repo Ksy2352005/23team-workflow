@@ -1,5 +1,5 @@
 // The Named Cup: a 23 Team reel in simple 2D motion graphics, drawn frame by frame from render(t).
-// A clean navy stage and a minimal shop (a counter, the seller, a shelf of plain cups); the boy, the cup and his name as big shapes that snap in with the voice.
+// A BOLT kiosk in an evening shopping mall (a counter, the seller, a shelf of plain cups); the boy, the cup and his name as big shapes that snap in with the voice.
 import { lerp, seg, ss, hash, clamp } from '/core/lib.js';
 import { drawMascot, BASE_H } from './char2d.js';
 import { DUR, STORY, SHOTS, HIT, NAME } from './story.js';
@@ -68,66 +68,121 @@ function carryCup(P, h) { const Hh = Hs(P.s), d = (P.f ?? 0) < -.1 ? -1 : 1, cx 
   P[d > 0 ? 'handR' : 'handL'] = [cx - d * h * .3, base - h * .45]; return [cx, base]; }
 
 
-// —— the shop's back wall, painted once: patterned navy wallpaper, a shop window onto the evening street, shelves of cups, mugs, gift boxes and a plant ——
-// 60-30-10: navy and blue (wall, window, shadows) · cream and wood (shelves, panelling, frames, floor) · gold (lamps, ribbons, bulbs, lettering)
-const WALL = (() => {
-  const [cv0, x] = mk(); cv0.width = 1700; cv0.height = 2300; x.translate(300, -150);   // world coords: x −300..1400, y 150..2450
-  x.fillStyle = '#1a2766'; x.fillRect(-300, 150, 1700, 1600);
-  for (let px = -300; px < 1400; px += 60) { x.fillStyle = (px / 60) % 2 ? '#1e2c70' : '#1a2766'; x.fillRect(px, 330, 30, 1000); }
-  x.fillStyle = 'rgba(236,189,74,.18)'; for (let py = 380; py < 1300; py += 110) for (let px = -270 + (py / 110 % 2) * 55; px < 1400; px += 110) { x.save(); x.translate(px, py); x.rotate(Math.PI / 4); x.fillRect(-4, -4, 8, 8); x.restore(); }
-  x.fillStyle = '#0f1846'; x.fillRect(-300, 150, 1700, 180); x.fillStyle = '#e9dcc0'; x.fillRect(-300, 326, 1700, 10); x.fillStyle = '#c9b791'; x.fillRect(-300, 336, 1700, 6);
-  // the shop window: the evening street outside, lit windows across the road, a NYITVA sign hanging in it
-  x.fillStyle = '#efe4c8'; x.fillRect(-250, 620, 520, 730); const g = x.createLinearGradient(0, 640, 0, 1330); g.addColorStop(0, '#0d1745'); g.addColorStop(1, '#3b5fb0'); x.fillStyle = g; x.fillRect(-228, 642, 476, 686);
-  x.fillStyle = '#121c50'; for (const [bx, bw, bh] of [[-228, 120, 330], [-100, 150, 420], [60, 110, 300], [175, 90, 380]]) { x.fillRect(bx, 1328 - bh, bw, bh); for (let wy = 1328 - bh + 30; wy < 1300; wy += 60) for (let wx = bx + 18; wx < bx + bw - 20; wx += 38) { x.fillStyle = (wx * 7 + wy) % 3 ? '#e9b860' : '#26346f'; x.fillRect(wx, wy, 18, 26); x.fillStyle = '#121c50'; } }
-  x.fillStyle = '#efe4c8'; x.fillRect(5, 642, 14, 686); x.fillRect(-228, 960, 476, 14);
-  x.strokeStyle = '#c9b791'; x.lineWidth = 3; x.beginPath(); x.moveTo(40, 642); x.lineTo(70, 760); x.moveTo(170, 642); x.lineTo(140, 760); x.stroke();
-  x.fillStyle = '#f6efdc'; x.beginPath(); x.roundRect(40, 760, 130, 56, 10); x.fill(); x.font = '34px "Lilita One"'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#1c2450'; x.fillText('NYITVA', 105, 790);
-  // panelling below, behind the counter
-  x.fillStyle = '#6e4a2c'; x.fillRect(-300, 1350, 1700, 400); x.fillStyle = '#e9dcc0'; x.fillRect(-300, 1344, 1700, 10);
-  x.strokeStyle = 'rgba(30,15,5,.35)'; x.lineWidth = 4; for (let px = -280; px < 1400; px += 170) x.strokeRect(px, 1380, 140, 280);
-  // the top shelf: mugs, a plant, gift boxes, a little framed heart, a jar of gold stars
-  const plank = (x0, x1, y) => { x.fillStyle = 'rgba(0,0,20,.3)'; x.fillRect(x0 + 10, y + 14, x1 - x0, 14); x.fillStyle = '#8a5d38'; x.beginPath(); x.roundRect(x0, y, x1 - x0, 22, 8); x.fill(); x.fillStyle = 'rgba(255,230,190,.18)'; x.fillRect(x0, y, x1 - x0, 4); };
-  plank(420, 1130, 780); plank(420, 1130, 990);
-  for (const mx0 of [470, 560]) { x.fillStyle = '#f1e7cf'; x.beginPath(); x.roundRect(mx0 - 32, 700, 64, 80, 10); x.fill(); x.strokeStyle = '#f1e7cf'; x.lineWidth = 10; x.beginPath(); x.arc(mx0 + 36, 740, 18, -1.3, 1.3); x.stroke(); x.fillStyle = mx0 === 470 ? '#26346f' : '#d9a332'; x.fillRect(mx0 - 32, 720, 64, 12); }
-  x.fillStyle = '#efe4c8'; x.beginPath(); x.moveTo(632, 780); x.lineTo(688, 780); x.lineTo(698, 730); x.lineTo(622, 730); x.fill();
-  for (const [lx, ly, r, col] of [[640, 690, 34, '#2b6c7e'], [680, 680, 30, '#3f8a92'], [660, 650, 30, '#2f7180'], [625, 655, 24, '#3f8a92']]) { x.fillStyle = col; x.beginPath(); x.ellipse(lx, ly, r, r * .6, -.4, 0, 7); x.fill(); }
-  for (const [bx, by, bw, bh, col, rib] of [[740, 700, 110, 80, '#f1e7cf', '#d9a332'], [755, 640, 80, 60, '#26346f', '#efe4c8'], [770, 600, 50, 40, '#f1e7cf', '#d9a332']]) { x.fillStyle = col; x.fillRect(bx, by, bw, bh); x.fillStyle = rib; x.fillRect(bx + bw / 2 - 6, by, 12, bh); x.fillRect(bx, by + bh / 2 - 5, bw, 10); }
-  x.fillStyle = '#d9a332'; x.fillRect(880, 660, 110, 120); x.fillStyle = '#1c2450'; x.fillRect(892, 672, 86, 96); x.fillStyle = '#ecbd4a'; x.beginPath(); const hx = 935, hy = 712; x.moveTo(hx, hy + 30); x.bezierCurveTo(hx - 40, hy, hx - 24, hy - 26, hx, hy - 10); x.bezierCurveTo(hx + 24, hy - 26, hx + 40, hy, hx, hy + 30); x.fill();
-  x.fillStyle = 'rgba(230,240,255,.25)'; x.beginPath(); x.roundRect(1030, 690, 70, 90, 12); x.fill(); x.fillStyle = '#ecbd4a'; for (let i = 0; i < 9; i++) { x.beginPath(); x.arc(1045 + (i % 3) * 20, 765 - Math.floor(i / 3) * 20, 7, 0, 7); x.fill(); } x.fillStyle = '#8a5d38'; x.fillRect(1026, 682, 78, 12);
-  // a tall plant on the right, wooden floor boards
-  x.fillStyle = '#efe4c8'; x.beginPath(); x.moveTo(1180, 1700); x.lineTo(1300, 1700); x.lineTo(1280, 1560); x.lineTo(1200, 1560); x.fill();
-  for (let i = 0; i < 9; i++) { x.fillStyle = i % 2 ? '#2b6c7e' : '#3f8a92'; x.save(); x.translate(1240, 1560); x.rotate(-1.1 + i * .28); x.beginPath(); x.ellipse(0, -140, 26, 120, 0, 0, 7); x.fill(); x.restore(); }
-  const fg = x.createLinearGradient(0, 1700, 0, 2450); fg.addColorStop(0, '#5a3a22'); fg.addColorStop(1, '#24170e'); x.fillStyle = fg; x.fillRect(-300, 1700, 1700, 750);
-  x.strokeStyle = 'rgba(0,0,0,.25)'; x.lineWidth = 3; for (let py = 1730; py < 2450; py += 40 + (py - 1700) * .08) { x.beginPath(); x.moveTo(-300, py); x.lineTo(1400, py); x.stroke(); }
+// —— the mall, painted once: a skylight, an upper gallery of shops, a lower row of shop windows, a polished navy floor ——
+// 60-30-10: navy and blue (walls, glass, floor, shoppers) · cream and wood (trim, columns, the kiosk) · gold (lights, signs, the balloon)
+const FLOOR = 1345, GAL = 760, MR = 1.5;
+const MALL = (() => {
+  const [cv0, x] = mk(); cv0.width = 2000 * MR; cv0.height = 2350 * MR; x.scale(MR, MR); x.translate(400, -100);   // world coords: x −400..1600, y 100..2450
+  const icon = (cx, cy, k, col) => { x.fillStyle = col; x.beginPath(); if (k === 0) x.arc(cx, cy, 13, 0, 7); else if (k === 1) { for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 7 : 16; x.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); } } else { x.moveTo(cx, cy + 13); x.bezierCurveTo(cx - 20, cy, cx - 12, cy - 14, cx, cy - 5); x.bezierCurveTo(cx + 12, cy - 14, cx + 20, cy, cx, cy + 13); } x.fill(); };
+  // the skylight
+  x.fillStyle = '#0a1240'; x.fillRect(-400, 100, 2000, 340);
+  for (let px = -400; px < 1600; px += 160) { const g = x.createLinearGradient(0, 120, 0, 420); g.addColorStop(0, '#1a2a74'); g.addColorStop(1, '#2d4596'); x.fillStyle = g; x.fillRect(px + 8, 120, 144, 290);
+    x.fillStyle = 'rgba(255,255,255,.07)'; x.beginPath(); x.moveTo(px + 20, 410); x.lineTo(px + 70, 120); x.lineTo(px + 100, 120); x.lineTo(px + 50, 410); x.fill(); }
+  x.fillStyle = '#e9dcc0'; x.fillRect(-400, 410, 2000, 14); x.fillStyle = '#c9b791'; x.fillRect(-400, 424, 2000, 6);
+  // upper gallery: a row of small shops
+  x.fillStyle = '#141d56'; x.fillRect(-400, 430, 2000, 330);
+  for (let i = 0, px = -390; px < 1600; px += 300, i++) {
+    x.fillStyle = '#1d2a6e'; x.fillRect(px + 15, 450, 270, 50); icon(px + 150, 475, i % 3, i % 2 ? '#ecbd4a' : '#efe4c8');
+    const g = x.createLinearGradient(0, 510, 0, 760); g.addColorStop(0, '#3a54a8'); g.addColorStop(1, '#1b2766'); x.fillStyle = g; x.fillRect(px + 15, 510, 270, 250);
+    x.fillStyle = 'rgba(239,228,200,.35)'; x.fillRect(px + 30, 600, 240, 6); x.fillRect(px + 30, 680, 240, 6);
+    for (let j = 0; j < 4; j++) { x.fillStyle = (i + j) % 3 ? 'rgba(239,228,200,.4)' : 'rgba(236,189,74,.45)'; x.beginPath(); x.roundRect(px + 45 + j * 58, 560 + ((i + j) % 2) * 6, 34, 40 - ((i + j) % 2) * 6, 6); x.fill(); x.beginPath(); x.roundRect(px + 50 + j * 58, 642, 28, 38, 6); x.fill(); }
+    x.fillStyle = 'rgba(239,228,200,.25)'; x.fillRect(px + 148, 510, 4, 250);
+  }
+  // the gallery floor's edge and its underside, with downlights
+  x.fillStyle = '#e9dcc0'; x.fillRect(-400, GAL, 2000, 30); x.fillStyle = '#c9b791'; x.fillRect(-400, GAL + 30, 2000, 6); x.fillStyle = '#0c1442'; x.fillRect(-400, GAL + 36, 2000, 94);
+  for (let px = -340; px < 1600; px += 180) { x.fillStyle = '#ffe7a6'; x.beginPath(); x.ellipse(px, GAL + 122, 22, 6, 0, 0, 7); x.fill();
+    const g = x.createLinearGradient(0, GAL + 125, 0, FLOOR); g.addColorStop(0, 'rgba(255,225,160,.16)'); g.addColorStop(1, 'rgba(255,225,160,0)'); x.fillStyle = g; x.beginPath(); x.moveTo(px - 18, GAL + 125); x.lineTo(px + 18, GAL + 125); x.lineTo(px + 110, FLOOR); x.lineTo(px - 110, FLOOR); x.fill(); }
+  // lower level: bigger shop windows, striped awnings on some
+  x.fillStyle = '#141d56'; x.fillRect(-400, GAL + 130, 2000, FLOOR - GAL - 130);
+  for (let i = 0, px = -400; px < 1600; px += 400, i++) {
+    x.fillStyle = '#1d2a6e'; x.fillRect(px + 20, 905, 360, 56); icon(px + 200, 933, (i + 1) % 3, i % 2 ? '#efe4c8' : '#ecbd4a');
+    const g = x.createLinearGradient(0, 1000, 0, FLOOR); g.addColorStop(0, '#3d58ae'); g.addColorStop(1, '#1a2563'); x.fillStyle = g; x.fillRect(px + 20, 1000, 360, FLOOR - 1000);
+    if (i % 2 === 0) for (let s = 0; s < 9; s++) { x.fillStyle = s % 2 ? '#26368c' : '#e9dcc0'; x.fillRect(px + 20 + s * 40, 966, 40, 30); x.beginPath(); x.arc(px + 40 + s * 40, 996, 20, 0, Math.PI); x.fill(); }
+    x.fillStyle = 'rgba(239,228,200,.32)'; x.fillRect(px + 40, 1150, 120, 6); x.fillRect(px + 240, 1150, 120, 6);
+    for (let j = 0; j < 3; j++) { x.fillStyle = (i + j) % 3 ? 'rgba(239,228,200,.38)' : 'rgba(236,189,74,.42)'; x.beginPath(); x.roundRect(px + 45 + j * 40, 1090 + (j % 2) * 10, 30, 60 - (j % 2) * 10, 6); x.fill(); x.beginPath(); x.roundRect(px + 245 + j * 40, 1100, 30, 50, 6); x.fill(); }
+    x.fillStyle = '#0f1748'; x.fillRect(px + 170, 1060, 60, FLOOR - 1060); x.fillStyle = 'rgba(239,228,200,.3)'; x.fillRect(px + 198, 1060, 4, FLOOR - 1060);
+  }
+  // cream columns
+  for (const cx of [110, 1290]) { x.fillStyle = '#d9ccab'; x.fillRect(cx - 26, 430, 52, FLOOR - 430); x.fillStyle = 'rgba(0,0,20,.18)'; x.fillRect(cx + 10, 430, 16, FLOOR - 430); x.fillStyle = '#e9dcc0'; x.fillRect(cx - 34, FLOOR - 40, 68, 40); }
+  // the polished floor: tiles in perspective, the shop windows reflected in it
+  const fg = x.createLinearGradient(0, FLOOR, 0, 2450); fg.addColorStop(0, '#1d2862'); fg.addColorStop(1, '#0c1236'); x.fillStyle = fg; x.fillRect(-400, FLOOR, 2000, 1105);
+  x.fillStyle = '#e9dcc0'; x.fillRect(-400, FLOOR - 4, 2000, 6);
+  for (let i = 0, px = -400; px < 1600; px += 400, i++) { const g = x.createLinearGradient(0, FLOOR, 0, FLOOR + 260); g.addColorStop(0, 'rgba(90,120,210,.22)'); g.addColorStop(1, 'rgba(90,120,210,0)'); x.fillStyle = g; x.fillRect(px + 20, FLOOR, 360, 260); }
+  x.strokeStyle = 'rgba(239,228,200,.07)'; x.lineWidth = 3;
+  for (let k = 1; k < 14; k++) { const py = FLOOR + k * k * 7; x.beginPath(); x.moveTo(-400, py); x.lineTo(1600, py); x.stroke(); }
+  for (let k = -14; k <= 14; k++) { x.beginPath(); x.moveTo(600 + k * 90, FLOOR); x.lineTo(600 + k * 90 * 4.5, 2450); x.stroke(); }
   return cv0;
 })();
-// the live parts: hanging lamps, a string of bulbs, the BOLT sign on chains
-function shopLights(c, t) {
-  c.strokeStyle = '#2a2a33'; c.lineWidth = 3;
-  for (const lx of [260, 1100]) { c.beginPath(); c.moveTo(lx, 150); c.lineTo(lx, 430); c.stroke(); c.fillStyle = '#121a46'; c.beginPath(); c.moveTo(lx - 60, 480); c.lineTo(lx + 60, 480); c.lineTo(lx + 24, 430); c.lineTo(lx - 24, 430); c.fill(); c.fillStyle = '#ffe7a6'; c.beginPath(); c.ellipse(lx, 482, 40, 10, 0, 0, 7); c.fill(); glow(c, lx, 520, 260, .45); }
-  c.strokeStyle = 'rgba(20,20,30,.8)'; c.lineWidth = 2; c.beginPath(); for (let i = 0; i <= 30; i++) { const x = -250 + i * 55, y = 360 + Math.sin(i / 30 * Math.PI * 3) * -24 + 30; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
-  for (let i = 0; i <= 30; i++) { const x = -250 + i * 55, y = 368 + Math.sin(i / 30 * Math.PI * 3) * -24 + 30, on = .75 + .25 * Math.sin(t * 3 + i * 1.7); c.fillStyle = '#ffe2a0'; c.beginPath(); c.arc(x, y, 6, 0, 7); c.fill(); glow(c, x, y, 26, .45 * on); }
-  c.strokeStyle = '#8a7a60'; c.lineWidth = 3; for (const cx of [680, 900]) { c.beginPath(); c.moveTo(cx, 330); c.lineTo(cx, 540); c.stroke(); }
-  c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(648, 546, 300, 126, 18); c.fill();
-  c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(640, 536, 300, 126, 18); c.fill(); c.strokeStyle = '#efe4c8'; c.lineWidth = 6; c.beginPath(); c.roundRect(652, 548, 276, 102, 12); c.stroke();
-  text(c, 'BOLT', 790, 602, 86, GOLD); for (let i = 0; i < 8; i++) { const on = (Math.floor(t * 3) + i) % 3 !== 0; c.fillStyle = on ? '#ffe7a6' : '#8a7040'; c.beginPath(); c.arc(668 + i * 35, 536, 5, 0, 7); c.fill(); if (on) glow(c, 668 + i * 35, 536, 20, .4); }
+// the life in it: banners swaying, shoppers on both floors, the escalator running
+const UP = [{ v: 70, dir: 1, off: 300, skin: 'blue2', fem: 'bob', s: .55 }, { v: 55, dir: -1, off: 1500, skin: 'blue3', s: .55, bag: '#efe4c8' }, { v: 62, dir: 1, off: 1250, skin: 'blue1', s: .52 }];
+const LO = [{ v: 95, dir: -1, off: 700, skin: 'blue3', fem: 'hat', s: .8, bag: '#ecbd4a' }, { v: 80, dir: 1, off: 100, skin: 'blue1', s: .82, bag: '#efe4c8', dy: 10 }, { v: 70, dir: 1, off: 1350, skin: 'blue2', s: .55, balloon: 1, dy: 6 }, { v: 88, dir: -1, off: 1900, skin: 'blue2', fem: 'glasses', s: .78 }];
+const ESC = { b: [-150, FLOOR], t: [330, GAL] };
+function walker(c, t, w, i, floorY) {
+  const d = ((w.off + t * w.v) % 2300 + 2300) % 2300, x = w.dir > 0 ? -500 + d : 1800 - d, y = floorY + (w.dy || 0), Hh = Hs(w.s);
+  const P = { id: 'm' + i + floorY, skin: w.skin, fem: w.fem, s: w.s, x, y, f: .85 * w.dir, walk: 1, phi: d * .0765 / w.s, smile: .4, shadow: false, blink: blinkAt(t, i + floorY) };
+  const hand = [x + w.dir * .2 * Hh, y - .44 * Hh]; if (w.bag || w.balloon) P[w.dir > 0 ? 'handR' : 'handL'] = hand;
+  if (w.balloon) { const bx = hand[0] + Math.sin(t * 1.3 + i) * 10 - w.dir * 12, by = hand[1] - 1.05 * Hh; c.strokeStyle = 'rgba(239,228,200,.7)'; c.lineWidth = 2; c.beginPath(); c.moveTo(hand[0], hand[1]); c.quadraticCurveTo(hand[0] - w.dir * 10, by + 60, bx, by + .2 * Hh); c.stroke();
+    c.fillStyle = GOLD; c.beginPath(); c.ellipse(bx, by, .17 * Hh, .2 * Hh, 0, 0, 7); c.fill(); c.fillStyle = 'rgba(255,255,255,.4)'; c.beginPath(); c.ellipse(bx - .06 * Hh, by - .07 * Hh, .04 * Hh, .06 * Hh, -.5, 0, 7); c.fill(); }
+  drawMascot(c, P);
+  if (w.bag) { const bw = .2 * Hh; c.strokeStyle = w.bag; c.lineWidth = 3; c.beginPath(); c.arc(hand[0], hand[1] + .06 * Hh, .05 * Hh, Math.PI, 0); c.stroke(); c.fillStyle = w.bag; c.beginPath(); c.roundRect(hand[0] - bw / 2, hand[1] + .06 * Hh, bw, bw * 1.05, 4); c.fill(); }
 }
-// the same wall as a soft, out-of-focus backdrop for the close shots
+function mall(c, t) {
+  c.drawImage(MALL, -400, 100, 2000, 2350);
+  for (const [bx, ph] of [[250, 0], [1180, 1.7]]) { c.save(); c.translate(bx, 300); c.rotate(Math.sin(t * .9 + ph) * .04); c.strokeStyle = '#8a7a60'; c.lineWidth = 3; c.beginPath(); c.moveTo(-30, 0); c.lineTo(-30, 40); c.moveTo(30, 0); c.lineTo(30, 40); c.stroke();
+    c.fillStyle = '#26368c'; c.beginPath(); c.moveTo(-50, 40); c.lineTo(50, 40); c.lineTo(50, 250); c.lineTo(0, 280); c.lineTo(-50, 250); c.fill(); c.fillStyle = GOLD; c.fillRect(-50, 40, 100, 10); c.fillStyle = '#e9dcc0'; c.fillRect(-36, 200, 72, 6); heart(c, 0, 130, 1, 26); c.restore(); }
+  UP.forEach((w, i) => walker(c, t, w, i, GAL + 6));
+  c.fillStyle = 'rgba(150,180,255,.12)'; c.fillRect(-400, GAL - 72, 2000, 72); c.fillStyle = '#e9dcc0'; c.fillRect(-400, GAL - 78, 2000, 8); c.fillStyle = 'rgba(233,220,192,.35)'; for (let px = -380; px < 1600; px += 140) c.fillRect(px, GAL - 70, 4, 70);
+  // the escalator: steps sliding up, riders standing still on them, a glass side and a cream handrail
+  const [bx, by] = ESC.b, [tx, ty] = ESC.t, at = u => [lerp(bx, tx, u), lerp(by, ty, u)];
+  c.fillStyle = '#0d1440'; c.beginPath(); c.moveTo(bx - 90, by); c.lineTo(bx, by); c.lineTo(tx, ty); c.lineTo(tx + 90, ty); c.lineTo(tx + 90, ty + 70); c.lineTo(tx, ty + 70); c.lineTo(bx, by + 70); c.lineTo(bx - 90, by + 70); c.fill();
+  c.strokeStyle = 'rgba(239,228,200,.35)'; c.lineWidth = 3; for (let k = 0; k < 16; k++) { const [sx, sy] = at(((k / 16 + t * .06) % 1)); c.beginPath(); c.moveTo(sx - 18, sy); c.lineTo(sx + 18, sy); c.stroke(); }
+  for (let k = 0; k < 2; k++) { const u = (t * .06 + k * .5 + .2) % 1, [rx, ry] = at(u); c.save(); c.globalAlpha = clamp(Math.min(u, 1 - u) * 12); drawMascot(c, { id: 'esc' + k, skin: k ? 'blue3' : 'blue2', fem: k ? 'bob' : null, s: .62, x: rx, y: ry, f: .5, smile: .4, shadow: false, blink: blinkAt(t, 9 + k) }); c.restore(); }
+  c.fillStyle = 'rgba(150,180,255,.16)'; c.beginPath(); c.moveTo(bx - 90, by - 70); c.lineTo(bx, by - 70); c.lineTo(tx, ty - 70); c.lineTo(tx + 90, ty - 70); c.lineTo(tx + 90, ty + 10); c.lineTo(tx, ty + 10); c.lineTo(bx, by + 10); c.lineTo(bx - 90, by + 10); c.fill();
+  c.strokeStyle = '#e9dcc0'; c.lineWidth = 9; c.lineJoin = 'round'; c.beginPath(); c.moveTo(bx - 90, by - 74); c.lineTo(bx, by - 74); c.lineTo(tx, ty - 74); c.lineTo(tx + 90, ty - 74); c.stroke();
+  c.fillStyle = '#1a2460'; c.beginPath(); c.moveTo(bx - 90, by + 10); c.lineTo(bx, by + 10); c.lineTo(tx, ty + 10); c.lineTo(tx + 90, ty + 10); c.lineTo(tx + 90, ty + 60); c.lineTo(tx, ty + 60); c.lineTo(bx, by + 60); c.lineTo(bx - 90, by + 60); c.fill();
+  LO.forEach((w, i) => walker(c, t, w, i, FLOOR + 8));
+  c.fillStyle = 'rgba(6,10,36,.3)'; c.fillRect(-400, 100, 2000, 2350);   // the setting a step darker than the kiosk and the characters
+}
+// the BOLT kiosk: two wooden posts, a striped canopy with bulbs, the sign on top, a small top shelf and the shelf of plain cups
+function kiosk(c, t, o = {}) {
+  c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(406, 680, 708, 120);
+  for (const px of [384, 1114]) { c.fillStyle = '#8a5d38'; c.fillRect(px, 640, 22, 740); c.fillStyle = 'rgba(255,230,190,.15)'; c.fillRect(px, 640, 5, 740); }
+  const pl = (x0, x1, y) => { c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(x0 + 10, y + 14, x1 - x0, 14); c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(x0, y, x1 - x0, 22, 8); c.fill(); c.fillStyle = 'rgba(255,230,190,.18)'; c.fillRect(x0, y, x1 - x0, 4); };
+  pl(395, 1125, 820);
+  cup(c, 470, 820, 84); cup(c, 470, 796, 84);
+  c.fillStyle = '#efe4c8'; c.beginPath(); c.moveTo(572, 820); c.lineTo(628, 820); c.lineTo(638, 772); c.lineTo(562, 772); c.fill();
+  for (const [lx, ly, r, col] of [[582, 735, 30, '#2b6c7e'], [620, 728, 28, '#3f8a92'], [600, 700, 26, '#2f7180']]) { c.fillStyle = col; c.beginPath(); c.ellipse(lx, ly, r, r * .6, -.4, 0, 7); c.fill(); }
+  c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(700, 700, 200, 120, 10); c.fill(); c.fillStyle = '#16205a'; c.fillRect(712, 712, 176, 96);
+  c.fillStyle = 'rgba(239,228,200,.75)'; for (let k = 0; k < 3; k++) { c.fillRect(800, 732 + k * 24, 72, 5); c.fillRect(728, 732 + k * 24, 10, 5); } c.fillStyle = GOLD; c.beginPath(); c.moveTo(752, 732); c.lineTo(782, 732); c.lineTo(778, 786); c.lineTo(756, 786); c.fill();
+  c.fillStyle = 'rgba(230,240,255,.25)'; c.beginPath(); c.roundRect(990, 728, 70, 92, 12); c.fill(); c.fillStyle = GOLD; for (let i = 0; i < 9; i++) { c.beginPath(); c.arc(1005 + (i % 3) * 20, 803 - Math.floor(i / 3) * 20, 7, 0, 7); c.fill(); } c.fillStyle = '#8a5d38'; c.fillRect(986, 720, 78, 12);
+  pl(395, 1125, 990);
+  for (let i = 0; i < 6; i++) cup(c, 475 + i * 120, 990, 105, { dim: o.dimShelf || 0 });
+  if (o.glintShelf) glow(c, 715, 930, 120, o.glintShelf);
+  // the canopy
+  for (let s = 0; s < 10; s++) { const x0 = 360 + s * 80; c.fillStyle = s % 2 ? '#26368c' : '#efe4c8'; c.fillRect(x0, 600, 80, 72); c.beginPath(); c.arc(x0 + 40, 672, 40, 0, Math.PI); c.fill(); }
+  c.fillStyle = 'rgba(0,0,20,.15)'; c.fillRect(360, 600, 800, 16); c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(348, 586, 824, 22, 8); c.fill(); c.fillStyle = GOLD; c.fillRect(352, 604, 816, 5);
+  for (let s = 0; s < 10; s++) { const bx = 400 + s * 80, by = 718, on = .7 + .3 * Math.sin(t * 3 + s * 1.9); c.fillStyle = '#ffe2a0'; c.beginPath(); c.arc(bx, by, 7, 0, 7); c.fill(); glow(c, bx, by, 30, .5 * on); }
+  // the sign on top
+  c.fillStyle = '#8a5d38'; c.fillRect(680, 560, 12, 30); c.fillRect(888, 560, 12, 30);
+  c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(648, 462, 300, 112, 18); c.fill();
+  c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(640, 452, 300, 112, 18); c.fill(); c.strokeStyle = '#efe4c8'; c.lineWidth = 6; c.beginPath(); c.roundRect(652, 464, 276, 88, 12); c.stroke();
+  text(c, 'BOLT', 790, 512, 82, GOLD); for (let i = 0; i < 8; i++) { const on = (Math.floor(t * 3) + i) % 3 !== 0; c.fillStyle = on ? '#ffe7a6' : '#8a7040'; c.beginPath(); c.arc(668 + i * 35, 452, 5, 0, 7); c.fill(); if (on) glow(c, 668 + i * 35, 452, 20, .4); }
+}
+// the mall as a soft, out-of-focus backdrop for the close shots: the escalator and the shoppers on the left, the kiosk's edge on the right
 function backdrop(c, t, blur = 10, dim = .5) {
-  c.save(); c.filter = `blur(${blur * K}px)`; c.translate(540, 1100); c.scale(1.12, 1.12); c.translate(-630, -1420); c.drawImage(WALL, -300, 150); shopLights(c, t); c.restore();
+  c.save(); c.filter = `blur(${blur * K}px)`; c.translate(540, 960); c.translate(-90, -1150); mall(c, t); kiosk(c, t); c.restore();
   c.fillStyle = `rgba(10,16,50,${dim})`; c.fillRect(0, 0, 1080, 1920);
 }
 
-// —— the minimal shop: a BOLT sign, a shelf of plain cups, the seller (white) behind a counter ——
+// —— the shop: the BOLT kiosk in the mall, the seller (white) behind its counter ——
 const CT = { x0: 400, x1: 1120, top: 1380, front: 1700 }, SPOT = [300, 1800], SELLER = { id: 'seller', skin: 'owner', tache: 1, s: 2.0, x: 860, y: 1560, f: -.4, smile: .8 };
 function shop(c, t, o = {}) {
   if (!o.noBg) bg(c, t, o.bg || {});
   c.save(); c.translate(540, 1100); c.scale(1.12, 1.12); c.translate(-630, -1420);
-  c.drawImage(WALL, -300, 150); shopLights(c, t);
-  for (let i = 0; i < 6; i++) cup(c, 475 + i * 120, 990, 105, { dim: o.dimShelf || 0 });
-  if (o.glintShelf) glow(c, 715, 930, 120, o.glintShelf);
+  mall(c, t); kiosk(c, t, o);
   const S = { ...SELLER, blink: blinkAt(t, 2), ...(o.seller || {}) }; drawMascot(c, { ...S, shadow: false });
   if (o.marker) { const [hx, hy] = S.handR || [S.x - 120, 1330]; c.save(); c.translate(hx, hy); c.rotate(-.6); c.fillStyle = NAVY; c.beginPath(); c.roundRect(-12, -70, 24, 90, 8); c.fill(); c.fillStyle = GOLD; c.fillRect(-12, -70, 24, 18); c.restore(); }
+  spot(c, 760, CT.front + 6, 520);
   c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(CT.x0 + 10, CT.top + 14, CT.x1 - CT.x0, 24);
   c.fillStyle = '#8a5d38'; c.beginPath(); c.roundRect(CT.x0 - 20, CT.top - 14, CT.x1 - CT.x0 + 40, 30, 12); c.fill();
   c.fillStyle = CREAM; c.fillRect(CT.x0, CT.top + 16, CT.x1 - CT.x0, CT.front - CT.top - 16); c.fillStyle = '#26368c'; c.fillRect(CT.x0, CT.top + 80, CT.x1 - CT.x0, 44); c.fillStyle = GOLD; c.fillRect(CT.x0, CT.top + 76, CT.x1 - CT.x0, 5); c.fillRect(CT.x0, CT.top + 124, CT.x1 - CT.x0, 5);
@@ -150,7 +205,7 @@ function sparkle(c, x, y, k, r = 40) { if (k <= 0 || k >= 1) return; const s = M
 const SHOT = {
   intro(c, t) {   // a boy walks into a shop
     const u = seg(t, .2, 1.5), P = BOY({ x: lerp(-160, SPOT[0], ss(u)), walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 7, look: -.6 * ss(seg(t, 1.4, 1.7)) });
-    cam(c, 540, 960, 1 + .06 * seg(t, 0, 1.8), 0, () => shop(c, t, { front: [() => mascot(c, P)] }));
+    cam(c, 540, lerp(900, 1010, ss(seg(t, 0, 1.8))), lerp(.76, .95, ss(seg(t, .1, 1.8))), 0, () => shop(c, t, { front: [() => mascot(c, P)] }));
   },
   pov(c, t) {   // what he sees: the shelf, close; the focus pulls onto one plain cup, it glints
     bg(c, t, { shop: 12, dim: .45 });
@@ -180,7 +235,7 @@ const SHOT = {
     bg(c, t);
     const lean = ss(seg(t, HIT.lean, HIT.lean + .35)), hand = ss(seg(t, 11.7, 12.1)), b = E(t, HIT.bubble, .35, .45), z = 1 + .07 * seg(t, 11.1, 16.4);
     cam(c, 600, 1150, z, 0, () => {
-      c.drawImage(WALL, -300, 150); shopLights(c, t); for (let i = 0; i < 6; i++) cup(c, 475 + i * 120, 990, 105);
+      mall(c, t); kiosk(c, t);
       const S = { ...SELLER, x: 640, y: 1560, s: 2.6, f: -.15, smile: .9, look: .1, blink: blinkAt(t, 2), lean: .06 * lean, squash: -.03 * Math.sin(clamp((t - HIT.seller) / .35) * Math.PI) };
       S.handR = reach([700, 1300], [520, 1150], hand); drawMascot(c, { ...S, shadow: false });
       if (hand > .2) { const [hx, hy] = S.handR; c.save(); c.translate(hx, hy); c.rotate(-.5); c.fillStyle = NAVY; c.beginPath(); c.roundRect(-14, -84, 28, 104, 9); c.fill(); c.fillStyle = GOLD; c.fillRect(-14, -84, 28, 22); c.restore(); }
