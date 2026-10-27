@@ -150,8 +150,9 @@ add(fx, click(.18, .8), H1('straw'), 1, .3)
 add(fx, verb(pitch(vox('g_ahh'), .94), .3, .1) * .5, H1('finalAhh'), 1, -.2)
 # the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only a soft airy swell as the logo appears
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
-_d = 2.4; _tt = t_(_d); _air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 5000) * np.minimum(1, _tt / .8) ** 2 * np.exp(-np.maximum(0, _tt - .8) / .55)
-add(fx, verb(norm(_air) * .12, 1.4, .35), STORY - .6, 1, 0)
+_d = 2.7; _tt = t_(_d); _env = np.minimum(1, _tt / .7) ** 2 * np.cos(np.clip((_tt - .7) / 2.0, 0, 1) * np.pi / 2) ** 2   # rises, then fades out slowly and smoothly
+_air = lp(hp(noise(_d) * .5 + brown(_d) * .5, 400), 4000) * _env
+add(fx, verb(norm(_air) * .06, 1.4, .3), STORY - .6, 1, 0)
 # the time-lapse: the wall clock ticking fast under the whoosh
 for k in range(int(4.4 / .1)): add(fx, mx(click(.07, 1.0 + (k % 2) * .25), lp(thump(.03, 900), 2500) * .2), H1('timelapse') + k * .1, 1, -.2)
 
