@@ -117,7 +117,7 @@ const SHOT = {
     counter(c, t, { items: { S: [0, 1 + .15 * Math.sin(clamp((t - HIT.check) / .4) * Math.PI) * (t > HIT.check)], M: 1, L: 1 }, cashier: { look: .3 }, front: [() => mascot(c, P), () => {
       const k = E(t, 14.35, .35, .4); scaled(c, 420, 780, k, () => { c.fillStyle = '#ffffff';
         for (const [dx, dy, r] of [[-100, -10, 105], [0, -60, 125], [100, -10, 105], [0, 50, 115]]) { c.beginPath(); c.arc(420 + dx, 780 + dy, r, 0, 7); c.fill(); }
-        c.beginPath(); c.arc(340, 950, 26, 0, 7); c.fill(); c.beginPath(); c.arc(310, 1020, 14, 0, 7); c.fill(); bucket(c, 420, 870, 150, 1, 3); });
+        c.beginPath(); c.arc(340, 950, 26, 0, 7); c.fill(); c.beginPath(); c.arc(310, 1020, 14, 0, 7); c.fill(); bucket(c, 420, 840, 80, 1, 3); });   // the small one, small in his mind
       if (ck > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 14; c.lineCap = 'round'; c.beginPath(); c.arc(420, 780, 190, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, ck)); c.stroke();
         c.beginPath(); c.moveTo(540, 930); c.lineTo(575, 970); c.lineTo(650, 885); c.globalAlpha = Math.min(1, ck); c.stroke(); c.restore(); } }] });
   },
@@ -139,15 +139,22 @@ const SHOT = {
       if (ar >= 1) { c.fillStyle = GOLD; c.beginPath(); c.moveTo(790, 850); c.lineTo(730, 800); c.lineTo(790, 780); c.closePath(); c.fill(); } c.restore(); }
     const ch = E(t, HIT.chip, .3, .5); scaled(c, 535, 520, ch, () => { c.fillStyle = GOLD; c.beginPath(); c.roundRect(535 - 210, 520 - 75, 420, 150, 75); c.fill(); text(c, '+200 Ft', 535, 526, 96, NAVY); });
   },
-  decide(c, t) {   // a moment's thought, the sizes circling his head... then the cashier hands him the large
+  decide(c, t) {   // a moment's thought: small or large? his eyes go from one to the other in a thought cloud... the large. The cashier hands it over
     const got = t > HIT.drop, g = E(t, HIT.drop, .35, .45), u = ss(seg(t, HIT.drop, HIT.drop + .45));
-    const P = MAN({ s: 2.1, x: SPOT[0], y: SPOT[1], f: .5, smile: got ? 1 : .35, look: got ? 0 : -.8 });
-    if (!got) { P.chin = 'R'; P.headTurn = .4 * Math.sin((t - 22) * 2.4); P.tilt = -.06; }
+    const side = HIT.pulses.filter(p => t > p).length % 2 ? 1 : -1, pulse = k => { const p = HIT.pulses.filter((_, i) => i % 2 === k).find(p => t > p && t < p + .35); return p ? Math.sin((t - p) / .35 * Math.PI) * .12 : 0; };
+    const P = MAN({ s: 2.1, x: SPOT[0], y: SPOT[1], f: .5, smile: got ? 1 : .4, look: got ? 0 : -.7, headTurn: got ? 0 : (t > HIT.pulses[0] ? .25 * side : 0), tilt: got ? 0 : -.05 * side });
     const Pc = { ...P }; const [bx, base] = carry(Pc, 150); if (u >= 1) Object.assign(P, Pc);
     const path = [lerp(700, bx, u), lerp(CT.top, base, u) - Math.sin(u * Math.PI) * 160], C = { smile: got ? 1 : .8, look: .3 };
     if (got && u < .55) C.handL = [path[0] + 40, path[1] - 110];
+    const cloud = E(t, 22.0, .35, .4) * (1 - ss(seg(t, HIT.drop + .35, HIT.drop + .6))), sm = 1 - ss(seg(t, HIT.drop - .05, HIT.drop + .2)), lg = got ? 1 + .18 * E(t, HIT.drop, .3, .5) : 1;
     counter(c, t, { bg: { rays: g * .8 }, items: { S: 1, M: 1, L: !got }, cashier: C, front: [() => mascot(c, P), () => { if (got) bucket(c, path[0], path[1], 150, 1.1, 72); },
-      () => { const ob = E(t, HIT.orbit, .35, .4); [[0, 80], [1, 105], [2, 130]].forEach(([i, h]) => { const a = t * 1.7 + i * 2.094, x = 300 + Math.cos(a) * 220, y = 900 + Math.sin(a) * 80; scaled(c, x, y, ob * (got ? 1 - u : 1), () => bucket(c, x, y, h, 1, 70 + i)); }); }] });
+      () => { c.save(); c.translate(86, 237); scaled(c, 330, 620, cloud * .82, () => { c.fillStyle = '#ffffff';
+        for (const [dx, dy, r] of [[-150, 0, 115], [-50, -70, 135], [70, -70, 135], [170, 0, 115], [10, 60, 140]]) { c.beginPath(); c.arc(330 + dx, 620 + dy, r, 0, 7); c.fill(); }
+        c.beginPath(); c.arc(250, 805, 26, 0, 7); c.fill(); c.beginPath(); c.arc(240, 880, 14, 0, 7); c.fill();
+        scaled(c, 230, 690, sm * (1 + pulse(0)), () => bucket(c, 230, 690, 80, 1, 3));
+        scaled(c, 450, 700, lg * (1 + pulse(1)), () => bucket(c, 450, 700, 150, 1.1, 72));
+        if (!got) text(c, '?', 340, 620, 110, GOLD);
+        const ck = E(t, HIT.drop, .3, .4); if (ck > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 12; c.lineCap = 'round'; c.beginPath(); c.arc(450, 620, 125, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, ck)); c.stroke(); c.restore(); } }); c.restore(); }] });
   },
   overflow(c, t) {   // so much more popcorn for the money: it bursts out over the top
     const gig = t > HIT.hehe ? Math.sin((t - HIT.hehe) * 22) * Math.exp(-(t - HIT.hehe) * 3) * .05 : 0;

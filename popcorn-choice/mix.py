@@ -84,7 +84,7 @@ add(fx, mx(pop(.3), chime(2093, .1, .8)), H1('check'), 1, .3)
 add(fx, verb(vox('ow_gasp'), .3, .08) * .6, H1('gasp'), 1, 0); add(fx, pop(.35), H1('bang'), 1, .3)
 add(fx, swish(.4, .4), H1('arrow'), 1, .2); add(fx, mx(stamp(.6), pop(.3)), H1('chip'), 1, 0)
 add(fx, boing(.5, 160, 640, .5), H1('grow'), 1, .3)
-add(fx, fade(swish(1.8, .15), .3, .4), H1('orbit'), 1, 0)
+for k, t in enumerate(HIT['pulses']): add(fx, mx(pop(.16 * (1 + .15 * (k % 2))), click(.06, 1 + .3 * (k % 2))), t, 1, -.3 if k % 2 == 0 else .3)   # his eyes going small, large, small, large
 add(fx, mx(pop(.4), S('impactSoft_medium_001', .5), boing(.25, 400, 250)), H1('drop'), 1, .2)
 add(fx, fade(mx(popping(1.6, 90, .55), rustle(1.6, .15)), .05, .5), H1('burst'), 1, .2)
 add(fx, verb(vox('ow_hehe'), .3, .08) * .55, H1('hehe'), 1, 0)
