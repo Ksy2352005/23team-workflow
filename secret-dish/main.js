@@ -325,7 +325,7 @@ const SHOT = {
       dining(c, t, { night: 1, windows: [[60, 360]] });
       table(c, 200, 1320, 300, { chairsUp: 1 }); table(c, 1000, 1290, 280, { chairsUp: 1 });
       pendant(c, 640, 700, lamp);
-      const P = OWNER({ x: 640, y: 1500, sit: 1, f: 0, look: .35 - .4 * chin, blink: blinkAt(t, 4), squash: t > HIT.nod ? Math.sin(clamp((t - HIT.nod) / .5) * Math.PI * 2) * .05 : 0, smile: t > HIT.nod ? .75 : .4 });
+      const P = CHEF({ s: 2.2, x: 640, y: 1500, sit: 1, f: 0, look: .35 - .4 * chin, blink: blinkAt(t, 4), squash: t > HIT.nod ? Math.sin(clamp((t - HIT.nod) / .5) * Math.PI * 2) * .05 : 0, smile: t > HIT.nod ? .75 : .4 });
       const Hh = Hs(P.s), menuL = [P.x - .22 * Hh, P.y - .3 * Hh]; P.handL = menuL; P.handR = chin > .5 ? null : reach([P.x + .22 * Hh, P.y - .3 * Hh], [P.x + .32 * Hh, P.y - .62 * Hh], pen * (1 - low));
       if (chin > .5) P.chin = 'R';
       mascot(c, P);
@@ -381,7 +381,7 @@ const SHOT = {
     c.fillStyle = 'rgba(10,16,50,.45)'; c.fillRect(0, 0, 1080, 1920);
     cam(c, 540, 1150, 1.05 + .1 * seg(t, 28.2, 31.45), 0, () => {
       const y = lerp(1900, 1250, Math.min(1.05, tk));
-      blurred(c, 3, () => drawMascot(c, { ...WAITER({ s: 4.2, x: 860, y: y + 950, f: -.3, smile: .9, handL: [700, y + 40], blink: blinkAt(t, 8) }), shadow: false }));
+      drawMascot(c, { ...WAITER({ s: 4.2, x: 860, y: y + 950, f: -.3, smile: .9, handL: [700, y + 40], blink: blinkAt(t, 8) }), shadow: false });
       ell(c, 540, y + 40, 380, 60, '#8f98b0'); ell(c, 540, y + 30, 370, 56, '#dfe3ec');
       heroDish(c, 540, y, 600, { steam: cr, t });
       leak(c, 540, y - 8, 560, cr, t);
@@ -460,12 +460,12 @@ const SHOT = {
     cam(c, 540, 1080, 1 + .1 * ss(seg(t, 43.85, 48.25)), 0, () => {
       dining(c, t, { windows: [] });
       c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(150, 330, 800, 960); c.fillStyle = '#e9dcc0'; c.fillRect(130, 310, 820, 960);
-      c.save(); c.beginPath(); c.rect(150, 330, 780, 920); c.clip(); kitchen(c, t, { window: false, rail: false, lamps: [540] });
+      c.save(); c.beginPath(); c.rect(150, 330, 780, 920); c.clip(); kitchen(c, t, { window: false, rail: false, lamps: [] });
       const P = CHEF({ s: 2.7, x: 540, y: lerp(1950, 1290, Math.min(1.08, up)), smile: .95, look: .15, blink: wink || blinkAt(t, 30) * (t < HIT.wink2), squash: wob(t, HIT.chefUp + .25, .3, 18, .04) });
       if (up > 0) { drawMascot(c, { ...P, shadow: false }); if (shh > 0) shhFinger(c, P, shh); }
       c.restore();
       c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(110, 1262, 860, 30); c.fillStyle = '#e9dcc0'; c.fillRect(100, 1236, 880, 40); c.fillStyle = 'rgba(255,255,255,.5)'; c.fillRect(100, 1236, 880, 5);
-      heroDish(c, 540, 1226, 420, { t }); leak(c, 540, 1222, 400, .25 + .15 * Math.sin(t * 3), t); cloche(c, 540, 1226, 460, 6 + 4 * Math.sin(t * 6) * (t < HIT.chefUp), 0); });
+      heroDish(c, 540, 1226, 420, { t }); cloche(c, 540, 1226, 460, 6 + 4 * Math.sin(t * 6) * (t < HIT.chefUp), 0); });
     // the curious guests lean into the frame, one after another, all eyes on the cloche
     const PEEK = [[200, 1620, .3, 'blue2', 'bob'], [880, 1600, -.3, 'blue1', null], [40, 1150, .85, 'blue3', 'long'], [1040, 1120, -.85, 'blue2', 'bun']];
     PEEK.forEach(([hx, hy, rot, skin, fem], i) => { const k = E(t, HIT.qs[i], .35, .4); if (k <= 0) return; const Hh = Hs(2.9), off = (1 - Math.min(1, k)) * 520 + Math.max(0, k - 1) * -40;
@@ -488,8 +488,8 @@ const SHOT = {
 };
 function shhFinger(c, P, k) {   // a finger to the lips, drawn over the face
   const Hh = Hs(P.s), mx = P.x + (P.headDX || 0) * Hh, my = P.y - .76 * Hh * (1 - (P.squash || 0) * .6) + .32 * .225 * Hh, u = Hh / 440;
-  c.save(); c.globalAlpha = ss(k); c.strokeStyle = '#eeeeea'; c.lineCap = 'round'; c.lineWidth = 18 * u; c.beginPath(); c.moveTo(mx, my + 40 * u); c.lineTo(mx, my - 30 * u); c.stroke();
-  const g = c.createRadialGradient(mx - 10 * u, my + 40 * u, 4, mx, my + 54 * u, 36 * u); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#b8bdcc'); c.fillStyle = g; c.beginPath(); c.ellipse(mx + 4 * u, my + 56 * u, 30 * u, 26 * u, 0, 0, 7); c.fill(); c.restore();
+  c.save(); c.globalAlpha = ss(k); c.lineCap = 'round'; c.strokeStyle = '#9aa1b6'; c.lineWidth = 24 * u; c.beginPath(); c.moveTo(mx, my + 40 * u); c.lineTo(mx, my - 30 * u); c.stroke(); c.strokeStyle = '#f4f5f8'; c.lineWidth = 17 * u; c.beginPath(); c.moveTo(mx, my + 40 * u); c.lineTo(mx, my - 30 * u); c.stroke();
+  const g = c.createRadialGradient(mx - 10 * u, my + 40 * u, 4, mx, my + 54 * u, 36 * u); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#b8bdcc'); c.fillStyle = g; c.strokeStyle = '#9aa1b6'; c.lineWidth = 3 * u; c.beginPath(); c.ellipse(mx + 4 * u, my + 56 * u, 30 * u, 26 * u, 0, 0, 7); c.fill(); c.stroke(); c.restore();
 }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
 function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); }
