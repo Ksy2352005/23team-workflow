@@ -88,7 +88,7 @@ add(fx, mx(S('impactMetal_light_002', .45), swish(.5, .3), verb(shimmer(.2, 1.4)
 for k, t in enumerate(HIT['tickets']): add(fx, slap(.5, k), t, 1, -.4 + .27 * k)
 for k, t in enumerate(HIT['days']): add(fx, S(f'bookFlip{1 + k % 3}', .3), t, 1, -.6)   # a calendar page for every day
 # the chef prepares it: knife chops on the board, the slices fanned onto the plate, the purée, the sauce, the berries, the greens
-for k, t in enumerate(HIT['chops']): add(fx, mx(S('chop', .55 - .03 * k), S(pick('impactWood_light_00', 5, k), .2)), t, 1, .15)
+for k, t in enumerate(HIT['chops']): add(fx, mx(S('chop', .32 - .02 * k), S(pick('impactWood_light_00', 5, k), .2)), t, 1, .15)
 for k in range(7): add(fx, mx(S('impactSoft_medium_000', .14), pop(.06)), H1('fan') + k * .055 + .3, 1, -.2 + .07 * k)
 add(fx, lp(swish(.35, .18), 3000), H1('fan'), 1, 0)
 add(fx, mx(lp(swish(.3, .2), 2000), S('impactSoft_medium_002', .2)), H1('puree') - .1, 1, -.3)
