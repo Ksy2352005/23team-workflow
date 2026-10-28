@@ -100,6 +100,8 @@ export function drawMascot(ctx, P) {
   if (P.cap) capHat(ctx, hx, hy, R, ff, P.back);
   if (P.helmet) helmet(ctx, hx, hy, R, ff);
   if (P.toque) toque(ctx, hx, hy, R, ff);
+  if (P.specs && !P.back) { const ex = hx + ff * .42 * R, sep = .34 * R * (1 - .5 * Math.abs(ff)), ey = hy - .02 * R + (P.look || 0) * R * .12; ctx.strokeStyle = '#26346f'; ctx.lineWidth = .05 * R;
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(ex + s * sep, ey, .18 * R, 0, 7); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(ex - sep + .18 * R, ey); ctx.lineTo(ex + sep - .18 * R, ey); ctx.stroke(); }
   if (P.tache && !P.back) { const mx = hx + ff * .42 * R, my = hy + .2 * R + (P.look || 0) * R * .06; ctx.fillStyle = '#3a2418';
     for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(mx + s * .11 * R, my, .14 * R, .06 * R, s * .25, 0, 7); ctx.fill(); } }
   ctx.restore();

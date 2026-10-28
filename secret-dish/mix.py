@@ -86,7 +86,17 @@ for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25,
 # the dish, the cloche, nobody
 add(fx, mx(S('impactMetal_light_002', .45), swish(.5, .3), verb(shimmer(.2, 1.4), 1.0, .35)), H1('lift'), 1, 0)
 for k, t in enumerate(HIT['tickets']): add(fx, slap(.5, k), t, 1, -.4 + .27 * k)
-for k, t in enumerate(HIT['days']): add(fx, mx(S(f'bookFlip{1 + k % 3}', .4), clink(k, .4)), t, 1, .3)
+for k, t in enumerate(HIT['days']): add(fx, S(f'bookFlip{1 + k % 3}', .3), t, 1, -.6)   # a calendar page for every day
+# the chef prepares it: knife chops on the board, the slices fanned onto the plate, the purée, the sauce, the berries, the greens
+for k, t in enumerate(HIT['chops']): add(fx, mx(S('chop', .55 - .03 * k), S(pick('impactWood_light_00', 5, k), .2)), t, 1, .15)
+for k in range(7): add(fx, mx(S('impactSoft_medium_000', .14), pop(.06)), H1('fan') + k * .055 + .3, 1, -.2 + .07 * k)
+add(fx, lp(swish(.35, .18), 3000), H1('fan'), 1, 0)
+add(fx, mx(lp(swish(.3, .2), 2000), S('impactSoft_medium_002', .2)), H1('puree') - .1, 1, -.3)
+add(fx, mx(click(.12, .8), click(.1, .9)), H1('puree') + .2, 1, .3)
+a, b = HIT['sauce']; add(fx, fade(lp(bp(noise(b - a), 300, 1800), 1500) * .08, .05, .1), a, 1, .1)
+for k in range(4): add(fx, pop(.07), H1('berries') + k * .075, 1, .2)
+add(fx, mx(click(.18, 1.6), S('cloth4', .1)), H1('herb'), 1, .3)
+add(fx, verb(shimmer(.18, 1.1), 1.0, .35), H1('done'), 1, 0)
 # the guests' usual plates; the secret dish slides in and out unnoticed
 for k, t in enumerate(HIT['lands']): add(fx, mx(clink(k + 2, .5), stamp(.25)), t, 1, [-.3, .4, .3, -.4][k])
 add(fx, lp(swish(.45, .22), 3000), H1('heroIn'), 1, .5); add(fx, lp(swish(.45, .18, False), 2500), H1('heroOut'), 1, .6)
@@ -130,6 +140,7 @@ add(fx, pop(.25), H1('twin'), 1, .3)
 add(fx, mx(stamp(.4), chime(1760, .14, .8)), H1('eq'), 1, 0)
 # everyone curious; the chef: shh
 for k, t in enumerate(HIT['qs']): add(fx, pop(.18 + .02 * k), t, 1, -.6 + .24 * k)
+add(fx, mx(boing(.22, 260, 560, .35), pop(.12)), H1('chefUp'), 1, 0)
 add(fx, lp(swish(.4, .12, False), 2500), H1('shh'), 1, .4)
 add(fx, click(.15, 1.8), H1('wink2'), 1, .4)
 # curiosity: the cloche lifts a crack, the steam asks, a hand reaches, the lid comes off

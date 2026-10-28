@@ -44,25 +44,44 @@ function star(c, x, y, r, k = 1, col = GOLD) { scaled(c, x, y, k, () => { c.fill
 function speech(c, x, y, w, h, k, tailX, tailY, draw) { scaled(c, tailX, tailY, k, () => { c.fillStyle = '#ffffff'; c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, 60); c.fill();
   c.beginPath(); c.moveTo(x - w * .12, y + h / 2 - 4); c.lineTo(tailX, tailY); c.lineTo(x + w * .08, y + h / 2 - 4); c.fill(); draw(); }); }
 function qmark(c, x, y, k, size = 120, col = GOLD) { if (k <= 0) return; scaled(c, x, y, k, () => { c.save(); c.translate(x, y); c.rotate(Math.sin(k * 9) * .08 * (1 - Math.min(1, k))); text(c, '?', 0, 0, size, col); c.restore(); }); }
-function qbubble(c, x, y, k, r = 58) { if (k <= 0) return; scaled(c, x, y + r, k, () => { c.fillStyle = '#ffffff'; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.beginPath(); c.moveTo(x - r * .25, y + r * .8); c.lineTo(x - r * .05, y + r * 1.35); c.lineTo(x + r * .25, y + r * .8); c.fill(); text(c, '?', x, y + r * .06, r * 1.45, GOLD2); }); }
 
 // —— the food ——
-// the secret dish, seen from the side at a slight angle: duck breast sliced and fanned, a quenelle of purée, a dark sauce, a sprig; y = the plate's centre
+// the secret dish, seen from the side at a slight angle: a generous fan of glazed duck breast, a quenelle of purée, a cherry sauce swoosh,
+// baby carrots, berries, microgreens and a few flakes of gold; y = the plate's centre
 function heroDish(c, x, y, w, o = {}) {
   const rx = w / 2, ry = w * .17, t = o.t || 0;
-  if (o.glow) glow(c, x, y - w * .12, w * .9, .55 * o.glow);
+  if (o.glow) glow(c, x, y - w * .14, w * .95, .55 * o.glow);
   ell(c, x + w * .02, y + ry * .4, rx * 1.02, ry * 1.05, 'rgba(0,0,20,.32)');
   ell(c, x, y + ry * .14, rx, ry, '#cfc3a6'); ell(c, x, y, rx, ry, CREAM);
-  c.strokeStyle = GOLD2; c.lineWidth = w * .012; c.beginPath(); c.ellipse(x, y, rx * .92, ry * .88, 0, 0, 7); c.stroke();
-  ell(c, x, y + ry * .06, rx * .66, ry * .6, '#ede3cb');
-  for (let k = 0; k < 6; k++) ell(c, x - rx * .2 + k * rx * .12, y + ry * .42 - Math.sin(k / 5 * Math.PI) * ry * .14, w * .014, w * .009, '#5a2216');
-  ell(c, x - rx * .3, y - ry * .12, rx * .19, ry * .42, '#f3e1b0'); ell(c, x - rx * .34, y - ry * .3, rx * .08, ry * .12, 'rgba(255,255,255,.6)');
-  for (let i = 0; i < 5; i++) { const sx = x - rx * .04 + i * rx * .11, sy = y - ry * .08 - i * ry * .06, rot = -.9 + i * .1;
-    ell(c, sx, sy, w * .052, w * .085, '#6b351c', rot); ell(c, sx + w * .006, sy - w * .004, w * .04, w * .07, '#b8644c', rot); ell(c, sx - w * .01, sy - w * .02, w * .012, w * .03, 'rgba(255,220,200,.35)', rot); }
-  for (const [dx, dy, r, a] of [[.42, -.55, .05, -.6], [.48, -.75, .045, .3], [.37, -.8, .04, -1.1]]) ell(c, x + rx * dx, y + ry * dy, w * r, w * r * .45, '#3f7d4f', a);
-  c.strokeStyle = '#2f5e3b'; c.lineWidth = w * .006; c.beginPath(); c.moveTo(x + rx * .36, y - ry * .3); c.lineTo(x + rx * .46, y - ry * .9); c.stroke();
-  if (o.steam > 0) steam(c, x, y - ry * .7, w, o.steam, t);
+  c.strokeStyle = GOLD2; c.lineWidth = w * .014; c.beginPath(); c.ellipse(x, y, rx * .93, ry * .89, 0, 0, 7); c.stroke(); c.lineWidth = w * .004; c.beginPath(); c.ellipse(x, y, rx * .86, ry * .82, 0, 0, 7); c.stroke();
+  ell(c, x, y + ry * .06, rx * .7, ry * .62, '#ede3cb');
+  // the cherry sauce: a glossy swoosh across the front
+  c.lineCap = 'round'; c.strokeStyle = '#5a1e14'; c.lineWidth = w * .034; c.beginPath(); c.ellipse(x + rx * .02, y + ry * .02, rx * .6, ry * .5, 0, .35, 2.75); c.stroke();
+  c.strokeStyle = 'rgba(255,190,170,.35)'; c.lineWidth = w * .008; c.beginPath(); c.ellipse(x + rx * .02, y - ry * .02, rx * .58, ry * .46, 0, .7, 2.3); c.stroke();
+  // baby carrots behind, on the right
+  carrot(c, x + rx * .26, y - ry * .5, w * .2, -.25); carrot(c, x + rx * .4, y - ry * .3, w * .19, .15);
+  // the purée: a tall glossy quenelle on the left
+  ell(c, x - rx * .34, y - ry * .2, w * .12, w * .07, '#e6cf98'); ell(c, x - rx * .34, y - ry * .32, w * .11, w * .065, '#f3e1b0'); ell(c, x - rx * .38, y - ry * .5, w * .045, w * .018, 'rgba(255,255,255,.7)', -.2);
+  c.strokeStyle = 'rgba(190,160,100,.6)'; c.lineWidth = w * .004; c.beginPath(); c.ellipse(x - rx * .32, y - ry * .3, w * .08, w * .035, 0, .2, 2.9); c.stroke();
+  // the duck: seven slices leaning in a fan, crisp edge, pink centre, a line of fat, a glaze
+  for (let i = 0; i < 7; i++) { const sx = x - rx * .16 + i * rx * .085, sy = y - ry * .3 - Math.sin(i / 6 * Math.PI) * ry * .25 - w * .03, rot = -.75 + i * .07;
+    ell(c, sx + w * .01, sy + w * .012, w * .052, w * .1, 'rgba(60,20,10,.35)', rot);
+    ell(c, sx, sy, w * .052, w * .1, '#5e2f17', rot); ell(c, sx + w * .005, sy - w * .002, w * .042, w * .088, '#c4705a', rot); ell(c, sx + w * .009, sy - w * .006, w * .022, w * .06, '#d98a72', rot);
+    c.save(); c.translate(sx, sy); c.rotate(rot); c.strokeStyle = '#efd9b0'; c.lineWidth = w * .008; c.beginPath(); c.ellipse(0, 0, w * .047, w * .095, 0, 3.6, 5.6); c.stroke(); c.restore();
+    ell(c, sx - w * .012, sy - w * .045, w * .008, w * .025, 'rgba(255,240,230,.55)', rot); }
+  for (const [dx, dy] of [[-.05, -.62], [.12, -.72], [.28, -.66]]) ell(c, x + rx * dx, y + ry * dy, w * .012, w * .009, '#4a160e');
+  // berries at the front, microgreens on top, gold flakes
+  for (const [dx, dy, r] of [[-.12, .42, .026], [.0, .5, .022], [.14, .46, .025], [.28, .36, .02]]) { ell(c, x + rx * dx, y + ry * dy, w * r, w * r, '#5b1626'); ell(c, x + rx * dx - w * r * .35, y + ry * dy - w * r * .35, w * r * .3, w * r * .3, 'rgba(255,255,255,.55)'); }
+  for (const [dx, dy, a, s] of [[.02, -1.05, -.7, 1], [.1, -1.15, .4, .8], [.18, -1.0, -1.3, .9], [-.06, -.95, .9, .7], [.26, -.88, .2, .8]]) leaf(c, x + rx * dx, y + ry * dy, w * .03 * s, a);
+  for (let k = 0; k < 6; k++) ell(c, x + rx * (-.2 + hash(k + 40) * .6), y + ry * (-.9 + hash(k + 50) * .5), w * .005, w * .005, '#ffd76a');
+  if (o.steam > 0) steam(c, x, y - ry * .9, w, o.steam, t);
 }
+function leaf(c, x, y, s, a) { c.save(); c.translate(x, y); c.rotate(a); c.fillStyle = '#4f9a5c'; c.beginPath(); c.ellipse(0, -s, s * .45, s, 0, 0, 7); c.fill(); c.fillStyle = '#3f7d4f'; c.fillRect(-s * .06, -s * .2, s * .12, s * 1.3); c.restore(); }
+function carrot(c, x, y, L, a) { c.save(); c.translate(x, y); c.rotate(a);
+  const g = c.createLinearGradient(0, -L * .1, 0, L * .1); g.addColorStop(0, '#f0a04a'); g.addColorStop(1, '#c76b22'); c.fillStyle = g; c.beginPath(); c.moveTo(-L / 2, -L * .1); c.quadraticCurveTo(L * .1, -L * .12, L / 2, 0); c.quadraticCurveTo(L * .1, L * .12, -L / 2, L * .1); c.closePath(); c.fill();
+  c.strokeStyle = 'rgba(120,60,20,.4)'; c.lineWidth = L * .015; for (const k of [-.2, .05, .25]) { c.beginPath(); c.moveTo(L * k, -L * .07); c.lineTo(L * k + L * .02, -L * .02); c.stroke(); }
+  for (const d of [-.5, 0, .5]) { c.save(); c.translate(-L / 2, 0); c.rotate(Math.PI + d); c.fillStyle = '#3f7d4f'; c.beginPath(); c.ellipse(L * .12, 0, L * .13, L * .035, 0, 0, 7); c.fill(); c.restore(); }
+  c.restore(); }
 function steam(c, x, y, w, a, t) { c.save(); c.lineCap = 'round'; c.lineWidth = w * .022; for (let k = 0; k < 3; k++) { const x0 = x + (k - 1) * w * .14, ph = t * 1.4 + k * 1.3, rise = (t * .35 + k * .33) % 1;
   c.strokeStyle = `rgba(246,239,220,${.42 * a * Math.sin(rise * Math.PI)})`; c.beginPath(); for (let i = 0; i <= 12; i++) { const u = i / 12, yy = y - u * w * .55 - rise * w * .1; c.lineTo(x0 + Math.sin(ph + u * 5) * w * .04, yy); } c.stroke(); } c.restore(); }
 // the cloche: a silver dome over the plate; lift raises it (and tips it), the crack lets the gold light out
@@ -90,11 +109,31 @@ function topDish(c, x, y, r, kind, o = {}) {
     c.fillStyle = '#b07a30'; for (let i = 0; i < 9; i++) ell(c, x - r * .08 + (hash(i) - .5) * r * .9, y + (hash(i + 9) - .5) * r * .7, r * .04, r * .03, '#b07a30');
     ell(c, x + r * .5, y - r * .35, r * .2, r * .2, GOLD); ell(c, x + r * .5, y - r * .35, r * .14, r * .14, '#f6dc7a'); ell(c, x + r * .45, y + r * .45, r * .08, r * .06, '#3f7d4f'); return; }
   // the secret dish
-  if (o.glow) glow(c, x, y, r * 2.2, .5 * o.glow);
-  ell(c, x - r * .32, y - r * .1, r * .3, r * .26, '#f3e1b0');
-  for (let i = 0; i < 5; i++) { const a = -.9 + i * .38, sx = x + r * .12 + Math.cos(a) * r * .22, sy = y + Math.sin(a) * r * .32; ell(c, sx, sy, r * .2, r * .09, '#6b351c', a + Math.PI / 2); ell(c, sx, sy, r * .16, r * .065, '#b8644c', a + Math.PI / 2); }
-  for (let k = 0; k < 5; k++) ell(c, x - r * .45 + k * r * .2, y + r * .5 + Math.sin(k) * r * .05, r * .045, r * .045, '#5a2216');
-  for (const [dx, dy, a] of [[.45, -.45, -.5], [.55, -.3, .6], [.38, -.6, 1.4]]) ell(c, x + dx * r, y + dy * r, r * .1, r * .045, '#3f7d4f', a);
+  topHero(c, x, y, r, { glow: o.glow || 0 });
+}
+// the secret dish from above; st builds it up piece by piece (0..1 each): slices (array of 7), puree, carrots, swoosh, berries, greens
+const SLICE_A = i => -1.05 + i * .35;
+const slicePos = (x, y, r, i) => { const a = -2.25 + i * .24; return [x - r * .06 + Math.cos(a) * r * .42, y + r * .42 + Math.sin(a) * r * .42, a]; };   // a shingled fan, like cards
+function slice(c, x, y, L, rot, cut = 1) {
+  ell(c, x + L * .04, y + L * .05, L * .5, L * .22, 'rgba(40,10,5,.3)', rot); ell(c, x, y, L * .5, L * .22, '#5e2f17', rot);
+  if (cut > 0) { c.save(); c.globalAlpha = cut; ell(c, x, y, L * .43, L * .16, '#c4705a', rot); ell(c, x, y, L * .25, L * .08, '#d98a72', rot); c.restore(); }
+  const px = Math.cos(rot + Math.PI / 2) * L * .17, py = Math.sin(rot + Math.PI / 2) * L * .17; ell(c, x - px, y - py, L * .42, L * .035, '#efd9b0', rot);
+  ell(c, x + px * .3, y + py * .3, L * .2, L * .03, 'rgba(255,240,230,.4)', rot);
+}
+function topHero(c, x, y, r, st = {}) {
+  const g = k => st[k] ?? 1;
+  if (st.glow) glow(c, x, y, r * 2.2, .5 * st.glow);
+  if (!st.noPlate) { ell(c, x + r * .06, y + r * .1, r * 1.02, r * 1.02, 'rgba(0,0,20,.28)'); ell(c, x, y, r, r, CREAM); ell(c, x, y, r * .7, r * .7, '#f1e8d2');
+    c.strokeStyle = GOLD2; c.lineWidth = r * .035; c.beginPath(); c.arc(x, y, r * .88, 0, 7); c.stroke(); c.lineWidth = r * .01; c.beginPath(); c.arc(x, y, r * .81, 0, 7); c.stroke(); }
+  const sw = g('swoosh'); if (sw > 0) { c.lineCap = 'round'; c.strokeStyle = '#5a1e14'; c.lineWidth = r * .1; c.beginPath(); c.arc(x, y, r * .64, .45, .45 + 2.1 * sw); c.stroke();
+    c.strokeStyle = 'rgba(255,190,170,.3)'; c.lineWidth = r * .025; c.beginPath(); c.arc(x, y, r * .62, .6, .6 + 1.8 * sw); c.stroke(); }
+  const pu = g('puree'), qx = x - r * .42, qy = y + r * .3; if (pu > 0) scaled(c, qx, qy, Math.min(1.1, pu), () => { ell(c, qx, qy, r * .27, r * .17, '#e6cf98', -.3); ell(c, qx - r * .02, qy - r * .02, r * .24, r * .14, '#f3e1b0', -.3);
+    ell(c, qx - r * .08, qy - r * .07, r * .1, r * .04, 'rgba(255,255,255,.65)', -.3); c.strokeStyle = 'rgba(190,160,100,.6)'; c.lineWidth = r * .012; c.beginPath(); c.ellipse(qx, qy + r * .01, r * .15, r * .07, -.3, .3, 2.7); c.stroke(); });
+  const ca = g('carrots'); if (ca > 0) for (const [dx, dy, a] of [[.5, -.02, 1.35], [.4, .3, .95]]) scaled(c, x + dx * r, y + dy * r, Math.min(1.1, ca), () => carrot(c, x + dx * r, y + dy * r, r * .4, a));
+  for (let i = 0; i < 7; i++) { const k = st.slices ? st.slices[i] : 1; if (k < 1) continue; const [sx, sy, rot] = slicePos(x, y, r, i); slice(c, sx, sy, r * .42, rot); }
+  const be = g('berries'); for (const [dx, dy, rr, j] of [[-.1, .64, .055, 0], [.06, .66, .05, 1], [.22, .6, .055, 2], [.12, .52, .045, 3]]) { const k = Math.min(1, be * 4 - j); if (k > 0) scaled(c, x + dx * r, y + dy * r, k, () => { ell(c, x + dx * r, y + dy * r, r * rr, r * rr, '#5b1626'); ell(c, x + dx * r - r * rr * .35, y + dy * r - r * rr * .35, r * rr * .3, r * rr * .3, 'rgba(255,255,255,.55)'); }); }
+  const gr = g('greens'); if (gr > 0) { for (const [dx, dy, a, s] of [[-.28, -.16, -.6, 1], [-.06, -.3, .7, 1], [.16, -.2, -1.4, .9], [.3, .02, 1.6, .9], [-.12, -.06, 2.4, .8]]) scaled(c, x + dx * r, y + dy * r, Math.min(1, gr), () => leaf(c, x + dx * r, y + dy * r, r * .07 * s, a));
+    for (let k = 0; k < 7; k++) ell(c, x + r * (-.35 + hash(k + 40) * .7), y + r * (-.3 + hash(k + 50) * .4), r * .012 * gr, r * .012 * gr, '#ffd76a'); }
 }
 // an order ticket: a cream slip with a zigzag foot, a few lines and the dish drawn on it
 function ticket(c, x, y, w, kind, rot = 0, k = 1) {
@@ -114,8 +153,8 @@ function menuCard(c, x, y, w, h, o = {}) {
   c.fillStyle = CREAM; c.fillRect(-w / 2, -h / 2, w, h); c.strokeStyle = GOLD2; c.lineWidth = w * .008; c.strokeRect(-w / 2 + w * .04, -h / 2 + w * .04, w * .92, h - w * .08); c.lineWidth = w * .003; c.strokeRect(-w / 2 + w * .06, -h / 2 + w * .06, w * .88, h - w * .12);
   const u = w / 860; text(c, 'ÉTLAP', 0, -h / 2 + 150 * u, 110 * u, NAVY); c.fillStyle = GOLD2; c.fillRect(-90 * u, -h / 2 + 225 * u, 180 * u, 6 * u); star(c, 0, -h / 2 + 228 * u, 16 * u);
   MENU.forEach(([kind, name, price], i) => { const ly = -h / 2 + (380 + i * 270) * u;
-    topDish(c, -w / 2 + 150 * u, ly, 62 * u, kind); text(c, name, -w / 2 + 245 * u, ly - 8 * u, 62 * u, NAVY, 'Lilita One', 'left'); text(c, price, w / 2 - 90 * u, ly - 8 * u, 50 * u, '#6e5a3a', 'Lilita One', 'right');
-    c.fillStyle = 'rgba(110,90,58,.4)'; for (let d = -w / 2 + 245 * u; d < w / 2 - 100 * u; d += 22 * u) c.fillRect(d, ly + 42 * u, 8 * u, 4 * u);
+    topDish(c, -w / 2 + 150 * u, ly, 62 * u, kind); text(c, name, -w / 2 + 240 * u, ly - 8 * u, 50 * u, NAVY, 'Lilita One', 'left'); text(c, price, w / 2 - 90 * u, ly - 6 * u, 40 * u, '#6e5a3a', 'Lilita One', 'right');
+    c.fillStyle = 'rgba(110,90,58,.4)'; for (let d = -w / 2 + 240 * u; d < w / 2 - 100 * u; d += 22 * u) c.fillRect(d, ly + 42 * u, 8 * u, 4 * u);
     if (kind === 'hero' && (o.note ?? 0) > 0) { const sz = 70 * u, nx = -w / 2 + 250 * u, ny = ly + 105 * u; c.font = `${sz}px "Caveat Brush"`; const nw = c.measureText(NOTE).width;
       if (o.noteGlow) glow(c, nx + nw / 2, ny, nw * .6, .35 * o.noteGlow);
       c.save(); c.beginPath(); c.rect(nx - 10, ny - sz, (nw + 20) * Math.min(1, o.note), sz * 2); c.clip(); c.save(); c.translate(nx, ny); c.rotate(-.03); text(c, NOTE, 0, 0, sz, '#22307a', 'Caveat Brush', 'left'); c.restore(); c.restore();
@@ -203,8 +242,8 @@ function topFloor(c) { c.fillStyle = '#3a2616'; c.fillRect(-1200, -1200, 3480, 4
   c.fillStyle = 'rgba(6,10,36,.4)'; c.fillRect(-1200, -1200, 3480, 4320); }
 
 // —— the people ——
-const CHEF = o => ({ id: 'chef', skin: 'owner', toque: 1, s: 2.4, smile: .7, ...o });
-const OWNER = o => ({ id: 'owner', skin: 'owner', tache: 1, s: 2.2, smile: .5, ...o });
+const CHEF = o => ({ id: 'chef', skin: 'owner', toque: 1, tache: 1, s: 2.4, smile: .7, ...o });
+const OWNER = o => ({ id: 'owner', skin: 'owner', specs: 1, s: 2.2, smile: .5, ...o });
 const WAITER = o => ({ id: 'waiter', skin: 'owner', bowtie: 1, s: 2.3, smile: .6, ...o });
 const GUEST = o => ({ id: 'guest', skin: 'blue2', fem: 'bun', s: 2.2, smile: .5, ...o });
 
@@ -228,16 +267,46 @@ const SHOT = {
       passFront(c, t); heroDish(c, 540, PASS + 8, 380, { steam: 1 - fade, t });
       c.fillStyle = `rgba(6,10,36,${.3 * fade})`; c.fillRect(0, 0, 1080, 2000); });
   },
-  chef(c, t) {   // the chef made it fresh every day: days fly by on the calendar and in the window, a fresh plate every morning
-    const d = HIT.days.filter(x => t > x).length, last = HIT.days[Math.max(0, d - 1)], tear = d ? seg(t, last, last + .4) : 0;
-    const cyc = (t - 3.6) / .5, night = .5 - .5 * Math.cos(cyc * Math.PI * 2);
-    const set = d ? ss(seg(t, last - .25, last + .05)) : 0, back = d ? ss(seg(t, last + .2, last + .45)) : 0;
-    cam(c, 560, 980, 1.18, 0, () => {
-      kitchen(c, t, { night, sunA: cyc * Math.PI * 2 % Math.PI, calendar: [880, 740], day: d, tear, rail: false, pans: true });
-      const P = CHEF({ x: 560, y: 1460, smile: d ? .9 : .7, blink: blinkAt(t, 1), look: .3, squash: wob(t, last, .3, 20, .04) });
-      const hand = reach([660, 1200], [560, PASS - 30], set * (1 - back)); P.handR = hand; P.handL = reach([450, 1200], [520, PASS - 30], set * (1 - back));
-      mascot(c, P); passFront(c, t);
-      if (d) scaled(c, 540, PASS + 8, E(t, last - .1, .25, .45), () => heroDish(c, 540, PASS + 8, 360, { steam: 1, t })); });
+  chef(c, t) {   // the chef made it fresh every day: from above, his hands slice the duck, fan it onto the plate, purée, sauce, berries, greens; a calendar page for each day
+    const nCut = HIT.chops.filter(x => t > x).length, PX = 540, PY = 1330, PR = 300, L = PR * .42;
+    const p1 = ss(seg(t, 4.35, 4.85)), p2 = ss(seg(t, 4.85, 6.3));
+    c.fillStyle = '#141d52'; c.fillRect(0, 0, 1080, 1920);
+    cam(c, 540, lerp(780, 1290, p1), lerp(1.45, 1.25, p1) + .25 * p2, lerp(-.05, .03, p1), () => {
+      c.fillStyle = '#18225e'; c.fillRect(-600, -400, 2280, 2800); for (let i = 0; i < 160; i++) ell(c, -500 + hash(i) * 2100, -300 + hash(i + 300) * 2600, 3, 3, 'rgba(233,220,192,.06)');
+      // a cream towel, a bowl of greens, a bowl of berries
+      c.save(); c.translate(900, 420); c.rotate(.3); c.fillStyle = '#e9dcc0'; c.fillRect(-120, -80, 240, 160); c.fillStyle = '#26368c'; for (const k of [-60, -40]) c.fillRect(-120, k, 240, 10); c.restore();
+      ell(c, 150, 1250, 105, 105, '#f1e7cf'); ell(c, 150, 1250, 85, 85, '#d9ccab'); for (let k = 0; k < 9; k++) leaf(c, 150 + (hash(k + 3) - .5) * 100, 1250 + (hash(k + 8) - .5) * 100, 26, k * .9);
+      ell(c, 930, 1560, 95, 95, '#f1e7cf'); ell(c, 930, 1560, 76, 76, '#d9ccab'); for (let k = 0; k < 10; k++) { const bx = 930 + (hash(k + 13) - .5) * 100, by = 1560 + (hash(k + 17) - .5) * 100; ell(c, bx, by, 16, 16, '#5b1626'); ell(c, bx - 5, by - 5, 5, 5, 'rgba(255,255,255,.5)'); }
+      // the board
+      c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(186, 580, 740, 420, 46); c.fill();
+      c.fillStyle = '#a8784a'; c.beginPath(); c.roundRect(170, 560, 740, 420, 46); c.fill(); c.strokeStyle = 'rgba(90,55,25,.35)'; c.lineWidth = 3; for (let k = 0; k < 9; k++) { c.beginPath(); c.moveTo(200, 600 + k * 44); c.bezierCurveTo(400, 590 + k * 44 + 14, 700, 610 + k * 44 - 14, 880, 600 + k * 44); c.stroke(); }
+      c.strokeStyle = 'rgba(70,40,15,.3)'; c.lineWidth = 6; c.beginPath(); c.roundRect(200, 590, 680, 360, 30); c.stroke();
+      // the plate, built up step by step
+      const fanK = i => ss(seg(t, HIT.fan + i * .055, HIT.fan + i * .055 + .32));
+      topHero(c, PX, PY, PR, { slices: [0, 1, 2, 3, 4, 5, 6].map(fanK), puree: E(t, HIT.puree, .3, .45), carrots: E(t, HIT.puree + .18, .3, .45), swoosh: ss(seg(t, ...HIT.sauce)), berries: seg(t, HIT.berries, HIT.berries + .3), greens: E(t, HIT.herb, .3, .45), glow: ss(seg(t, HIT.done, HIT.done + .3)) });
+      // the duck on the board: one piece, then sliced, then each slice flies over to the plate
+      for (let i = 0; i < 7; i++) { const k = fanK(i), bx = 540 - 3 * 50 + i * 50 + 14 * Math.min(i, nCut) - 7 * nCut, by = 770, [tx, ty, tr] = slicePos(PX, PY, PR, i);
+        if (k >= 1) continue; const x = lerp(bx, tx, k), y = lerp(by, ty, k) - Math.sin(k * Math.PI) * 120; scaled(c, x, y, 1 + .25 * Math.sin(k * Math.PI), () => slice(c, x, y, L, lerp(Math.PI / 2, tr, k), i < nCut || i > 0 && i <= nCut ? 1 : 0)); }
+      // his hands: the knife, the spoon, the sauce bottle, the tweezers
+      const hand = (x, y, r = 50, ax = x + 600, ay = y - 500) => {   // the chef's arm from above: a white sleeve with a cuff, a mitten hand with a thumb
+        const g = c.createLinearGradient(x, y - r, x, y + r); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#c9cdd9'); c.lineCap = 'round';
+        c.strokeStyle = 'rgba(0,0,20,.25)'; c.lineWidth = r * 2.3; c.beginPath(); c.moveTo(ax + 20, ay + 26); c.lineTo(x + 20, y + 26); c.stroke();
+        c.strokeStyle = '#e6e8ee'; c.lineWidth = r * 2.3; c.beginPath(); c.moveTo(ax, ay); c.lineTo(lerp(x, ax, .25), lerp(y, ay, .25)); c.stroke();
+        c.strokeStyle = '#26368c'; c.lineWidth = r * 2.35; c.beginPath(); c.moveTo(lerp(x, ax, .25), lerp(y, ay, .25)); c.lineTo(lerp(x, ax, .22), lerp(y, ay, .22)); c.stroke();
+        c.strokeStyle = g; c.lineWidth = r * 1.7; c.beginPath(); c.moveTo(lerp(x, ax, .22), lerp(y, ay, .22)); c.lineTo(x, y); c.stroke();
+        const a = Math.atan2(y - ay, x - ax); c.fillStyle = g; c.beginPath(); c.ellipse(x, y, r * 1.1, r * .95, a, 0, 7); c.fill(); c.beginPath(); c.ellipse(x + Math.cos(a + 1.2) * r * .8, y + Math.sin(a + 1.2) * r * .8, r * .38, r * .3, a + 1.2, 0, 7); c.fill(); };
+      const kin = ss(seg(t, 3.6, 3.72)) * (1 - ss(seg(t, 4.4, 4.6))); if (kin > 0) { const j = Math.min(nCut, 5), last = HIT.chops[Math.max(0, nCut - 1)], press = nCut ? Math.exp(-(t - last) * 18) : 0;
+        const kx = 540 - 3 * 50 + j * 50 + 14 * j - 7 * nCut + 25 + lerp(500, 0, kin), ky = 770 - lerp(500, 0, kin) + press * 8;
+        c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(kx - 10 + 14 * (1 - press), ky - 110 + 14, 22, 220); c.fillStyle = '#dfe3ec'; c.beginPath(); c.moveTo(kx - 12, ky - 120); c.lineTo(kx + 12, ky - 120); c.lineTo(kx + 12, ky + 100); c.lineTo(kx - 12, ky + 140); c.fill(); c.fillStyle = 'rgba(255,255,255,.7)'; c.fillRect(kx + 4, ky - 115, 5, 220);
+        c.fillStyle = '#3a2a1e'; c.beginPath(); c.roundRect(kx - 15, ky - 260, 30, 140, 10); c.fill(); hand(kx + 6, ky - 200, 50, kx + 520, ky - 700); }
+      const sp1 = Math.sin(seg(t, HIT.puree - .3, HIT.puree + .25) * Math.PI); if (sp1 > 0) { const sx = lerp(-150, PX - PR * .3, sp1), sy = lerp(1100, PY - PR * .14 - 60, sp1); c.fillStyle = '#dfe3ec'; ell(c, sx, sy, 34, 50, '#dfe3ec', -.6); c.strokeStyle = '#c9ccd6'; c.lineWidth = 16; c.beginPath(); c.moveTo(sx - 20, sy - 40); c.lineTo(sx - 120, sy - 170); c.stroke(); hand(sx - 130, sy - 190, 48, sx - 700, sy - 600); }
+      const sb = seg(t, HIT.sauce[0] - .15, HIT.sauce[1] + .1); if (sb > 0 && sb < 1) { const a = 1.55 + 2.0 * clamp((t - HIT.sauce[0]) / (HIT.sauce[1] - HIT.sauce[0])), bx = PX + 12 + Math.cos(a) * PR * .56, by = PY + Math.sin(a) * PR * .56;
+        c.fillStyle = '#5a1e14'; c.beginPath(); c.roundRect(bx - 34, by - 230, 68, 200, 20); c.fill(); c.fillStyle = GOLD; c.fillRect(bx - 34, by - 230, 68, 30); c.fillStyle = '#2a2a33'; c.beginPath(); c.moveTo(bx - 10, by - 30); c.lineTo(bx + 10, by - 30); c.lineTo(bx, by); c.fill(); hand(bx + 20, by - 130, 50, bx + 700, by - 500); }
+      const tw = Math.sin(seg(t, HIT.herb - .3, HIT.herb + .3) * Math.PI); if (tw > 0) { const tx = PX + PR * .25, ty = PY - PR * .05 - (1 - tw) * 300; c.strokeStyle = '#c9ccd6'; c.lineWidth = 8; c.lineCap = 'round'; for (const d of [-1, 1]) { c.beginPath(); c.moveTo(tx + d * 6, ty); c.lineTo(tx + 120 + d * 16, ty - 220); c.stroke(); } hand(tx + 135, ty - 245, 46, tx + 700, ty - 700); }
+      sparkle(c, PX + PR * .2, PY - PR * .3, seg(t, HIT.done, HIT.done + .6), 70); if (t > HIT.done) steam(c, PX, PY - 40, 400, ss(seg(t, HIT.done, HIT.done + .4)), t); });
+    // every step is another day
+    const d = HIT.days.filter(x => t > x).length, last = HIT.days[Math.max(0, d - 1)];
+    scaled(c, 150, 200, .62, () => calendar(c, 150, 200, d, d ? seg(t, last, last + .4) : 0));
   },
   same(c, t) {   // but the guests always chose the same usual dishes: from above, plates of the usual land at every seat; the secret dish slides in, and back out
     topFloor(c);
@@ -345,15 +414,15 @@ const SHOT = {
   },
   friends(c, t) {   // the next day she brought her friends along
     const open = ss(seg(t, HIT.door, HIT.door + .35));
-    const crew = [['blue2', 'bun', 35.15], ['blue1', null, 35.55], ['blue3', 'long', 35.95], ['blue2', 'beret', 36.35]];
+    const crew = [['blue2', 'bun', 35.05, 930, 1720], ['blue1', null, 35.45, 720, 1700], ['blue3', 'long', 35.85, 510, 1720], ['blue2', 'beret', 36.25, 300, 1700]];
     cam(c, 540, 1100, 1.0 + .05 * seg(t, 34.85, 37.55), 0, () => {
       dining(c, t, { windows: [[700, 360]] });
       c.fillStyle = '#e9dcc0'; c.fillRect(150, 700, 380, 760); const dg = c.createLinearGradient(0, 720, 0, 1450); dg.addColorStop(0, '#9fb6ea'); dg.addColorStop(1, '#d9e2f6'); c.fillStyle = dg; c.fillRect(170, 720, 340, 740); glow(c, 340, 1300, 400, .3 * open);
       c.fillStyle = WOOD; c.fillRect(170, 720, 340 * (1 - .8 * open), 740); c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(190, 750, 300 * (1 - .8 * open), 300); ell(c, 170 + 340 * (1 - .8 * open) - 30, 1100, 12, 12, GOLD);
       c.strokeStyle = '#8a7a60'; c.lineWidth = 3; c.beginPath(); c.moveTo(340, 640); c.lineTo(340, 690); c.stroke(); const sw = Math.sin((t - HIT.door) * 14) * .4 * Math.exp(-(t - HIT.door) * 2) * (t > HIT.door); c.save(); c.translate(340, 690); c.rotate(sw); ell(c, 0, 18, 18, 22, GOLD); c.restore();
       pendant(c, 860, 600, .8); table(c, 880, 1460, 340);
-      crew.forEach(([skin, fem, t0], i) => { const u = seg(t, t0, t0 + 1.4), x = lerp(340, [470, 640, 1010, 820][i], ss(u)), y = lerp(1470, [1680, 1740, 1700, 1780][i], ss(u));
-        if (t > t0) mascot(c, { id: 'f' + i, skin, fem, s: 1.9, x, y, f: u < 1 ? .7 : .3, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 6, smile: u >= 1 ? .9 : .6, blink: blinkAt(t, 10 + i) }); }); });
+      crew.map(([skin, fem, t0, tx, ty], i) => { const u = seg(t, t0, t0 + 1.2), e = 1 - (1 - u) * (1 - u); return { i, skin, fem, t0, u, x: lerp(340, tx, e), y: lerp(1480, ty, e) }; })   // one at a time, each to their own spot
+        .filter(p => t > p.t0).sort((a, b) => a.y - b.y).forEach(p => mascot(c, { id: 'f' + p.i, skin: p.skin, fem: p.fem, s: 1.7, x: p.x, y: p.y, f: p.u < 1 ? .7 : (p.i ? -.3 : .2), walk: p.u > 0 && p.u < 1 ? 1 : 0, phi: p.u * Math.PI * 5, smile: p.u >= 1 ? .9 : .6, blink: blinkAt(t, 10 + p.i) })); });
   },
   rush(c, t) {   // soon it was one of the most popular dishes: the rail fills with tickets for it, plates stream across the pass
     cam(c, 540, 1010, 1.06, 0, () => {
@@ -385,17 +454,24 @@ const SHOT = {
       heroDish(c, 270, PASS + 8, 400, { steam: 1, t }); if (tw > 0) scaled(c, 810, PASS + 8, Math.min(1, tw), () => heroDish(c, 810, PASS + 8, 400, { steam: 1, t }));
       if (eq > 0) scaled(c, 540, PASS - 60, eq, () => { c.fillStyle = GOLD; c.beginPath(); c.roundRect(480, PASS - 100, 120, 26, 12); c.roundRect(480, PASS - 44, 120, 26, 12); c.fill(); glow(c, 540, PASS - 60, 160, .45); }); });
   },
-  curious(c, t) {   // only now everyone was curious what makes it so special: a "?" over every head; in the kitchen window, the chef: shh
-    const shh = ss(seg(t, HIT.shh, HIT.shh + .35)), wink = t > HIT.wink2 && t < HIT.wink2 + .4 ? Math.sin(seg(t, HIT.wink2, HIT.wink2 + .4) * Math.PI) : 0, push = ss(seg(t, 45.6, 48.25));
-    cam(c, lerp(540, 790, push), lerp(1080, 820, push), lerp(.95, 1.6, push), 0, () => {
+  curious(c, t) {   // only now everyone was curious what makes it so special: the covered dish on the pass, guests peeking in from every side; the chef pops up: shh
+    const up = E(t, HIT.chefUp, .35, .45), shh = ss(seg(t, HIT.shh, HIT.shh + .3)), wink = t > HIT.wink2 && t < HIT.wink2 + .4 ? Math.sin(seg(t, HIT.wink2, HIT.wink2 + .4) * Math.PI) : 0;
+    bg(c, t);
+    cam(c, 540, 1080, 1 + .1 * ss(seg(t, 43.85, 48.25)), 0, () => {
       dining(c, t, { windows: [] });
-      c.fillStyle = '#e9dcc0'; c.fillRect(600, 520, 420, 420); c.fillStyle = '#18225e'; c.fillRect(620, 540, 380, 380); glow(c, 810, 760, 300, .4);
-      kitchenWin(c, t, shh, wink);
-      pendant(c, 260, 520, .8);
-      const seated = [[180, 1500, 'blue1', null, .6], [380, 1500, 'blue3', 'long', -.4], [640, 1540, 'blue2', 'bun', .7], [880, 1540, 'blue1', null, .7], [130, 1820, 'blue2', 'bob', .7], [420, 1820, 'blue3', null, .6]];
-      [[280, 1420, 380], [760, 1460, 360], [280, 1740, 380]].forEach(([x, y, w]) => table(c, x, y, w));
-      seated.forEach(([x, y, skin, fem, f], i) => { mascot(c, { id: 'g' + i, skin, fem, s: 1.5, x, y: y + 60, sit: 1, f, look: -.35, headTurn: .5 - f * .3, smile: .4, blink: blinkAt(t, 20 + i) }); });
-      seated.forEach(([x, y], i) => qbubble(c, x + 40, y - 400, E(t, HIT.qs[i], .3, .55), 50)); });
+      c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(150, 330, 800, 960); c.fillStyle = '#e9dcc0'; c.fillRect(130, 310, 820, 960);
+      c.save(); c.beginPath(); c.rect(150, 330, 780, 920); c.clip(); kitchen(c, t, { window: false, rail: false, lamps: [540] });
+      const P = CHEF({ s: 2.7, x: 540, y: lerp(1950, 1290, Math.min(1.08, up)), smile: .95, look: .15, blink: wink || blinkAt(t, 30) * (t < HIT.wink2), squash: wob(t, HIT.chefUp + .25, .3, 18, .04) });
+      if (up > 0) { drawMascot(c, { ...P, shadow: false }); if (shh > 0) shhFinger(c, P, shh); }
+      c.restore();
+      c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(110, 1262, 860, 30); c.fillStyle = '#e9dcc0'; c.fillRect(100, 1236, 880, 40); c.fillStyle = 'rgba(255,255,255,.5)'; c.fillRect(100, 1236, 880, 5);
+      heroDish(c, 540, 1226, 420, { t }); leak(c, 540, 1222, 400, .25 + .15 * Math.sin(t * 3), t); cloche(c, 540, 1226, 460, 6 + 4 * Math.sin(t * 6) * (t < HIT.chefUp), 0); });
+    // the curious guests lean into the frame, one after another, all eyes on the cloche
+    const PEEK = [[200, 1620, .3, 'blue2', 'bob'], [880, 1600, -.3, 'blue1', null], [40, 1150, .85, 'blue3', 'long'], [1040, 1120, -.85, 'blue2', 'bun']];
+    PEEK.forEach(([hx, hy, rot, skin, fem], i) => { const k = E(t, HIT.qs[i], .35, .4); if (k <= 0) return; const Hh = Hs(2.9), off = (1 - Math.min(1, k)) * 520 + Math.max(0, k - 1) * -40;
+      c.save(); c.translate(hx - Math.sin(rot) * off, hy + Math.cos(rot) * off); c.rotate(rot);
+      drawMascot(c, { id: 'peek' + i, skin, fem, s: 2.9, x: 0, y: .76 * Hh, f: 0, headTurn: 0, look: -.5, o: t > HIT.chefUp + .3 ? 0 : .5, smile: t > HIT.chefUp + .3 ? .7 : 0, blink: blinkAt(t, 40 + i), shadow: false });
+      c.restore(); });
   },
   curiosity(c, t) {   // sometimes curiosity is the first step to trying something new: the cloche lifts a crack, the steam asks, a hand reaches, the lid comes off
     const cr = ss(seg(t, HIT.crack2, HIT.crack2 + .5)), op = E(t, HIT.open, .45, .25), rh = ss(seg(t, HIT.reach, HIT.open));
@@ -410,12 +486,10 @@ const SHOT = {
       if (rh > 0) { c.strokeStyle = '#2448bb'; c.lineCap = 'round'; c.lineWidth = 90; c.beginPath(); c.moveTo(hx + 700, hy - 300); c.lineTo(hx + 60, hy - 20); c.stroke(); ell(c, hx + 40, hy - 10, 62, 62, '#2a52c9'); } });
   },
 };
-function kitchenWin(c, t, shh, wink) {   // the chef in the serving window
-  c.save(); c.beginPath(); c.rect(620, 540, 380, 380); c.clip(); c.fillStyle = '#1d2a6e'; c.fillRect(620, 540, 380, 380);
-  const P = CHEF({ s: 1.9, x: 810, y: 1070, smile: .9, look: -.1, blink: wink || blinkAt(t, 30) * (t < HIT.wink2) });
-  drawMascot(c, { ...P, shadow: false });
-  if (shh > .6) { const Hh = Hs(1.9), mx = 810, my = 1070 - .76 * Hh + .32 * .225 * Hh; c.globalAlpha = ss((shh - .6) / .4); c.strokeStyle = '#eeeeea'; c.lineCap = 'round'; c.lineWidth = 16; c.beginPath(); c.moveTo(mx, my + 34); c.lineTo(mx, my - 26); c.stroke(); ell(c, mx + 4, my + 44, 26, 22, '#e2e3ea'); c.globalAlpha = 1; }
-  c.restore(); c.fillStyle = '#e9dcc0'; c.fillRect(600, 900, 420, 40); heroDish(c, 700, 905, 150, { steam: .6, t });
+function shhFinger(c, P, k) {   // a finger to the lips, drawn over the face
+  const Hh = Hs(P.s), mx = P.x + (P.headDX || 0) * Hh, my = P.y - .76 * Hh * (1 - (P.squash || 0) * .6) + .32 * .225 * Hh, u = Hh / 440;
+  c.save(); c.globalAlpha = ss(k); c.strokeStyle = '#eeeeea'; c.lineCap = 'round'; c.lineWidth = 18 * u; c.beginPath(); c.moveTo(mx, my + 40 * u); c.lineTo(mx, my - 30 * u); c.stroke();
+  const g = c.createRadialGradient(mx - 10 * u, my + 40 * u, 4, mx, my + 54 * u, 36 * u); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#b8bdcc'); c.fillStyle = g; c.beginPath(); c.ellipse(mx + 4 * u, my + 56 * u, 30 * u, 26 * u, 0, 0, 7); c.fill(); c.restore();
 }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
 function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); }
@@ -455,7 +529,7 @@ function draw(c, t) {
 // sound cues: the fixed hits, plus the friends' footsteps as they come in
 const EV = [];
 for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.push({ t, type });
-[35.15, 35.55, 35.95, 36.35].forEach((t0, i) => { for (let k = 1; k < 5; k++) EV.push({ t: +(t0 + k * 1.4 / 5).toFixed(3), type: 'step', who: i ? 'friend' : 'guest', pan: lerp(-.5, .2, k / 5) }); });
+[35.05, 35.45, 35.85, 36.25].forEach((t0, i) => { for (let k = 1; k < 5; k++) EV.push({ t: +(t0 + k * 1.2 / 5).toFixed(3), type: 'step', who: i ? 'friend' : 'guest', pan: lerp(-.5, .2, k / 5) }); });
 window.DUR = DUR;
 window.EV = EV.sort((a, b) => a.t - b.t);
 window.render = t => draw(ctx, t);
