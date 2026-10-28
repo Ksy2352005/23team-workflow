@@ -1,0 +1,7 @@
+The Chef's Secret Favourite — 23 Team
+
+Voiceover (Hungarian): supplied by 23 Team (refs/voiceover-hu.mp3); used at 1.10× speed, pitch kept (refs/voiceover-hu-x1.10.mp3).
+Picture drawn in code (HTML canvas), rendered with the Lemo-Opuscar tools. Handwriting: Caveat Brush (SIL Open Font License, fonts/).
+Sound effects, recorded, CC0 (public domain), files in sfx/: Kenney "Impact Sounds", "RPG Audio", "Casino Audio" — www.kenney.nl (sfx/LICENSE-kenney-CC0.txt).
+Synthesized in code: the pen, the service bell, chimes, pops, whooshes, the kitchen sizzle, the locked logo sound (tools/logo_sting.py).
+The guest's "mmm": Kokoro text-to-speech (offline, Apache-2.0 model). No music.
