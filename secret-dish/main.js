@@ -462,7 +462,7 @@ const SHOT = {
       c.fillStyle = 'rgba(0,0,20,.35)'; c.fillRect(150, 330, 800, 960); c.fillStyle = '#e9dcc0'; c.fillRect(130, 310, 820, 960);
       c.save(); c.beginPath(); c.rect(150, 330, 780, 920); c.clip(); kitchen(c, t, { window: false, rail: false, lamps: [] });
       const P = CHEF({ s: 2.7, x: 540, y: lerp(1950, 1290, Math.min(1.08, up)), smile: .95, look: .15, blink: wink || blinkAt(t, 30) * (t < HIT.wink2), squash: wob(t, HIT.chefUp + .25, .3, 18, .04) });
-      if (up > 0) { drawMascot(c, { ...P, shadow: false }); if (shh > 0) shhFinger(c, P, shh); }
+      if (up > 0) drawMascot(c, { ...P, shadow: false, tilt: -.08 * shh });   // nothing in front of his face: a smile, a playful tilt, a wink
       c.restore();
       c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(110, 1262, 860, 30); c.fillStyle = '#e9dcc0'; c.fillRect(100, 1236, 880, 40); c.fillStyle = 'rgba(255,255,255,.5)'; c.fillRect(100, 1236, 880, 5);
       heroDish(c, 540, 1226, 420, { t }); cloche(c, 540, 1226, 460, 6 + 4 * Math.sin(t * 6) * (t < HIT.chefUp), 0); });
@@ -480,17 +480,14 @@ const SHOT = {
       ell(c, 540, 1330, 520, 110, '#4a321e'); ell(c, 540, 1320, 500, 100, '#6e4a2c');
       heroDish(c, 540, 1300, 620, { steam: cr, t, glow: op });
       leak(c, 540, 1290, 600, cr * (1 - Math.min(1, op)) + Math.min(1, op) * .8, t);
-      const q = ss(seg(t, HIT.qsteam, HIT.qsteam + .8)); if (q > 0) { c.save(); c.globalAlpha = .75 * q * (1 - ss(seg(t, HIT.open, HIT.open + .4))); c.translate(560 + Math.sin(t * 1.5) * 12, lerp(1120, 860, q)); c.rotate(Math.sin(t * 1.2) * .08); text(c, '?', 0, 0, 260, CREAM, 'Caveat Brush'); c.restore(); }
+      const q = ss(seg(t, HIT.qsteam, HIT.qsteam + .8)), qa = q * (1 - ss(seg(t, HIT.open, HIT.open + .4))); if (qa > 0) { const qx = 545 + Math.sin(t * 1.5) * 12, qy = lerp(980, 620, q), qs = .6 + .4 * E(t, HIT.qsteam, .45, .45);   // the steam curls into a big, bold question mark
+        glow(c, qx, qy, 380, .5 * qa); c.save(); c.globalAlpha = qa; c.translate(qx, qy); c.rotate(Math.sin(t * 1.2) * .06); c.scale(qs, qs); c.font = '520px "Lilita One"'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.lineJoin = 'round'; c.strokeStyle = GOLD; c.lineWidth = 26; c.strokeText('?', 0, 0); c.fillStyle = CREAM; c.fillText('?', 0, 0); c.restore(); }
       const lift = 60 * cr + op * 1500, hx = lerp(1300, 560, rh), hy = lerp(800, 1300 - 268 - 40, rh) - op * 1500;
       cloche(c, 540, 1300, 660, lift, cr * .12 + op * .4);
       if (rh > 0) { c.strokeStyle = '#2448bb'; c.lineCap = 'round'; c.lineWidth = 90; c.beginPath(); c.moveTo(hx + 700, hy - 300); c.lineTo(hx + 60, hy - 20); c.stroke(); ell(c, hx + 40, hy - 10, 62, 62, '#2a52c9'); } });
   },
 };
-function shhFinger(c, P, k) {   // a finger to the lips, drawn over the face
-  const Hh = Hs(P.s), mx = P.x + (P.headDX || 0) * Hh, my = P.y - .76 * Hh * (1 - (P.squash || 0) * .6) + .32 * .225 * Hh, u = Hh / 440;
-  c.save(); c.globalAlpha = ss(k); c.lineCap = 'round'; c.strokeStyle = '#9aa1b6'; c.lineWidth = 24 * u; c.beginPath(); c.moveTo(mx, my + 40 * u); c.lineTo(mx, my - 30 * u); c.stroke(); c.strokeStyle = '#f4f5f8'; c.lineWidth = 17 * u; c.beginPath(); c.moveTo(mx, my + 40 * u); c.lineTo(mx, my - 30 * u); c.stroke();
-  const g = c.createRadialGradient(mx - 10 * u, my + 40 * u, 4, mx, my + 54 * u, 36 * u); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#b8bdcc'); c.fillStyle = g; c.strokeStyle = '#9aa1b6'; c.lineWidth = 3 * u; c.beginPath(); c.ellipse(mx + 4 * u, my + 56 * u, 30 * u, 26 * u, 0, 0, 7); c.fill(); c.stroke(); c.restore();
-}
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
 function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); }
 
