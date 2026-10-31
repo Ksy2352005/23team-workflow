@@ -5,7 +5,7 @@ import { drawMascot, BASE_H } from './char2d.js';
 import { DUR, STORY, SHOTS, HIT } from './story.js';
 import { WORDS } from './captions.js';
 
-await Promise.all([document.fonts.load('74px "Lilita One"', 'ELADVA?'), document.fonts.load('700 74px "Fredoka"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…'), document.fonts.load('700 74px "Fredoka"', 'abc')]);
+await Promise.all([document.fonts.load('74px "Lilita One"', 'ELADVA?'), document.fonts.load('700 74px "Playfair Display"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…'), document.fonts.load('700 74px "Playfair Display"', 'abcABC')]);
 const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
@@ -84,6 +84,7 @@ function suv(c, x, y, w, o = {}) {
     c.save(); cab(); c.clip(); c.fillStyle = '#2a3784'; c.fillRect(-w * .5, -w * .55, w, w * .45); c.fillStyle = 'rgba(150,180,255,.18)'; c.fillRect(-w * .5, -w * .49, w, w * .13);
     c.fillStyle = '#d9cba8'; c.fillRect(-w * .5, -w * .2, w, w * .1); c.scale(f, 1); c.translate(-x, -y); o.inside(); c.restore(); c.strokeStyle = '#cdbf9c'; c.lineWidth = w * .02; cab(); c.stroke(); }
   else { const wg = c.createLinearGradient(-w * .3, -w * .5, w * .1, -w * .35); wg.addColorStop(0, '#3a52a8'); wg.addColorStop(1, '#1a2463'); c.fillStyle = wg; win(); c.fill();
+    if (o.win) { c.save(); win(); c.clip(); c.scale(f, 1); c.translate(-x, -y); o.win(); c.restore(); c.fillStyle = 'rgba(120,150,230,.16)'; win(); c.fill(); }   // who sits inside, seen through the glass
     c.fillStyle = 'rgba(255,255,255,.18)'; c.beginPath(); c.moveTo(-w * .2, -w * .49); c.lineTo(-w * .12, -w * .49); c.lineTo(-w * .2, -w * .35); c.lineTo(-w * .28, -w * .35); c.fill(); }
   c.fillStyle = '#efe4c8'; c.fillRect(-w * .1, -w * .5, w * .025, w * .16);
   c.fillStyle = '#3a3f55'; c.fillRect(-w * .36, -w * .565, w * .44, w * .02);
@@ -118,6 +119,57 @@ function showroom(c, t, o = {}) {
 }
 function plinth(c, x, y, w) { ell(c, x, y + 10, w * .62, w * .09, 'rgba(0,0,20,.35)'); ell(c, x, y, w * .6, w * .085, '#2e3b86'); ell(c, x, y - 6, w * .58, w * .075, '#3a4a9c'); c.strokeStyle = GOLD2; c.lineWidth = 4; c.beginPath(); c.ellipse(x, y - 6, w * .58, w * .075, 0, 0, 7); c.stroke(); }
 
+// the two salesmen side by side, each beside his own car, everything in frame and nothing overlapping
+function pair(c, t, o) {
+  const k1 = o.k1 ?? 1, k2 = o.k2 ?? 1, st = o.st || 0, bb = o.bb || 0;
+  cam(c, 540, 1250, 1.0, 0, () => {
+    showroom(c, t);
+    for (const [x, k, flip] of [[340, k1, 0], [740, k2, 1]]) { if (k <= 0) continue; plinth(c, x, 1530, 330); scaled(c, x, 1530, Math.min(1, k), () => suv(c, x, 1524, 330, { flip, glow: flip ? st : 0 })); }
+    if (k1 > 0) mascot(c, S1({ x: 110, y: 1690, s: 2.0, f: .35, smile: st > .5 ? .5 : .8, blink: blinkAt(t, 1) }), Math.min(1, k1));
+    if (k2 > 0) mascot(c, S2({ x: 970, y: 1690, s: 2.0, f: -.35, smile: st > .5 ? 1 : .7, blink: blinkAt(t, 2), squash: wob(t, HIT.stamp, .3, 18, .03) }), Math.min(1, k2));
+    if (o.eq > 0) scaled(c, 540, 1440, o.eq, () => { c.fillStyle = GOLD; c.beginPath(); c.roundRect(510, 1420, 60, 16, 8); c.roundRect(510, 1452, 60, 16, 8); c.fill(); });
+    if (st > 0) scaled(c, 740, 1330, st, () => { c.save(); c.translate(740, 1330); c.rotate(-.06); c.fillStyle = '#c4304a'; c.beginPath(); c.roundRect(-100, -32, 200, 64, 12); c.fill(); text(c, 'ELADVA', 0, 2, 42, CREAM); c.restore(); });
+    bubble(c, 200, 1050, 300, 130, bb, 140, 1200, () => ['gauge', 'seat', 'speaker'].forEach((f, i) => icon(c, f, 110 + i * 90, 1050, 38)));
+    bubble(c, 930, 1050, 130, 130, bb, 960, 1200, () => icon(c, 'q', 930, 1050, 40)); });
+}
+// —— imagined: the family on the road in Budapest at night (the Parliament and the Chain Bridge across the Danube), a world that scrolls past the car ——
+function budapest(c, t, o = {}) {
+  const v = o.speed ?? 260, sx = (t - (o.t0 || 0)) * v + (o.x0 || 0);   // each shot starts with the Parliament and the bridge in view
+  const sky = c.createLinearGradient(0, 0, 0, 1180); sky.addColorStop(0, '#060b2a'); sky.addColorStop(1, '#1d2b70'); c.fillStyle = sky; c.fillRect(0, 0, 1080, 1180);
+  for (let i = 0; i < 40; i++) ell(c, (hash(i) * 1400 - sx * .02) % 1080 + (hash(i) * 1400 - sx * .02 < 0 ? 1080 : 0), 440 + hash(i + 70) * 520, 2.5, 2.5, `rgba(246,239,220,${.4 + .4 * hash(i + 3)})`);
+  // the far bank: the Parliament, lit gold, repeating slowly
+  const P = 1400, px0 = -((sx * .12) % P) + 420;
+  for (let k = -1; k < 2; k++) { const bx = px0 + k * P + 300;
+    c.fillStyle = '#121b52'; c.fillRect(bx - 420, 1060, 840, 120); for (let i = -7; i <= 7; i++) { c.beginPath(); c.moveTo(bx + i * 56 - 10, 1060); c.lineTo(bx + i * 56, 1020 - (i % 2 ? 0 : 18)); c.lineTo(bx + i * 56 + 10, 1060); c.fill(); }
+    c.beginPath(); c.moveTo(bx - 110, 1060); c.quadraticCurveTo(bx - 110, 930, bx, 905); c.quadraticCurveTo(bx + 110, 930, bx + 110, 1060); c.fill(); c.beginPath(); c.moveTo(bx - 8, 910); c.lineTo(bx, 840); c.lineTo(bx + 8, 910); c.fill();
+    for (const d of [-1, 1]) { c.beginPath(); c.moveTo(bx + d * 170 - 14, 1060); c.lineTo(bx + d * 170, 970); c.lineTo(bx + d * 170 + 14, 1060); c.fill(); }
+    c.fillStyle = 'rgba(233,184,96,.85)'; for (let i = -12; i <= 12; i++) for (let r = 0; r < 3; r++) if (hash(i * 7 + r) > .25) c.fillRect(bx + i * 32 - 4, 1080 + r * 28, 8, 12);
+    glow(c, bx, 980, 260, .25); }
+  // the Chain Bridge, a little nearer
+  const B = 1600, bx0 = -((sx * .25) % B) + 380;
+  for (let k = -1; k < 2; k++) { const bx = bx0 + k * B;
+    c.strokeStyle = 'rgba(236,189,74,.8)'; c.lineWidth = 4; c.beginPath(); c.moveTo(bx - 650, 1150); c.quadraticCurveTo(bx - 450, 1100, bx - 250, 1000); c.quadraticCurveTo(bx, 1120, bx + 250, 1000); c.quadraticCurveTo(bx + 450, 1100, bx + 650, 1150); c.stroke();
+    for (let i = 0; i < 26; i++) { const u = i / 25, x = lerp(bx - 650, bx + 650, u); const y = u < .35 ? lerp(1150, 1000, u / .35) : u < .65 ? 1000 + Math.sin((u - .35) / .3 * Math.PI) * 110 : lerp(1000, 1150, (u - .65) / .35); ell(c, x, y, 4, 4, '#ffe7a6'); }
+    for (const d of [-250, 250]) { c.fillStyle = '#d9ccab'; c.fillRect(bx + d - 40, 990, 80, 170); c.fillStyle = '#1a2560'; c.beginPath(); c.moveTo(bx + d - 22, 1160); c.lineTo(bx + d - 22, 1070); c.quadraticCurveTo(bx + d, 1040, bx + d + 22, 1070); c.lineTo(bx + d + 22, 1160); c.fill(); }
+    c.fillStyle = '#d9ccab'; c.fillRect(bx - 700, 1150, 1400, 16); }
+  // the Danube with gold reflections, the stone embankment, the road with its lamps
+  const wg = c.createLinearGradient(0, 1166, 0, 1360); wg.addColorStop(0, '#16206a'); wg.addColorStop(1, '#0c1342'); c.fillStyle = wg; c.fillRect(0, 1166, 1080, 194);
+  for (let i = 0; i < 30; i++) { const x = ((hash(i) * 1300 - sx * .25) % 1080 + 1080) % 1080, y = 1185 + hash(i + 9) * 160; c.fillStyle = `rgba(236,189,74,${.25 + .3 * hash(i + 2)})`; c.fillRect(x + Math.sin(t * 3 + i) * 6, y, 26 + hash(i + 5) * 40, 3); }
+  c.fillStyle = '#8a7d64'; c.fillRect(0, 1360, 1080, 70); c.fillStyle = '#c9b791'; c.fillRect(0, 1360, 1080, 14); c.strokeStyle = 'rgba(0,0,0,.18)'; c.lineWidth = 3; for (let x = -((sx) % 90); x < 1080; x += 90) { c.beginPath(); c.moveTo(x, 1376); c.lineTo(x, 1430); c.stroke(); }
+  const rg = c.createLinearGradient(0, 1430, 0, 1920); rg.addColorStop(0, '#22284a'); rg.addColorStop(1, '#10132a'); c.fillStyle = rg; c.fillRect(0, 1430, 1080, 490);
+  c.fillStyle = 'rgba(246,239,220,.55)'; for (let x = -((sx * 1.0) % 220); x < 1080; x += 220) c.fillRect(x, 1790, 110, 10);
+  for (let x = -((sx * 1.0) % 520) + 100; x < 1180; x += 520) { c.fillStyle = '#2a2f45'; c.fillRect(x - 6, 1150, 12, 290); c.fillRect(x - 40, 1146, 80, 8); ell(c, x - 36, 1160, 14, 10, '#ffe7a6'); ell(c, x + 36, 1160, 14, 10, '#ffe7a6'); glow(c, x, 1170, 160, .35); }
+}
+function dreamHaze(c) {   // a soft warm haze round the edges: this is imagined
+  const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.22)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
+}
+// the family seen through the car's side windows (window band of the SUV at x, ground y, length w)
+function familyInWindows(c, x, y, w, t, k = 1, crowd = 0) {
+  const hy = y - w * .42, who = [[x + w * .12, 'blue1', null, .78], [x - w * .03, 'blue2', 'long', .74], [x - w * .18, 'blue3', 'pony', .55], [x - w * .29, 'blue2', null, .45]];
+  who.forEach(([px, skin, fem, s], i) => { const kk = clamp(k * 1.4 - i * .12); if (kk <= 0) return; const Hh = Hs(s);
+    drawMascot(c, { id: 'w' + i, skin, fem, s, x: px, y: hy + .74 * Hh + (1 - kk) * 80 + Math.sin(t * 9 + i) * 2, f: .35, smile: crowd ? .4 : 1, sad: crowd ? .2 : 0, sit: 1, shadow: false, blink: blinkAt(t, 30 + i), squash: crowd * .06 }); });
+}
+
 // —— the people ——
 const BUYER = o => ({ id: 'buyer', skin: 'blue1', s: 2.2, smile: .5, ...o });
 const S1 = o => ({ id: 's1', skin: 'owner', specs: 1, bowtie: 1, s: 2.2, smile: .8, ...o });   // the one who knows everything
@@ -126,25 +178,11 @@ const talk = (t, a = 1) => .5 + .4 * a * Math.abs(Math.sin(t * 9));   // a movin
 
 // —— the shots (the story lives in the middle of the frame; the top left is kept calm for the captions) ——
 const SHOT = {
-  twins(c, t) {   // two salesmen, exactly the same car
-    const k1 = E(t, HIT.car1, .4, .35), k2 = E(t, HIT.car2, .4, .35), eq = E(t, HIT.eq, .3, .5);
-    cam(c, 540, 1330, 1.16 + .04 * seg(t, 0, 3.9), 0, () => {
-      showroom(c, t);
-      for (const [x, k, P] of [[290, k1, S1({ x: 160, y: 1660, f: .4, blink: blinkAt(t, 1) })], [790, k2, S2({ x: 920, y: 1660, f: -.4, blink: blinkAt(t, 2) })]]) {
-        if (k <= 0) continue; plinth(c, x, 1520, 420); scaled(c, x, 1520, Math.min(1, k), () => suv(c, x, 1514, 420, { flip: x > 540 })); mascot(c, P, Math.min(1, k)); }
-      if (eq > 0) scaled(c, 540, 1380, eq, () => { c.fillStyle = GOLD; c.beginPath(); c.roundRect(505, 1352, 70, 18, 9); c.roundRect(505, 1392, 70, 18, 9); c.fill(); }); });
+  twins(c, t) {   // two salesmen, exactly the same car: a clean, symmetric pair
+    pair(c, t, { k1: E(t, HIT.car1, .4, .35), k2: E(t, HIT.car2, .4, .35), eq: E(t, HIT.eq, .3, .5) });
   },
-  sold(c, t) {   // yet the one who knew less about cars sold it
-    const st = E(t, HIT.stamp, .3, .5), bb = E(t, HIT.bubbles, .35, .45);
-    cam(c, 540, 1300, 1.16, 0, () => {
-      showroom(c, t); c.fillStyle = 'rgba(6,10,36,.25)'; c.fillRect(-800, -600, 1340, 3000);
-      plinth(c, 290, 1520, 420); suv(c, 290, 1514, 420); plinth(c, 790, 1520, 420); suv(c, 790, 1514, 420, { flip: 1, glow: st });
-      mascot(c, S1({ x: 160, y: 1660, f: .4, smile: .6, blink: blinkAt(t, 1) })); mascot(c, S2({ x: 920, y: 1660, f: -.4, smile: st > .5 ? 1 : .7, blink: blinkAt(t, 2), squash: wob(t, HIT.stamp, .3, 18, .04) }));
-      // a ribbon tag on the second car: sold
-      if (st > 0) scaled(c, 800, 1300, st, () => { c.save(); c.translate(800, 1300); c.rotate(-.12); c.fillStyle = '#c4304a'; c.beginPath(); c.roundRect(-120, -38, 240, 76, 14); c.fill(); text(c, 'ELADVA', 0, 2, 48, CREAM); c.restore(); });
-      // what each knows: a crowded bubble, and a small one
-      bubble(c, 230, 860, 380, 330, bb, 170, 1220, () => { FEATS.forEach((f, i) => icon(c, f, 120 + (i % 3) * 110, 790 + Math.floor(i / 3) * 140, 46)); });
-      bubble(c, 870, 960, 170, 150, bb, 920, 1220, () => icon(c, 'q', 870, 960, 50)); });
+  sold(c, t) {   // yet the one who knew less about cars sold it: a sold tag on his car's roof; what each knows, in two small bubbles
+    pair(c, t, { st: E(t, HIT.stamp, .3, .5), bb: E(t, HIT.bubbles, .35, .45) });
   },
   why(c, t) {   // "I'll tell you why": the showroom's glass doors slide open onto the floor
     const op = ss(seg(t, HIT.doors - .1, HIT.doors + .6));
@@ -166,13 +204,13 @@ const SHOT = {
     const k = E(t, HIT.s1, .35, .4), pt = ss(seg(t, HIT.point, HIT.point + .3));
     cam(c, 560, 1240, 1.12 + .05 * seg(t, 13.35, 16.1), 0, () => {
       showroom(c, t); plinth(c, 640, 1520, 520); suv(c, 640, 1514, 520, { flip: 1 });
-      mascot(c, BUYER({ x: 1000, y: 1700, f: -.4, blink: blinkAt(t, 3) }));
+      mascot(c, BUYER({ x: 930, y: 1700, f: -.4, blink: blinkAt(t, 3) }));
       const P = S1({ x: lerp(-120, 300, Math.min(1, k)), y: 1690, f: .5, smile: talk(t, pt), blink: blinkAt(t, 1), squash: wob(t, HIT.s1 + .3, .3, 16, .04) }); if (pt > 0) P.handR = reach([P.x + 60, 1500], [P.x + 170, 1330], pt);
       mascot(c, P);
       if (pt > 0) bubble(c, 330, 1000, 220, 170, pt, 330, 1200, () => icon(c, 'star', 330, 1000, 56)); });
   },
   features(c, t) {   // horsepower, leather seats, a premium sound system...
-    const spots = [[880, 1310, 'gauge', 920, 980], [500, 1250, 'seat', 330, 960], [430, 1300, 'speaker', 640, 860]];
+    const spots = [[880, 1310, 'gauge', 900, 1060], [500, 1250, 'seat', 300, 1060], [430, 1300, 'speaker', 600, 1010]];
     cam(c, 560, 1250, 1.3 + .06 * seg(t, 16.1, 19.0), -.02, () => {
       showroom(c, t); plinth(c, 600, 1520, 640); suv(c, 600, 1514, 640, { lights: 1 });
       spots.forEach(([px, py, kind, ix, iy], i) => { const k = E(t, HIT.feats[i], .35, .5); if (k <= 0) return;
@@ -183,13 +221,13 @@ const SHOT = {
     const spin = seg(t, ...HIT.clock), tired = ss(seg(t, 20.6, 22.6));
     cam(c, 540, 1320, 1.18, 0, () => {
       showroom(c, t); plinth(c, 560, 1500, 420); suv(c, 560, 1494, 420, { flip: 1 });
-      c.save(); c.translate(860, 820); ell(c, 0, 0, 110, 110, CREAM); c.strokeStyle = GOLD2; c.lineWidth = 10; c.beginPath(); c.arc(0, 0, 100, 0, 7); c.stroke();
+      c.save(); c.translate(880, 1010); c.scale(.8, .8); ell(c, 0, 0, 110, 110, CREAM); c.strokeStyle = GOLD2; c.lineWidth = 10; c.beginPath(); c.arc(0, 0, 100, 0, 7); c.stroke();
       for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; c.fillStyle = NAVY; c.fillRect(Math.cos(a) * 80 - 3, Math.sin(a) * 80 - 3, 6, 6); }
       c.strokeStyle = NAVY; c.lineCap = 'round'; c.lineWidth = 9; c.beginPath(); c.moveTo(0, 0); const am = -Math.PI / 2 + spin * Math.PI * 2 * 1.67; c.lineTo(Math.cos(am) * 72, Math.sin(am) * 72); c.stroke();
       c.lineWidth = 12; c.beginPath(); c.moveTo(0, 0); const ah = -Math.PI / 3 + spin * Math.PI * .28; c.lineTo(Math.cos(ah) * 46, Math.sin(ah) * 46); c.stroke(); ell(c, 0, 0, 10, 10, GOLD2); c.restore();
       mascot(c, S1({ x: 230, y: 1700, f: .5, smile: talk(t), blink: blinkAt(t, 1), armR: .6 + .5 * Math.sin(t * 7), armL: .3 + .3 * Math.sin(t * 5) }));
       const B = BUYER({ x: 880, y: 1720, f: -.4, smile: lerp(.4, 0, tired), blink: tired > .5 ? .65 : blinkAt(t, 3), look: .3 * tired, squash: tired * .04, lean: -.06 * tired });
-      HIT.rain.forEach((tk, i) => { const k = E(t, tk, .3, .45); if (k <= 0) return; const fx = 330 + (i % 4) * 120 + (Math.floor(i / 4) % 2) * 60, fy = 1060 - Math.floor(i / 4) * 105 + 60;
+      HIT.rain.forEach((tk, i) => { const k = E(t, tk, .3, .45); if (k <= 0) return; const fx = 300 + (i % 4) * 115 + (Math.floor(i / 4) % 2) * 55, fy = 1240 - Math.floor(i / 4) * 100;
         icon(c, FEATS[i % FEATS.length], fx + Math.sin(t * 3 + i) * 6, fy + Math.cos(t * 2.4 + i) * 6, 50, k); });
       mascot(c, B); });
   },
@@ -223,7 +261,7 @@ const SHOT = {
       showroom(c, t); plinth(c, 540, 1500, 440); suv(c, 540, 1494, 440);
       mascot(c, BUYER({ x: 260, y: 1720, f: .4, smile: .5, look: -.1, blink: blinkAt(t, 3) }));
       mascot(c, S2({ x: 830, y: 1710, f: -.4, smile: .85, look: -.05, lean: -.04 * cl, blink: blinkAt(t, 2), squash: wob(t, HIT.ask, .3, 16, .03) }));
-      bubble(c, 640, 1040, 230, 210, q * qp, 760, 1230, () => { icon(c, 'q', 640, 1040, 70); }); });
+      bubble(c, 650, 1090, 190, 180, q * qp, 760, 1240, () => { icon(c, 'q', 650, 1090, 60); }); });
   },
   story(c, t) {   // a second child was just born
     const b1 = E(t, HIT.baby, .35, .45), b2 = E(t, HIT.kid2, .35, .45), hh = E(t, HIT.heart, .35, .5);
@@ -236,16 +274,17 @@ const SHOT = {
         if (b2 > 0) scaled(c, 690, 1250, Math.min(1, b2), () => drawMascot(c, { id: 'k2', skin: 'blue2', s: .6, x: 690, y: 1250, smile: 1, shadow: false, blink: 1 }));
         heart(c, 700, 960, 46, hh, '#d94a6a'); if (b1 > 0 && b2 <= 0) heart(c, 690, 1180, 30, b1 * .8, '#d94a6a'); }); });
   },
-  tiny(c, t) {   // his car is already too small: the whole family squeezed into a little hatchback
-    const sq = Math.max(0, Math.sin(clamp((t - HIT.squeeze) / .4) * Math.PI)) * (t > HIT.squeeze), pp = E(t, HIT.pop, .3, .5);
-    cam(c, 540, 1300, 1.25, 0, () => {
-      showroom(c, t, { windows: false });
-      tinyCar(c, 540, 1560, 560, sq);
-      c.save(); c.beginPath(); c.moveTo(540 - 168, 1336); c.quadraticCurveTo(540 - 134, 1224, 551, 1224); c.quadraticCurveTo(652, 1235, 680, 1336); c.clip();
-      [[420, 'blue1', null, 1.0], [520, 'blue2', 'long', .95], [600, 'blue3', 'pony', .6], [660, 'blue2', null, .45]].forEach(([x, skin, fem, s], i) => drawMascot(c, { id: 'c' + i, skin, fem, s: s * 1.05, x, y: 1395 + s * 25, smile: .4, sad: .3, shadow: false, squash: sq * .08, blink: blinkAt(t, 12 + i) }));
-      c.restore();
-      if (pp > 0) { const u = Math.min(1.2, pp); c.save(); c.translate(760 + u * 120, 1140 - u * 160); c.rotate(u * 1.5); c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(-50, -36, 100, 72, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(-14, -48, 28, 14); c.restore(); }
-      poof(c, 700, 1250, seg(t, HIT.pop, HIT.pop + .5), 70); });
+  tiny(c, t) {   // imagined: his car today, too small: the whole family squeezed into a little hatchback, on the road in Budapest
+    const sq = Math.max(0, Math.sin(clamp((t - HIT.squeeze) / .4) * Math.PI)) * (t > HIT.squeeze), pp = E(t, HIT.pop, .3, .5), bump = Math.abs(Math.sin(t * 7)) * 6;
+    budapest(c, t, { speed: 200, t0: 39.05 });
+    c.save(); c.translate(0, -bump);
+    tinyCar(c, 540, 1760, 660, sq);
+    c.save(); c.translate(540, 1760); c.scale(1 + sq * .06, 1 - sq * .06); c.beginPath(); c.moveTo(-.3 * 660, -.4 * 660); c.quadraticCurveTo(-.24 * 660, -.6 * 660, .02 * 660, -.6 * 660); c.quadraticCurveTo(.2 * 660, -.58 * 660, .25 * 660, -.4 * 660); c.closePath(); c.clip(); c.translate(-540, -1760);
+    [[400, 'blue1', null, .9], [485, 'blue2', 'long', .86], [565, 'blue3', 'pony', .64], [635, 'blue2', null, .52]].forEach(([x, skin, fem, s], i) => drawMascot(c, { id: 'c' + i, skin, fem, s, x, sit: 1, y: 1760 - .5 * 660 + .74 * Hs(s), f: .3, smile: .3, sad: .35, shadow: false, squash: sq * .08, blink: blinkAt(t, 12 + i) }));
+    c.restore();
+    if (pp > 0) { const u = Math.min(1.3, pp); c.save(); c.translate(560 - u * 260, 1300 - Math.sin(Math.min(1, u) * Math.PI) * 160 + u * 140); c.rotate(-u * 1.8); c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(-60, -42, 120, 84, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(-16, -56, 32, 16); c.restore(); }
+    else { c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(500, 1258, 120, 84, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(544, 1244, 32, 16); }
+    c.restore(); dreamHaze(c);
   },
   safety(c, t) {   // and safety matters most now
     const sh = E(t, HIT.shield, .4, .45), shine = ss(seg(t, HIT.shine, HIT.shine + .5));
@@ -285,16 +324,11 @@ const SHOT = {
         HIT.seats.forEach((ts, i) => { const k = E(t, ts, .3, .5), sx = 540 - 700 * .33 + i * 700 * .11, sy = 1600 - 700 * .19; if (k > 0) scaled(c, sx, sy, Math.min(1.1, k), () => { c.fillStyle = '#efe4c8'; c.beginPath(); c.roundRect(sx - 34, sy - 150, 68, 150, 28); c.fill(); c.fillStyle = '#d9ccab'; c.beginPath(); c.roundRect(sx - 24, sy - 138, 48, 70, 18); c.fill(); c.fillStyle = GOLD; c.fillRect(sx - 30, sy - 50, 60, 10); c.fillRect(sx - 4, sy - 120, 8, 70); }); }); } });
       check(c, 640, 1200, 56, ok); });
   },
-  family(c, t) {   // and whether the whole family fits in comfortably
-    const hh = E(t, HIT.famheart, .35, .5);
-    cam(c, 470, 1390, 1.6, 0, () => {
-      showroom(c, t, { windows: false });
-      suv(c, 540, 1600, 700, { glow: hh, inside: () => {
-        for (const sx of [540 - 700 * .17, 540 + 700 * .1]) { c.fillStyle = '#c9b791'; c.beginPath(); c.roundRect(sx - 700 * .03, 1600 - 700 * .37, 700 * .07, 700 * .18, 14); c.fill(); }
-        for (const sx of [540 - 700 * .33, 540 - 700 * .22]) { const sy = 1600 - 700 * .19; c.fillStyle = '#efe4c8'; c.beginPath(); c.roundRect(sx - 34, sy - 150, 68, 150, 28); c.fill(); c.fillStyle = GOLD; c.fillRect(sx - 30, sy - 50, 60, 10); }   // the kids in their child seats
-        const who = [[540 - 700 * .33, 'blue3', 'pony', .55, 0], [540 - 700 * .22, 'blue2', null, .42, 1], [540 - 700 * .05, 'blue2', 'long', .72, 2], [540 + 700 * .13, 'blue1', null, .74, 3]];
-        who.forEach(([x, skin, fem, s, i]) => { const k = E(t, HIT.fam[i], .3, .5); if (k <= 0) return; drawMascot(c, { id: 'm' + i, skin, fem, s, x, sit: 1, y: 1600 - 700 * .2 + (1 - Math.min(1, k)) * 120, smile: 1, shadow: false, blink: blinkAt(t, 20 + i) }); }); } });
-      heart(c, 470, 1190, 56, hh, '#d94a6a'); });
+  family(c, t) {   // imagined: the whole family in the new car, comfortably, on the road in Budapest
+    const hh = E(t, HIT.famheart, .35, .5), k = seg(t, HIT.fam[0] - .2, HIT.fam[3] + .3);
+    budapest(c, t, { speed: 260, t0: 55.3, x0: 400 });
+    const bob = Math.sin(t * 6) * 2; suv(c, 540, 1760 + bob, 820, { lights: 1, wheel: t * 12, win: () => familyInWindows(c, 540, 1760 + bob, 820, t, k) });
+    heart(c, 560, 1240, 58, hh, '#d94a6a'); dreamHaze(c);
   },
   deal(c, t) {   // and this time, he buys the car
     const sh = ss(seg(t, HIT.shake - .4, HIT.shake)), bob = t > HIT.shake && t < HIT.shake + .6 ? Math.sin((t - HIT.shake) * 20) * 10 : 0, ky = E(t, HIT.keys, .35, .45), sold = E(t, HIT.sold2, .3, .5);
@@ -311,7 +345,7 @@ const SHOT = {
       const B = BUYER({ s: 3.6, x: 540, y: 1960, f: 0, smile: .3, blink: blinkAt(t, 3), squash: HIT.cards.reduce((a, tc) => a + wob(t, tc + .3, .25, 20, .02), 0) });
       mascot(c, B);
       HIT.cards.forEach((tc, i) => { const u = seg(t, tc - .35, tc + .3), side = i % 2 ? 1 : -1; if (u <= 0) return; const hit = Math.min(1, u / .55), back = clamp((u - .55) / .45);
-        const x = lerp(540 + side * 700, 540 + side * 70, ss(hit)) + side * back * 520, y = lerp(700 + i * 40, 1100, ss(hit)) + back * back * 700 - back * 200;
+        const x = lerp(540 + side * 700, 540 + side * 230, ss(hit)) + side * back * 520, y = lerp(900 + i * 40, 1320, ss(hit)) + back * back * 700 - back * 200;
         c.save(); c.translate(x, y); c.rotate(side * (.3 + back * 2)); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-70, -90, 140, 180, 14); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 4; c.stroke(); icon(c, FEATS[i % 6], 0, -18, 44); c.fillStyle = 'rgba(28,36,80,.35)'; c.fillRect(-45, 45, 90, 8); c.fillRect(-45, 62, 60, 8); c.restore(); }); });
   },
   piece(c, t) {   // but the information that truly matters to them: one gold card clicks into place
@@ -320,7 +354,7 @@ const SHOT = {
       const g = c.createRadialGradient(540, 1150, 100, 540, 1150, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(1, '#0a1034'); c.fillStyle = g; c.fillRect(-200, -200, 1480, 2400);
       glow(c, 540, 1350, 600, .4 * gl);
       mascot(c, BUYER({ s: 3.6, x: 540, y: 1960, f: 0, smile: lerp(.3, 1, gl), blink: blinkAt(t, 3) }));
-      const sx = 540, sy = 1460; c.strokeStyle = GOLD2; c.lineWidth = 6; c.setLineDash([16, 12]); c.strokeRect(sx - 80, sy - 100, 160, 200); c.setLineDash([]);
+      const sx = 540, sy = 1680; c.strokeStyle = GOLD2; c.lineWidth = 6; c.setLineDash([16, 12]); c.strokeRect(sx - 80, sy - 100, 160, 200); c.setLineDash([]);
       const x = lerp(1250, sx, u), y = lerp(700, sy, u) - Math.sin(u * Math.PI) * 200;
       c.save(); c.translate(x, y); c.rotate((1 - u) * .8); const k = 1 + .12 * Math.sin(Math.min(1, cl) * Math.PI); c.scale(k, k); glow(c, 0, 0, 220, .5 + .4 * gl);
       c.fillStyle = GOLD; c.beginPath(); c.roundRect(-80, -100, 160, 200, 16); c.fill(); icon(c, 'family', 0, -25, 50, 1, { bg: '#fff3cf' }); icon(c, 'shield', 0, 52, 34, 1, { bg: '#fff3cf' }); c.restore(); });
@@ -344,14 +378,11 @@ const SHOT = {
       const P = [[300, 1000], [480, 920], [660, 920], [840, 1000]], kinds = ['gauge', 'seat', 'speaker', 'cog'];
       HIT.what.forEach((tw, i) => icon(c, kinds[i], P[i][0], P[i][1], 64, E(t, tw, .3, .5))); });
   },
-  whyneed(c, t) {   // ...they understand why someone needs it: the family drives off in their new car
-    const ins = E(t, HIT.inside, .35, .45), dr = ss(seg(t, HIT.drive, STORY)), lv = E(t, HIT.love, .35, .5);
-    cam(c, 540 + dr * 200, 1250, 1.15, 0, () => {
-      showroom(c, t); const x = 540 + dr * dr * 900;
-      suv(c, x, 1514, 560, { lights: 1, wheel: dr * 30, inside: () => {
-        [[x - 560 * .33, 'blue3', 'pony', .48], [x - 560 * .22, 'blue2', null, .36], [x - 560 * .05, 'blue2', 'long', .6], [x + 560 * .13, 'blue1', null, .62]].forEach(([px, skin, fem, s], i) => {
-          const k = Math.min(1, ins * 1.3 - i * .1); if (k > 0) drawMascot(c, { id: 'd' + i, skin, fem, s, x: px, sit: 1, y: 1514 - 560 * .2 + (1 - k) * 100, smile: 1, shadow: false, armR: i === 3 ? 2.2 + Math.sin(t * 10) * .3 : .1, blink: blinkAt(t, 30 + i) }); }); } });
-      heart(c, x - 40, 1070, 56, lv, '#d94a6a'); });
+  whyneed(c, t) {   // ...they understand why someone needs it: the family drives on through Budapest, and away
+    const dr = ss(seg(t, HIT.drive, STORY)), lv = E(t, HIT.love, .35, .5), x = 540 + dr * dr * 760, bob = Math.sin(t * 6) * 2;
+    budapest(c, t, { speed: 260 + 120 * dr, t0: 85.2, x0: 900 });
+    suv(c, x, 1760 + bob, 820, { lights: 1, wheel: t * 12 + dr * 20, win: () => familyInWindows(c, x, 1760 + bob, 820, t, 1) });
+    heart(c, x + 20, 1240, 58, lv, '#d94a6a'); dreamHaze(c);
   },
 };
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
@@ -360,7 +391,7 @@ function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['SUV-t', 'Tíz', 'percen', 'kérdést', 'Miért', 'biztonság', 'család', 'megveszi', 'pszichológia', 'fontos', 'tulajdonságait', 'problémáját', 'miért', 'szüksége']);
 const bare = w => w.replace(/[.,:;!?…„”"]/g, '');
-const CAP = { x: 64, y: 290, size: 72, lh: 88, maxW: 820, maxLines: 3 }, CAPFONT = `700 ${CAP.size}px "Fredoka"`;   // Fredoka Bold: it has the Hungarian ő and ű
+const CAP = { x: 64, y: 300, size: 80, lh: 96, maxW: 900, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Playfair Display"`;   // a classic serif with the Hungarian ő and ű; never more than two lines
 const PAGES = (() => {   // group the words into short pages: a new page after a full stop, a question, a colon, or once a page is full
   const m = document.createElement('canvas').getContext('2d'); m.font = CAPFONT; const space = m.measureText(' ').width;
   const pages = []; let cur = [], x = 0, line = 0;
@@ -368,7 +399,7 @@ const PAGES = (() => {   // group the words into short pages: a new page after a
   WORDS.forEach(([w, t0], i) => { const wd = m.measureText(w).width;
     if (x > 0 && x + space + wd > CAP.maxW) { line++; x = 0; if (line >= CAP.maxLines) flush(); }
     cur.push({ w, t: t0, x: x ? x + space : 0, line, wd, key: KEY.has(bare(w)) }); x = (x ? x + space : 0) + wd;
-    const prev = WORDS[i + 1]; if (/[.?!:…”]$/.test(w) || (/,$/.test(w) && cur.length >= 4) || cur.length >= 9 || (prev && prev[1] - t0 > 1.1)) flush(); });
+    const prev = WORDS[i + 1]; if (/[.?!:…”]$/.test(w) || (/,$/.test(w) && cur.length >= 4) || cur.length >= 7 || (prev && prev[1] - t0 > 1.1)) flush(); });
   flush(); return pages.map((p, i) => ({ words: p, t0: p[0].t - .05, t1: pages[i + 1] ? pages[i + 1][0].t - .05 : STORY - .5 }));
 })();
 function captions(c, t) {
@@ -381,7 +412,6 @@ function captions(c, t) {
     const hot = w === now, col = hot || w.key ? GOLD : CREAM;
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
     c.shadowColor = 'rgba(0,0,15,.65)'; c.shadowBlur = 14; c.shadowOffsetY = 4; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
-    if (hot) { c.fillStyle = GOLD; c.fillRect(CAP.x + w.x, y + 14, w.wd * Math.min(1, (t - w.t + .06) / .2), 7); }
     c.restore(); });
   c.restore();
 }
@@ -396,7 +426,7 @@ function endCard(c, t) {
   c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO_W, -w / 2, -h / 2, w, h); c.restore();
 }
 function vignette(c) { c.setTransform(1, 0, 0, 1, 0, 0); const g = c.createRadialGradient(W / 2, H * .5, H * .3, W / 2, H * .5, H * .8); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, 'rgba(4,6,30,.4)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }
-const WHIP = .24, PUNCH = .26;
+const WHIP = .24, PUNCH = .26, DREAM = .6;
 function draw(c, t) {
   if (t >= STORY) return endCard(c, t);
   const i = shotAt(t), [t0, , kind] = SHOTS[i], dt = t - t0;
@@ -405,6 +435,10 @@ function draw(c, t) {
     const e = ss(dt / WHIP), blur = Math.sin(e * Math.PI) * 26 * K;
     paintShot(actx, i - 1, t0 - 1 / 48); paintShot(bctx, i, t);
     c.save(); c.filter = `blur(${blur}px)`; c.drawImage(bufA, -W * e, 0); c.drawImage(bufB, W * (1 - e), 0); c.restore();
+  } else if (kind === 'dream' && dt < DREAM && i > 0) {   // into (or out of) an imagined scene: a soft, warm, blurred dissolve
+    const e = ss(dt / DREAM), b = Math.sin(e * Math.PI);
+    paintShot(actx, i - 1, t0 - 1 / 48); paintShot(bctx, i, t);
+    c.save(); c.filter = `blur(${b * 18 * K}px) brightness(${1 + .25 * b})`; c.globalAlpha = 1; c.drawImage(bufA, 0, 0); c.globalAlpha = e; c.drawImage(bufB, 0, 0); c.restore();
   } else if (kind === 'punch' && dt < PUNCH && i > 0) {
     const e = 1 - Math.pow(1 - dt / PUNCH, 3), s = lerp(1.22, 1, e);
     paintShot(bctx, i, t); c.save(); c.translate(W / 2, H / 2); c.scale(s, s); c.translate(-W / 2, -H / 2); c.filter = `blur(${(1 - e) * 10 * K}px)`; c.drawImage(bufB, 0, 0); c.restore();

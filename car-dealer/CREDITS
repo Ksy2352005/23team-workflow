@@ -1,7 +1,7 @@
 Two Salesmen — 23 Team
 
 Voiceover (Hungarian): supplied by 23 Team (refs/voiceover-hu.mp3); used at 1.10× speed, pitch kept (refs/voiceover-hu-x1.10.mp3).
-Captions: the script (refs/script-hu.txt), timed word by word from Whisper's word timings (align.py). Caption font: Fredoka Bold (SIL Open Font License).
+Captions: the script (refs/script-hu.txt), timed word by word from Whisper's word timings (align.py). Caption font: Playfair Display Bold (SIL Open Font License, fonts/OFL-PlayfairDisplay.txt).
 Picture drawn in code (HTML canvas), rendered with the Lemo-Opuscar tools.
 Sound effects, recorded, CC0 (public domain), files in sfx/: Kenney "Impact Sounds", "RPG Audio", "Casino Audio" — www.kenney.nl (sfx/LICENSE-kenney-CC0.txt).
 Synthesized in code: chimes, pops, whooshes, the clock, the puffs, the engine, the locked logo sound (tools/logo_sting.py). No music, no character voices.
