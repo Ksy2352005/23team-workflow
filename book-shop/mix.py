@@ -86,8 +86,8 @@ add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
 for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
 for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
 for k, t in enumerate(HIT['pages']): add(fx, mx(S(f'bookFlip{1 + k % 3}', .35), lp(swish(.5, .12), 4000)), t - .02, 1, .3)   # a page turning over
-add(fx, mx(S('bookOpen', .4), swish(.6, .15)), .1, 1, -.3); add(fx, mx(pop(.2), verb(shimmer(.12, 1.0), .8, .3)), .8, 1, 0)   # the book opens, the shop pops up
-add(fx, mx(S('bookPlace1', .4), lp(thump(.25, 70), 300) * .5), 66.95, 1, 0)   # and closes
+add(fx, mx(lp(swish(1.4, .15), 3000), shopbell(.06)), .2, 1, 0)   # gliding in through the window
+add(fx, lp(swish(1.4, .14, False), 3000), 65.6, 1, 0)   # and back out into the night
 for e in EVS:
     if e['type'] == 'step': add(fx, lp(S(pick('footstep_wood_00', 5, int(e['t'] * 7)), .16), 3500), e['t'], 1, e.get('pan', 0) * .7)
 # what sells: the known books

@@ -120,6 +120,26 @@ function specialShelf(c, t, x, y, k = 1, o = {}) {   // the special shelf: gold-
   c.restore();
 }
 
+// the shop from the street at night: a navy front, a hanging sign, the warm window full of books (or, at the end, the special shelf), a street lamp, cobbles
+function storefront(c, t, o = {}) {
+  c.fillStyle = TOP; c.fillRect(-800, -600, 2680, 3000);
+  for (let i = 0; i < 30; i++) ell(c, -200 + hash(i) * 1500, 700 + hash(i + 30) * 200, 2.5, 2.5, `rgba(246,239,220,${.3 + .5 * hash(i + 7)})`);
+  c.fillStyle = '#16205a'; c.fillRect(-300, 900, 1680, 900); c.fillStyle = '#1a2563'; c.fillRect(80, 900, 920, 900);
+  c.fillStyle = WOOD; c.fillRect(60, 880, 960, 30); c.fillRect(60, 1700, 960, 24);
+  // the hanging sign
+  c.strokeStyle = '#8a7a60'; c.lineWidth = 4; c.beginPath(); c.moveTo(380, 930); c.lineTo(380, 990); c.moveTo(700, 930); c.lineTo(700, 990); c.stroke(); const sw = Math.sin(t * 1.5) * .02;
+  c.save(); c.translate(540, 1030); c.rotate(sw); c.fillStyle = WOOD; c.beginPath(); c.roundRect(-200, -44, 400, 88, 14); c.fill(); c.strokeStyle = CREAM; c.lineWidth = 5; c.beginPath(); c.roundRect(-188, -32, 376, 64, 10); c.stroke();
+  c.font = '700 46px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('KÖNYVEK', 30, 2); c.fillStyle = CREAM; c.fillRect(-160, -16, 26, 34); c.fillRect(-130, -16, 26, 34); c.fillStyle = '#26368c'; c.fillRect(-135, -16, 4, 34); c.restore();
+  // the window
+  c.fillStyle = CREAM; c.fillRect(150, 1110, 780, 520); c.fillStyle = '#2a2f6a'; c.fillRect(170, 1130, 740, 480); glow(c, 540, 1380, 420, .55);
+  c.save(); c.beginPath(); c.rect(170, 1130, 740, 480); c.clip();
+  if (o.special) specialShelf(c, t, 540, 1560, 1, { lamp: 1 }); else { shelfUnit(c, 190, 500, 1160, 1600, 3, 41); shelfUnit(c, 580, 890, 1160, 1600, 3, 63); }
+  c.fillStyle = 'rgba(255,224,160,.12)'; c.fillRect(170, 1130, 740, 480); c.restore();
+  c.fillStyle = 'rgba(255,255,255,.08)'; c.beginPath(); c.moveTo(200, 1130); c.lineTo(320, 1130); c.lineTo(220, 1610); c.lineTo(170, 1610); c.fill(); c.fillStyle = CREAM; c.fillRect(530, 1130, 20, 480);
+  // a street lamp and the cobbles
+  c.fillStyle = '#2a2f45'; c.fillRect(92, 1000, 16, 800); c.beginPath(); c.moveTo(62, 1000); c.lineTo(138, 1000); c.lineTo(118, 950); c.lineTo(82, 950); c.fill(); ell(c, 100, 1004, 34, 8, '#ffe7a6'); glow(c, 100, 1060, 240, .4);
+  c.fillStyle = '#2a3054'; c.fillRect(-300, 1724, 1680, 400); c.strokeStyle = 'rgba(0,0,0,.3)'; c.lineWidth = 3; for (let r = 0; r < 7; r++) for (let x = -300 + (r % 2) * 40; x < 1400; x += 90) { c.beginPath(); c.roundRect(x, 1740 + r * 34, 80, 26, 8); c.stroke(); }
+}
 // —— the people ——
 const OWNER = o => ({ id: 'owner', skin: 'owner', specs: 1, tache: 1, s: 2.2, smile: .7, ...o });   // the bookseller: glasses and a moustache
 const CUST = [['blue2', 'long'], ['blue3', 'bun'], ['blue1', null], ['blue2', 'bob'], ['blue3', 'beret'], ['blue1', 'glasses']];
@@ -128,23 +148,18 @@ function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1300, 10
 
 // —— the shots ——
 const SHOT = {
-  shop(c, t) {   // the story opens like a book: a closed storybook, its cover swings open and the bookshop pops up out of the pages; then the owner notices: customers grab the books they already know
-    const open = ss(seg(t, .1, .9)), pop = sp(Math.max(0, t - .7), .5, .35), push = ss(seg(t, 1.6, 5.4));
-    c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
-    stage(c, lerpBox([-60, 760, 1140, 1900], [40, 800, 1040, 1860], push), 0, () => {
-      // the open book under the scene: two cream pages and a spine
-      c.fillStyle = 'rgba(0,0,20,.4)'; c.fillRect(-40, 1700, 1160, 140); c.fillStyle = '#26368c'; c.fillRect(-60, 1690, 1200, 150); c.fillStyle = CREAM; c.fillRect(-40, 1680, 560, 140); c.fillRect(560, 1680, 560, 140); c.fillStyle = 'rgba(160,120,60,.25)'; c.fillRect(500, 1680, 80, 140);
-      c.save(); c.translate(0, 1680); c.scale(1, Math.max(0, pop)); c.translate(0, -1680);   // the scene folds up out of the page
+  shop(c, t) {   // from the street at night the camera glides to the warm window and through it into the shop; there the owner notices customers grabbing the books they already know
+    const glide = ss(seg(t, 0, 1.5)), into = ss(seg(t, 1.15, 1.7)), push = ss(seg(t, 1.6, 5.4));
+    if (into < 1) stage(c, lerpBox([20, 820, 1060, 1860], [170, 1130, 910, 1610], glide), 0, () => storefront(c, t));
+    if (into > 0) { c.save(); c.globalAlpha = into;
+    stage(c, lerpBox([-60, 760, 1140, 1840], [40, 800, 1040, 1840], push), 0, () => {
       shop(c, t);
-      table(c, 540, 1500, 360); for (const [x, kind, tg] of [[450, 'author', HIT.grabs[0]], [560, 'gold', HIT.grabs[1]]]) { cover(c, x, 1420, 90, kind, .4 + .3 * Math.sin(t * 5)); for (let r = 0; r < 3; r++) { const u = ((t * .8 + r / 3) % 1); c.strokeStyle = `rgba(236,189,74,${.5 * (1 - u)})`; c.lineWidth = 4; c.beginPath(); c.arc(x, 1420, 60 + u * 160, 0, 7); c.stroke(); } }
+      table(c, 540, 1500, 360); for (const [x, kind] of [[450, 'author'], [560, 'gold']]) { cover(c, x, 1420, 90, kind, .4 + .3 * Math.sin(t * 5)); for (let r = 0; r < 3; r++) { const u = ((t * .8 + r / 3) % 1); c.strokeStyle = `rgba(236,189,74,${.5 * (1 - u)})`; c.lineWidth = 4; c.beginPath(); c.arc(x, 1420, 60 + u * 160, 0, 7); c.stroke(); } }
       cover(c, 660, 1430, 76, 'plain');
       mascot(c, OWNER({ x: 880, y: 1720, f: -.4, look: -.1, headTurn: t > HIT.notice ? -.3 : 0, smile: .5, blink: blinkAt(t, 1) }));
       [[200, 0, HIT.grabs[0], 450], [340, 1, HIT.grabs[1], 560]].forEach(([x0, i, tg, bx]) => { const pull = ss(seg(t, tg - 1.2, tg)), x = lerp(x0, bx - 120, pull * .6), P = cust(i, { x, y: 1760, f: .5, lean: .12 * pull, smile: t > tg ? 1 : .6, blink: blinkAt(t, 10 + i) }); const r = Math.sin(seg(t, tg - .4, tg + .5) * Math.PI); if (r > 0) P.handR = reach([x + 80, 1560], [bx, 1440], r); mascot(c, P);
-        const ex = E(t, tg, .3, .5); if (ex > 0 && t < tg + 1.4) badge(c, 'ex', x, 1240, 40, ex); });
-      c.restore();
-      // the cover, swinging open on its spine
-      if (open < 1) { c.save(); c.translate(-60, 0); c.scale(1 - open, 1); c.fillStyle = '#26368c'; c.fillRect(0, 760, 1200, 1080); c.strokeStyle = GOLD; c.lineWidth = 10; c.strokeRect(50, 810, 1100, 980);
-        c.font = '700 84px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('A KÖNYVESBOLT', 600, 1240); star(c, 600, 1380, 40); c.restore(); } });   // the title swings with the cover
+        const ex = E(t, tg, .3, .5); if (ex > 0 && t < tg + 1.4) badge(c, 'ex', x, 1240, 40, ex); }); });
+    c.restore(); }
   },
   known(c, t) {   // the familiar covers pull customers in like magnets: rings pulse from them, the customers lean in and grab
     const a = ss(seg(t, HIT.author - .2, HIT.author + .3)), b = ss(seg(t, HIT.cover - .2, HIT.cover + .3)), ra = ss(seg(t, HIT.author, HIT.author + .5)), rb = ss(seg(t, HIT.cover, HIT.cover + .5));
@@ -166,7 +181,7 @@ const SHOT = {
       c.strokeStyle = 'rgba(233,220,192,.6)'; c.beginPath(); c.moveTo(300, 900); c.lineTo(300, 900 + 300 * sp); c.stroke(); ell(c, 300, 910 + 300 * sp, 16, 20, '#121a3a'); for (const d of [-1, 1]) for (let k = 0; k < 3; k++) { c.strokeStyle = '#121a3a'; c.lineWidth = 3; c.beginPath(); c.moveTo(300, 910 + 300 * sp); c.lineTo(300 + d * 26, 900 + 300 * sp + k * 10); c.stroke(); }
       for (let i = 0; i < 24; i++) { const u = (t * .08 + hash(i)) % 1; ell(c, 220 + hash(i + 5) * 640, 920 + u * 700, 2.5, 2.5, `rgba(246,239,220,${.4 * Math.sin(u * Math.PI)})`); }
       if (pass > 0 && pass < 1) mascot(c, cust(4, { x: lerp(200, 880, pass), y: 1830, s: 2.0, f: .8, walk: 1, phi: pass * 14, smile: .5, alpha: Math.min(clamp(pass / .15), clamp((1 - pass) / .15)) }));
-      const n = E(t, HIT.nope, .3, .5); if (n > 0) scaled(c, 720, 1180, n, () => { c.fillStyle = CREAM; c.beginPath(); c.roundRect(650, 1140, 140, 80, 12); c.fill(); text(c, '0', 720, 1182, 60, '#7a3a3a'); }); });
+    });
   },
   idea(c, t) {   // so he decided to make a very special shelf: a lightbulb, and the shelf builds itself, plank by plank, the lamp lights
     const bl = E(t, HIT.bulb, .35, .5), sk = seg(t, HIT.planks[0] - .2, HIT.lamp);
@@ -270,19 +285,13 @@ const SHOT = {
         c.save(); c.globalAlpha = dead ? .18 : 1; scaled(c, x, y, Math.min(1, on), () => { cover(c, x, y, 150, k, dead ? 0 : .6 * flick); c.strokeStyle = dead ? 'rgba(120,120,140,.4)' : `rgba(255,214,120,${.9 * flick})`; c.lineWidth = 6; c.strokeRect(x - 90, y - 120, 180, 240); if (!dead) glow(c, x, y, 160, .35 * flick); }); c.restore(); });
       const pk = ss(seg(t, HIT.fade, HIT.fade + .5)); if (pk > 0) { glow(c, 540, 1260, 300, .5 * pk); c.save(); c.globalAlpha = pk; parcel(c, 540, 1260, 230, { mark: 'heart' }); c.restore(); } });
   },
-  mirror(c, t) {   // ...he let customers recognise themselves in the sentences: the label becomes a mirror; then the story folds back into its book, and the book closes
-    const mr = ss(seg(t, HIT.mirror - .4, HIT.mirror + .3)), fold = ss(seg(t, 65.6, 66.6)), shut = ss(seg(t, 66.4, 67.1));
-    c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
-    stage(c, [80, 800, 1000, 1860], 0, () => {
-      c.fillStyle = '#26368c'; c.fillRect(-60, 1690, 1200, 150); c.fillStyle = CREAM; c.fillRect(-40, 1680, 560, 140); c.fillRect(560, 1680, 560, 140);
-      c.save(); c.translate(0, 1680); c.scale(1, 1 - fold); c.translate(0, -1680);
-      shop(c, t, { window: false }); specialShelf(c, t, 690, 1580, 1, { lamp: 1 });
+  mirror(c, t) {   // ...he let customers recognise themselves in the sentences: the label becomes a mirror; then the camera pulls back out through the window into the night, the special shelf glowing inside
+    const mr = ss(seg(t, HIT.mirror - .4, HIT.mirror + .3)), out = ss(seg(t, 65.5, 66.0)), back = ss(seg(t, 65.6, 67.3));
+    if (out < 1) { c.save(); c.globalAlpha = 1 - out; stage(c, [80, 800, 1000, 1860], 0, () => { shop(c, t, { window: false }); specialShelf(c, t, 690, 1580, 1, { lamp: 1 });
       const P = cust(1, { s: 2.4, x: 300, y: 1760, f: .4, smile: mr > .5 ? 1 : .5, look: -.1, blink: blinkAt(t, 7) }); P.handR = [560, 1440]; P.handL = [520, 1500]; mascot(c, P);
       glow(c, 600, 1340, 220, .4 * mr); parcel(c, 600, 1340, 260, { mirror: mr, who: 1, mark: 'heart' });
-      if (mr > .8) heart(c, 300, 1060, 46, E(t, HIT.mirror + .3, .35, .5), '#d94a6a');
-      c.restore();
-      if (shut > 0) { c.save(); c.translate(1140, 0); c.scale(-shut, 1); c.fillStyle = '#26368c'; c.fillRect(0, 760, 1200, 1080); c.strokeStyle = GOLD; c.lineWidth = 10; c.strokeRect(50, 810, 1100, 980); c.restore();
-        c.save(); c.translate(1140, 0); c.scale(shut, 1); c.translate(-1200, 0); c.font = '700 84px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('A KÖNYVESBOLT', 600, 1240); star(c, 600, 1380, 40); c.restore(); } });
+      if (mr > .8) heart(c, 300, 1060, 46, E(t, HIT.mirror + .3, .35, .5), '#d94a6a'); }); c.restore(); }
+    if (out > 0) stage(c, lerpBox([170, 1130, 910, 1610], [20, 820, 1060, 1860], back), 0, () => storefront(c, t, { special: 1 }));
   },
 };
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
