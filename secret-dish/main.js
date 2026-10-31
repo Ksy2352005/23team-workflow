@@ -474,17 +474,18 @@ const SHOT = {
       c.restore(); });
   },
   curiosity(c, t) {   // sometimes curiosity is the first step to trying something new: the cloche lifts a crack, the steam asks, a hand reaches, the lid comes off
-    const cr = ss(seg(t, HIT.crack2, HIT.crack2 + .5)), op = E(t, HIT.open, .45, .25), rh = ss(seg(t, HIT.reach, HIT.open));
-    bg(c, t, { rays: cr * .6 + ss(seg(t, HIT.open, HIT.open + .5)), ry: 1150 });
-    cam(c, 540, 1130, 1 + .1 * seg(t, 48.25, 53.2) + .15 * ss(seg(t, HIT.open, STORY)), 0, () => {
+    const cr = ss(seg(t, HIT.crack2, HIT.crack2 + .5)), op = ss(seg(t, HIT.open, HIT.open + .85)), rh = ss(seg(t, HIT.reach, HIT.open)), calm = 1 - ss(seg(t, HIT.open, HIT.open + .5));
+    bg(c, t, { rays: cr * .6 * calm + .25 * op, ry: 1150 });
+    cam(c, 540, lerp(1130, 1220, op), 1 + .1 * seg(t, 48.25, 53.2) + .18 * op, 0, () => {
       ell(c, 540, 1330, 520, 110, '#4a321e'); ell(c, 540, 1320, 500, 100, '#6e4a2c');
-      heroDish(c, 540, 1300, 620, { steam: cr, t, glow: op });
-      leak(c, 540, 1290, 600, cr * (1 - Math.min(1, op)) + Math.min(1, op) * .8, t);
-      const q = ss(seg(t, HIT.qsteam, HIT.qsteam + .8)), qa = q * (1 - ss(seg(t, HIT.open, HIT.open + .4))); if (qa > 0) { const qx = 545 + Math.sin(t * 1.5) * 12, qy = lerp(980, 620, q), qs = .6 + .4 * E(t, HIT.qsteam, .45, .45);   // the steam curls into a big, bold question mark
+      if (op > 0) glow(c, 540, 1230, 520, .22 * op);   // a soft warm halo behind the plate, nothing over the food
+      heroDish(c, 540, 1300, 620, { steam: Math.max(cr * calm, .7 * op), t });
+      leak(c, 540, 1290, 600, cr * calm, t);
+      const q = ss(seg(t, HIT.qsteam, HIT.qsteam + .8)), qa = q * (1 - ss(seg(t, HIT.open - .5, HIT.open))); if (qa > 0) { const qx = 545 + Math.sin(t * 1.5) * 12, qy = lerp(980, 620, q), qs = .6 + .4 * E(t, HIT.qsteam, .45, .45);   // the steam curls into a big, bold question mark
         glow(c, qx, qy, 380, .5 * qa); c.save(); c.globalAlpha = qa; c.translate(qx, qy); c.rotate(Math.sin(t * 1.2) * .06); c.scale(qs, qs); c.font = '520px "Lilita One"'; c.textAlign = 'center'; c.textBaseline = 'middle';
         c.lineJoin = 'round'; c.strokeStyle = GOLD; c.lineWidth = 26; c.strokeText('?', 0, 0); c.fillStyle = CREAM; c.fillText('?', 0, 0); c.restore(); }
-      const lift = 60 * cr + op * 1500, hx = lerp(1300, 560, rh), hy = lerp(800, 1300 - 268 - 40, rh) - op * 1500;
-      cloche(c, 540, 1300, 660, lift, cr * .12 + op * .4);
+      const lift = 60 * cr * calm + op * 1500, tip = cr * .12 * calm, hx = lerp(1300, 500, rh), hy = lerp(800, 1300 - lift - 288, rh);   // the hand holds the handle all the way up   // the lid goes straight up and out, smoothly
+      cloche(c, 540, 1300, 660, lift, tip);
       if (rh > 0) { c.strokeStyle = '#2448bb'; c.lineCap = 'round'; c.lineWidth = 90; c.beginPath(); c.moveTo(hx + 700, hy - 300); c.lineTo(hx + 60, hy - 20); c.stroke(); ell(c, hx + 40, hy - 10, 62, 62, '#2a52c9'); } });
   },
 };
