@@ -83,6 +83,7 @@ def sizzle(d, v): tt = t_(d); return norm(hp(noise(d), 3500) * (rng.random(len(t
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
 for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
 for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
+for t in HIT['dreams']: add(fx, mx(lp(swish(.7, .18), 3000), verb(shimmer(.12, 1.2), 1.2, .4)), t - .05, 1, 0)   # into the world inside a scoop
 for t in HIT['clocks']:
     for k in range(11): add(fx, click(.07, 1.4 + (k % 2) * .3), t + k * .05, 1, 0)
     add(fx, swish(.55, .2), t, 1, 0)
@@ -90,21 +91,22 @@ for e in EVS:
     if e['type'] == 'step': add(fx, lp(S(pick('footstep_concrete_00', 5, int(e['t'] * 7)), .2), 3500), e['t'], 1, e.get('pan', 0) * .7)
 # her idea; the old labels; the sign
 add(fx, pop(.15), H1('decide'), 1, 0); add(fx, mx(chime(2349, .14, .7), pop(.15)), H1('idea'), 1, .3)
-add(fx, mx(pop(.2), scribble(.6, .25, 8)), H1('label') - .3, 1, 0); add(fx, swish(.3, .18), H1('labelx'), 1, 0)
+for t in [4.75, 5.3, 5.88]: add(fx, mx(stamp(.25), click(.1, 1.2)), t, 1, -.4 + .3 * [4.75, 5.3, 5.88].index(t))   # stamp, stamp, stamp: her labels
+add(fx, swish(.4, .18), H1('labelx'), 1, .4)
 a, b = HIT['write']; add(fx, chalk(b - a, .3), a, 1, .1)
 add(fx, mx(stamp(.25), chime(2093, .12, .8)), H1('first'), 1, -.3); add(fx, pop(.2), H1('tag'), 1, .2)
 # the first namer, the second
 add(fx, click(.14, 1.6), H1('spoon'), 1, 0); add(fx, verb(chime(1568, .1, 1.0) + chime(2093, .07, 1.0), .8, .3), H1('yum'), 1, 0); add(fx, pop(.22), H1('bubble'), 1, .3)
-add(fx, mx(scribble(.8, .3, 9), verb(chime(1760, .1, 1.0), .8, .3)), H1('name1'), 1, 0)
+add(fx, mx(swish(.3, .12), verb(chime(1760, .12, 1.2), .8, .3)), H1('name1'), 1, 0)   # the tag flips: the name
 add(fx, click(.14, 1.6), H1('spoon2'), 1, -.2); add(fx, pop(.22), 26.2, 1, -.3)
-add(fx, mx(scribble(.6, .3, 9), verb(chime(1568, .1, 1.0), .8, .3)), H1('name2'), 1, 0)
-for t in HIT['names'][2:]: add(fx, mx(chalk(.6, .22), chime(1976, .07, .7)), t, 1, .1)
+add(fx, mx(swish(.3, .12), verb(chime(1568, .12, 1.2), .8, .3)), H1('name2'), 1, 0)
+for t in HIT['names'][2:]: add(fx, mx(verb(shimmer(.1, .8), .8, .3), chime(1976, .08, .7)), t, 1, .1); add(fx, chalk(.6, .2), t + .7, 1, .3)
 # a queue, their own flavour, the wall of names
 for k, t in enumerate(HIT['q'][:3]): add(fx, lp(S(pick('footstep_concrete_00', 5, k + 2), .14), 3000), t - .2, 1, -.5 + .5 * k)
-for k, t in enumerate(HIT['picks']): add(fx, pop(.16 + .02 * k), t, 1, .2 + .1 * k)
+for k, t in enumerate(HIT['picks']): add(fx, mx(swish(.3, .1), pop(.16 + .02 * k)), t, 1, -.5 + .25 * k); add(fx, S('impactSoft_medium_001', .2), t + .45, 1, .1)   # each scoop leaps into the cone
 add(fx, mx(swish(.5, .2), verb(shimmer(.1, 1.0), .8, .3)), H1('mix'), 1, .2); add(fx, click(.15, 1.3), H1('pen'), 1, .4)
 for k, t in enumerate(HIT['cards']): add(fx, mx(click(.12, .9), pop(.1)), t, 1, -.5 + .2 * (k % 6))
-add(fx, pop(.15), H1('notice'), 1, 0); add(fx, verb(shimmer(.16, 1.2), 1.0, .35), H1('story'), 1, 0)
+add(fx, pop(.15), H1('notice'), 1, 0); add(fx, mx(swish(.6, .2), S('bookOpen', .3)), H1('story') + .2, 1, 0); add(fx, verb(shimmer(.16, 1.2), 1.0, .35), H1('story') + 1.0, 1, 0)   # the photos fly into the book
 add(fx, boing(.2, 360, 560, .3), H1('spark'), 1, .3)
 # creating together, bonding, value; not just selling; sharing the making
 for t in HIT['hands']: add(fx, mx(pop(.2), S('impactSoft_medium_000', .2)), t, 1, 0)
