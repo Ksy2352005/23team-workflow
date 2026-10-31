@@ -147,7 +147,7 @@ add(fx, click(.15, 1.8), H1('wink2'), 1, .4)
 add(fx, mx(S('impactMetal_light_004', .25), verb(shimmer(.18, 1.2), 1.0, .35)), H1('crack2'), 1, 0)
 add(fx, lp(swish(.9, .12), 3000), H1('qsteam'), 1, 0)
 add(fx, S('cloth2', .2), H1('reach'), 1, .4)
-add(fx, mx(S('impactMetal_light_002', .35), swish(.6, .3), verb(shimmer(.3, 1.6), 1.2, .4)), H1('open'), 1, 0)
+add(fx, mx(S('impactMetal_light_002', .18), lp(swish(.85, .22), 4000), verb(shimmer(.15, 1.8), 1.4, .4)), H1('open'), 1, 0)   # the lid comes off: soft and airy
 
 # the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only the locked logo sound
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
