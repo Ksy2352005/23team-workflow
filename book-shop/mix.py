@@ -85,6 +85,9 @@ def spider(d, v): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(2400 - 900 * t
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
 for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
 for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
+for k, t in enumerate(HIT['pages']): add(fx, mx(S(f'bookFlip{1 + k % 3}', .35), lp(swish(.5, .12), 4000)), t - .02, 1, .3)   # a page turning over
+add(fx, mx(S('bookOpen', .4), swish(.6, .15)), .1, 1, -.3); add(fx, mx(pop(.2), verb(shimmer(.12, 1.0), .8, .3)), .8, 1, 0)   # the book opens, the shop pops up
+add(fx, mx(S('bookPlace1', .4), lp(thump(.25, 70), 300) * .5), 66.95, 1, 0)   # and closes
 for e in EVS:
     if e['type'] == 'step': add(fx, lp(S(pick('footstep_wood_00', 5, int(e['t'] * 7)), .16), 3500), e['t'], 1, e.get('pan', 0) * .7)
 # what sells: the known books
@@ -107,6 +110,10 @@ add(fx, mx(S('impactGlass_light_002', .22), chime(1175, .06, .8)), H1('crack'), 
 add(fx, S('creak2', .3), H1('door') - .3, 1, 0); add(fx, verb(shimmer(.14, 1.2), 1.0, .35), H1('sun'), 1, 0)
 add(fx, boing(.18, 300, 520, .3), H1('smug'), 1, -.3); add(fx, mx(pop(.25), boing(.12, 500, 300, .25)), H1('oops'), 1, -.3)
 # the mystery: shake it, listen; it fits
+for k in range(10): add(fx, mx(crinkle(.12, .12), click(.05, 1.2 + (k % 3) * .2)), 48.9 + k * .27, 1, -.5 + (k % 5) * .25)   # the parcels shuffling
+add(fx, mx(swish(.5, .15), verb(chime(1976, .08, 1.0), .8, .3)), 51.6, 1, .1)   # one rises
+for t in [59.2, 59.6, 60.0, 60.3, 60.66]: add(fx, mx(bp(noise(.25), 80, 400) * .08, click(.1, .7)), t - .3, 1, 0)   # a neon sign flickers and clicks off
+add(fx, mx(S('creak1', .15), swish(.3, .1)), 11.0, 1, .2); add(fx, fade(bp(noise(.6), 300, 2000) * .05, .05, .4), 11.4, 1, .1)   # the lonely book slides back, a puff of dust
 for t in HIT['shake']: add(fx, mx(crinkle(.25, .25), S('impactSoft_medium_002', .15)), t, 1, .2)
 add(fx, pop(.2), H1('q'), 1, .2)
 add(fx, mx(click(.25, 1.0), stamp(.25)), H1('fit'), 1, .3); add(fx, verb(mx(shimmer(.16, 1.4), chime(1319, .08, 1.4)), 1.0, .35), H1('fill'), 1, .3)

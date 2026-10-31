@@ -128,30 +128,45 @@ function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1300, 10
 
 // —— the shots ——
 const SHOT = {
-  shop(c, t) {   // a little bookshop's owner noticed: customers always chose the books whose author or cover they already knew
-    const push = ss(seg(t, 0, 5.4));
-    stage(c, lerpBox([-60, 760, 1140, 1840], [60, 820, 1020, 1840], push), 0, () => { shop(c, t);
-      table(c, 540, 1500, 360); cover(c, 450, 1420, 90, 'author', t > HIT.grabs[0] - .3 ? .6 : 0); cover(c, 560, 1420, 90, 'gold', t > HIT.grabs[1] - .3 ? .6 : 0); cover(c, 660, 1430, 76, 'plain');
+  shop(c, t) {   // the story opens like a book: a closed storybook, its cover swings open and the bookshop pops up out of the pages; then the owner notices: customers grab the books they already know
+    const open = ss(seg(t, .1, .9)), pop = sp(Math.max(0, t - .7), .5, .35), push = ss(seg(t, 1.6, 5.4));
+    c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
+    stage(c, lerpBox([-60, 760, 1140, 1900], [40, 800, 1040, 1860], push), 0, () => {
+      // the open book under the scene: two cream pages and a spine
+      c.fillStyle = 'rgba(0,0,20,.4)'; c.fillRect(-40, 1700, 1160, 140); c.fillStyle = '#26368c'; c.fillRect(-60, 1690, 1200, 150); c.fillStyle = CREAM; c.fillRect(-40, 1680, 560, 140); c.fillRect(560, 1680, 560, 140); c.fillStyle = 'rgba(160,120,60,.25)'; c.fillRect(500, 1680, 80, 140);
+      c.save(); c.translate(0, 1680); c.scale(1, Math.max(0, pop)); c.translate(0, -1680);   // the scene folds up out of the page
+      shop(c, t);
+      table(c, 540, 1500, 360); for (const [x, kind, tg] of [[450, 'author', HIT.grabs[0]], [560, 'gold', HIT.grabs[1]]]) { cover(c, x, 1420, 90, kind, .4 + .3 * Math.sin(t * 5)); for (let r = 0; r < 3; r++) { const u = ((t * .8 + r / 3) % 1); c.strokeStyle = `rgba(236,189,74,${.5 * (1 - u)})`; c.lineWidth = 4; c.beginPath(); c.arc(x, 1420, 60 + u * 160, 0, 7); c.stroke(); } }
+      cover(c, 660, 1430, 76, 'plain');
       mascot(c, OWNER({ x: 880, y: 1720, f: -.4, look: -.1, headTurn: t > HIT.notice ? -.3 : 0, smile: .5, blink: blinkAt(t, 1) }));
-      [[220, 0, HIT.grabs[0], 450], [380, 1, HIT.grabs[1], 560]].forEach(([x, i, tg, bx]) => { const P = cust(i, { x, y: 1760, f: .5, smile: t > tg ? .9 : .6, blink: blinkAt(t, 10 + i) }); const r = Math.sin(seg(t, tg - .4, tg + .5) * Math.PI); if (r > 0) P.handR = reach([x + 80, 1560], [bx, 1440], r); mascot(c, P);
-        const ex = E(t, tg, .3, .5); if (ex > 0 && t < tg + 1.4) badge(c, 'ex', x, 1240, 40, ex); }); });
+      [[200, 0, HIT.grabs[0], 450], [340, 1, HIT.grabs[1], 560]].forEach(([x0, i, tg, bx]) => { const pull = ss(seg(t, tg - 1.2, tg)), x = lerp(x0, bx - 120, pull * .6), P = cust(i, { x, y: 1760, f: .5, lean: .12 * pull, smile: t > tg ? 1 : .6, blink: blinkAt(t, 10 + i) }); const r = Math.sin(seg(t, tg - .4, tg + .5) * Math.PI); if (r > 0) P.handR = reach([x + 80, 1560], [bx, 1440], r); mascot(c, P);
+        const ex = E(t, tg, .3, .5); if (ex > 0 && t < tg + 1.4) badge(c, 'ex', x, 1240, 40, ex); });
+      c.restore();
+      // the cover, swinging open on its spine
+      if (open < 1) { c.save(); c.translate(-60, 0); c.scale(1 - open, 1); c.fillStyle = '#26368c'; c.fillRect(0, 760, 1200, 1080); c.strokeStyle = GOLD; c.lineWidth = 10; c.strokeRect(50, 810, 1100, 980);
+        c.font = '700 84px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('A KÖNYVESBOLT', 600, 1240); star(c, 600, 1380, 40); c.restore(); } });   // the title swings with the cover
   },
-  known(c, t) {   // two customers reach for the familiar: the author's face lights up, then the shiny cover
+  known(c, t) {   // the familiar covers pull customers in like magnets: rings pulse from them, the customers lean in and grab
     const a = ss(seg(t, HIT.author - .2, HIT.author + .3)), b = ss(seg(t, HIT.cover - .2, HIT.cover + .3)), ra = ss(seg(t, HIT.author, HIT.author + .5)), rb = ss(seg(t, HIT.cover, HIT.cover + .5));
     bg(c);
-    stage(c, [60, 860, 1020, 1800], 0, () => { table(c, 540, 1560, 520); cover(c, 430, 1430, 150, 'author', a); cover(c, 650, 1430, 150, 'gold', b);
-      const L = cust(0, { s: 2.2, x: 170, y: 1790, f: .5, smile: ra > .5 ? 1 : .6, blink: blinkAt(t, 10) }), R = cust(2, { s: 2.2, x: 910, y: 1790, f: -.5, smile: rb > .5 ? 1 : .6, blink: blinkAt(t, 12) });
-      L.handR = reach([300, 1560], [400, 1450], ra); R.handL = reach([780, 1560], [680, 1450], rb); mascot(c, L); mascot(c, R);
-      if (ra > .5) badge(c, 'ex', 170, 1240, 40, E(t, HIT.author + .3, .3, .5)); if (rb > .5) badge(c, 'ex', 910, 1240, 40, E(t, HIT.cover + .3, .3, .5)); });
+    stage(c, [60, 860, 1020, 1800], 0, () => { table(c, 540, 1560, 520);
+      for (const [x, k] of [[430, a], [650, b]]) for (let r = 0; r < 3; r++) { const u = ((t * 1.1 + r / 3) % 1); c.strokeStyle = `rgba(236,189,74,${(.25 + .5 * k) * (1 - u)})`; c.lineWidth = 5; c.beginPath(); c.arc(x, 1430, 90 + u * 260, 0, 7); c.stroke(); }
+      cover(c, 430, 1430, 150, 'author', a); cover(c, 650, 1430, 150, 'gold', b);
+      const L = cust(0, { s: 2.2, x: lerp(120, 200, ra), y: 1790, f: .5, lean: .1 * a, smile: ra > .5 ? 1 : .6, blink: blinkAt(t, 10) }), R = cust(2, { s: 2.2, x: lerp(960, 880, rb), y: 1790, f: -.5, lean: -.1 * b, smile: rb > .5 ? 1 : .6, blink: blinkAt(t, 12) });
+      L.handR = reach([L.x + 130, 1560], [400, 1450], ra); R.handL = reach([R.x - 130, 1560], [680, 1450], rb); mascot(c, L); mascot(c, R);
+      if (ra > .5) badge(c, 'ex', L.x, 1240, 40, E(t, HIT.author + .3, .3, .5)); if (rb > .5) badge(c, 'ex', R.x, 1240, 40, E(t, HIT.cover + .3, .3, .5)); });
   },
-  dusty(c, t) {   // the unknown books hardly ever sold: a dark corner shelf, dust, a cobweb, a spider coming down
-    const sp = ss(seg(t, HIT.spider - .6, HIT.spider + .4));
+  dusty(c, t) {   // the unknown books hardly ever sold: in a dusty corner, one lonely book slides out hopefully as someone passes... who doesn't look; it sinks back in a puff of dust; a spider comes down
+    const hope = ss(seg(t, 9.6, 10.2)) * (1 - ss(seg(t, 11.0, 11.5))), sp = ss(seg(t, HIT.spider - .6, HIT.spider + .4)), pass = seg(t, 9.3, 11.6), puff = seg(t, 11.4, 12.2);
     bg(c, '#1d2868');
-    stage(c, [140, 820, 940, 1700], seg(t, 8.9, 12.7), () => { shelfUnit(c, 200, 880, 900, 1640, 3, 77, .45);
-      c.strokeStyle = 'rgba(233,220,192,.35)'; c.lineWidth = 2; for (let k = 0; k < 6; k++) { const a = Math.PI * .5 + k * .2; c.beginPath(); c.moveTo(880, 900); c.lineTo(880 - Math.sin(a) * 200 * 1, 900 + Math.cos(a - Math.PI) * -200 * .0 + k * 34); c.stroke(); } for (let r = 1; r < 5; r++) { c.beginPath(); c.arc(880, 900, r * 45, Math.PI * .5, Math.PI); c.stroke(); }
-      c.strokeStyle = 'rgba(233,220,192,.6)'; c.lineWidth = 2; c.beginPath(); c.moveTo(560, 900); c.lineTo(560, 900 + 260 * sp); c.stroke(); ell(c, 560, 910 + 260 * sp, 16, 20, '#121a3a'); for (const d of [-1, 1]) for (let k = 0; k < 3; k++) { c.strokeStyle = '#121a3a'; c.lineWidth = 3; c.beginPath(); c.moveTo(560, 910 + 260 * sp); c.lineTo(560 + d * 26, 900 + 260 * sp + k * 10); c.stroke(); }
+    stage(c, [100, 820, 980, 1840], 0, () => { shelfUnit(c, 200, 880, 900, 1640, 3, 77, .45);
+      c.fillStyle = '#6b6f86'; c.fillRect(520, 1390 - 230, 50, 230); c.save(); c.translate(545, 1390); c.rotate(-hope * .25); c.translate(-545, -1390); c.fillStyle = '#7d8199'; c.fillRect(520 + hope * 40, 1390 - 230, 50, 230); c.fillStyle = 'rgba(236,189,74,.5)'; c.fillRect(526 + hope * 40, 1180, 38, 4); c.restore();
+      for (let i = 0; i < 10; i++) { const u = puff, a = i / 10 * Math.PI * 2; if (u > 0 && u < 1) ell(c, 560 + Math.cos(a) * 60 * (.3 + u), 1290 + Math.sin(a) * 40 * (.3 + u), 16 * (1 - u), 16 * (1 - u), `rgba(246,239,220,${.5 * (1 - u)})`); }
+      c.strokeStyle = 'rgba(233,220,192,.35)'; c.lineWidth = 2; for (let r = 1; r < 5; r++) { c.beginPath(); c.arc(880, 900, r * 45, Math.PI * .5, Math.PI); c.stroke(); } for (let k = 0; k < 5; k++) { const a = Math.PI * .5 + k * Math.PI / 8; c.beginPath(); c.moveTo(880, 900); c.lineTo(880 + Math.cos(a) * 200, 900 + Math.sin(a) * 200); c.stroke(); }
+      c.strokeStyle = 'rgba(233,220,192,.6)'; c.beginPath(); c.moveTo(300, 900); c.lineTo(300, 900 + 300 * sp); c.stroke(); ell(c, 300, 910 + 300 * sp, 16, 20, '#121a3a'); for (const d of [-1, 1]) for (let k = 0; k < 3; k++) { c.strokeStyle = '#121a3a'; c.lineWidth = 3; c.beginPath(); c.moveTo(300, 910 + 300 * sp); c.lineTo(300 + d * 26, 900 + 300 * sp + k * 10); c.stroke(); }
       for (let i = 0; i < 24; i++) { const u = (t * .08 + hash(i)) % 1; ell(c, 220 + hash(i + 5) * 640, 920 + u * 700, 2.5, 2.5, `rgba(246,239,220,${.4 * Math.sin(u * Math.PI)})`); }
-      const n = E(t, HIT.nope, .3, .5); if (n > 0) scaled(c, 540, 1180, n, () => { c.fillStyle = CREAM; c.beginPath(); c.roundRect(470, 1140, 140, 80, 12); c.fill(); text(c, '0', 540, 1182, 60, '#7a3a3a'); }); });
+      if (pass > 0 && pass < 1) mascot(c, cust(4, { x: lerp(200, 880, pass), y: 1830, s: 2.0, f: .8, walk: 1, phi: pass * 14, smile: .5, alpha: Math.min(clamp(pass / .15), clamp((1 - pass) / .15)) }));
+      const n = E(t, HIT.nope, .3, .5); if (n > 0) scaled(c, 720, 1180, n, () => { c.fillStyle = CREAM; c.beginPath(); c.roundRect(650, 1140, 140, 80, 12); c.fill(); text(c, '0', 720, 1182, 60, '#7a3a3a'); }); });
   },
   idea(c, t) {   // so he decided to make a very special shelf: a lightbulb, and the shelf builds itself, plank by plank, the lamp lights
     const bl = E(t, HIT.bulb, .35, .5), sk = seg(t, HIT.planks[0] - .2, HIT.lamp);
@@ -161,18 +176,18 @@ const SHOT = {
       specialShelf(c, t, 690, 1580, sk, { n: 0, lamp: ss(seg(t, HIT.lamp, HIT.lamp + .4)) });
       HIT.planks.forEach((tp, i) => { const k = E(t, tp, .25, .5); if (k <= 0) return; c.fillStyle = WOOD; c.save(); c.translate(690, 1580 - i * 90); c.scale(Math.min(1, k), 1); c.fillRect(-350, -10, 700, 20); c.restore(); }); });
   },
-  wrap(c, t) {   // every book wrapped in brown paper so its cover can't be seen: from above, the book lands, the paper folds over, the string is tied
-    const ld = E(t, HIT.land, .3, .45), f = HIT.folds.map(x => ss(seg(t, x - .1, x + .2))), bw = E(t, HIT.bow, .35, .5);
+  wrap(c, t) {   // every book wrapped in brown paper: from above, the first is wrapped fold by fold, then a quick stack of parcels piles up
+    const ld = E(t, HIT.land, .3, .45), f = HIT.folds.map(x => ss(seg(t, x - .1, x + .2))), bw = E(t, HIT.bow, .35, .5), stackT = [19.7, 20.1, 20.5, 20.9, 21.3];
     bg(c, '#3a2a1c');
-    stage(c, [140, 900, 940, 1700], 0, () => { c.fillStyle = WOOD; c.fillRect(-200, 820, 1480, 1000); c.strokeStyle = 'rgba(70,40,15,.3)'; c.lineWidth = 3; for (let k = 0; k < 14; k++) { c.beginPath(); c.moveTo(-200, 860 + k * 70); c.lineTo(1280, 870 + k * 70); c.stroke(); }
-      const px = 540, py = 1300, W2 = 200, H2 = 270;
-      c.fillStyle = '#c9a072'; c.fillRect(px - W2 - 150, py - H2 - 130, (W2 + 150) * 2, (H2 + 130) * 2);
-      if (ld > 0) scaled(c, px, py, lerp(1.4, 1, Math.min(1, ld)), () => { c.save(); c.translate(px, py); c.scale(W2 * 2 / 230, W2 * 2 / 230); cover(c, 0, 0, 230, 'author'); c.restore(); });
-      const flap = (k, side) => { if (k <= 0) return; c.fillStyle = side % 2 ? '#c49668' : '#b4865a'; c.save(); c.translate(px, py); if (side === 0) { c.fillRect(-W2 - 150 + (1 - k) * 0, -H2, (150 + W2) * k, H2 * 2); } if (side === 1) { c.fillRect(W2 + 150 - (150 + W2) * k, -H2, (150 + W2) * k, H2 * 2); } if (side === 2) { c.fillRect(-W2, -H2 - 130, W2 * 2, (130 + H2) * k); } if (side === 3) { c.fillRect(-W2, H2 + 130 - (130 + H2) * k, W2 * 2, (130 + H2) * k); } c.restore(); };
+    stage(c, [100, 880, 980, 1760], 0, () => { c.fillStyle = WOOD; c.fillRect(-200, 820, 1480, 1000); c.strokeStyle = 'rgba(70,40,15,.3)'; c.lineWidth = 3; for (let k = 0; k < 14; k++) { c.beginPath(); c.moveTo(-200, 860 + k * 70); c.lineTo(1280, 870 + k * 70); c.stroke(); }
+      const slide = ss(seg(t, 19.4, 19.9)), px = lerp(540, 300, slide), py = lerp(1300, 1560, slide), sc = lerp(1, .55, slide), W2 = 200 * sc, H2 = 270 * sc;
+      c.fillStyle = '#c9a072'; if (slide < 1) c.fillRect(px - W2 - 150 * sc, py - H2 - 130 * sc, (W2 + 150 * sc) * 2, (H2 + 130 * sc) * 2);
+      if (ld > 0 && f[3] < 1) scaled(c, px, py, lerp(1.4, 1, Math.min(1, ld)) * sc, () => { c.save(); c.translate(px, py); c.scale(400 / 230, 400 / 230); cover(c, 0, 0, 230, 'author'); c.restore(); });
+      const flap = (k, side) => { if (k <= 0 || f[3] >= 1) return; c.fillStyle = side % 2 ? '#c49668' : '#b4865a'; c.save(); c.translate(px, py); c.scale(sc, sc); const w = 200, h = 270; if (side === 0) c.fillRect(-w - 150, -h, (150 + w) * k, h * 2); if (side === 1) c.fillRect(w + 150 - (150 + w) * k, -h, (150 + w) * k, h * 2); if (side === 2) c.fillRect(-w, -h - 130, w * 2, (130 + h) * k); if (side === 3) c.fillRect(-w, h + 130 - (130 + h) * k, w * 2, (130 + h) * k); c.restore(); };
       f.forEach((k, i) => flap(k, i));
-      if (f[3] >= 1) { parcel(c, px, py, W2 * 2, { label: false }); }
-      if (bw > 0) { c.save(); c.globalAlpha = Math.min(1, bw); parcel(c, px, py, W2 * 2, { label: false }); c.restore(); }
-      if (t > HIT.hide) { const k = E(t, HIT.hide, .3, .5); badge(c, 'q', px + 260, py - 330, 50, k); } });
+      if (f[3] >= 1) parcel(c, px, py, W2 * 2, { label: false });
+      stackT.forEach((ts, i) => { const k = E(t, ts, .25, .5); if (k <= 0) return; const sx = 700 + (i % 2) * 40, sy = 1600 - i * 120; scaled(c, sx, sy, Math.min(1, k), () => parcel(c, sx, sy, 220, { label: false, rot: (hash(i) - .5) * .2 })); });
+      if (t > HIT.hide) badge(c, 'q', 860, 1000, 50, E(t, HIT.hide, .3, .5)); });
   },
   write(c, t) {   // he wrote just a few sentences on the parcels
     const k = seg(t, ...HIT.write);
@@ -214,38 +229,60 @@ const SHOT = {
       if (fill < 1) { const px = lerp(hx + 20, gx, fit), py = lerp(hy, gy, fit) - Math.sin(fit * Math.PI) * 160; c.save(); c.globalAlpha = 1 - fill; parcel(c, px, py, lerp(150, 110, fit), { mark: 'heart', rot: sh + fit * .3 }); c.restore(); }
       if (q > 0 && t < HIT.fit - .8) badge(c, 'q', 560, 1180, 48, q); });
   },
-  read(c, t) {   // some came back after reading: at home, in an armchair under a lamp, the pages turn; she closes the book, smiling
+  read(c, t) {   // some came back after reading: at home in an armchair, the pages turn and little pieces of the story float up out of the book; she closes it, smiling
     const n = HIT.pages.filter(x => t > x).length, cl = ss(seg(t, HIT.close, HIT.close + .4));
     bg(c, '#3a2a5a');
-    stage(c, [140, 860, 940, 1760], 0, () => { glow(c, 760, 1000, 320, .5); c.strokeStyle = '#2a2a33'; c.lineWidth = 4; c.beginPath(); c.moveTo(760, 1000); c.lineTo(760, 1600); c.stroke(); c.fillStyle = '#c99a3a'; c.beginPath(); c.moveTo(680, 1000); c.lineTo(840, 1000); c.lineTo(800, 920); c.lineTo(720, 920); c.fill();
+    stage(c, [140, 820, 940, 1760], 0, () => { glow(c, 760, 1000, 320, .5); c.strokeStyle = '#2a2a33'; c.lineWidth = 4; c.beginPath(); c.moveTo(760, 1000); c.lineTo(760, 1600); c.stroke(); c.fillStyle = '#c99a3a'; c.beginPath(); c.moveTo(680, 1000); c.lineTo(840, 1000); c.lineTo(800, 920); c.lineTo(720, 920); c.fill();
       c.fillStyle = '#7a3a3a'; c.beginPath(); c.roundRect(240, 1180, 440, 560, 80); c.fill(); c.beginPath(); c.roundRect(200, 1440, 520, 300, 60); c.fill();
-      const P = cust(3, { s: 2.2, x: 460, y: 1700, sit: 1, f: .1, look: cl > .5 ? 0 : .5, smile: cl > .5 ? 1 : .7, blink: blinkAt(t, 6) }), Hh = Hs(P.s); P.handL = [400, 1430]; P.handR = [520, 1430]; mascot(c, P);
+      const P = cust(3, { s: 2.2, x: 460, y: 1700, sit: 1, f: .1, look: cl > .5 ? 0 : .5, smile: cl > .5 ? 1 : .8, blink: blinkAt(t, 6) }); P.handL = [400, 1430]; P.handR = [520, 1430]; mascot(c, P);
       c.fillStyle = CREAM; c.save(); c.translate(460, 1420); c.scale(1 - .5 * cl, 1); c.fillRect(-110, -70, 220, 120); c.fillStyle = '#26368c'; c.fillRect(-4, -70, 8, 120); c.strokeStyle = 'rgba(28,36,80,.3)'; c.lineWidth = 3; for (let k = 0; k < 4; k++) { c.beginPath(); c.moveTo(-90, -46 + k * 24); c.lineTo(-20, -46 + k * 24); c.moveTo(20, -46 + k * 24); c.lineTo(90, -46 + k * 24); c.stroke(); }
       const pg = HIT.pages.find(x => t > x && t < x + .3); if (pg) { const u = (t - pg) / .3; c.fillStyle = '#efe4c8'; c.beginPath(); c.moveTo(0, -70); c.lineTo(110 * Math.cos(u * Math.PI), -70 - 20 * Math.sin(u * Math.PI)); c.lineTo(110 * Math.cos(u * Math.PI), 50 - 20 * Math.sin(u * Math.PI)); c.lineTo(0, 50); c.fill(); }
-      c.restore(); });
+      c.restore();
+      const story = [['heart', 0], ['sun', 1], ['bird', 2], ['star', 3], ['heart', 4], ['sun', 5]];
+      if (cl < 1) story.forEach(([k, i]) => { const u = ((t - 43.6) * .35 + i / 6) % 1, x = 460 + Math.sin(u * 6 + i) * 120, y = 1340 - u * 420, a = Math.sin(u * Math.PI) * (1 - cl);
+        c.save(); c.globalAlpha = a; if (k === 'heart') heart(c, x, y, 26, 1, '#d94a6a'); if (k === 'star') star(c, x, y, 24); if (k === 'sun') { glow(c, x, y, 50, .4); ell(c, x, y, 18, 18, GOLD); }
+        if (k === 'bird') { c.strokeStyle = CREAM; c.lineWidth = 5; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - 24, y); c.quadraticCurveTo(x - 12, y - 14 * Math.sin(t * 10), x, y); c.quadraticCurveTo(x + 12, y - 14 * Math.sin(t * 10), x + 24, y); c.stroke(); } c.restore(); }); });
   },
-  back(c, t) {   // ...and came back to the shop to see which book fate had chosen for them this time: the bell, the special shelf, a beam of gold picks one parcel
-    const fate = ss(seg(t, HIT.fate - .3, HIT.fate + .4)), hv = seg(t, HIT.hover, HIT.fate);
-    stage(c, [100, 760, 1040, 1820], 0, () => { shop(c, t, { window: false }); specialShelf(c, t, 690, 1580, 1, { pick: 2, pickGlow: fate });
-      if (fate > 0) { c.save(); c.globalCompositeOperation = 'lighter'; const g = c.createLinearGradient(0, 760, 0, 1500); g.addColorStop(0, `rgba(255,224,138,${.0})`); g.addColorStop(1, `rgba(255,224,138,${.35 * fate})`); c.fillStyle = g; c.beginPath(); c.moveTo(560, 760); c.lineTo(720, 760); c.lineTo(760, 1500); c.lineTo(660, 1500); c.fill(); c.restore(); star(c, 710, 1340, 30, fate); }
-      const u = seg(t, HIT.bell - .2, HIT.bell + 1.2), P = cust(3, { x: lerp(120, 300, ss(u)), y: 1800, f: u < 1 ? .6 : .5, walk: u > 0 && u < 1 ? 1 : 0, phi: u * 12, smile: fate > .5 ? 1 : .7, look: -.3, alpha: clamp((t - HIT.bell + .3) / .3), blink: blinkAt(t, 6) });
-      if (hv > 0 && fate < 1) P.handR = [lerp(420, 860, hv), 1460 + 20 * Math.sin(hv * 20)]; mascot(c, P);
-      mascot(c, OWNER({ x: 960, y: 1800, s: 1.9, f: -.4, smile: 1, blink: blinkAt(t, 1) })); });
-  },
-  covers(c, t) {   // instead of trying to catch their eye with the author's name or the cover: famous faces and shiny covers fly up... and fade away
-    const fd = ss(seg(t, HIT.fade - .2, HIT.fade + .6));
+  back(c, t) {   // ...and came back to see which book fate had in store this time: the bell, she steps up to the special shelf, the parcels lift and shuffle like cards, slow down, one glows and floats down into her hands
+    const u = seg(t, HIT.bell - .2, HIT.bell + 1.0), sh = seg(t, 48.8, 51.6), rise = ss(seg(t, 51.6, HIT.fate)), land = ss(seg(t, HIT.fate, HIT.fate + .8));
     bg(c);
-    stage(c, [100, 820, 980, 1760], 0, () => { const items = [['author', 300, 1180, HIT.flyin[0]], ['gold', 700, 1100, HIT.flyin[2]], ['author', 560, 1520, HIT.flyin[1]], ['gold', 260, 1560, HIT.flyin[2] + .3], ['author', 800, 1500, HIT.flyin[1] + .3]];
-      items.forEach(([k, x, y, ts], i) => { const e = E(t, ts, .35, .45); if (e <= 0) return; c.save(); c.globalAlpha = 1 - fd; c.translate(x, y - fd * 80); c.rotate((hash(i) - .5) * .3 + Math.sin(t * 2 + i) * .03); scaled(c, 0, 0, Math.min(1, e) * (1 - fd * .3), () => cover(c, 0, 0, 200, k, .3)); c.restore(); });
-      if (fd > 0) { c.save(); c.globalAlpha = fd; parcel(c, 540, 1360, 300, { mark: 'heart' }); c.restore(); } });
+    stage(c, [80, 780, 1000, 1840], 0, () => { c.fillStyle = '#1a2563'; c.fillRect(-100, 760, 1280, 900); c.fillStyle = '#5a3a22'; c.fillRect(-100, 1640, 1280, 300);
+      // the shelf, empty now: its parcels are in the air
+      c.fillStyle = '#5a3a22'; c.fillRect(160, 1180, 760, 420); c.fillStyle = '#121a4e'; c.fillRect(180, 1200, 720, 380); c.fillStyle = GOLD; c.fillRect(160, 1176, 760, 8); glow(c, 540, 1300, 380, .4);
+      const P = cust(3, { x: lerp(150, 230, ss(u)), y: 1830, s: 2.1, f: u < 1 ? .6 : .4, walk: u > 0 && u < 1 ? 1 : 0, phi: u * 12, smile: land > .5 ? 1 : .7, look: -.3, alpha: clamp((t - HIT.bell + .2) / .3), blink: blinkAt(t, 6) }), Hh = Hs(P.s);
+      const catchAt = [P.x + .3 * Hh, P.y - .45 * Hh]; if (land > 0) { P.handR = [catchAt[0] + 40, catchAt[1]]; P.handL = [catchAt[0] - 30, catchAt[1] + 10]; }
+      const later = [];
+      const N = 5, speed = 7 * (1 - ss(seg(t, 50.6, 51.6)));
+      for (let i = 0; i < N; i++) { const chosen = i === 2, ph = (t - 48.8) * speed * .35 + i / N * Math.PI * 2, lift = ss(seg(t, 48.6, 49.0)), bx = 280 + i * 130;
+        let x = lerp(bx, 540 + Math.cos(ph) * 300, lift * (1 - ss(seg(t, 51.0, 51.6)))) , y = lerp(1500, 1180 + Math.sin(ph) * 120, lift * (1 - ss(seg(t, 51.0, 51.6)))) ;
+        if (t > 51.6) { x = bx; y = 1500; }
+        if (chosen && t > 51.6) { x = lerp(bx, 540, rise); y = lerp(1500, 1040, rise) ; x = lerp(x, catchAt[0], land); y = lerp(y, catchAt[1] - 20, land); }
+        if (chosen && rise > 0) { glow(c, x, y, 200, .6 * rise); for (let k = 0; k < 6; k++) { const a = t * 2 + k; ell(c, x + Math.cos(a) * 120, y + Math.sin(a) * 80, 6, 6, `rgba(255,224,138,${.8 * rise * (1 - land)})`); } }
+        const draw = () => parcel(c, x, y, chosen ? lerp(110, 140, rise) * lerp(1, .8, land) : 110, { mark: ['heart', 'dawn', 'heart', 'owl', 'dawn'][i], rot: Math.sin(ph) * .2 * (1 - ss(seg(t, 51.0, 51.6))) }); if (chosen && land > .3) later.push(draw); else draw(); }
+      mascot(c, P); later.forEach(f => f());   // she stands in front of the shelf; the chosen parcel lands in her hands
+      if (land > .5) star(c, catchAt[0], catchAt[1] - 160, 28, E(t, HIT.fate + .4, .3, .5)); });
   },
-  mirror(c, t) {   // ...he let the customers recognise themselves in the sentences: the label becomes a mirror, she sees herself, smiles; the camera pulls back to the glowing shelf
-    const mr = ss(seg(t, HIT.mirror - .4, HIT.mirror + .3)), pull = ss(seg(t, HIT.pull, 67.6));
-    stage(c, lerpBox([180, 860, 900, 1760], [40, 760, 1040, 1820], pull), 0, () => { shop(c, t, { window: false }); c.fillStyle = `rgba(17,26,82,${.6 * (1 - pull)})`; c.fillRect(-300, 700, 1680, 1200);
-      specialShelf(c, t, 690, 1580, pull, { lamp: 1 });
-      const P = cust(1, { s: 2.4, x: 330, y: 1760, f: .4, smile: mr > .5 ? 1 : .5, look: -.1, blink: blinkAt(t, 7) }), Hh = Hs(P.s); P.handR = [600, 1440]; P.handL = [560, 1500]; mascot(c, P);
-      glow(c, 640, 1340, 220, .4 * mr); parcel(c, 640, 1340, 260, { mirror: mr, who: 1, mark: 'heart' });
-      if (mr > .8) heart(c, 330, 1060, 46, E(t, HIT.mirror + .3, .35, .5), '#d94a6a'); });
+  covers(c, t) {   // instead of catching their eye with the author's name or the cover: famous covers lit up like neon signs flicker, and switch off one by one, leaving one brown parcel in the light
+    const items = [['author', 270, 1080, HIT.flyin[0], 59.2], ['gold', 810, 1080, HIT.flyin[2], 59.6], ['author', 540, 1260, HIT.flyin[1], 60.0], ['gold', 270, 1460, HIT.flyin[2] + .3, 60.3], ['author', 810, 1460, HIT.flyin[1] + .3, 60.66]];
+    bg(c, '#16205a');
+    stage(c, [80, 900, 1000, 1700], 0, () => {
+      items.forEach(([k, x, y, ts, off], i) => { const on = E(t, ts, .3, .45); if (on <= 0) return; const flick = t > off - .5 && t < off ? (Math.sin(t * 60 + i) > 0 ? 1 : .2) : 1, dead = t >= off;
+        c.save(); c.globalAlpha = dead ? .18 : 1; scaled(c, x, y, Math.min(1, on), () => { cover(c, x, y, 150, k, dead ? 0 : .6 * flick); c.strokeStyle = dead ? 'rgba(120,120,140,.4)' : `rgba(255,214,120,${.9 * flick})`; c.lineWidth = 6; c.strokeRect(x - 90, y - 120, 180, 240); if (!dead) glow(c, x, y, 160, .35 * flick); }); c.restore(); });
+      const pk = ss(seg(t, HIT.fade, HIT.fade + .5)); if (pk > 0) { glow(c, 540, 1260, 300, .5 * pk); c.save(); c.globalAlpha = pk; parcel(c, 540, 1260, 230, { mark: 'heart' }); c.restore(); } });
+  },
+  mirror(c, t) {   // ...he let customers recognise themselves in the sentences: the label becomes a mirror; then the story folds back into its book, and the book closes
+    const mr = ss(seg(t, HIT.mirror - .4, HIT.mirror + .3)), fold = ss(seg(t, 65.6, 66.6)), shut = ss(seg(t, 66.4, 67.1));
+    c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
+    stage(c, [80, 800, 1000, 1860], 0, () => {
+      c.fillStyle = '#26368c'; c.fillRect(-60, 1690, 1200, 150); c.fillStyle = CREAM; c.fillRect(-40, 1680, 560, 140); c.fillRect(560, 1680, 560, 140);
+      c.save(); c.translate(0, 1680); c.scale(1, 1 - fold); c.translate(0, -1680);
+      shop(c, t, { window: false }); specialShelf(c, t, 690, 1580, 1, { lamp: 1 });
+      const P = cust(1, { s: 2.4, x: 300, y: 1760, f: .4, smile: mr > .5 ? 1 : .5, look: -.1, blink: blinkAt(t, 7) }); P.handR = [560, 1440]; P.handL = [520, 1500]; mascot(c, P);
+      glow(c, 600, 1340, 220, .4 * mr); parcel(c, 600, 1340, 260, { mirror: mr, who: 1, mark: 'heart' });
+      if (mr > .8) heart(c, 300, 1060, 46, E(t, HIT.mirror + .3, .35, .5), '#d94a6a');
+      c.restore();
+      if (shut > 0) { c.save(); c.translate(1140, 0); c.scale(-shut, 1); c.fillStyle = '#26368c'; c.fillRect(0, 760, 1200, 1080); c.strokeStyle = GOLD; c.lineWidth = 10; c.strokeRect(50, 810, 1100, 980); c.restore();
+        c.save(); c.translate(1140, 0); c.scale(shut, 1); c.translate(-1200, 0); c.font = '700 84px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('A KÖNYVESBOLT', 600, 1240); star(c, 600, 1380, 40); c.restore(); } });
   },
 };
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
@@ -291,7 +328,7 @@ function endCard(c, t) {
   c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO_W, -w / 2, -h / 2, w, h); c.restore();
 }
 function vignette(c) { c.setTransform(1, 0, 0, 1, 0, 0); const g = c.createRadialGradient(W / 2, H * .5, H * .3, W / 2, H * .5, H * .8); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, 'rgba(4,6,30,.4)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }
-const WHIP = .24, PUNCH = .26, DREAM = .6, CLOCK = .55;
+const WHIP = .24, PUNCH = .26, DREAM = .6, CLOCK = .55, PAGE = .6;
 function draw(c, t) {
   if (t >= STORY) return endCard(c, t);
   const i = shotAt(t), [t0, , kind] = SHOTS[i], dt = t - t0;
@@ -305,6 +342,12 @@ function draw(c, t) {
     paintShot(actx, i - 1, t0 - 1 / 48); paintShot(bctx, i, t); c.drawImage(bufA, 0, 0);
     c.save(); c.beginPath(); c.moveTo(cx, cy); c.arc(cx, cy, R, -Math.PI / 2, a); c.closePath(); c.clip(); c.drawImage(bufB, 0, 0); c.restore();
     c.save(); c.strokeStyle = GOLD; c.lineCap = 'round'; c.lineWidth = 14 * K; c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); c.stroke(); c.fillStyle = GOLD; c.beginPath(); c.arc(cx, cy, 22 * K, 0, 7); c.fill(); c.restore();
+  } else if (kind === 'page' && dt < PAGE && i > 0) {   // a page turns: the old shot curls over from the right, its cream back showing, a shadow on the new one
+    const e = ss(dt / PAGE), xf = W * (1 - e), flap = Math.min(xf, (W - xf) * .55);
+    paintShot(actx, i - 1, t0 - 1 / 48); paintShot(bctx, i, t); c.drawImage(bufB, 0, 0);
+    const sg = c.createLinearGradient(xf, 0, xf + 90 * K, 0); sg.addColorStop(0, 'rgba(0,0,20,.45)'); sg.addColorStop(1, 'rgba(0,0,20,0)'); c.fillStyle = sg; c.fillRect(xf, 0, 90 * K, H);
+    c.save(); c.beginPath(); c.rect(0, 0, xf, H); c.clip(); c.drawImage(bufA, 0, 0); c.restore();
+    if (flap > 0) { const g = c.createLinearGradient(xf - flap, 0, xf, 0); g.addColorStop(0, '#e9dcc0'); g.addColorStop(.85, '#f6efdc'); g.addColorStop(1, '#cdbf9c'); c.fillStyle = g; c.fillRect(xf - flap, 0, flap, H); c.fillStyle = 'rgba(0,0,20,.25)'; c.fillRect(xf - flap - 6 * K, 0, 6 * K, H); }
   } else if (kind === 'dream' && dt < DREAM && i > 0) {   // into (or out of) an imagined scene: a soft, warm, blurred dissolve
     const e = ss(dt / DREAM), b = Math.sin(e * Math.PI);
     paintShot(actx, i - 1, t0 - 1 / 48); paintShot(bctx, i, t);
