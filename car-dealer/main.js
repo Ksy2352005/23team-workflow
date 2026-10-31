@@ -5,7 +5,7 @@ import { drawMascot, BASE_H } from './char2d.js';
 import { DUR, STORY, SHOTS, HIT } from './story.js';
 import { WORDS } from './captions.js';
 
-await Promise.all([document.fonts.load('74px "Lilita One"', 'ELADVA?'), document.fonts.load('700 74px "Playfair Display"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…'), document.fonts.load('700 74px "Playfair Display"', 'abcABC')]);
+await Promise.all([document.fonts.load('74px "Lilita One"', 'ELADVA?'), document.fonts.load('600 74px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…abcABC')]);
 const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
@@ -274,17 +274,17 @@ const SHOT = {
         if (b2 > 0) scaled(c, 690, 1250, Math.min(1, b2), () => drawMascot(c, { id: 'k2', skin: 'blue2', s: .6, x: 690, y: 1250, smile: 1, shadow: false, blink: 1 }));
         heart(c, 700, 960, 46, hh, '#d94a6a'); if (b1 > 0 && b2 <= 0) heart(c, 690, 1180, 30, b1 * .8, '#d94a6a'); }); });
   },
-  tiny(c, t) {   // imagined: his car today, too small: the whole family squeezed into a little hatchback, on the road in Budapest
-    const sq = Math.max(0, Math.sin(clamp((t - HIT.squeeze) / .4) * Math.PI)) * (t > HIT.squeeze), pp = E(t, HIT.pop, .3, .5), bump = Math.abs(Math.sin(t * 7)) * 6;
-    budapest(c, t, { speed: 200, t0: 39.05 });
-    c.save(); c.translate(0, -bump);
-    tinyCar(c, 540, 1760, 660, sq);
-    c.save(); c.translate(540, 1760); c.scale(1 + sq * .06, 1 - sq * .06); c.beginPath(); c.moveTo(-.3 * 660, -.4 * 660); c.quadraticCurveTo(-.24 * 660, -.6 * 660, .02 * 660, -.6 * 660); c.quadraticCurveTo(.2 * 660, -.58 * 660, .25 * 660, -.4 * 660); c.closePath(); c.clip(); c.translate(-540, -1760);
-    [[400, 'blue1', null, .9], [485, 'blue2', 'long', .86], [565, 'blue3', 'pony', .64], [635, 'blue2', null, .52]].forEach(([x, skin, fem, s], i) => drawMascot(c, { id: 'c' + i, skin, fem, s, x, sit: 1, y: 1760 - .5 * 660 + .74 * Hs(s), f: .3, smile: .3, sad: .35, shadow: false, squash: sq * .08, blink: blinkAt(t, 12 + i) }));
-    c.restore();
-    if (pp > 0) { const u = Math.min(1.3, pp); c.save(); c.translate(560 - u * 260, 1300 - Math.sin(Math.min(1, u) * Math.PI) * 160 + u * 140); c.rotate(-u * 1.8); c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(-60, -42, 120, 84, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(-16, -56, 32, 16); c.restore(); }
-    else { c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(500, 1258, 120, 84, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(544, 1244, 32, 16); }
-    c.restore(); dreamHaze(c);
+  tiny(c, t) {   // his car is already too small: the whole family squeezed into a little hatchback, on a plain blue stage
+    const sq = Math.max(0, Math.sin(clamp((t - HIT.squeeze) / .4) * Math.PI)) * (t > HIT.squeeze), pp = E(t, HIT.pop, .3, .5), W0 = 820, X = 540, Y = 1640;
+    const g = c.createRadialGradient(540, 1250, 100, 540, 1250, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(1, '#0a1034'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
+    cam(c, 540, 1300, 1 + .05 * seg(t, 39.05, 41.3), 0, () => {
+      tinyCar(c, X, Y, W0, sq);
+      c.save(); c.translate(X, Y); c.scale(1 + sq * .06, 1 - sq * .06); c.beginPath(); c.moveTo(-.3 * W0, -.4 * W0); c.quadraticCurveTo(-.24 * W0, -.6 * W0, .02 * W0, -.6 * W0); c.quadraticCurveTo(.2 * W0, -.58 * W0, .25 * W0, -.4 * W0); c.closePath(); c.clip(); c.translate(-X, -Y);
+      [[X - 165, 'blue1', null, 1.15], [X - 55, 'blue2', 'long', 1.1], [X + 48, 'blue3', 'pony', .82], [X + 132, 'blue2', null, .66]].forEach(([x, skin, fem, s], i) => drawMascot(c, { id: 'c' + i, skin, fem, s, x, sit: 1, y: Y - .5 * W0 + .74 * Hs(s) + 10, f: .2, smile: .3, sad: .35, shadow: false, squash: sq * .08, tilt: (i - 1.5) * .06, blink: blinkAt(t, 12 + i) }));
+      c.restore();
+      if (pp > 0) { const u = Math.min(1.3, pp); c.save(); c.translate(X + 20 + u * 260, Y - .66 * W0 - 40 - Math.sin(Math.min(1, u) * Math.PI) * 160 + u * 120); c.rotate(u * 1.8); c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(-60, -42, 120, 84, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(-16, -56, 32, 16); c.restore(); }
+      else { c.fillStyle = '#c99a3a'; c.beginPath(); c.roundRect(X - 40, Y - .66 * W0 - 82, 120, 84, 10); c.fill(); c.fillStyle = '#8a5d38'; c.fillRect(X + 4, Y - .66 * W0 - 96, 32, 16); }
+      poof(c, X + 160, Y - .62 * W0, seg(t, HIT.pop, HIT.pop + .5), 70); });
   },
   safety(c, t) {   // and safety matters most now
     const sh = E(t, HIT.shield, .4, .45), shine = ss(seg(t, HIT.shine, HIT.shine + .5));
@@ -391,7 +391,7 @@ function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['SUV-t', 'Tíz', 'percen', 'kérdést', 'Miért', 'biztonság', 'család', 'megveszi', 'pszichológia', 'fontos', 'tulajdonságait', 'problémáját', 'miért', 'szüksége']);
 const bare = w => w.replace(/[.,:;!?…„”"]/g, '');
-const CAP = { x: 64, y: 300, size: 80, lh: 96, maxW: 900, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Playfair Display"`;   // a classic serif with the Hungarian ő and ű; never more than two lines
+const CAP = { x: 64, y: 300, size: 66, lh: 88, maxW: 940, maxLines: 2 }, CAPFONT = `600 ${CAP.size}px "Montserrat"`;   // Montserrat SemiBold (23 Team's font); never more than two lines
 const PAGES = (() => {   // group the words into short pages: a new page after a full stop, a question, a colon, or once a page is full
   const m = document.createElement('canvas').getContext('2d'); m.font = CAPFONT; const space = m.measureText(' ').width;
   const pages = []; let cur = [], x = 0, line = 0;
@@ -404,7 +404,8 @@ const PAGES = (() => {   // group the words into short pages: a new page after a
 })();
 function captions(c, t) {
   c.setTransform(K, 0, 0, K, 0, 0);
-  const g = c.createRadialGradient(330, 330, 60, 330, 330, 720); g.addColorStop(0, 'rgba(5,8,30,.55)'); g.addColorStop(1, 'rgba(5,8,30,0)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1100);
+  // the top of the world, plain dark blue: the words sit apart from the picture, fading softly into it
+  c.fillStyle = '#0a1036'; c.fillRect(0, 0, 1080, 470); const g = c.createLinearGradient(0, 470, 0, 600); g.addColorStop(0, 'rgba(10,16,54,1)'); g.addColorStop(1, 'rgba(10,16,54,0)'); c.fillStyle = g; c.fillRect(0, 470, 1080, 130);
   const p = PAGES.find(p => t >= p.t0 && t < p.t1); if (!p) return;
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
