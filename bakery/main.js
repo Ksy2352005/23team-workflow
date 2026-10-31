@@ -100,7 +100,7 @@ function oven(c, t, x, y, o = {}) {   // a brick oven: the arch, its mouth (fire
   c.fillStyle = '#5a3a22'; c.fillRect(x - 300, y - 20, 600, 30);
 }
 function bakeryInside(c, t, o = {}) {
-  c.fillStyle = TOP; c.fillRect(-800, -600, 2680, 3000); c.fillStyle = '#1a2563'; c.fillRect(-300, 760, 1680, 1000);
+  c.fillStyle = TOP; c.fillRect(-800, -600, 2680, 3000);   // the wall is the same blue as the caption area: one page
   c.fillStyle = '#e9dcc0'; for (let r = 0; r < 4; r++) for (let k = 0; k < 14; k++) { c.fillStyle = (r + k) % 2 ? '#e9dcc0' : '#d9ccab'; c.fillRect(-300 + k * 120, 1380 + r * 60, 118, 58); }
   if (o.window !== false) skyWindow(c, 80, 880, 340, 380, o.sky ?? 0, t);
   c.fillStyle = '#5a3a22'; c.fillRect(-300, 1640, 1680, 600); c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 3; for (let y = 1670; y < 2200; y += 40) { c.beginPath(); c.moveTo(-300, y); c.lineTo(1380, y); c.stroke(); }
@@ -136,7 +136,7 @@ function ticket(c, x, y, w, who, o = {}) {   // an order ticket hanging from its
 const OWNER = o => ({ id: 'baker', skin: 'owner', toque: 1, s: 2.2, smile: .8, ...o });   // the baker in his tall white hat
 const CUST = [['blue2', 'long'], ['blue1', null], ['blue3', 'bun'], ['blue2', 'bob'], ['blue1', 'beret'], ['blue3', 'glasses']];
 const cust = (i, o) => ({ id: 'c' + i, skin: CUST[i % 6][0], fem: CUST[i % 6][1], s: 2.0, smile: .6, ...o });
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1300, 100, 540, 1300, 1000); g.addColorStop(0, col); g.addColorStop(.8, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 
 // —— the shots ——
 const SHOT = {
