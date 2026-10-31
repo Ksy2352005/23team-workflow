@@ -87,9 +87,10 @@ for t in HIT['clocks']:
     for k in range(11): add(fx, click(.07, 1.4 + (k % 2) * .3), t + k * .05, 1, 0)
     add(fx, swish(.55, .2), t, 1, 0)
 for e in EVS:
-    if e['type'] == 'step': add(fx, lp(S(pick('footstep_wood_00', 5, int(e['t'] * 7)), .26), 3500), e['t'], 1, e.get('pan', 0) * .7)
+    if e['type'] == 'step': add(fx, lp(S(pick('footstep_wood_00', 5, int(e['t'] * 7)), .14), 3500), e['t'], 1, e.get('pan', 0) * .7)
 # the new flavour
 add(fx, mx(chime(2349, .14, .7), pop(.15)), H1('bulb1'), 1, 0)
+add(fx, fade(lp(bp(noise(3.2), 400, 3000) * (.6 + .4 * np.abs(np.sin(2 * np.pi * 1.43 * t_(3.2)))), 3000) * .05, .2, .3), 0, 1, 0)   # the whisk going round the bowl
 add(fx, mx(pop(.25), S('impactWood_light_002', .25)), H1('choc'), 1, -.4); add(fx, mx(pop(.25), boing(.12, 400, 600)), H1('chili'), 1, .4)
 add(fx, mx(swish(.5, .25), verb(shimmer(.14, 1.0), .8, .3)), H1('swirl'), 1, 0)
 # nobody tries it
@@ -102,17 +103,18 @@ add(fx, mx(chime(2349, .16, .7), pop(.15)), H1('bulb2'), 1, .2)
 a, b = HIT['wipe']; add(fx, wipe(b - a, .35), a, 1, 0)
 a, b = HIT['write']; add(fx, chalk(b - a, .32), a, 1, .1)
 # curiosity
-for k, t in enumerate(HIT['arrive']): add(fx, shopbell(.18 - .03 * k), t - .2, 1, -.4)
+for k, t in enumerate(HIT['arrive']): add(fx, shopbell(.08 - .015 * k), t - .2, 1, -.4)
 for k, t in enumerate(HIT['qs']): add(fx, pop(.18 + .02 * k), t, 1, -.5 + .5 * k)
 add(fx, mx(pop(.25), sizzle(.5, .12)), H1('q1') - .3, 1, .2); add(fx, pop(.25), H1('q2') - .3, 1, -.2)
 for k, t in enumerate(HIT['spoons']): add(fx, mx(click(.12, 1.6), sizzle(.6, .1)), t + .1, 1, -.5 + .5 * k)
 add(fx, verb(chime(1568, .1, 1.0) + chime(2093, .07, 1.0), .8, .3), H1('wow'), 1, 0)
-add(fx, mx(shopbell(.3), S('doorOpen_2', .2)), H1('bell'), 1, -.6); add(fx, shopbell(.25), H1('bell2'), 1, -.6)
+add(fx, mx(shopbell(.12), S('doorOpen_2', .08)), H1('bell'), 1, -.6); add(fx, shopbell(.1), H1('bell2'), 1, -.6)   # the door and the bell: soft
 add(fx, mx(pop(.15), chime(2093, .08, .6)), H1('point'), 1, .3)
 # what it means
 add(fx, chime(2093, .1, .8), H1('check'), 1, .3)
 add(fx, mx(swish(.4, .15), verb(shimmer(.12, 1.0), .8, .3)), H1('turn'), 1, 0)
-for k in range(4): add(fx, S(pick('impactWood_light_00', 5, k), .25 * (1 - k * .2)), H1('dice') - .4 + k * .13, 1, 0)   # the die tumbling
+for t in [52.14, 53.08]: add(fx, mx(pop(.2), chime(2093, .07, .5)), t, 1, 0)   # each passer-by notices the sign
+for k, dt in enumerate([.35, .55, .72, .86, .95]): add(fx, S(pick('impactWood_light_00', 5, k), .3 * (1 - k * .15)), 55.3 + dt, 1, -.4 + .1 * k)   # the die bouncing as it rolls in
 add(fx, swish(.25, .15), H1('nope'), 1, 0)
 add(fx, mx(pop(.2), chime(1976, .08, .6)), H1('notice'), 1, .2); add(fx, click(.12, 1.6), H1('tryit'), 1, .2); add(fx, verb(shimmer(.1, 1.0), .8, .3), H1('ignore'), 1, 0)
 add(fx, mx(S('bookOpen', .3), swish(.6, .12)), HIT['unroll'][0], 1, 0)   # the long list unrolling

@@ -117,6 +117,13 @@ function board(c, t, x, y, s, mode, k = 1) {
   c.restore();
 }
 
+function aframe(c, x, ground, gl = 0) {   // a chalkboard A-frame sign: a big gold question mark and a little chili
+  if (gl) glow(c, x, ground - 330, 330, .45 * gl);
+  c.strokeStyle = WOOD; c.lineWidth = 16; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - 150, ground); c.lineTo(x - 100, ground - 560); c.moveTo(x + 150, ground); c.lineTo(x + 100, ground - 560); c.stroke();
+  c.fillStyle = WOOD; c.beginPath(); c.moveTo(x - 130, ground - 120); c.lineTo(x - 98, ground - 560); c.lineTo(x + 98, ground - 560); c.lineTo(x + 130, ground - 120); c.closePath(); c.fill();
+  c.fillStyle = '#121a3a'; c.beginPath(); c.moveTo(x - 112, ground - 140); c.lineTo(x - 86, ground - 540); c.lineTo(x + 86, ground - 540); c.lineTo(x + 112, ground - 140); c.closePath(); c.fill();
+  c.save(); c.font = '700 240px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('?', x, ground - 360); c.restore(); chili(c, x + 40, ground - 190, 90, -.4);
+}
 // —— the people ——
 const OWNER = o => ({ id: 'owner', skin: 'owner', cap: 1, s: 2.2, smile: .7, ...o });
 const GUEST = [['blue1', null], ['blue3', 'long'], ['blue2', 'bob'], ['blue1', 'hat'], ['blue3', null], ['blue2', 'bun']];
@@ -127,11 +134,18 @@ function behindCounter(c, t, o = {}) {   // the owner behind the display case
 
 // —— the shots ——
 const SHOT = {
-  invent(c, t) {   // a gelato maker came up with a new flavour
-    const b = E(t, HIT.bulb1, .35, .5);
-    stage(c, [120, 760, 1000, 1760], seg(t, 0, 3.25), () => { parlour(c, t, { boardX: 230, boardY: 1090, boardS: .42 });
-      behindCounter(c, t, { P: { smile: b > .5 ? 1 : .6, squash: wob(t, HIT.bulb1, .3, 16, .04) }, cs: { flag: false } });
-      if (b > 0) { glow(c, 640, 880, 150, .5 * Math.min(1, b)); badge(c, 'bulb', 640, 880, 60, b); } });
+  invent(c, t) {   // a gelato maker came up with a new flavour: he whisks it in a bowl, chocolate and chili beside him
+    const b = E(t, HIT.bulb1, .35, .5), wa = t * 9;
+    stage(c, [140, 820, 940, 1760], seg(t, 0, 3.25), () => { parlour(c, t, { board: false });
+      const P = OWNER({ x: 560, y: 1560, f: 0, smile: b > .5 ? 1 : .6, look: .35, blink: blinkAt(t, 1), squash: wob(t, HIT.bulb1, .3, 16, .04) });
+      const bx = 560, by = 1420, wx = bx + Math.cos(wa) * 40, wy = by - 40 + Math.sin(wa) * 12; P.handR = [wx + 20, wy - 70]; P.handL = [bx - 120, by - 10]; mascot(c, P);
+      displayCase(c, 300, 820, 1400, {});
+      ell(c, bx, by + 6, 170, 30, 'rgba(0,0,20,.3)'); c.fillStyle = CREAM; c.beginPath(); c.moveTo(bx - 170, by - 60); c.quadraticCurveTo(bx - 160, by + 20, bx, by + 22); c.quadraticCurveTo(bx + 160, by + 20, bx + 170, by - 60); c.fill();
+      ell(c, bx, by - 60, 170, 34, '#e9dcc0'); ell(c, bx, by - 58, 150, 26, SCOOP.dark); c.strokeStyle = 'rgba(120,70,40,.7)'; c.lineWidth = 5; c.beginPath(); c.ellipse(bx, by - 58, 90 + 30 * Math.sin(wa), 14, 0, wa, wa + 4); c.stroke();
+      for (let k = 0; k < 6; k++) { const u = ((t * .9 + k / 6) % 1); ell(c, bx + 60 + k * 9, lerp(by - 130, by - 62, u), 5, 3, '#d23a2a', k); }   // chili flakes falling into the bowl, clear of his face
+      c.strokeStyle = '#c9ccd6'; c.lineWidth = 7; c.lineCap = 'round'; c.beginPath(); c.moveTo(wx + 20, wy - 70); c.lineTo(wx, wy); c.stroke(); for (const d of [-14, 0, 14]) { c.beginPath(); c.ellipse(wx + d * .3, wy + 8, 10 + Math.abs(d) * .4, 26, 0, 0, 7); c.stroke(); }
+      bar(c, 320, 1400, 110); chili(c, 810, 1405, 140, -.3);
+      if (b > 0) { glow(c, 760, 900, 150, .5 * Math.min(1, b)); badge(c, 'bulb', 760, 900, 60, b); } });
   },
   combo(c, t) {   // a special combination: dark chocolate and red chili
     const bc = E(t, HIT.choc, .35, .45), ch = E(t, HIT.chili, .35, .45), sw = ss(seg(t, HIT.swirl, HIT.swirl + .5)), cn = E(t, HIT.swirl + .2, .35, .45);
@@ -215,17 +229,23 @@ const SHOT = {
     const g = c.createRadialGradient(540, 1300, 100, 540, 1300, 1000); g.addColorStop(0, '#26368c'); g.addColorStop(.8, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
     stage(c, [260, 820, 820, 1720], 0, () => { cone(c, 520, 1700, 140, [SCOOP.dark, SCOOP.dark], true); check(c, 740, 960, 70, ck); });
   },
-  one(c, t) {   // just one question made people notice it: every head turns to the board
-    const tu = ss(seg(t, HIT.turn - .3, HIT.turn + .3));
-    stage(c, [80, 760, 1000, 1800], seg(t, 51.25, 55.25), () => { parlour(c, t, { boardMode: 'question', boardX: 540, boardY: 1060, boardS: .62 });
-      if (tu > 0) glow(c, 540, 1060, 400, .3 * tu);
-      [[150, 0, -1], [400, 1, -1], [680, 2, 1], [930, 3, 1]].forEach(([x, i, side]) => mascot(c, guest(i, { x, y: 1810, s: 1.9, f: lerp(side * .9, side * .2, tu), back: tu > .5, walk: tu < .3 ? 1 : 0, phi: t * 9 + i, smile: .5 }))); });
+  one(c, t) {   // just one question made people notice it: passers-by stop at the sign, turn, "!"
+    const gl = ss(seg(t, HIT.turn - .3, HIT.turn + .4));
+    stage(c, [60, 860, 1020, 1800], 0, () => { parlour(c, t, { board: false });
+      aframe(c, 540, 1780, gl);
+      [[52.04, 980, 790, -1, 0], [52.98, 100, 290, 1, 1]].forEach(([ts, x0, x1, dir, i]) => { const u = seg(t, ts - 1.0, ts), stopped = t >= ts; if (t < ts - 1.2) return;
+        mascot(c, guest(i + 2, { x: lerp(x0, x1, ss(u)), y: 1790, s: 1.9, f: stopped ? -dir * .5 : dir * .85, walk: stopped ? 0 : 1, phi: u * Math.PI * 5, smile: stopped ? .7 : .4, look: stopped ? -.25 : 0, o: t > ts + .1 && t < ts + .8 ? .6 : 0, alpha: clamp((t - ts + 1.2) / .3), blink: blinkAt(t, 80 + i) }));
+        const ex = E(t, ts + .1, .3, .5); if (ex > 0) scaled(c, x1, 1270, ex, () => text(c, '!', x1, 1270, 120, GOLD)); }); });
   },
-  luck(c, t) {   // it was no accident: a die rolls, and is crossed out
-    const dk = E(t, HIT.dice - .4, .35, .4), x = ss(seg(t, HIT.nope - .2, HIT.nope + .3));
+  luck(c, t) {   // it was no accident: a die rolls in, tumbles, lands, and is crossed out
+    const u = seg(t, 55.3, 56.25), x = ss(seg(t, HIT.nope - .2, HIT.nope + .3)), land = t >= 56.25;
     c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
-    stage(c, [300, 960, 780, 1560], 0, () => { scaled(c, 540, 1260, dk, () => { c.save(); c.translate(540, 1260); c.rotate((1 - Math.min(1, dk)) * 3); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-150, -150, 300, 300, 40); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 8; c.stroke();
-        for (const [dx, dy] of [[-70, -70], [0, 0], [70, 70], [70, -70], [-70, 70]]) ell(c, dx, dy, 24, 24, NAVY); c.restore(); }); cross(c, 540, 1260, 190, x); });
+    stage(c, [120, 960, 960, 1560], 0, () => { c.fillStyle = 'rgba(233,220,192,.12)'; c.fillRect(100, 1452, 880, 6);
+      const px = lerp(200, 540, ss(u)), bounce = Math.abs(Math.sin(u * Math.PI * 3)) * (1 - u) * 260, py = 1300 - bounce + (land ? Math.sin(Math.min(1, (t - 56.25) / .25) * Math.PI) * -12 : 0), rot = (1 - ss(u)) * Math.PI * 4;
+      const face = land ? 5 : 1 + Math.floor(u * 9) % 6, PIPS = { 1: [[0, 0]], 2: [[-70, -70], [70, 70]], 3: [[-70, -70], [0, 0], [70, 70]], 4: [[-70, -70], [70, -70], [-70, 70], [70, 70]], 5: [[-70, -70], [70, -70], [0, 0], [-70, 70], [70, 70]], 6: [[-70, -70], [70, -70], [-70, 0], [70, 0], [-70, 70], [70, 70]] };
+      ell(c, px, 1458, 150 - bounce * .2, 22, 'rgba(0,0,20,.35)');
+      c.save(); c.translate(px, py); c.rotate(rot); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-150, -150, 300, 300, 40); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 8; c.stroke(); PIPS[face].forEach(([dx, dy]) => ell(c, dx, dy, 24, 24, NAVY)); c.restore();
+      cross(c, 540, 1300, 190, x); });
   },
   curious(c, t) {   // curiosity makes us try things we might not even notice otherwise: a passer-by, a "?" flag on one tub, he stops and tries it
     const u = seg(t, HIT.pass, HIT.notice), stop = t > HIT.notice, tryk = ss(seg(t, HIT.tryit, HIT.tryit + .5)), fk = E(t, HIT.notice - .4, .35, .5);
