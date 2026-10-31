@@ -81,11 +81,30 @@ function bouquet(c, x, y, s, o = {}) {   // y = the bottom of the paper cone
   c.strokeStyle = '#3f7d4f'; c.lineWidth = 7 * s; for (let i = -2; i <= 2; i++) { c.beginPath(); c.moveTo(x + i * 6 * s, y - H * .2); c.lineTo(x + i * 34 * s, y - H * 1.0); c.stroke(); }
   for (const [lx, ly, a] of [[-.8, -.68, -.9], [.8, -.7, .9], [-.5, -.95, -.5], [.55, -.97, .5]]) ell(c, x + lx * W2, y + ly * H, 40 * s, 15 * s, '#4f9a5c', a);
   (o.mix || MIX).forEach(([k, dx, dy, rs]) => flower(c, x + dx * W2 * 1.2, y + dy * H, 46 * s * rs, k));
+  if (o.box === 'vase') { const g = c.createLinearGradient(x - W2, 0, x + W2, 0); g.addColorStop(0, '#f6efdc'); g.addColorStop(1, '#cdbf9c'); c.fillStyle = g; c.beginPath(); c.moveTo(x - W2 * .45, y - H * .55); c.quadraticCurveTo(x - W2 * 1.0, y - H * .3, x - W2 * .55, y); c.lineTo(x + W2 * .55, y); c.quadraticCurveTo(x + W2 * 1.0, y - H * .3, x + W2 * .45, y - H * .55); c.closePath(); c.fill();
+    c.fillStyle = '#26368c'; c.fillRect(x - W2 * .78, y - H * .32, W2 * 1.56, 18 * s); c.fillStyle = GOLD; c.fillRect(x - W2 * .78, y - H * .32 + 18 * s, W2 * 1.56, 5 * s); ell(c, x, y - H * .55, W2 * .45, 10 * s, '#d9ccab'); }
+  else if (o.box === 'basket') { c.fillStyle = '#a8784a'; c.beginPath(); c.moveTo(x - W2 * 1.05, y - H * .38); c.lineTo(x + W2 * 1.05, y - H * .38); c.lineTo(x + W2 * .8, y); c.lineTo(x - W2 * .8, y); c.closePath(); c.fill();
+    c.strokeStyle = 'rgba(90,55,25,.6)'; c.lineWidth = 4 * s; for (let k = 1; k < 4; k++) { c.beginPath(); c.moveTo(x - W2 * (1.05 - k * .06), y - H * .38 + k * H * .095); c.lineTo(x + W2 * (1.05 - k * .06), y - H * .38 + k * H * .095); c.stroke(); } for (let k = -4; k <= 4; k++) { c.beginPath(); c.moveTo(x + k * W2 * .24, y - H * .38); c.lineTo(x + k * W2 * .19, y); c.stroke(); }
+    c.strokeStyle = '#8a5d38'; c.lineWidth = 9 * s; c.beginPath(); c.ellipse(x, y - H * .38, W2 * .9, H * .5, 0, Math.PI, 0); c.stroke(); }
+  else {
   const g = c.createLinearGradient(x - W2, 0, x + W2, 0); g.addColorStop(0, '#e9dcc0'); g.addColorStop(.5, '#f6efdc'); g.addColorStop(1, '#cdbf9c');
   c.fillStyle = g; c.beginPath(); c.moveTo(x - W2, y - H * .55); c.lineTo(x + W2, y - H * .55); c.lineTo(x + 26 * s, y); c.lineTo(x - 26 * s, y); c.closePath(); c.fill();
   c.fillStyle = 'rgba(160,120,60,.25)'; c.beginPath(); c.moveTo(x - W2, y - H * .55); c.lineTo(x - W2 * .2, y - H * .55); c.lineTo(x - 10 * s, y); c.lineTo(x - 26 * s, y); c.fill();
-  c.fillStyle = GOLD; c.fillRect(x - 40 * s, y - H * .3, 80 * s, 12 * s); ell(c, x - 26 * s, y - H * .3, 26 * s, 13 * s, GOLD, -.4); ell(c, x + 26 * s, y - H * .3, 26 * s, 13 * s, GOLD, .4); ell(c, x, y - H * .3 + 6 * s, 10 * s, 10 * s, GOLD2);
-  if (o.tag) tagCard(c, x + W2 * 1.05, y - H * .28, s, o.tag, o.tagK ?? 1, o.tagGlow || 0);
+  c.fillStyle = GOLD; c.fillRect(x - 40 * s, y - H * .3, 80 * s, 12 * s); ell(c, x - 26 * s, y - H * .3, 26 * s, 13 * s, GOLD, -.4); ell(c, x + 26 * s, y - H * .3, 26 * s, 13 * s, GOLD, .4); ell(c, x, y - H * .3 + 6 * s, 10 * s, 10 * s, GOLD2); }
+  if (o.tag) pickCard(c, x + W2 * .08, y - H * .44, s, o.tag, o.tagK ?? 1, o.tagGlow || 0);
+}
+const SUNMIX = [['sun', -.5, -.75, 1.05], ['daisy', .55, -.72, .9], ['sun', .2, -1.05, 1], ['daisy', -.25, -1.12, .85], ['sun', .05, -.8, .95], ['daisy', -.75, -.95, .75], ['daisy', .75, -.98, .75]];
+const TULIPMIX = [['tulip', -.6, -.62, .9], ['pink', -.3, -.85, .95], ['tulip', 0, -.7, .95], ['pink', .3, -.88, .9], ['tulip', .6, -.64, .9], ['tulip', -.15, -1.08, .85], ['pink', .2, -1.1, .85]];
+const WINDOW = [{ box: 'vase', mix: SUNMIX }, {}, { box: 'basket', mix: TULIPMIX }];
+function pickCard(c, x, y, s, kind, k = 1, gl = 0) {   // a big card on a florist's pick, standing in front of the flowers, with one clear mark
+  if (k <= 0) return; const w = 150 * s, h = 124 * s;
+  c.strokeStyle = '#3f7d4f'; c.lineWidth = 6 * s; c.beginPath(); c.moveTo(x, y + h * .5); c.lineTo(x - 4 * s, y + h * .95); c.stroke();
+  scaled(c, x, y + h * .5, k, () => { if (gl) glow(c, x, y, w * 1.2, .5 * gl); c.save(); c.translate(x, y); c.rotate(-.06);
+    c.fillStyle = 'rgba(0,0,20,.3)'; c.fillRect(-w / 2 + 6 * s, -h / 2 + 8 * s, w, h); c.fillStyle = CREAM; c.fillRect(-w / 2, -h / 2, w, h); c.strokeStyle = GOLD2; c.lineWidth = 4 * s; c.strokeRect(-w / 2 + 8 * s, -h / 2 + 8 * s, w - 16 * s, h - 16 * s);
+    if (kind === 'smile') { ell(c, -22 * s, -14 * s, 7 * s, 10 * s, NAVY); ell(c, 22 * s, -14 * s, 7 * s, 10 * s, NAVY); c.strokeStyle = GOLD2; c.lineWidth = 9 * s; c.lineCap = 'round'; c.beginPath(); c.arc(0, 2 * s, 34 * s, .35, Math.PI - .35); c.stroke(); }
+    else if (kind === 'heart') heart(c, 0, 2 * s, 40 * s, 1, '#d94a6a'); else if (kind === 'blank') { c.strokeStyle = 'rgba(28,36,80,.3)'; c.lineWidth = 5 * s; for (let i = 0; i < 2; i++) { c.beginPath(); c.moveTo(-40 * s, -10 * s + i * 26 * s); c.lineTo(40 * s, -10 * s + i * 26 * s); c.stroke(); } }
+    else badge(c, kind, 0, 0, 44 * s);
+    c.restore(); });
 }
 function tagCard(c, x, y, s, kind, k = 1, gl = 0) {   // a little card on a gold string with a hand-drawn mark (a smile, a heart...)
   if (k <= 0) return; c.strokeStyle = GOLD2; c.lineWidth = 3 * s; c.beginPath(); c.moveTo(x - 50 * s, y); c.quadraticCurveTo(x - 20 * s, y - 10 * s, x, y + 6 * s); c.stroke();
@@ -106,7 +125,7 @@ function shopFront(c, t, o = {}) {
   // the window
   c.fillStyle = CREAM; c.fillRect(110, 1060, 560, 470); const wg = c.createLinearGradient(0, 1080, 0, 1510); wg.addColorStop(0, '#3a52a8'); wg.addColorStop(1, '#22307a'); c.fillStyle = wg; c.fillRect(126, 1076, 528, 438); glow(c, 390, 1300, 360, .35 + .25 * (o.lit || 0));
   c.fillStyle = WOOD; c.fillRect(126, 1440, 528, 22);
-  (o.bouquets ?? [[220, 1440], [390, 1440], [560, 1440]]).forEach(([bx, by, k = 1, tag, tk, tg], i) => { if (k > 0) scaled(c, bx, by, Math.min(1, k), () => bouquet(c, bx, by, .55, { tag, tagK: tk, tagGlow: tg })); });
+  (o.bouquets ?? [[220, 1440], [390, 1440], [560, 1440]]).forEach(([bx, by, k = 1, tag, tk, tg], i) => { if (k > 0) scaled(c, bx, by, Math.min(1, k), () => bouquet(c, bx, by, .55, { ...WINDOW[i], tag, tagK: tk, tagGlow: tg })); });   // each window display is its own design
   c.fillStyle = 'rgba(255,255,255,.08)'; c.beginPath(); c.moveTo(150, 1076); c.lineTo(250, 1076); c.lineTo(160, 1514); c.lineTo(126, 1514); c.fill();
   // the door, and its bell
   c.fillStyle = CREAM; c.fillRect(720, 1060, 250, 600); c.fillStyle = '#121a4e'; c.fillRect(736, 1076, 218, 584); if (o.door) { c.fillStyle = 'rgba(255,225,160,.35)'; c.fillRect(736, 1076, 218 * o.door, 584); }
@@ -212,7 +231,7 @@ const SHOT = {
     stage(c, [300, 860, 780, 1720], seg(t, 31.3, 33.2), () => { shopInside(c, t, { door: false }); mascot(c, FLORIST({ s: 2.6, x: 540, y: 1720, f: 0, smile: lerp(.4, 1, sm), squash: wob(t, HIT.smile, .3, 14, .03), blink: blinkAt(t, 1) })); });
   },
   write(c, t) {   // the next day, he wrote next to one bouquet...
-    const wk = seg(t, ...HIT.write);
+    const wk = seg(t, ...HIT.write); c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
     stage(c, [200, 1050, 920, 1660], seg(t, 33.2, 36.25), () => {
       c.fillStyle = WOOD; c.fillRect(-200, 1500, 1480, 400); c.fillStyle = CREAM; c.fillRect(-200, 1490, 1480, 16);
       bouquet(c, 420, 1500, 1.1);
@@ -222,14 +241,14 @@ const SHOT = {
       if (wk > 0 && wk < 1) { const lw = (wk * 3) % 1, li = Math.floor(wk * 3), px = 720 - 100 + lw * 200, py = 1340 - 90 + li * 60; c.save(); c.translate(px + 20, py - 20); c.rotate(.6); c.fillStyle = NAVY; c.beginPath(); c.roundRect(-10, -120, 20, 130, 8); c.fill(); c.fillStyle = GOLD; c.fillRect(-10, -120, 20, 24); c.restore(); } });
   },
   card1(c, t) {   // "For someone who needs a smile today."
-    const k = E(t, HIT.card1, .35, .45), m = ss(seg(t, HIT.mosoly, HIT.mosoly + .4));
+    const k = E(t, HIT.card1, .35, .45), m = ss(seg(t, HIT.mosoly, HIT.mosoly + .4)); c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
     stage(c, [180, 950, 860, 1660], seg(t, 36.25, 39.7), () => { c.fillStyle = WOOD; c.fillRect(-200, 1600, 1480, 400); c.fillStyle = CREAM; c.fillRect(-200, 1590, 1480, 16);
       bouquet(c, 460, 1600, 1.45, { tag: 'smile', tagK: k, tagGlow: m }); });
   },
   card2(c, t) {   // ...and next to another: "To say something you can't put into words."
-    const k = E(t, HIT.card2, .35, .45), h = ss(seg(t, HIT.heart, HIT.heart + .4));
+    const k = E(t, HIT.card2, .35, .45), h = ss(seg(t, HIT.heart, HIT.heart + .4)); c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
     stage(c, [180, 950, 860, 1660], seg(t, 39.7, 44.85), () => { c.fillStyle = WOOD; c.fillRect(-200, 1600, 1480, 400); c.fillStyle = CREAM; c.fillRect(-200, 1590, 1480, 16);
-      bouquet(c, 460, 1600, 1.45, { mix: [['pink', -.3, -.55, 1], ['rose', .32, -.6, .9], ['pink', 0, -.8, .95], ['daisy', -.55, -.25, .8], ['rose', .55, -.28, .85], ['pink', .05, -.35, .9]], tag: 'heart', tagK: k, tagGlow: h }); });
+      bouquet(c, 460, 1600, 1.45, { mix: [['pink', -.3, -.85, 1], ['rose', .32, -.88, .95], ['pink', 0, -1.18, 1], ['daisy', -.62, -.72, .8], ['rose', .62, -.74, .85], ['pink', .05, -1.0, .9], ['rose', -.25, -1.1, .85], ['daisy', .3, -1.12, .75]], tag: 'heart', tagK: k, tagGlow: h }); });
   },
   change(c, t) {   // and something interesting happened: the cards glow in the window
     const g = ss(seg(t, HIT.glowup - .3, HIT.glowup + .5));
@@ -257,11 +276,11 @@ const SHOT = {
       bouquet(c, 300, 1560, 1.05); if (r > 0) scaled(c, 780, 1560, Math.min(1, r), () => bouquet(c, 780, 1560, 1.05, { tag: 'smile', tagK: 1 }));
       if (eq > 0) scaled(c, 540, 1300, eq, () => { c.fillStyle = GOLD; c.beginPath(); c.roundRect(495, 1270, 90, 22, 11); c.roundRect(495, 1320, 90, 22, 11); c.fill(); }); });
   },
-  meaning(c, t) {   // but now every one of them meant something
-    const kinds = ['smile', 'heart', 'star', 'thanks', 'gift'];
+  meaning(c, t) {   // but now every one of them meant something: three bouquets, each with its big card
+    const kinds = [['smile', HIT.tags[0], {}], ['heart', HIT.tags[2], { mix: TULIPMIX }], ['gift', HIT.tags[4], { mix: SUNMIX }]];
     c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920);
-    stage(c, [50, 1250, 1030, 1600], 0, () => { c.fillStyle = WOOD; c.fillRect(-200, 1560, 1480, 300); c.fillStyle = CREAM; c.fillRect(-200, 1550, 1480, 14);
-      kinds.forEach((kd, i) => bouquet(c, 140 + i * 190, 1560, .62, { tag: kd, tagK: E(t, HIT.tags[i], .3, .5) })); });
+    stage(c, [60, 1060, 1020, 1640], 0, () => { c.fillStyle = WOOD; c.fillRect(-200, 1600, 1480, 300); c.fillStyle = CREAM; c.fillRect(-200, 1590, 1480, 14);
+      kinds.forEach(([kd, tk, o], i) => bouquet(c, 210 + i * 330, 1600, .95, { ...o, tag: kd, tagK: E(t, tk, .3, .5), tagGlow: ss(seg(t, tk, tk + .4)) * (1 - ss(seg(t, tk + .6, tk + 1.2))) })); });
   },
   whyq(c, t) {   // do you know why that happened?
     const q = E(t, HIT.q, .35, .5);
@@ -297,7 +316,7 @@ const SHOT = {
 };
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.22)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); }
+function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['virágboltja', 'kirakatba', 'alkalomra', 'szebbé', 'mosolyra', 'szavakkal', 'érdekes', 'ajándékba', 'ugyanolyanok', 'jelentése', 'jelentést', 'értékesebbé', 'meglátni']);
@@ -361,7 +380,6 @@ function draw(c, t) {
     paintShot(bctx, i, t); c.save(); c.translate(W / 2, H / 2); c.scale(s, s); c.translate(-W / 2, -H / 2); c.filter = `blur(${(1 - e) * 10 * K}px)`; c.drawImage(bufB, 0, 0); c.restore();
   } else paintShot(c, i, t);
   vignette(c);
-  captions(c, t);
   const fade = ss(seg(t, STORY - .7, STORY)); if (fade > 0) { c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = fade; c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H); c.globalAlpha = 1; }
 }
 

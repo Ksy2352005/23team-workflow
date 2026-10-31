@@ -31,6 +31,7 @@ When a film shows its script, it is written word by word as it is spoken, placed
 | Colour | Cream `#f6efdc`. Only the word being spoken turns gold `#ecbd4a`, with no underline. A few key words stay gold once spoken. |
 | Motion | Each word pops in as it is spoken: it rises about 34 px, scales from 75% to 100% and fades in on a soft spring. The page lifts away and fades in 0.12 s before the next one starts. A soft dark shadow keeps it readable. |
 | Behind the text | No band of its own: the top of every scene is the same plain blue `#111a52`, and the text sits on it. That blue fades into the picture between 660 and 760 px. |
+| One page | The words are part of each shot's page, in the same world: every transition (whip, punch, clock wipe, dissolve) moves them together with the picture. Only their place on the page is separate. |
 | The story | Plays only in the stage under the captions, x 50–1030 and y 760–1860. Each shot fits its content inside it, so nothing is cut by the frame or by the captions. |
 | Timing | The script's own words are matched letter by letter to Whisper's word timings on the sped-up voice (`align.py`), so the spelling is the script's and the timing is the voice's. |
 
