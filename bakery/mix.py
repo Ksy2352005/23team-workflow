@@ -102,16 +102,19 @@ add(fx, boing(.12, 300, 180, .45), H1('sad'), 1, -.2)
 # the idea: a lightbulb, the sign spins round
 add(fx, mx(chime(2349, .14, .7), pop(.15)), H1('bulb'), 1, -.3)
 add(fx, mx(swish(.5, .2), S('creak2', .15)), H1('flip'), 1, .3); add(fx, mx(S('impactWood_light_002', .3), verb(chime(1760, .08, 1.0), .8, .3)), H1('flipped'), 1, .3)
-# pre-orders: one customer at a time fills the meter; full, the oven lights
-for k, t in enumerate(HIT['orders']): add(fx, mx(pop(.18), chime(1319 * 2 ** (k / 12 * 2), .06, .5)), t, 1, -.5 + .25 * k)
+# pre-orders: one ticket at a time swings onto the line, the dough rises; five: the line glows, the oven lights
+for k, t in enumerate(HIT['orders']): add(fx, mx(S(f'cloth{1 + k % 4}', .14), pop(.14), chime(1319 * 2 ** (k / 12 * 2), .05, .5)), t - .1, 1, -.5 + .25 * k)
 add(fx, verb(mx(shimmer(.16, 1.2), chime(1568, .1, 1.2)), 1.0, .35), H1('full'), 1, 0)
-add(fx, mx(lp(swish(.6, .2, False), 2000), fade(fire(1.4, .16), .1, .6)), H1('fire'), 1, 0)
-# something special: the clock, its ticks, the tokens onto the hours, the hand, ding
-add(fx, pop(.2), H1('special'), 1, .3)
-for k in range(12): add(fx, tick(.08, 1 if k % 2 else .8), 21.6 + k * .5, 1, 0)
-for k, t in enumerate(HIT['tokens']): add(fx, mx(swish(.25, .12), pop(.16)), t, 1, [-.4, 0, .3][k])
-for t in HIT['hands']: add(fx, roll(.5, .14), t, 1, 0)
-add(fx, ovenbell(.2), H1('ding'), 1, 0)
+add(fx, mx(lp(swish(.6, .2, False), 2000), fade(fire(1.4, .16), .1, .6), S('metalLatch', .15)), H1('fire'), 1, .4)
+# something special: the camera finds one ticket; it turns over to show a clock
+add(fx, lp(swish(.9, .1), 3000), 21.3, 1, 0); add(fx, mx(swish(.35, .18), S('cloth2', .12)), H1('special') - .6, 1, 0)
+add(fx, mx(pop(.18), verb(shimmer(.12, 1.0), .8, .3)), H1('special'), 1, .3)
+# her ticket stamped; it flies up and becomes the oven's clock; the three hours; she points, the hand sweeps; ding, her loaf slides out
+add(fx, stamp(.25), H1('stamp'), 1, .1); add(fx, mx(swish(.5, .16), verb(chime(1760, .06, .8), .8, .3)), H1('morph'), 1, .3)
+for k in range(5): add(fx, tick(.07, 1 if k % 2 else .8), 26.7 + k * .5, 1, .3)
+for k, t in enumerate(HIT['tokens']): add(fx, pop(.15), t, 1, [-.1, .3, .4][k])
+add(fx, mx(roll(.9, .14), swish(.9, .08)), HIT['hands'][0], 1, .3); add(fx, verb(mx(chime(1568, .1, 1.0), shimmer(.08, .8)), .8, .3), HIT['hands'][1], 1, .1)
+add(fx, mx(ovenbell(.2), S('metalLatch', .2)), H1('ding'), 1, .3); add(fx, mx(swish(.4, .12), S('impactSoft_medium_000', .15)), H1('ding') + .5, 1, -.1)
 # breakfast, lunch, dinner: the cup, the plate, the candle
 add(fx, S('impactPlate_light_001', .25), H1('morning'), 1, .2); add(fx, S('impactPlate_medium_000', .25), H1('noon'), 1, .2)
 add(fx, mx(click(.1, .6), lp(noise(.3), 1500) * env_exp(.3, .1) * .05), H1('night'), 1, .2)   # a match, the candle

@@ -119,6 +119,19 @@ function token(c, x, y, r, who, k = 1) {   // a customer's bread token: their fa
     c.save(); c.beginPath(); c.arc(x, y, r * .82, 0, 7); c.clip(); drawMascot(c, { ...cust(who, { x: x - r * .2, y: y + r * 1.6, s: r / 70, smile: 1 }), shadow: false }); c.restore(); loaf(c, x + r * .45, y + r * .55, r * .7); });
 }
 
+function ticket(c, x, y, w, who, o = {}) {   // an order ticket hanging from its pin at (x, y): the customer's face and a loaf on the front, a clock on the back
+  const h = w * 1.33, fl = o.flip || 0, sx = Math.cos(fl * Math.PI), back = fl > .5, r = w * .08;
+  c.save(); c.translate(x, y); c.rotate(o.rot || 0); c.scale(Math.max(.03, Math.abs(sx)), 1); c.translate(-x, -y);
+  c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(x - w / 2 + w * .04, y + 8 + w * .05, w, h, r); c.fill();
+  c.fillStyle = back ? '#f1e3c2' : CREAM; c.beginPath(); c.roundRect(x - w / 2, y + 8, w, h, r); c.fill();
+  if (!back) { c.fillStyle = GOLD; c.beginPath(); c.roundRect(x - w / 2, y + 8, w, h * .14, [r, r, 0, 0]); c.fill();
+    token(c, x, y + 8 + h * .37, w * .25, who, 1); c.fillStyle = 'rgba(28,36,80,.22)'; c.beginPath(); c.roundRect(x - w * .3, y + 8 + h * .62, w * .6, h * .04, 4); c.fill(); c.beginPath(); c.roundRect(x - w * .2, y + 8 + h * .7, w * .4, h * .04, 4); c.fill();
+    loaf(c, x, y + 8 + h * .94, w * .42); if (o.check > 0) check(c, x + w * .3, y + 8 + h * .8, w * .14, o.check); }
+  else clockFace(c, x, y + 8 + h * .48, w * .34, 7);
+  ell(c, x, y + 8 + h * .07, w * .045, w * .045, '#c4566a');
+  c.restore();
+}
+
 // —— the people ——
 const OWNER = o => ({ id: 'baker', skin: 'owner', toque: 1, s: 2.2, smile: .8, ...o });   // the baker in his tall white hat
 const CUST = [['blue2', 'long'], ['blue1', null], ['blue3', 'bun'], ['blue2', 'bob'], ['blue1', 'beret'], ['blue3', 'glasses']];
@@ -154,28 +167,48 @@ const SHOT = {
       else { c.save(); c.font = '700 40px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('ELŐRENDELÉS', 0, -60); clockFace(c, -90, 40, 56, 7 + t); loaf(c, 70, 80, 110); c.restore(); }
       c.restore(); });
   },
-  meter(c, t) {   // from then on certain loaves were baked only once enough customers had reserved them: a loaf-shaped meter fills, one customer at a time; full: the oven lights
+  meter(c, t) {   // from then on certain loaves were baked only once enough customers had reserved them: order tickets swing onto the line one by one, the dough rises with each; five: the line glows, the oven lights
     const full = E(t, HIT.full, .35, .5), fire = ss(seg(t, HIT.fire, HIT.fire + .6)), filled = HIT.orders.filter(o => t > o).length;
-    stage(c, [60, 780, 1040, 1780], 0, () => { bakeryInside(c, t, { window: false }); scaled(c, 540, 1640, .8, () => oven(c, t, 540, 1640, { fire, door: fire > .5 ? 0 : 1 }));
-      const mx = 540, my = 950, mw = 620, mh = 220; c.save(); c.beginPath(); c.moveTo(mx - mw / 2, my + mh / 2); c.quadraticCurveTo(mx - mw * .52, my - mh * .6, mx, my - mh * .6); c.quadraticCurveTo(mx + mw * .52, my - mh * .6, mx + mw / 2, my + mh / 2); c.closePath();
-      c.fillStyle = 'rgba(20,24,70,.7)'; c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 6; c.stroke(); c.clip();
-      for (let i = 0; i < 5; i++) { const k = E(t, HIT.orders[i], .3, .5); if (k <= 0) continue; c.fillStyle = full > 0 ? '#e0a258' : ['#e0a258', '#d29b45', '#c98a4a', '#e0a258', '#d29b45'][i]; c.fillRect(mx - mw / 2 + i * mw / 5, my + mh / 2 - (mh * 1.1) * Math.min(1, k), mw / 5 + 1, mh * 1.2); }
-      c.restore(); if (full > 0) glow(c, mx, my, 360, .5 * Math.min(1, full));
-      c.strokeStyle = 'rgba(246,239,220,.25)'; c.lineWidth = 3; for (let i = 1; i < 5; i++) { c.beginPath(); c.moveTo(mx - mw / 2 + i * mw / 5, my - mh * .5); c.lineTo(mx - mw / 2 + i * mw / 5, my + mh / 2); c.stroke(); }
-      HIT.orders.forEach((to, i) => token(c, 220 + i * 160, 1140, 52, i, E(t, to - .15, .3, .5)));
-      text(c, `${filled}/5`, mx, my + 6, 64, filled >= 5 ? NAVY : CREAM); });
+    stage(c, [40, 800, 1040, 1800], 0, () => { bakeryInside(c, t, { window: false });
+      scaled(c, 830, 1640, .72, () => oven(c, t, 830, 1640, { fire, door: fire > .4 ? 1 : 0 }));
+      c.strokeStyle = full > 0 ? GOLD : '#b9a888'; c.lineWidth = 5; c.beginPath(); c.moveTo(90, 930); c.quadraticCurveTo(540, 1050, 990, 930); c.stroke(); for (const px of [90, 990]) ell(c, px, 930, 12, 12, WOOD);
+      HIT.orders.forEach((to, i) => { const k = E(t, to - .12, .3, .45); if (k <= 0) return; const px = 210 + i * 165, tt = (px - 90) / 900, py = 930 + 120 * tt * (1 - tt), dt = t - to + .12;
+        const rot = .38 * Math.sin(dt * 9) * Math.exp(-dt * 2.6) + (full > 0 ? .06 * Math.sin((t - HIT.full) * 12 + i) * Math.exp(-(t - HIT.full) * 2) : 0);
+        if (full > 0) glow(c, px, py + 90, 110, .35 * Math.min(1, full));
+        scaled(c, px, py, Math.min(1.1, k), () => ticket(c, px, py, 118, i, { rot })); });
+      // the counter, the baker behind it, the dough rising in its bowl
+      mascot(c, OWNER({ x: 470, y: 1650, s: 1.9, f: -.25, smile: lerp(.5, 1, Math.min(1, filled / 5)), blink: blinkAt(t, 1), squash: HIT.orders.reduce((m, o) => m + wob(t, o, .3, 16, .03), 0), handL: filled >= 5 ? [360, 1440] : undefined }));
+      c.fillStyle = '#6e4a2c'; c.fillRect(70, 1560, 540, 230); c.fillStyle = WOOD; c.fillRect(56, 1530, 568, 36); c.fillStyle = 'rgba(0,0,0,.18)'; for (let k = 0; k < 4; k++) c.fillRect(110 + k * 130, 1600, 8, 160);
+      const dk = HIT.orders.reduce((m, o, i) => Math.max(m, (i + 1) * Math.min(1, E(t, o + .1, .35, .55))), 0) / 5, dh = 50 + 110 * dk + (full > 0 ? 14 * Math.sin((t - HIT.full) * 10) * Math.exp(-(t - HIT.full) * 3) : 0);
+      const dg = c.createLinearGradient(0, 1500 - dh, 0, 1500); dg.addColorStop(0, '#fbf1da'); dg.addColorStop(1, '#e6cf9f'); c.fillStyle = dg; c.beginPath(); c.ellipse(250, 1490, 110 + 20 * dk, dh, 0, Math.PI, 0); c.fill();
+      ell(c, 210, 1490 - dh * .7, 30, 12, 'rgba(255,255,255,.4)', -.3);
+      c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(110, 1480); c.lineTo(390, 1480); c.quadraticCurveTo(380, 1530, 340, 1532); c.lineTo(160, 1532); c.quadraticCurveTo(120, 1530, 110, 1480); c.fill(); c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(110, 1480, 280, 8);
+      if (full > 0) for (let k = 0; k < 4; k++) star(c, 250 + Math.cos(k * 1.7) * 150, 1390 - Math.abs(Math.sin(k * 1.3)) * 80, 16, Math.max(0, Math.sin(clamp((t - HIT.full - k * .08) / .8) * Math.PI))); });
   },
-  special(c, t) {   // but there was something special in it
-    const k = E(t, HIT.special - .6, .4, .45);
-    bg(c);
-    stage(c, [200, 820, 880, 1700], seg(t, 21.3, 23.7), () => { clockFace(c, 540, 1300, 300 * Math.min(1, k), 6 + (t - 21.3) * 3, { glow: 1 }); badge(c, 'ex', 820, 980, 64, E(t, HIT.special, .3, .5)); });
+  special(c, t) {   // but there was something special in it: the camera finds one ticket; it turns over: on its back, a clock
+    const fl = ss(seg(t, HIT.special - .6, HIT.special - .05)), bang = E(t, HIT.special, .3, .5), sw = .07 * Math.sin((t - 21.3) * 2.4) * (1 - fl);
+    stage(c, lerpBox([60, 800, 1020, 1800], [170, 820, 910, 1560], ss(seg(t, 21.3, 22.2))), 0, () => { bakeryInside(c, t, { window: false }); c.fillStyle = 'rgba(17,26,82,.55)'; c.fillRect(-300, 700, 1680, 1300);
+      c.strokeStyle = '#b9a888'; c.lineWidth = 5; c.beginPath(); c.moveTo(540, 700); c.lineTo(540, 900); c.stroke(); if (fl > .5) glow(c, 540, 1180, 360, .3 * bang);
+      ticket(c, 540, 900, 380, 4, { rot: sw, flip: fl });
+      if (bang > 0) { badge(c, 'ex', 760, 960, 56, bang); for (let k = 0; k < 4; k++) star(c, 540 + [-250, 250, -230, 230][k], [1000, 1180, 1360, 1420][k], 18, Math.max(0, Math.sin(clamp((t - HIT.special - k * .1) / .9) * Math.PI))); } });
   },
-  clockface(c, t) {   // customers didn't just order bread: they chose exactly when it would come out of the oven: their tokens fly onto the hours, the hand sweeps from one to the next, ding
-    const target = [7, 12, 18], ha = t < HIT.hands[0] ? 6 : t < HIT.hands[1] ? lerp(7, 12, ss(seg(t, HIT.hands[0], HIT.hands[0] + .6))) : lerp(12, 18, ss(seg(t, HIT.hands[1], HIT.hands[1] + .8)));
-    bg(c);
-    stage(c, [140, 820, 940, 1740], 0, () => { clockFace(c, 540, 1300, 330, ha, { glow: ss(seg(t, HIT.ding, HIT.ding + .4)) });
-      target.forEach((h, i) => { const an = (h % 12) / 12 * Math.PI * 2 - Math.PI / 2, k = E(t, HIT.tokens[i], .35, .5); const x = 540 + Math.cos(an) * 400, y = 1300 + Math.sin(an) * 400, u = ss(seg(t, HIT.tokens[i], HIT.tokens[i] + .5)); token(c, lerp(540, x, u), lerp(1700, y, u), 62, i, k); });
-      if (t > HIT.ding) { const k = E(t, HIT.ding, .3, .5); badge(c, 'bell', 540, 900, 52, k); loaf(c, 540, 1500, 160, { steam: 1, t, glow: 1 }); } });
+  clockface(c, t) {   // customers didn't just order bread: they had to choose exactly when it would come out of the oven: her stamped ticket flies up and becomes the oven's clock; she points, the hand sweeps round to seven; ding, her loaf slides out to her
+    const tk = E(t, 23.75, .35, .5), st = E(t, HIT.stamp, .3, .5), mo = ss(seg(t, HIT.morph, HIT.morph + .5)), ck = E(t, HIT.morph + .3, .4, .45);
+    const sweep = ss(seg(t, ...HIT.hands)), ha = lerp(12, 19, sweep), pick = E(t, HIT.hands[1], .3, .5), door = ss(seg(t, HIT.ding - .1, HIT.ding + .2)), out = ss(seg(t, HIT.ding + .15, HIT.ding + .75));
+    const CX = 720, CY = 1050, R0 = 160;
+    stage(c, [60, 800, 1020, 1800], 0, () => { bakeryInside(c, t, { window: false });
+      scaled(c, CX, 1640, .62, () => oven(c, t, CX, 1640, { fire: .5, door }));
+      if (ck > 0) { clockFace(c, CX, CY, R0 * Math.min(1.1, ck), ha, { glow: pick });
+        if (sweep > 0) { c.save(); c.strokeStyle = GOLD; c.lineCap = 'round'; c.lineWidth = 16; c.beginPath(); c.arc(CX, CY, R0 * 1.12, -Math.PI / 2, -Math.PI / 2 + (ha - 12) / 12 * Math.PI * 2); c.stroke(); c.restore(); }
+        [7, 12, 18].forEach((h, i) => { const k = E(t, HIT.tokens[i], .3, .5); if (k <= 0) return; const an = (h % 12) / 12 * Math.PI * 2 - Math.PI / 2, lx = CX + Math.cos(an) * R0 * 1.42, ly = CY + Math.sin(an) * R0 * 1.42 + 22, chosen = i === 0;
+          c.save(); c.globalAlpha = chosen ? 1 : 1 - .65 * pick; scaled(c, lx, ly - 18, Math.min(1.1, k) * (chosen ? 1 + .35 * pick : 1), () => { if (chosen && pick > 0) glow(c, lx, ly - 18, 90, .5 * pick); loaf(c, lx, ly, 70, { steam: chosen ? pick : 0, t }); }); c.restore(); }); }
+      const point = ss(seg(t, HIT.hands[0] - .3, HIT.hands[0])) * (1 - ss(seg(t, HIT.ding - .3, HIT.ding)));
+      const P = cust(2, { x: 290, y: 1790, s: 2.0, f: .5, smile: lerp(.6, 1, Math.max(pick, out)), blink: blinkAt(t, 9) });
+      if (mo < 1) P.handR = [470, 1600]; if (point > 0) P.handR = reach([460, 1575], [425, 1455], point); if (out > .5) P.handR = [430, 1650];
+      mascot(c, P);
+      if (mo < 1 && tk > 0) { const x = lerp(480, CX, mo), y = lerp(1390, CY - 80, mo) - Math.sin(mo * Math.PI) * 120; c.save(); c.globalAlpha = 1 - ss(seg(mo, .6, 1)); scaled(c, x, y, Math.min(1.1, tk) * lerp(1, .5, mo), () => ticket(c, x, y, 150, 2, { rot: .05 * Math.sin(t * 3), check: st, flip: ss(seg(mo, .1, .5)) })); c.restore(); }
+      if (point > 0 && sweep > 0 && sweep < 1) for (let k = 0; k < 3; k++) star(c, 445 + k * 10, 1430 - k * 26, 10, Math.max(0, Math.sin((t * 4 + k / 3) % 1 * Math.PI)));
+      if (t > HIT.ding) { badge(c, 'bell', CX + 200, CY - 150, 46, E(t, HIT.ding, .3, .5)); if (door > .5) loaf(c, lerp(CX, 440, out), lerp(1520, 1650, out) - Math.sin(out * Math.PI) * 70, 120, { steam: 1, t, glow: 1 - .5 * out }); } });
   },
   meals(c, t) {   // some wanted warm bread for breakfast, others for lunch, others for dinner: one table, the sky turns, the table and the guest change with each meal
     const ph = t < HIT.noon - .2 ? 0 : t < HIT.night - .2 ? 1 : 2, k = [.4, 1.2, 3][ph], sw = Math.max(0, Math.sin(clamp((t - [31.8, HIT.noon - .2, HIT.night - .2][ph]) / .35) * Math.PI));
