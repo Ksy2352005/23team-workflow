@@ -5,7 +5,7 @@ import { drawMascot, BASE_H } from './char2d.js';
 import { DUR, STORY, SHOTS, HIT } from './story.js';
 import { WORDS } from './captions.js';
 
-await Promise.all([document.fonts.load('74px "Lilita One"', 'ELADVA?'), document.fonts.load('600 74px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…abcABC')]);
+await Promise.all([document.fonts.load('74px "Lilita One"', 'ELADVA?'), document.fonts.load('700 74px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…abcABC')]);
 const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
@@ -32,7 +32,7 @@ function mascot(c, P, k = 1) { spot(c, P.x, P.y + 4, Hs(P.s) * .42); scaled(c, P
 function text(c, s, x, y, size, col = CREAM, align = 'center') { c.font = `${size}px "Lilita One"`; c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
 function ell(c, x, y, rx, ry, col, rot = 0) { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, Math.max(.1, rx), Math.max(.1, ry), rot, 0, 7); c.fill(); }
 // the stage: the part of the frame under the captions where the story plays; each shot names the box its content needs, and the camera fits that box inside the stage
-const STAGE = { x0: 50, x1: 1030, y0: 660, y1: 1860 };
+const STAGE = { x0: 50, x1: 1030, y0: 760, y1: 1860 };   // the story plays under the caption area
 const lerpBox = (a, b, u) => a.map((v, i) => lerp(v, b[i], u));
 function stage(c, box, push, f) { const [x0, y0, x1, y1] = box, z = Math.min((STAGE.x1 - STAGE.x0) / (x1 - x0), (STAGE.y1 - STAGE.y0) / (y1 - y0)) * (.96 + .04 * push);
   c.save(); c.translate((STAGE.x0 + STAGE.x1) / 2, (STAGE.y0 + STAGE.y1) / 2); c.scale(z, z); c.translate(-(x0 + x1) / 2, -(y0 + y1) / 2); f(); c.restore(); }
@@ -139,7 +139,7 @@ function pair(c, t, o) {
 // —— imagined: the family on the road in Budapest at night (the Parliament and the Chain Bridge across the Danube), a world that scrolls past the car ——
 function budapest(c, t, o = {}) {
   const v = o.speed ?? 260, sx = (t - (o.t0 || 0)) * v + (o.x0 || 0);   // each shot starts with the Parliament and the bridge in view
-  const sky = c.createLinearGradient(0, 640, 0, 1180); sky.addColorStop(0, TOP); sky.addColorStop(1, '#1d2b70'); c.fillStyle = sky; c.fillRect(0, 0, 1080, 1180);
+  const sky = c.createLinearGradient(0, 760, 0, 1180); sky.addColorStop(0, TOP); sky.addColorStop(1, '#1d2b70'); c.fillStyle = sky; c.fillRect(0, 0, 1080, 1180);
   for (let i = 0; i < 40; i++) ell(c, (hash(i) * 1400 - sx * .02) % 1080 + (hash(i) * 1400 - sx * .02 < 0 ? 1080 : 0), 440 + hash(i + 70) * 520, 2.5, 2.5, `rgba(246,239,220,${.4 + .4 * hash(i + 3)})`);
   // the far bank: the Parliament, lit gold, repeating slowly
   const P = 1400, px0 = -((sx * .12) % P) + 420;
@@ -395,7 +395,7 @@ function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['SUV-t', 'Tíz', 'percen', 'kérdést', 'Miért', 'biztonság', 'család', 'megveszi', 'pszichológia', 'fontos', 'tulajdonságait', 'problémáját', 'miért', 'szüksége']);
 const bare = w => w.replace(/[.,:;!?…„”"]/g, '');
-const CAP = { x: 64, y: 300, size: 66, lh: 88, maxW: 940, maxLines: 2 }, CAPFONT = `600 ${CAP.size}px "Montserrat"`;   // Montserrat SemiBold (23 Team's font); never more than two lines
+const CAP = { x: 130, y: 540, size: 56, lh: 72, maxW: 790, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Montserrat"`;   // the caption area, placed for Instagram's preview: Montserrat Bold, two lines at most
 const PAGES = (() => {   // group the words into short pages: a new page after a full stop, a question, a colon, or once a page is full
   const m = document.createElement('canvas').getContext('2d'); m.font = CAPFONT; const space = m.measureText(' ').width;
   const pages = []; let cur = [], x = 0, line = 0;
@@ -409,14 +409,14 @@ const PAGES = (() => {   // group the words into short pages: a new page after a
 function captions(c, t) {
   c.setTransform(K, 0, 0, K, 0, 0);
   // behind the words, plain: the same blue as the top of every scene, fading into the picture
-  c.fillStyle = TOP; c.fillRect(0, 0, 1080, 560); const g = c.createLinearGradient(0, 560, 0, 660); g.addColorStop(0, TOP); g.addColorStop(1, 'rgba(17,26,82,0)'); c.fillStyle = g; c.fillRect(0, 560, 1080, 100);
+  c.fillStyle = TOP; c.fillRect(0, 0, 1080, 660); const g = c.createLinearGradient(0, 660, 0, 760); g.addColorStop(0, TOP); g.addColorStop(1, 'rgba(17,26,82,0)'); c.fillStyle = g; c.fillRect(0, 660, 1080, 100);
   const p = PAGES.find(p => t >= p.t0 && t < p.t1); if (!p) return;
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
   p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
     const hot = w === now, col = hot || w.key ? GOLD : CREAM;
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
-    c.shadowColor = 'rgba(0,0,15,.65)'; c.shadowBlur = 14; c.shadowOffsetY = 4; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
+    c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10; c.shadowOffsetY = 3; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
     c.restore(); });
   c.restore();
 }
