@@ -10,7 +10,7 @@ const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
 const [bufA, actx] = mk(), [bufB, bctx] = mk();
-const NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#0b1438';
+const TOP = '#111a52', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#0b1438';
 const GLOW = (() => { const [c, x] = mk(); c.width = c.height = 256; const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,214,120,1)'); g.addColorStop(.25, 'rgba(255,214,120,.45)'); g.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c; })();
 
 function sp(tau, d = .4, b = .2) {   // a spring like Motion's { type: 'spring', visualDuration, bounce }
@@ -31,6 +31,11 @@ function spot(c, x, y, w, a = .35) { const g = c.createRadialGradient(x, y, 0, x
 function mascot(c, P, k = 1) { spot(c, P.x, P.y + 4, Hs(P.s) * .42); scaled(c, P.x, P.y, k, () => drawMascot(c, { ...P, shadow: false })); }
 function text(c, s, x, y, size, col = CREAM, align = 'center') { c.font = `${size}px "Lilita One"`; c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
 function ell(c, x, y, rx, ry, col, rot = 0) { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, Math.max(.1, rx), Math.max(.1, ry), rot, 0, 7); c.fill(); }
+// the stage: the part of the frame under the captions where the story plays; each shot names the box its content needs, and the camera fits that box inside the stage
+const STAGE = { x0: 50, x1: 1030, y0: 660, y1: 1860 };
+const lerpBox = (a, b, u) => a.map((v, i) => lerp(v, b[i], u));
+function stage(c, box, push, f) { const [x0, y0, x1, y1] = box, z = Math.min((STAGE.x1 - STAGE.x0) / (x1 - x0), (STAGE.y1 - STAGE.y0) / (y1 - y0)) * (.96 + .04 * push);
+  c.save(); c.translate((STAGE.x0 + STAGE.x1) / 2, (STAGE.y0 + STAGE.y1) / 2); c.scale(z, z); c.translate(-(x0 + x1) / 2, -(y0 + y1) / 2); f(); c.restore(); }
 function cam(c, x, y, z = 1, rot = 0, f) { c.save(); c.translate(540, 960); c.rotate(rot); c.scale(z, z); c.translate(-x, -y); f(); c.restore(); }
 function star(c, x, y, r, k = 1, col = GOLD) { scaled(c, x, y, k, () => { c.fillStyle = col; c.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); c.fill(); }); }
 function heart(c, x, y, r, k = 1, col = GOLD) { scaled(c, x, y, k, () => { c.fillStyle = col; c.beginPath(); c.moveTo(x, y + r * .9); c.bezierCurveTo(x - r * 1.3, y, x - r * .8, y - r, x, y - r * .35); c.bezierCurveTo(x + r * .8, y - r, x + r * 1.3, y, x, y + r * .9); c.fill(); }); }
@@ -107,8 +112,7 @@ function tinyCar(c, x, y, w, squeeze = 0) {
 // —— the showroom: a dark ceiling with small spots (calm behind the captions), a band of tall windows, a glossy floor ——
 const FLOOR = 1500;
 function showroom(c, t, o = {}) {
-  const g = c.createLinearGradient(0, -400, 0, FLOOR); g.addColorStop(0, '#0a1036'); g.addColorStop(1, '#1d2868'); c.fillStyle = g; c.fillRect(-800, -600, 2680, FLOOR + 600);
-  for (let x = -700; x < 1800; x += 260) { ell(c, x, 120, 26, 8, '#ffe7a6'); const cg = c.createLinearGradient(0, 120, 0, FLOOR); cg.addColorStop(0, 'rgba(255,225,160,.10)'); cg.addColorStop(1, 'rgba(255,225,160,0)'); c.fillStyle = cg; c.beginPath(); c.moveTo(x - 20, 124); c.lineTo(x + 20, 124); c.lineTo(x + 170, FLOOR); c.lineTo(x - 170, FLOOR); c.fill(); }
+  c.fillStyle = TOP; c.fillRect(-800, -600, 2680, FLOOR + 600);   // a plain wall: the same blue as the caption area above
   if (o.windows !== false) { c.fillStyle = '#0d1546'; c.fillRect(-800, 700, 2680, 600); for (let x = -760; x < 1800; x += 300) { const wg = c.createLinearGradient(0, 720, 0, 1280); wg.addColorStop(0, '#1a2c74'); wg.addColorStop(1, '#2d4596'); c.fillStyle = wg; c.fillRect(x, 720, 270, 560);
       c.fillStyle = 'rgba(10,18,60,.8)'; for (const [bx, bw, bh] of [[10, 60, 160], [80, 80, 240], [170, 90, 130]]) c.fillRect(x + bx, 1280 - bh, bw, bh); c.fillStyle = 'rgba(233,184,96,.5)'; for (let k = 0; k < 6; k++) c.fillRect(x + 20 + hash(k + x) * 220, 1150 + hash(k + x + 9) * 110, 10, 14); }
     c.fillStyle = '#e9dcc0'; c.fillRect(-800, 1290, 2680, 12); }
@@ -122,7 +126,7 @@ function plinth(c, x, y, w) { ell(c, x, y + 10, w * .62, w * .09, 'rgba(0,0,20,.
 // the two salesmen side by side, each beside his own car, everything in frame and nothing overlapping
 function pair(c, t, o) {
   const k1 = o.k1 ?? 1, k2 = o.k2 ?? 1, st = o.st || 0, bb = o.bb || 0;
-  cam(c, 540, 1250, 1.0, 0, () => {
+  stage(c, [30, 980, 1050, 1720], 0, () => {
     showroom(c, t);
     for (const [x, k, flip] of [[340, k1, 0], [740, k2, 1]]) { if (k <= 0) continue; plinth(c, x, 1530, 330); scaled(c, x, 1530, Math.min(1, k), () => suv(c, x, 1524, 330, { flip, glow: flip ? st : 0 })); }
     if (k1 > 0) mascot(c, S1({ x: 110, y: 1690, s: 2.0, f: .35, smile: st > .5 ? .5 : .8, blink: blinkAt(t, 1) }), Math.min(1, k1));
@@ -135,7 +139,7 @@ function pair(c, t, o) {
 // —— imagined: the family on the road in Budapest at night (the Parliament and the Chain Bridge across the Danube), a world that scrolls past the car ——
 function budapest(c, t, o = {}) {
   const v = o.speed ?? 260, sx = (t - (o.t0 || 0)) * v + (o.x0 || 0);   // each shot starts with the Parliament and the bridge in view
-  const sky = c.createLinearGradient(0, 0, 0, 1180); sky.addColorStop(0, '#060b2a'); sky.addColorStop(1, '#1d2b70'); c.fillStyle = sky; c.fillRect(0, 0, 1080, 1180);
+  const sky = c.createLinearGradient(0, 640, 0, 1180); sky.addColorStop(0, TOP); sky.addColorStop(1, '#1d2b70'); c.fillStyle = sky; c.fillRect(0, 0, 1080, 1180);
   for (let i = 0; i < 40; i++) ell(c, (hash(i) * 1400 - sx * .02) % 1080 + (hash(i) * 1400 - sx * .02 < 0 ? 1080 : 0), 440 + hash(i + 70) * 520, 2.5, 2.5, `rgba(246,239,220,${.4 + .4 * hash(i + 3)})`);
   // the far bank: the Parliament, lit gold, repeating slowly
   const P = 1400, px0 = -((sx * .12) % P) + 420;
@@ -186,7 +190,7 @@ const SHOT = {
   },
   why(c, t) {   // "I'll tell you why": the showroom's glass doors slide open onto the floor
     const op = ss(seg(t, HIT.doors - .1, HIT.doors + .6));
-    cam(c, 540, 1100, 1 + .25 * ss(seg(t, 7.3, 9.1)), 0, () => {
+    stage(c, [220, 660, 860, 1520], ss(seg(t, 7.3, 9.1)), () => {
       showroom(c, t, { windows: false });
       c.fillStyle = '#e9dcc0'; c.fillRect(220, 660, 640, 860); const dg = c.createLinearGradient(0, 680, 0, 1500); dg.addColorStop(0, '#2d4596'); dg.addColorStop(1, '#4a66b8'); c.fillStyle = dg; c.fillRect(240, 680, 600, 820);
       glow(c, 540, 1200, 500, .4 * op); plinth(c, 540, 1440, 360); suv(c, 540, 1436, 360, { lights: op });
@@ -194,24 +198,24 @@ const SHOT = {
   },
   enter(c, t) {   // a buyer walks into the showroom, looking for an SUV
     const u = seg(t, ...HIT.walk), th = E(t, HIT.suv, .35, .45);
-    cam(c, 540, 1330, 1.15 + .06 * seg(t, 9.1, 13.35), 0, () => {
+    stage(c, [100, 900, 1000, 1720], seg(t, 9.1, 13.35), () => {
       showroom(c, t); plinth(c, 300, 1480, 380); suv(c, 300, 1474, 380); plinth(c, 800, 1480, 380); suv(c, 800, 1474, 380, { flip: 1 });
-      const P = BUYER({ x: lerp(-150, 540, u), y: 1700, f: u < 1 ? .7 : 0, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 9, look: u >= 1 ? -.3 : 0, headTurn: u >= 1 ? Math.sin(t * 2) * .4 : 0, blink: blinkAt(t, 3) });
+      const P = BUYER({ x: lerp(150, 540, u), alpha: clamp((t - 9.1) / .4), y: 1700, f: u < 1 ? .7 : 0, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 9, look: u >= 1 ? -.3 : 0, headTurn: u >= 1 ? Math.sin(t * 2) * .4 : 0, blink: blinkAt(t, 3) });
       mascot(c, P);
       if (th > 0) { const tx = 640, ty = 1060; scaled(c, P.x + 60, 1240, th, () => { c.fillStyle = '#ffffff'; for (const [dx, dy, r] of [[-110, 0, 95], [-30, -50, 110], [70, -40, 105], [130, 10, 90], [10, 45, 110]]) ell(c, tx + dx, ty + dy, r, r, '#ffffff'); ell(c, P.x + 60, 1210, 20, 20, '#ffffff'); ell(c, P.x + 40, 1250, 12, 12, '#ffffff'); suv(c, tx + 10, ty + 70, 240); }); } });
   },
   expert(c, t) {   // the first salesman knows everything about the car
     const k = E(t, HIT.s1, .35, .4), pt = ss(seg(t, HIT.point, HIT.point + .3));
-    cam(c, 560, 1240, 1.12 + .05 * seg(t, 13.35, 16.1), 0, () => {
+    stage(c, [180, 900, 1020, 1710], seg(t, 13.35, 16.1), () => {
       showroom(c, t); plinth(c, 640, 1520, 520); suv(c, 640, 1514, 520, { flip: 1 });
       mascot(c, BUYER({ x: 930, y: 1700, f: -.4, blink: blinkAt(t, 3) }));
-      const P = S1({ x: lerp(-120, 300, Math.min(1, k)), y: 1690, f: .5, smile: talk(t, pt), blink: blinkAt(t, 1), squash: wob(t, HIT.s1 + .3, .3, 16, .04) }); if (pt > 0) P.handR = reach([P.x + 60, 1500], [P.x + 170, 1330], pt);
+      const P = S1({ x: lerp(140, 300, Math.min(1, k)), alpha: Math.min(1, k * 2), y: 1690, f: .5, smile: talk(t, pt), blink: blinkAt(t, 1), squash: wob(t, HIT.s1 + .3, .3, 16, .04) }); if (pt > 0) P.handR = reach([P.x + 60, 1500], [P.x + 170, 1330], pt);
       mascot(c, P);
       if (pt > 0) bubble(c, 330, 1000, 220, 170, pt, 330, 1200, () => icon(c, 'star', 330, 1000, 56)); });
   },
   features(c, t) {   // horsepower, leather seats, a premium sound system...
     const spots = [[880, 1310, 'gauge', 900, 1060], [500, 1250, 'seat', 300, 1060], [430, 1300, 'speaker', 600, 1010]];
-    cam(c, 560, 1250, 1.3 + .06 * seg(t, 16.1, 19.0), -.02, () => {
+    stage(c, [200, 920, 1000, 1560], seg(t, 16.1, 19.0), () => {
       showroom(c, t); plinth(c, 600, 1520, 640); suv(c, 600, 1514, 640, { lights: 1 });
       spots.forEach(([px, py, kind, ix, iy], i) => { const k = E(t, HIT.feats[i], .35, .5); if (k <= 0) return;
         c.strokeStyle = 'rgba(236,189,74,.8)'; c.lineWidth = 5; c.setLineDash([12, 10]); c.beginPath(); c.moveTo(px, py); c.lineTo(lerp(px, ix, Math.min(1, k)), lerp(py, iy, Math.min(1, k))); c.stroke(); c.setLineDash([]);
@@ -219,7 +223,7 @@ const SHOT = {
   },
   tenmin(c, t) {   // ten minutes of every single feature: the clock spins, the icons pile up, the buyer glazes over
     const spin = seg(t, ...HIT.clock), tired = ss(seg(t, 20.6, 22.6));
-    cam(c, 540, 1320, 1.18, 0, () => {
+    stage(c, [140, 900, 980, 1730], 0, () => {
       showroom(c, t); plinth(c, 560, 1500, 420); suv(c, 560, 1494, 420, { flip: 1 });
       c.save(); c.translate(880, 1010); c.scale(.8, .8); ell(c, 0, 0, 110, 110, CREAM); c.strokeStyle = GOLD2; c.lineWidth = 10; c.beginPath(); c.arc(0, 0, 100, 0, 7); c.stroke();
       for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; c.fillStyle = NAVY; c.fillRect(Math.cos(a) * 80 - 3, Math.sin(a) * 80 - 3, 6, 6); }
@@ -233,22 +237,22 @@ const SHOT = {
   },
   leave(c, t) {   // the buyer says thanks, and walks away
     const nod = t > HIT.thanks && t < HIT.thanks + .6 ? Math.sin(seg(t, HIT.thanks, HIT.thanks + .6) * Math.PI * 2) * .05 : 0, u = seg(t, ...HIT.away), drop = ss(seg(t, 24.9, 25.6));
-    cam(c, 540, 1330, 1.18, 0, () => {
+    stage(c, [140, 940, 980, 1730], 0, () => {
       showroom(c, t); plinth(c, 560, 1500, 420); suv(c, 560, 1494, 420, { flip: 1 });
       mascot(c, S1({ x: 230, y: 1700, f: .5, smile: lerp(.8, .3, drop), o: drop > .5 ? .5 : 0, armR: lerp(1.0, .1, drop), blink: blinkAt(t, 1) }));
       FEATS.forEach((f, i) => icon(c, f, 330 + (i % 3) * 120, lerp(1000 - Math.floor(i / 3) * 110, 1640, ss(seg(t, 24.9 + i * .06, 25.5 + i * .06))), 50, 1 - .3 * drop));
-      mascot(c, BUYER({ x: lerp(880, 1300, u), y: 1720, f: u > 0 ? .7 : -.4, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 6, smile: .45, squash: nod, blink: blinkAt(t, 3) })); });
+      mascot(c, BUYER({ x: lerp(880, 1000, u), alpha: 1 - clamp((u - .3) / .6), y: 1720, f: u > 0 ? .7 : -.4, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 6, smile: .45, squash: nod, blink: blinkAt(t, 3) })); });
   },
   meet(c, t) {   // then he meets the second salesman
     const u = ss(seg(t, 25.95, 27.2)), wv = t > HIT.wave && t < HIT.wave + 1.2 ? Math.sin((t - HIT.wave) * 12) * .3 : 0;
-    cam(c, 540, 1330, 1.18, 0, () => {
+    stage(c, [150, 1160, 940, 1720], 0, () => {
       showroom(c, t); plinth(c, 540, 1500, 440); suv(c, 540, 1494, 440);
-      mascot(c, BUYER({ x: lerp(-150, 260, u), y: 1720, f: u < 1 ? .7 : .4, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 6, smile: .5, blink: blinkAt(t, 3) }));
+      mascot(c, BUYER({ x: lerp(130, 260, u), alpha: clamp((t - 25.95) / .4), y: 1720, f: u < 1 ? .7 : .4, walk: u > 0 && u < 1 ? 1 : 0, phi: u * Math.PI * 6, smile: .5, blink: blinkAt(t, 3) }));
       mascot(c, S2({ x: 830, y: 1710, f: -.4, smile: .9, armL: t > HIT.wave ? 2.4 + wv : .12, blink: blinkAt(t, 2), squash: wob(t, HIT.s2, .3, 16, .03) })); });
   },
   instead(c, t) {   // instead of presenting the car straight away: the brochure goes back under his arm
     const br = E(t, HIT.brochure, .35, .4), aw = ss(seg(t, HIT.putaway, HIT.putaway + .4));
-    cam(c, 640, 1300, 1.25, 0, () => {
+    stage(c, [160, 1050, 940, 1720], 0, () => {
       showroom(c, t); plinth(c, 540, 1500, 440); suv(c, 540, 1494, 440);
       mascot(c, BUYER({ x: 260, y: 1720, f: .4, smile: .5, blink: blinkAt(t, 3) }));
       const P = S2({ x: 830, y: 1710, f: -.4, smile: .7, blink: blinkAt(t, 2) }), Hh = Hs(P.s), hp = reach([P.x - .35 * Hh, P.y - .55 * Hh], [P.x + .05 * Hh, P.y - .45 * Hh], aw); P.handL = hp; mascot(c, P);
@@ -257,7 +261,7 @@ const SHOT = {
   },
   question(c, t) {   // he asks just one question: why are you looking for a new car?
     const q = E(t, HIT.ask, .35, .45), cl = ss(seg(t, HIT.miert - .3, HIT.miert + .2)), qp = 1 + .25 * Math.sin(clamp((t - HIT.qpulse) / .35) * Math.PI) * (t > HIT.qpulse);
-    cam(c, lerp(640, 760, cl), lerp(1300, 1240, cl), lerp(1.25, 1.75, cl), 0, () => {
+    stage(c, lerpBox([160, 1050, 940, 1720], [480, 960, 980, 1720], cl), 0, () => {
       showroom(c, t); plinth(c, 540, 1500, 440); suv(c, 540, 1494, 440);
       mascot(c, BUYER({ x: 260, y: 1720, f: .4, smile: .5, look: -.1, blink: blinkAt(t, 3) }));
       mascot(c, S2({ x: 830, y: 1710, f: -.4, smile: .85, look: -.05, lean: -.04 * cl, blink: blinkAt(t, 2), squash: wob(t, HIT.ask, .3, 16, .03) }));
@@ -265,7 +269,7 @@ const SHOT = {
   },
   story(c, t) {   // a second child was just born
     const b1 = E(t, HIT.baby, .35, .45), b2 = E(t, HIT.kid2, .35, .45), hh = E(t, HIT.heart, .35, .5);
-    cam(c, 540, 1180, 1.05, 0, () => {
+    stage(c, [120, 800, 960, 1770], 0, () => {
       showroom(c, t); c.fillStyle = 'rgba(6,10,36,.35)'; c.fillRect(-800, -600, 2680, 3000);
       mascot(c, BUYER({ x: 220, y: 1760, f: .4, smile: .8, blink: blinkAt(t, 3) }));
       bubble(c, 610, 1080, 640, 520, Math.min(1, E(t, 35.6, .35, .45)), 330, 1420, () => {
@@ -276,8 +280,8 @@ const SHOT = {
   },
   tiny(c, t) {   // his car is already too small: the whole family squeezed into a little hatchback, on a plain blue stage
     const sq = Math.max(0, Math.sin(clamp((t - HIT.squeeze) / .4) * Math.PI)) * (t > HIT.squeeze), pp = E(t, HIT.pop, .3, .5), W0 = 820, X = 540, Y = 1640;
-    const g = c.createRadialGradient(540, 1250, 100, 540, 1250, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(1, '#0a1034'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
-    cam(c, 540, 1300, 1 + .05 * seg(t, 39.05, 41.3), 0, () => {
+    const g = c.createRadialGradient(540, 1250, 100, 540, 1250, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(.8, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
+    stage(c, [120, 880, 960, 1700], seg(t, 39.05, 41.3), () => {
       tinyCar(c, X, Y, W0, sq);
       c.save(); c.translate(X, Y); c.scale(1 + sq * .06, 1 - sq * .06); c.beginPath(); c.moveTo(-.3 * W0, -.4 * W0); c.quadraticCurveTo(-.24 * W0, -.6 * W0, .02 * W0, -.6 * W0); c.quadraticCurveTo(.2 * W0, -.58 * W0, .25 * W0, -.4 * W0); c.closePath(); c.clip(); c.translate(-X, -Y);
       [[X - 165, 'blue1', null, 1.15], [X - 55, 'blue2', 'long', 1.1], [X + 48, 'blue3', 'pony', .82], [X + 132, 'blue2', null, .66]].forEach(([x, skin, fem, s], i) => drawMascot(c, { id: 'c' + i, skin, fem, s, x, sit: 1, y: Y - .5 * W0 + .74 * Hs(s) + 10, f: .2, smile: .3, sad: .35, shadow: false, squash: sq * .08, tilt: (i - 1.5) * .06, blink: blinkAt(t, 12 + i) }));
@@ -288,14 +292,14 @@ const SHOT = {
   },
   safety(c, t) {   // and safety matters most now
     const sh = E(t, HIT.shield, .4, .45), shine = ss(seg(t, HIT.shine, HIT.shine + .5));
-    cam(c, 540, 1230, 1.05, 0, () => {
+    stage(c, [230, 820, 870, 1730], 0, () => {
       showroom(c, t); c.fillStyle = 'rgba(6,10,36,.35)'; c.fillRect(-800, -600, 2680, 3000);
       [[340, 'blue1', null, 2.0], [520, 'blue2', 'long', 1.9], [660, 'blue3', 'pony', 1.2], [760, 'blue2', null, .8]].forEach(([x, skin, fem, s], i) => mascot(c, { id: 'f' + i, skin, fem, s, x, y: 1720, f: 0, smile: .5 + .4 * shine, blink: blinkAt(t, 12 + i) }));
       if (sh > 0) { glow(c, 560, 1050, 420, .45 * sh); icon(c, 'shield', 560, 1000, 150, sh, { glow: shine }); } });
   },
   flip(c, t) {   // suddenly the whole conversation changes: their speech bubbles flip from features to family
     const tu = seg(t, HIT.turn - .25, HIT.turn + .25), sx = Math.abs(Math.cos(tu * Math.PI)), after = tu > .5;
-    cam(c, 540, 1240, 1.1, 0, () => {
+    stage(c, [140, 900, 940, 1730], 0, () => {
       showroom(c, t); plinth(c, 540, 1500, 420); suv(c, 540, 1494, 420);
       mascot(c, BUYER({ x: 240, y: 1720, f: .4, smile: after ? .9 : .5, blink: blinkAt(t, 3) })); mascot(c, S2({ x: 840, y: 1710, f: -.4, smile: after ? .95 : .7, blink: blinkAt(t, 2) }));
       for (const [bx, by, tx2, ty2, kinds] of [[330, 1020, 260, 1250, after ? ['family', 'heart'] : ['gauge', 'speaker']], [760, 1020, 830, 1250, after ? ['shield', 'child'] : ['seat', 'cog']]]) {
@@ -303,7 +307,7 @@ const SHOT = {
       if (after) glow(c, 540, 1020, 500, .3 * (1 - seg(t, HIT.turn + .25, HIT.turn + 1.2))); });
   },
   nomore(c, t) {   // no more talk of horsepower or features nobody needs
-    cam(c, 540, 1240, 1.0, 0, () => {
+    stage(c, [200, 980, 880, 1610], 0, () => {
       showroom(c, t); c.fillStyle = 'rgba(6,10,36,.3)'; c.fillRect(-800, -600, 2680, 3000);
       const P = [[340, 1120], [740, 1120], [340, 1470], [740, 1470]], kinds = ['gauge', 'speaker', 'screen', 'rim'];
       HIT.poofs.forEach((tp, i) => { const [x, y] = P[i], gone = seg(t, tp + .15, tp + .45);   // crossed out, then gone in a puff
@@ -311,14 +315,14 @@ const SHOT = {
         poof(c, x, y, gone, 110); cross(c, x, y, 110, seg(t, tp - .1, tp + .2) * (1 - gone)); }); });
   },
   stars(c, t) {   // only the safety rating: five gold stars
-    cam(c, 540, 1300, 1.12, 0, () => {
+    stage(c, [220, 800, 860, 1600], 0, () => {
       showroom(c, t); plinth(c, 540, 1560, 600); suv(c, 540, 1554, 600, { glow: ss(seg(t, HIT.stars[4], HIT.stars[4] + .5)) });
       icon(c, 'shield', 540, 900, 90, E(t, 51.0, .35, .45));
       HIT.stars.forEach((ts, i) => star(c, 540 + (i - 2) * 120, 1080, 52, E(t, ts, .3, .55))); });
   },
   seats(c, t) {   // room for the child seats: the car cut away, two child seats click into the back
     const ok = E(t, HIT.seatok, .35, .5);
-    cam(c, 470, 1390, 1.6, 0, () => {
+    stage(c, [180, 1180, 900, 1620], 0, () => {
       showroom(c, t, { windows: false });
       suv(c, 540, 1600, 700, { inside: () => { for (const sx of [540 - 700 * .17, 540 + 700 * .1]) { c.fillStyle = '#c9b791'; c.beginPath(); c.roundRect(sx - 700 * .03, 1600 - 700 * .37, 700 * .07, 700 * .18, 14); c.fill(); }   // the seat backs
         HIT.seats.forEach((ts, i) => { const k = E(t, ts, .3, .5), sx = 540 - 700 * .33 + i * 700 * .11, sy = 1600 - 700 * .19; if (k > 0) scaled(c, sx, sy, Math.min(1.1, k), () => { c.fillStyle = '#efe4c8'; c.beginPath(); c.roundRect(sx - 34, sy - 150, 68, 150, 28); c.fill(); c.fillStyle = '#d9ccab'; c.beginPath(); c.roundRect(sx - 24, sy - 138, 48, 70, 18); c.fill(); c.fillStyle = GOLD; c.fillRect(sx - 30, sy - 50, 60, 10); c.fillRect(sx - 4, sy - 120, 8, 70); }); }); } });
@@ -332,7 +336,7 @@ const SHOT = {
   },
   deal(c, t) {   // and this time, he buys the car
     const sh = ss(seg(t, HIT.shake - .4, HIT.shake)), bob = t > HIT.shake && t < HIT.shake + .6 ? Math.sin((t - HIT.shake) * 20) * 10 : 0, ky = E(t, HIT.keys, .35, .45), sold = E(t, HIT.sold2, .3, .5);
-    cam(c, 540, 1240, 1.12, 0, () => {
+    stage(c, [200, 1000, 900, 1740], 0, () => {
       showroom(c, t); plinth(c, 540, 1500, 460); suv(c, 540, 1494, 460, { glow: sold, lights: sold });
       const B = BUYER({ x: lerp(240, 400, sh), y: 1730, f: .4, smile: 1, blink: blinkAt(t, 3) }), S = S2({ x: lerp(840, 680, sh), y: 1720, f: -.4, smile: 1, blink: blinkAt(t, 2) }), Hb = Hs(B.s), hy = B.y - .42 * Hb + bob;
       if (sh > 0) { B.handR = [540, hy]; S.handL = [540, hy]; } mascot(c, B); mascot(c, S);
@@ -340,28 +344,28 @@ const SHOT = {
       if (sold > 0) scaled(c, 560, 1180 - 120, sold, () => { c.save(); c.translate(560, 1060); c.rotate(-.1); c.fillStyle = '#c4304a'; c.beginPath(); c.roundRect(-130, -40, 260, 80, 14); c.fill(); text(c, 'ELADVA', 0, 2, 52, CREAM); c.restore(); }); });
   },
   mind(c, t) {   // people don't always need more information: a pile of cards bounces off
-    cam(c, 540, 1200, 1.0, 0, () => {
-      const g = c.createRadialGradient(540, 1150, 100, 540, 1150, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(1, '#0a1034'); c.fillStyle = g; c.fillRect(-200, -200, 1480, 2400);
+    stage(c, [100, 860, 980, 1990], 0, () => {
+      const g = c.createRadialGradient(540, 1150, 100, 540, 1150, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(.8, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-200, -200, 1480, 2400);
       const B = BUYER({ s: 3.6, x: 540, y: 1960, f: 0, smile: .3, blink: blinkAt(t, 3), squash: HIT.cards.reduce((a, tc) => a + wob(t, tc + .3, .25, 20, .02), 0) });
       mascot(c, B);
       HIT.cards.forEach((tc, i) => { const u = seg(t, tc - .35, tc + .3), side = i % 2 ? 1 : -1; if (u <= 0) return; const hit = Math.min(1, u / .55), back = clamp((u - .55) / .45);
-        const x = lerp(540 + side * 700, 540 + side * 230, ss(hit)) + side * back * 520, y = lerp(900 + i * 40, 1320, ss(hit)) + back * back * 700 - back * 200;
-        c.save(); c.translate(x, y); c.rotate(side * (.3 + back * 2)); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-70, -90, 140, 180, 14); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 4; c.stroke(); icon(c, FEATS[i % 6], 0, -18, 44); c.fillStyle = 'rgba(28,36,80,.35)'; c.fillRect(-45, 45, 90, 8); c.fillRect(-45, 62, 60, 8); c.restore(); }); });
+        const x = lerp(540 + side * 380, 540 + side * 230, ss(hit)) + side * back * 160, y = lerp(900 + i * 30, 1320, ss(hit)) + back * back * 380 - back * 120;   // they pop up inside the frame, bounce off, and fade
+        c.save(); c.globalAlpha = Math.min(1, hit * 3) * (1 - back); c.translate(x, y); c.rotate(side * (.3 + back * 2)); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-70, -90, 140, 180, 14); c.fill(); c.strokeStyle = GOLD2; c.lineWidth = 4; c.stroke(); icon(c, FEATS[i % 6], 0, -18, 44); c.fillStyle = 'rgba(28,36,80,.35)'; c.fillRect(-45, 45, 90, 8); c.fillRect(-45, 62, 60, 8); c.restore(); }); });
   },
   piece(c, t) {   // but the information that truly matters to them: one gold card clicks into place
     const u = ss(seg(t, HIT.gold, HIT.click)), cl = E(t, HIT.click, .3, .5), gl = ss(seg(t, HIT.glowup, HIT.glowup + .6));
-    cam(c, 540, 1200, 1.0 + .06 * seg(t, 69.1, 73.4), 0, () => {
-      const g = c.createRadialGradient(540, 1150, 100, 540, 1150, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(1, '#0a1034'); c.fillStyle = g; c.fillRect(-200, -200, 1480, 2400);
+    stage(c, [140, 860, 940, 1990], seg(t, 69.1, 73.4), () => {
+      const g = c.createRadialGradient(540, 1150, 100, 540, 1150, 1100); g.addColorStop(0, '#26368c'); g.addColorStop(.8, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-200, -200, 1480, 2400);
       glow(c, 540, 1350, 600, .4 * gl);
       mascot(c, BUYER({ s: 3.6, x: 540, y: 1960, f: 0, smile: lerp(.3, 1, gl), blink: blinkAt(t, 3) }));
       const sx = 540, sy = 1680; c.strokeStyle = GOLD2; c.lineWidth = 6; c.setLineDash([16, 12]); c.strokeRect(sx - 80, sy - 100, 160, 200); c.setLineDash([]);
-      const x = lerp(1250, sx, u), y = lerp(700, sy, u) - Math.sin(u * Math.PI) * 200;
-      c.save(); c.translate(x, y); c.rotate((1 - u) * .8); const k = 1 + .12 * Math.sin(Math.min(1, cl) * Math.PI); c.scale(k, k); glow(c, 0, 0, 220, .5 + .4 * gl);
+      const x = lerp(860, sx, u), y = lerp(920, sy, u) - Math.sin(u * Math.PI) * 120, pk = E(t, HIT.gold - .45, .35, .45);
+      if (pk <= 0) return; c.save(); c.translate(x, y); c.scale(Math.min(1, pk), Math.min(1, pk)); c.rotate((1 - u) * .8); const k = 1 + .12 * Math.sin(Math.min(1, cl) * Math.PI); c.scale(k, k); glow(c, 0, 0, 220, .5 + .4 * gl);
       c.fillStyle = GOLD; c.beginPath(); c.roundRect(-80, -100, 160, 200, 16); c.fill(); icon(c, 'family', 0, -25, 50, 1, { bg: '#fff3cf' }); icon(c, 'shield', 0, 52, 34, 1, { bg: '#fff3cf' }); c.restore(); });
   },
   compare(c, t) {   // the first sold the car's features; the second understood the buyer's problem
     const L = E(t, HIT.left, .35, .45), R = E(t, HIT.right, .35, .45), dimL = ss(seg(t, HIT.right, HIT.right + .5)), ok = E(t, HIT.understood, .35, .5);
-    cam(c, 540, 1200, 1.0, 0, () => {
+    stage(c, [60, 850, 1010, 1740], 0, () => {
       showroom(c, t); c.fillStyle = 'rgba(6,10,36,.3)'; c.fillRect(-800, -600, 2680, 3000);
       c.save(); c.beginPath(); c.rect(-200, 560, 740, 1500); c.clip();
       mascot(c, S1({ x: 270, y: 1720, s: 2.0, smile: talk(t), blink: blinkAt(t, 1) }), Math.min(1, L));
@@ -373,13 +377,13 @@ const SHOT = {
       icon(c, 'family', 700, 960, 70, E(t, HIT.right + .2, .3, .45)); icon(c, 'shield', 900, 960, 70, E(t, HIT.right + .35, .3, .45)); check(c, 810, 1180, 56, ok); c.restore(); });
   },
   what(c, t) {   // good salespeople don't only explain what a product can do...
-    cam(c, 540, 1250, 1.15, 0, () => {
+    stage(c, [220, 850, 860, 1560], 0, () => {
       showroom(c, t); plinth(c, 540, 1520, 560); suv(c, 540, 1514, 560);
       const P = [[300, 1000], [480, 920], [660, 920], [840, 1000]], kinds = ['gauge', 'seat', 'speaker', 'cog'];
       HIT.what.forEach((tw, i) => icon(c, kinds[i], P[i][0], P[i][1], 64, E(t, tw, .3, .5))); });
   },
   whyneed(c, t) {   // ...they understand why someone needs it: the family drives on through Budapest, and away
-    const dr = ss(seg(t, HIT.drive, STORY)), lv = E(t, HIT.love, .35, .5), x = 540 + dr * dr * 760, bob = Math.sin(t * 6) * 2;
+    const dr = ss(seg(t, HIT.drive, STORY)), lv = E(t, HIT.love, .35, .5), x = 540, bob = Math.sin(t * 6) * 2;
     budapest(c, t, { speed: 260 + 120 * dr, t0: 85.2, x0: 900 });
     suv(c, x, 1760 + bob, 820, { lights: 1, wheel: t * 12 + dr * 20, win: () => familyInWindows(c, x, 1760 + bob, 820, t, 1) });
     heart(c, x + 20, 1240, 58, lv, '#d94a6a'); dreamHaze(c);
@@ -404,8 +408,8 @@ const PAGES = (() => {   // group the words into short pages: a new page after a
 })();
 function captions(c, t) {
   c.setTransform(K, 0, 0, K, 0, 0);
-  // the top of the world, plain dark blue: the words sit apart from the picture, fading softly into it
-  c.fillStyle = '#0a1036'; c.fillRect(0, 0, 1080, 470); const g = c.createLinearGradient(0, 470, 0, 600); g.addColorStop(0, 'rgba(10,16,54,1)'); g.addColorStop(1, 'rgba(10,16,54,0)'); c.fillStyle = g; c.fillRect(0, 470, 1080, 130);
+  // behind the words, plain: the same blue as the top of every scene, fading into the picture
+  c.fillStyle = TOP; c.fillRect(0, 0, 1080, 560); const g = c.createLinearGradient(0, 560, 0, 660); g.addColorStop(0, TOP); g.addColorStop(1, 'rgba(17,26,82,0)'); c.fillStyle = g; c.fillRect(0, 560, 1080, 100);
   const p = PAGES.find(p => t >= p.t0 && t < p.t1); if (!p) return;
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
