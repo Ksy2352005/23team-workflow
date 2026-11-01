@@ -16,7 +16,7 @@ for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
-STORY = 60.0
+STORY = 90.0
 def buf(): return np.zeros((N, 2))
 def verb(x, t60=.7, wet=.25):
     n = int(t60 * SR); ir = rng.standard_normal(n) * np.exp(-6.9 * np.arange(n) / n); ir = lp(ir, 5000) * .06
@@ -99,7 +99,7 @@ for t in HIT['clocks']: add(fx, mx(swish(.55, .18), roll(.5, .12)), t - .02, 1, 
 # the street, in through the door; guests at the desk, the same question
 add(fx, lp(swish(1.4, .12), 3000), .1, 1, 0); add(fx, mx(S('doorOpen_1', .15), shopbell(.06)), H1('into') - .2, 1, -.2)
 for k, t in enumerate(HIT['guests']): add(fx, lp(S(pick('footstep_wood_00', 5, k), .12), 3500), t, 1, -.5 + .2 * k)
-add(fx, deskbell(.1), 2.4, 1, .4)
+add(fx, deskbell(.1), 3.6, 1, .4)
 for k, t in enumerate(HIT['asks']): add(fx, pop(.14), t, 1, [.2, -.2, -.5][k])
 add(fx, mx(pop(.2), swish(.3, .1)), H1('quote'), 1, -.2); add(fx, mx(scribble(.3, .2, 6), boing(.1, 260, 180, .3)), H1('nope'), 1, -.1)
 # the list of famous sights unrolls; rolled up, tossed: poof
@@ -121,7 +121,7 @@ for k in range(4): add(fx, lp(S(pick('footstep_wood_00', 5, k), .1), 3500), a + 
 add(fx, fade(bp(noise(b - a), 200, 900) * .04, .05, .2), a, 1, -.3)   # the suitcase's wheels
 # months go by: pins rain onto the map, the clock spins; a local, amazed
 for k, t in enumerate(HIT['rain']): add(fx, pintap(.12 + .04 * (k % 3)), t, 1, -.6 + 1.2 * ((k * 7) % 10) / 10)
-add(fx, mx(roll(1.2, .08)), 21.0, 1, .5); add(fx, pop(.18), H1('wow'), 1, .5)
+add(fx, mx(roll(1.8, .08)), 31.53, 1, .5); add(fx, pop(.18), H1('wow'), 1, .5)
 # something interesting: the map glows; the lift opens, guests come to see it
 add(fx, mx(pop(.2), verb(shimmer(.14, 1.0), .8, .3)), H1('bang'), 1, -.2)
 add(fx, mx(liftding(.18), lp(swish(.6, .08), 2000)), H1('lift'), 1, .5)
@@ -164,7 +164,7 @@ _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.lin
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— voice ——
-vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.80.mp3'))   # the voice at 1.80×, pitch kept
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.20.mp3'))   # the voice at 1.20×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
