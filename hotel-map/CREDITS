@@ -1,6 +1,6 @@
 The Map in the Lobby — 23 Team
 
-Voiceover (Hungarian): supplied by 23 Team (refs/voiceover-hu.mp3); used at 1.20× speed, pitch kept (refs/voiceover-hu-x1.20.mp3).
+Voiceover (Hungarian): supplied by 23 Team (refs/voiceover-hu.mp3); used at 1.20× speed, pitch kept (refs/voiceover-hu-x1.20.mp3), with eight short pauses tightened (refs/voiceover-hu-x1.20-tight.mp3).
 Captions: the script (refs/script-hu.txt), timed word by word from Whisper's word timings (align.py), in the locked caption style. Caption font: Montserrat Bold, supplied by 23 Team (SIL Open Font License, fonts/OFL-Montserrat.txt).
 Picture drawn in code (HTML canvas), rendered with the Lemo-Opuscar tools.
 Sound effects, recorded, CC0 (public domain), files in sfx/: Kenney "Impact Sounds", "RPG Audio", "Casino Audio" — www.kenney.nl (sfx/LICENSE-kenney-CC0.txt).

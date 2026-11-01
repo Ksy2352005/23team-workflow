@@ -82,7 +82,7 @@ const PINS = (() => { const out = [], used = [[.5, .92]]; let i = 0;
   while (out.length < 26 && i < 500) { const u = .08 + hash(i * 3.1 + 1) * .84, v = .1 + hash(i * 7.3 + 2) * .76; i++;
     if (Math.abs(v - (.62 - .3 * u + .12 * Math.sin(u * 7))) < .07) continue;
     if (used.some(([a, b]) => Math.hypot((a - u) * 1.3, b - v) < .095)) continue;
-    used.push([u, v]); out.push({ u, v, t: 31.45 + out.length * 0.160, col: [GOLD2, '#c4566a', '#c4566a', '#5d7fc4'][out.length % 4], note: out.length % 4 === 1 ? ['heart', 'cup', 'star'][out.length % 3] : null }); }
+    used.push([u, v]); out.push({ u, v, t: 30.1 + out.length * 0.160, col: [GOLD2, '#c4566a', '#c4566a', '#5d7fc4'][out.length % 4], note: out.length % 4 === 1 ? ['heart', 'cup', 'star'][out.length % 3] : null }); }
   return out; })();
 const MYPIN = { u: .5, v: .92, col: '#c4566a' };
 function bigMap(c, R, u = 1, o = {}) {   // R = { x, y, w, h }; u = how far it has unrolled from the top
@@ -160,8 +160,8 @@ const SHOT = {
     if (into < 1) stage(c, front, 0, () => { street(c, t); hotelHouse(c, 200, 1000, 680, 700, { door: 410, map: true, doorGlow: glide });
       [[0, 140, 330, 'hat'], [1, 940, 760]].forEach(([i, a, b], j) => { const [x, walk, phi] = walkX(t, 0, 1.6, a, b); mascot(c, cust(6 + j, { x, y: 1810, s: 1.5, f: b > a ? .6 : -.6, walk, phi, smile: 1 })); }); });
     if (into > 0) { c.save(); c.beginPath(); c.arc(wx, wy, 1500 * into, 0, 7); c.clip();
-      stage(c, [0, 780, 1080, 1800], seg(t, 2.4, 8.42), () => { lobby(c, t);
-        const think = ss(seg(t, 7.35, 7.96)); mascot(c, OWNER({ x: 760, y: 1690, f: -.45, blink: blinkAt(t, 1), look: -.2, smile: lerp(.8, .4, think), chin: think > .5 ? 'R' : undefined })); desk(c, 740, 1500);
+      stage(c, [0, 780, 1080, 1800], seg(t, 2.4, 7.82), () => { lobby(c, t);
+        const think = ss(seg(t, 7.05, 7.66)); mascot(c, OWNER({ x: 760, y: 1690, f: -.45, blink: blinkAt(t, 1), look: -.2, smile: lerp(.8, .4, think), chin: think > .5 ? 'R' : undefined })); desk(c, 740, 1500);
         const q = ss(seg(t, HIT.quote - .15, HIT.quote + .2));
         [500, 300, 100].forEach((x, i) => { const k = E(t, HIT.guests[i], .3, .5); if (k <= 0) return; c.save(); c.globalAlpha = Math.min(1, k * 2); mascot(c, cust(i, { x, y: 1790, s: 1.6, f: .45, blink: blinkAt(t, 3 + i), smile: .5, squash: wob(t, HIT.asks[i], .3, 16, .04) })); c.restore();
           const b = E(t, HIT.asks[i], .3, .5) * (1 - q); if (b > 0) bubble(c, x, 1250, 128, 106, b, x + 10, 1385, () => text(c, '?', x, 1253, 76, NAVY)); });
@@ -173,7 +173,7 @@ const SHOT = {
   list(c, t) {   // instead of putting together another list of famous sights: the list unrolls, full of them; he rolls it up, tosses it: something quite different
     const un = ss(seg(t, HIT.unroll, HIT.unroll + .9)) * (1 - ss(seg(t, HIT.toss - .25, HIT.toss))), fly = seg(t, HIT.toss, HIT.toss + .5), sp2 = E(t, HIT.spark, .3, .5);
     bg(c);
-    stage(c, [80, 880, 1000, 1800], seg(t, 8.42, 15.91), () => {
+    stage(c, [80, 880, 1000, 1800], seg(t, 7.82, 15.31), () => {
       const P = OWNER({ x: 330, y: 1790, s: 2.3, f: .3, blink: blinkAt(t, 1), smile: t > HIT.toss ? 1 : .6, look: t < HIT.toss ? .2 : 0, handR: t < HIT.toss + .05 ? [470, 1400] : reach([470, 1400], [470, 1280], ss(seg(t, HIT.toss, HIT.toss + .25))) });
       mascot(c, P);
       if (t < HIT.toss + .02) scaled(c, 650, 1400, 1.3, () => { const L = 320 * un; c.fillStyle = 'rgba(0,0,20,.25)'; c.fillRect(530, 1410, 260, L); c.fillStyle = '#fff8e6'; c.fillRect(520, 1400, 260, L);
@@ -205,18 +205,18 @@ const SHOT = {
   },
   fill(c, t) {   // within a few months the map was full of places even some locals didn't know: pins rain onto it, the wall clock spins; a local stops, amazed
     const [lx, walk, phi] = walkX(t, HIT.local - .6, HIT.local + .2, 1060, 930), wow = E(t, HIT.wow, .3, .5);
-    stage(c, [20, 780, 1060, 1800], 0, () => { lobby(c, t); clockFace(c, 960, 1040, 62, 9 + (t - 31.21) * 9);
+    stage(c, [20, 780, 1060, 1800], 0, () => { lobby(c, t); clockFace(c, 960, 1040, 62, 9 + (t - 29.86) * 9);
       bigMap(c, MAP, 1, { pins: pinsAt(t) });
       if (t > HIT.local - .6) { const P = cust(4, { x: lx, y: 1790, s: 1.9, f: -.5, walk, phi, smile: wow > .3 ? 0 : .6, o: wow > .3 ? 1 : 0, look: -.3, blink: blinkAt(t, 4) }); c.save(); c.globalAlpha = clamp((t - HIT.local + .6) / .3); mascot(c, P); c.restore(); if (wow > 0) badge(c, 'ex', 1000, 1250, 34, wow); } });
   },
   buzz(c, t) {   // then something interesting happened: the new guests came down to the lobby just to see the map: the lift opens, they gather round it
-    const bang = E(t, HIT.bang, .3, .5), op = ss(seg(t, HIT.lift, HIT.lift + .5)) * (1 - ss(seg(t, 43.5, 44.25)));
+    const bang = E(t, HIT.bang, .3, .5), op = ss(seg(t, HIT.lift, HIT.lift + .5)) * (1 - ss(seg(t, 41.85, 42.6)));
     stage(c, [0, 780, 1080, 1800], 0, () => { lobby(c, t);
       const R2 = { x: 80, y: 930, w: 560, h: 440 }; bigMap(c, R2, 1, { pins: pinsAt(99), pr: 11, glow: Math.max(Math.min(1, bang) * Math.max(0, 1 - (t - HIT.bang) / 1.4), ss(seg(t, HIT.glow2 - .3, HIT.glow2 + .3))) });
-      if (bang > 0) { badge(c, 'ex', 640, 920, 44, bang * (1 - ss(seg(t, 39.32, 39.75)))); for (let k = 0; k < 4; k++) star(c, [90, 640, 90, 640][k], [940, 1060, 1360, 1360][k], 16, Math.max(0, Math.sin(clamp((t - HIT.bang - k * .1) / .9) * Math.PI))); }
+      if (bang > 0) { badge(c, 'ex', 640, 920, 44, bang * (1 - ss(seg(t, 37.67, 38.1)))); for (let k = 0; k < 4; k++) star(c, [90, 640, 90, 640][k], [940, 1060, 1360, 1360][k], 16, Math.max(0, Math.sin(clamp((t - HIT.bang - k * .1) / .9) * Math.PI))); }
       c.fillStyle = GOLD2; c.fillRect(740, 1120, 280, 520); c.fillStyle = '#f0d9a8'; c.fillRect(756, 1136, 248, 504); glow(c, 880, 1400, 200, .3 * op);
       c.fillStyle = '#3a3f6a'; c.fillRect(756, 1136, 124 * (1 - op), 504); c.fillRect(880 + 124 * op, 1136, 124 * (1 - op), 504); c.fillStyle = 'rgba(255,255,255,.12)'; c.fillRect(876, 1136, 8, 504 * (1 - op));
-      ell(c, 880, 1080, 26, 26, GOLD); c.fillStyle = NAVY; c.beginPath(); c.moveTo(868, 1088); c.lineTo(880, 1068); c.lineTo(892, 1088); c.fill(); if (t > HIT.lift) badge(c, 'bell', 1000, 1050, 30, E(t, HIT.lift, .3, .5) * (1 - ss(seg(t, 41.43, 41.86))));
+      ell(c, 880, 1080, 26, 26, GOLD); c.fillStyle = NAVY; c.beginPath(); c.moveTo(868, 1088); c.lineTo(880, 1068); c.lineTo(892, 1088); c.fill(); if (t > HIT.lift) badge(c, 'bell', 1000, 1050, 30, E(t, HIT.lift, .3, .5) * (1 - ss(seg(t, 39.78, 40.21))));
       [[150, 3], [360, 5], [570, 7]].forEach(([tx, who], i) => { const a = HIT.walkers[i], u = seg(t, a, a + 1.4); if (u <= 0) return; const x = lerp(880, tx, ss(u)), arrived = u >= 1, al = Math.min(1, u * 5);
         c.save(); c.globalAlpha = al; mascot(c, cust(who, { x, y: 1790, s: 1.75, f: arrived ? 0 : -.6, back: arrived ? 1 : 0, walk: arrived ? 0 : 1, phi: u * 9, smile: 1, blink: blinkAt(t, who) })); c.restore(); }); });
   },
@@ -262,7 +262,7 @@ const SHOT = {
         c.fillStyle = GOLD2; c.beginPath(); c.ellipse(ex, dy, 150, 26, 0, 0, Math.PI); c.fill(); ell(c, ex, dy, 150, 12, GOLD); }); });
   },
   smart(c, t) {   // but the owner did something smarter still: he got his past guests to bring in new ones: past guests' faces, gold threads, new guests' faces
-    const wink = t > HIT.wink && t < HIT.wink + .35, st = E(t, HIT.star, .3, .5), gest = ss(seg(t, 75.89, 76.79));
+    const wink = t > HIT.wink && t < HIT.wink + .35, st = E(t, HIT.star, .3, .5), gest = ss(seg(t, 73.94, 74.84));
     bg(c);
     stage(c, [60, 860, 1020, 1780], 0, () => {
       mascot(c, OWNER({ x: 290, y: 1770, s: 2.2, f: .35, smile: 1, blink: wink ? 1 : blinkAt(t, 1), handR: gest > 0 ? reach([360, 1620], [470, 1440], gest) : undefined }));
