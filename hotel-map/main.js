@@ -133,7 +133,8 @@ function hotelHouse(c, x0, y0, w, h, o = {}) {   // a hotel front: floors of win
     c.fillStyle = on && lit > 0 ? `rgba(255,214,140,${.55 + .4 * lit})` : '#2a2f6a'; c.fillRect(wx, wy, gap * .5, 76); c.fillStyle = o.trim || WOOD; c.fillRect(wx - 6, wy + 76, gap * .5 + 12, 8); }
   c.fillStyle = o.signBg || WOOD; c.beginPath(); c.roundRect(x0 + w / 2 - 150, y0 + 22, 300, 70, 12); c.fill(); c.save(); c.font = '700 44px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = o.signCol || GOLD; c.fillText(o.name || 'HOTEL', x0 + w / 2, y0 + 58); c.restore();
   const dx = o.door ?? (x0 + w * .35), dw = 120;
-  c.fillStyle = '#3a2416'; c.fillRect(dx - dw / 2, y1 - 210, dw, 210); c.fillStyle = `rgba(255,214,140,${.25 + .5 * (o.doorGlow || 0)})`; c.fillRect(dx - dw / 2 + 10, y1 - 200, dw - 20, 200); c.fillStyle = o.awning || '#c4566a'; c.beginPath(); c.moveTo(dx - 90, y1 - 230); c.lineTo(dx + 90, y1 - 230); c.lineTo(dx + 76, y1 - 196); c.lineTo(dx - 76, y1 - 196); c.closePath(); c.fill();
+  const dop = o.doorOpen || 0, pw = (dw - 20) * (1 - .82 * dop); c.fillStyle = '#3a2416'; c.fillRect(dx - dw / 2, y1 - 210, dw, 210); c.fillStyle = `rgba(255,214,140,${Math.min(.95, .3 + .4 * (o.doorGlow || 0) + .6 * dop)})`; c.fillRect(dx - dw / 2 + 10, y1 - 200, dw - 20, 200); if (dop > 0) glow(c, dx, y1 - 90, 150, .5 * dop);
+  c.fillStyle = '#6e4a2c'; c.fillRect(dx - dw / 2 + 10, y1 - 200, pw, 200); c.fillStyle = `rgba(255,214,140,${.35 + .4 * (o.doorGlow || 0)})`; c.fillRect(dx - dw / 2 + 10 + pw * .18, y1 - 186, pw * .64, 70); ell(c, dx - dw / 2 + 10 + pw * .85, y1 - 96, 6 * (1 - .5 * dop), 6, GOLD); c.fillStyle = o.awning || '#c4566a'; c.beginPath(); c.moveTo(dx - 90, y1 - 230); c.lineTo(dx + 90, y1 - 230); c.lineTo(dx + 76, y1 - 196); c.lineTo(dx - 76, y1 - 196); c.closePath(); c.fill();
   if (o.map) { const mx = dx + 110, mw = x1 - mx - 30; c.fillStyle = '#2a2f6a'; c.fillRect(mx, y1 - 200, mw, 170); glow(c, mx + mw / 2, y1 - 115, 170, .35 + .4 * (o.mapGlow || 0)); bigMap(c, { x: mx + 16, y: y1 - 180, w: mw - 32, h: 120 }, 1, { pins: PINS.slice(0, 12), pr: 5 }); c.fillStyle = o.trim || WOOD; c.fillRect(mx - 8, y1 - 30, mw + 16, 10); }
 }
 function street(c, t, o = {}) {   // the city: night sky in the caption blue, stars, a skyline of famous sights, the pavement
@@ -223,8 +224,8 @@ const SHOT = {
   neighbour(c, t) {   // even travellers staying at another hotel came in, just to see the map
     const [x, walk, phi] = walkX(t, ...HIT.walk, 265, 640), al = clamp((t - HIT.exit) / .3) * (1 - ss(seg(t, HIT.enter2, HIT.enter2 + .3))), look = E(t, HIT.look, .3, .5);
     stage(c, [0, 780, 1080, 1860], 0, () => { street(c, t);
-      hotelHouse(c, 30, 990, 470, 710, { col: '#b9bccb', trim: '#6b6f86', signBg: '#6b6f86', signCol: CREAM, door: 265, awning: '#6b6f86', seed: 4, lit: .3 });
-      hotelHouse(c, 530, 990, 520, 710, { door: 640, map: true, mapGlow: Math.min(1, look), doorGlow: Math.max(Math.sin(clamp((t - HIT.enter2 + .2) / .8) * Math.PI), 0) });
+      hotelHouse(c, 30, 990, 470, 710, { col: '#b9bccb', trim: '#6b6f86', signBg: '#6b6f86', signCol: CREAM, door: 265, awning: '#6b6f86', seed: 4, lit: .3, doorOpen: ss(seg(t, HIT.exit - .4, HIT.exit - .1)) * (1 - ss(seg(t, HIT.exit + .4, HIT.exit + .75))) });
+      hotelHouse(c, 530, 990, 520, 710, { door: 640, map: true, mapGlow: Math.min(1, look), doorGlow: Math.max(Math.sin(clamp((t - HIT.enter2 + .2) / .8) * Math.PI), 0), doorOpen: ss(seg(t, HIT.enter2 - .55, HIT.enter2 - .25)) * (1 - ss(seg(t, HIT.enter2 + .35, HIT.enter2 + .7))) });
       if (look > 0) for (let k = 0; k < 3; k++) star(c, 880 + [-60, 50, 0][k], 1470 + [0, 10, -40][k], 12, Math.max(0, Math.sin(clamp((t - HIT.look - k * .1) / .9) * Math.PI)));
       if (al > 0) { c.save(); c.globalAlpha = al; mascot(c, cust(5, { x, y: 1800, s: 1.6, f: .6, walk, phi, smile: 1, blink: blinkAt(t, 5) })); c.restore(); } });
   },
@@ -272,15 +273,20 @@ const SHOT = {
         face(c, 610, y, 58, [0, 2, 3][i], o); if (o > 0) pinMark(c, 655, y - 30, 14, Math.min(1, o));
         face(c, 930, y, 58, [5, 6, 7][i], n); }); });
   },
-  ending(c, t) {   // so the guests no longer just used the hotel: without noticing, they became part of something that drew others in: the hotel at night, guests in and out; their faces rise into the sky as a constellation; new people arrive
+  ending(c, t) {   // so the guests no longer just used the hotel: the door opens for each guest coming and going; without noticing, they became part of something: one by one their faces rise from the lobby window into the sky and link up, a constellation above the hotel; it draws new people in
     const rise = HIT.rise, part = ss(seg(t, HIT.part - .3, HIT.part + .6)), gl = ss(seg(t, HIT.glow - .3, HIT.glow + .5));
+    const W = [[HIT.inout[0], 390, 130, 1, 'out'], [HIT.inout[1], 960, 405, 2, 'in'], [HIT.inout[2], 110, 375, 3, 'in'], [HIT.come[0], 60, 375, 4, 'in'], [HIT.come[1], 1020, 660, 5, 'stop']], WD = 1.2;
+    let dop = 0; for (const [st, , , , kind] of W) { if (kind === 'out') dop = Math.max(dop, ss(seg(t, st - .4, st - .1)) * (1 - ss(seg(t, st + .4, st + .75)))); if (kind === 'in') dop = Math.max(dop, ss(seg(t, st + WD - .55, st + WD - .25)) * (1 - ss(seg(t, st + WD + .15, st + WD + .5)))); }
+    const SP = [[140, 900], [285, 820], [430, 880], [580, 805], [735, 875], [880, 815], [960, 935]], arrive = SP.map((p, i) => rise[0] + i * (rise[1] - rise[0]) / SP.length + .9);
     stage(c, [0, 780, 1080, 1860], 0, () => { street(c, t);
-      const SP = [[150, 980], [290, 880], [440, 960], [600, 870], [760, 950], [900, 880], [960, 1040]];
-      if (part > 0) { c.save(); c.strokeStyle = GOLD; c.globalAlpha = .7 * part; c.lineWidth = 4; c.beginPath(); c.moveTo(...SP[0]); for (let i = 1; i < SP.length; i++) { const f = clamp(part * (SP.length - 1) - (i - 1)); if (f <= 0) break; c.lineTo(lerp(SP[i - 1][0], SP[i][0], f), lerp(SP[i - 1][1], SP[i][1], f)); } c.stroke(); c.beginPath(); c.moveTo(600, 870); c.lineTo(600, lerp(870, 1030, part)); c.stroke(); c.restore(); }
-      hotelHouse(c, 260, 1050, 560, 650, { door: 390, map: true, mapGlow: Math.max(gl, .4), doorGlow: Math.max(gl, .3) });
-      SP.forEach(([x, y], i) => { const a = rise[0] + i * (rise[1] - rise[0]) / SP.length, u = ss(seg(t, a, a + .9)); if (u <= 0) return; const fx = lerp(650, x, u), fy = lerp(1560, y, u); if (u > .95) glow(c, fx, fy, 70, .3 + .2 * gl); face(c, fx, fy, 34, i, Math.min(1, u * 1.5)); });
-      [[HIT.inout[0], 390, 140, 0], [HIT.inout[1], 940, 440, 1], [HIT.inout[2], 120, 400, 2], [HIT.come[0], 60, 300, 3], [HIT.come[1], 1020, 600, 4]].forEach(([st, a, b, i]) => { const u = seg(t, st, st + 1.1); if (u <= 0 || u >= 1) return; const out = i === 0, al = out ? Math.min(clamp(u / .2), clamp((1 - u) / .25)) : Math.min(clamp(u / .2), clamp((1 - u) / .2));
-        c.save(); c.globalAlpha = al; mascot(c, cust(i + 1, { x: lerp(a, b, ss(u)), y: 1810, s: 1.5, f: b > a ? .6 : -.6, walk: 1, phi: u * 8, smile: 1 })); c.restore(); });
+      c.save(); c.strokeStyle = GOLD; c.lineWidth = 5; c.lineCap = 'round'; for (let i = 1; i < SP.length; i++) { const f = ss(seg(t, arrive[i] - .05, arrive[i] + .35)); if (f <= 0) continue; c.globalAlpha = .8; c.beginPath(); c.moveTo(...SP[i - 1]); c.lineTo(lerp(SP[i - 1][0], SP[i][0], f), lerp(SP[i - 1][1], SP[i][1], f)); c.stroke(); }
+      if (part > 0) { c.globalAlpha = .8 * part; c.setLineDash([10, 12]); c.beginPath(); c.moveTo(580, 805); c.lineTo(580, lerp(805, 1020, part)); c.stroke(); } c.restore();
+      hotelHouse(c, 260, 1050, 560, 650, { door: 390, map: true, mapGlow: Math.max(gl, .4), doorGlow: Math.max(gl, .3), doorOpen: dop });
+      SP.forEach(([x, y], i) => { const a = arrive[i] - .9, u = ss(seg(t, a, a + .9)); if (u <= 0) return; const fx = lerp(645, x, u), fy = lerp(1585, y, u) - Math.sin(u * Math.PI) * 60;
+        if (u < 1) { c.save(); c.strokeStyle = 'rgba(236,189,74,.35)'; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); const u0 = Math.max(0, u - .25); c.moveTo(lerp(645, x, u0), lerp(1585, y, u0) - Math.sin(u0 * Math.PI) * 60); c.lineTo(fx, fy); c.stroke(); c.restore(); }
+        const tw = .3 + .15 * Math.sin(t * 3 + i) + .3 * part + .2 * gl; glow(c, fx, fy, 80, tw * Math.min(1, u * 2)); face(c, fx, fy, 38, i, Math.min(1, .5 + u)); });
+      W.forEach(([st, a, b, who, kind]) => { const u = seg(t, st, st + WD); if (u <= 0 || (u >= 1 && kind !== 'stop')) return; const al = kind === 'out' ? Math.min(clamp(u / .25), clamp((1 - u) / .2)) : kind === 'in' ? Math.min(clamp(u / .2), clamp((1 - u) / .15)) : clamp(u / .2);
+        c.save(); c.globalAlpha = al; mascot(c, cust(who, { x: lerp(a, b, ss(u)), y: 1810, s: 1.5, f: u >= 1 ? -.2 : b > a ? .6 : -.6, walk: u < 1 ? 1 : 0, phi: u * 8, smile: 1, look: u >= 1 ? -.4 : 0, blink: blinkAt(t, who) })); c.restore(); });
       if (gl > 0) glow(c, 390, 1600, 260, .4 * gl); });
   },
 };

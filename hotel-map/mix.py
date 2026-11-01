@@ -129,7 +129,6 @@ for k, t in enumerate(HIT['walkers']):
     for j in range(4): add(fx, lp(S(pick('footstep_wood_00', 5, k + j), .1), 3500), t + .15 + j * .32, 1, .4 - .25 * j)
 add(fx, verb(mx(shimmer(.12, 1.2), chime(1319, .06, 1.2)), 1.0, .35), H1('glow2'), 1, -.2)
 # a traveller from the hotel next door crosses over
-add(fx, S('doorOpen_2', .12), H1('exit') - .1, 1, -.5)
 for k in range(5): add(fx, lp(S(pick('footstep_concrete_00', 5, k), .12), 3500), HIT['walk'][0] + k * .28, 1, -.5 + .2 * k)
 add(fx, mx(S('doorClose_1', .1), shopbell(.06)), H1('enter2'), 1, .3); add(fx, verb(shimmer(.1, .9), .8, .3), H1('look'), 1, .4)
 # the bar: a cocktail slides along the counter, a coin
@@ -151,7 +150,9 @@ for t in HIT['olds']: add(fx, pop(.13), t, 1, .1)
 for t in HIT['arcs']: add(fx, swish(.45, .1), t, 1, .3)
 for k, t in enumerate(HIT['news']): add(fx, mx(pop(.13), chime(1568 * 2 ** (k * 2 / 12), .05, .5)), t, 1, .5)
 # the hotel at night: guests in and out; their faces rise into a constellation; new visitors arrive
-for t in HIT['inout']: add(fx, mx(shopbell(.04), S('doorOpen_1', .06)), t + .7, 1, 0)
+add(fx, mx(shopbell(.04), S('doorOpen_1', .07)), HIT['inout'][0] - .35, 1, -.2)   # the door opens to let a guest out
+for t in HIT['inout'][1:] + HIT['come'][:1]: add(fx, mx(shopbell(.04), S('doorOpen_2', .07)), t + .7, 1, -.2)   # and to let guests in
+add(fx, mx(shopbell(.04), S('doorOpen_1', .07)), H1('exit') - .4, 1, -.5); add(fx, S('doorOpen_2', .06), H1('enter2') - .5, 1, .3)
 a, b = HIT['rise']
 for k in range(7): add(fx, mx(pop(.08), chime(1319 * 2 ** (k * 2 / 12), .05, .7)), a + k * (b - a) / 7 + .5, 1, -.6 + .2 * k)
 add(fx, verb(mx(shimmer(.14, 1.4), chime(1047, .06, 1.6)), 1.0, .4), H1('part'), 1, 0)
