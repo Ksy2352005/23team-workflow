@@ -95,14 +95,14 @@ for t in HIT['kicks']: add(fx, lp(thump(.12, 80), 300) * .1, t, 1, 0)
 for t in HIT.get('dives', []): add(fx, mx(lp(swish(.6, .2), 4500), verb(chime(1568, .04, .6), .7, .3)), t - .05, 1, .2)   # diving into her phone
 for t in HIT.get('rises', []): add(fx, mx(lp(swish(.55, .17, False), 4000), lp(thump(.15, 90), 300) * .15), t - .05, 1, .2)   # rising back out into her day
 # the sofa: she scrolls; the ad again; the empty bag
-for t in [.5, 1.25, H1('seen') - .45, 2.15, H1('insta') - .45, 3.3, H1('never') - .5, 4.9, H1('unk') + .2, H1('unk') + 1.3, H1('second') + .2, H1('few') - .1, H1('few') + .45, H1('few') + 1.0]: add(fx, mx(lp(swish(.22, .07), 6000), tap(.06)), t, 1, .4)   # her thumb flicking the feed up
-for t in [H1('unk') - .2, H1('second') - .2, H1('few'), H1('few') + .55, H1('few') + 1.1]: add(fx, lp(swish(.3, .08), 4000), t, 1, -.4)   # the place changing around her
+for t in [.5, 1.25, H1('seen') - .45, 2.15, H1('insta') - .45, 3.3, H1('never') - .5, 4.9]: add(fx, mx(lp(swish(.22, .07), 6000), tap(.06)), t, 1, .4)   # her thumb flicking the feed up
+for k, t in enumerate([H1('unk') - .05, H1('second') - .2, H1('few'), H1('few') + .55, H1('few') + 1.1]): add(fx, mx(swish(.35, .13), pop(.08)), t, 1, [.5, -.5, .5, -.5, 0][k])   # the ad swooping in beside her each time she sees it
 for t in [H1('seen'), H1('insta')]: add(fx, mx(pop(.13), chime(1568, .05, .5)), t, 1, .4)
 add(fx, mx(S('cloth2', .12), boing(.08, 260, 180, .3)), H1('never'), 1, -.2)
 # her days: the bus, the café, the gym, the park, her bed; the ring fills; the bell
-add(fx, fade(lp(brown(3.4), 300) * .04, .3, .4), H1('unk') - .2, 1, -.4); add(fx, pop(.12), H1('q'), 1, .4)
+add(fx, pop(.12), H1('q'), 1, .4)
 add(fx, mx(S('impactPlate_light_002', .1), swish(.3, .08)), H1('second') - .25, 1, -.3); add(fx, mx(click(.12), verb(chime(1760, .05, .6), .8, .3)), H1('memo'), 1, .4)
-for k, t in enumerate([H1('few'), H1('few') + .6, H1('few') + 1.2]): add(fx, mx(swish(.3, .12), pop(.1), chime(1319 * 2 ** (k * 2 / 12), .05, .5)), t, 1, -.3 + .3 * k)
+for k, t in enumerate([H1('few'), H1('few') + .55, H1('few') + 1.1]): add(fx, chime(1319 * 2 ** (k * 2 / 12), .05, .5), t + .2, 1, .3)
 add(fx, verb(mx(chime(2349, .14, 1.4), chime(2793, .08, 1.2), chime(3136, .05, 1.0)), .9, .35), H1('bell'), 1, .4)
 # the mirror: the empty jar, puff; the dry skin; the ad comes back
 add(fx, mx(S('metalLatch', .1), bp(noise(.4), 400, 3000) * env_exp(.4, .1) * .1), H1('empty'), 1, .3); add(fx, boing(.08, 300, 200, .4), H1('dry'), 1, 0)

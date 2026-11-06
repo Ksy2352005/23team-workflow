@@ -190,6 +190,29 @@ const SHOT = {
     const mt = KF(t, [[H.unk, 0], [H.unk + .6, .12], [H.second + .2, .12], [H.second + .7, .4], [H.few, .4], [H.few + .3, .58], [H.few + .85, .74], [H.few + 1.4, .9], [H.name, 1]]); const mx = 790, my = 1730, mw = 340;
     if (t > H.unk - .2) { c.save(); c.globalAlpha = ss(seg(t, H.unk - .2, H.unk + .2)); c.fillStyle = 'rgba(246,239,220,.15)'; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, mw, 32, 16); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, Math.max(32, mw * mt), 32, 16); c.fill(); eyeIcon(c, mx - mw / 2 - 46, my, .34, 1); if (mt >= .99) heart(c, mx + mw / 2 + 40, my, 20, 1, '#e8664f'); c.restore(); }
   },
+  recog(c, t) {   // from stranger to familiar: she stands on the left; the ad swoops in beside her each time she sees it: first a grey blur (a question by her), then clearer (she notices: a pin), then again and again, brighter, until she smiles and it rings a bell
+    const H = HIT; bg(c, '#2c46a0');
+    const visits = [[H.unk - .05, H.second - .45, 1, 'R'], [H.second - .2, H.few - .2, .3, 'T'], [H.few, H.few + .5, 0, 'R'], [H.few + .55, H.few + 1.05, 0, 'T'], [H.few + 1.1, 99, 0, 'R']];
+    const cx = 750, cy = 1170, cw = 360; let lit = 0;
+    visits.forEach(([a, b, grey, from], i) => { if (t < a || t > b + .4) return; const inn = ss(seg(t, a, a + .35)), out = ss(seg(t, b, b + .35)); if (out >= 1) return; const dx = from === 'R' ? 520 : from === 'L' ? -520 : 0, dy = from === 'T' ? -500 : 0;
+      const x = cx + dx * (1 - inn) + 600 * out, y = cy + dy * (1 - inn) - 140 * out, rot = (1 - inn) * (from === 'T' ? -.2 : .3) + out * .25, al = Math.min(inn * 1.5, 1 - out);
+      c.save(); c.globalAlpha = al; c.translate(x, y); c.rotate(rot); c.translate(-x, -y); const ch = cw * 1.22;
+      if (i >= 2) glow(c, x, y, 260, .25 + .1 * i); c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - cw / 2 + 10, y - ch / 2 + 14, cw, ch, 22); c.fill(); c.fillStyle = '#fbf6ea'; c.beginPath(); c.roundRect(x - cw / 2, y - ch / 2, cw, ch, 22); c.fill();
+      ell(c, x - cw / 2 + 32, y - ch / 2 + 32, 15, 15, grey > .5 ? '#9aa0b8' : GOLD); c.fillStyle = 'rgba(28,36,80,.3)'; c.fillRect(x - cw / 2 + 58, y - ch / 2 + 25, 110, 14); c.fillStyle = '#1f2c62'; c.fillRect(x - cw / 2 + 14, y - ch / 2 + 62, cw - 28, cw - 28);
+      c.save(); if (grey > 0) c.filter = `grayscale(${grey}) blur(${grey * 10 * K}px)`; glow(c, x, y - ch / 2 + 62 + (cw - 28) / 2, 120, .35); jar(c, x, y - ch / 2 + 62 + (cw - 28) * .8, 1.15); c.restore();
+      if (i >= 2) { c.strokeStyle = GOLD; c.lineWidth = 8; c.beginPath(); c.roundRect(x - cw / 2 - 4, y - ch / 2 - 4, cw + 8, ch + 8, 24); c.stroke(); } c.fillStyle = GOLD; c.beginPath(); c.roundRect(x - cw / 2 + 14, y + ch / 2 - 62, cw - 28, 44, 22); c.fill(); c.restore();
+      if (i === 1) badge(c, 'pin', cx + 150, cy - 210, 40, E(t, H.memo, .3, .5) * (1 - out)); });
+    // her: blank at first, then noticing, then smiling
+    const notice = t > H.memo - .1 && t < H.few, fam = ss(seg(t, H.name - .2, H.name + .3));
+    mascot(c, HER({ x: 300, y: 1790, s: 2.2, f: .45, smile: t < H.second ? .75 : lerp(.85, 1, fam), o: notice ? .6 : 0, look: .35, blink: blinkAt(t, 3), handR: [380, 1640] })); handPhone(c, 384, 1632, 1.2);
+    badge(c, 'q', 470, 1180, 44, E(t, H.q, .3, .5) * (1 - ss(seg(t, H.second - .4, H.second - .1))));
+    badge(c, 'ex', 470, 1180, 40, E(t, H.memo, .3, .5) * (1 - ss(seg(t, H.memo + .9, H.memo + 1.2))));
+    if (fam > 0) for (let k = 0; k < 3; k++) heart(c, 400 + k * 46, 1220 - 60 * clamp((t - H.name - k * .15) / 1.3), 14 + 4 * k, Math.max(0, Math.sin(clamp((t - H.name - k * .15) / 1.3) * Math.PI)), '#c4566a');
+    const bk = E(t, H.bell, .3, .45); if (bk > 0) { badge(c, 'bell', cx + 190, cy - 250, 44 * Math.min(1.1, bk), 1); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(cx + 190, cy - 250, 64 + q * 22, -.6, .6); c.stroke(); } }
+    // the familiarity meter: it fills a step with every encounter
+    const mt = KF(t, [[H.unk, 0], [H.unk + .6, .12], [H.second, .12], [H.second + .5, .4], [H.few, .4], [H.few + .3, .58], [H.few + .85, .74], [H.few + 1.4, .9], [H.name, 1]]), mx = 750, my = 1680, mw = 380;
+    c.fillStyle = 'rgba(246,239,220,.15)'; c.beginPath(); c.roundRect(mx - mw / 2, my - 18, mw, 36, 18); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(mx - mw / 2, my - 18, Math.max(36, mw * mt), 36, 18); c.fill(); eyeIcon(c, mx - mw / 2 - 52, my, .38, 1); if (mt >= .99) heart(c, mx + mw / 2 + 44, my, 22, 1, '#e8664f');
+  },
   mirror(c, t) {   // one day she needs it: at her bathroom mirror; her reflection; the cream jar on the shelf is empty, puff; she touches her dry cheek
     const H = HIT, op = ss(seg(t, H.empty - .2, H.empty + .2)), dry = ss(seg(t, H.dry - .1, H.dry + .4)); scenery(c, 'bath', t);
     const mxc = 720, myc = 1200; c.fillStyle = '#e9dcc0'; c.beginPath(); c.ellipse(mxc, myc, 230, 300, 0, 0, 7); c.fill(); c.save(); c.beginPath(); c.ellipse(mxc, myc, 212, 282, 0, 0, 7); c.clip(); const mg = c.createLinearGradient(mxc - 200, myc - 280, mxc + 200, myc + 280); mg.addColorStop(0, '#5272c4'); mg.addColorStop(1, '#2b4396'); c.fillStyle = mg; c.fillRect(mxc - 220, myc - 290, 440, 580);
