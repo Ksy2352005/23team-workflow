@@ -89,7 +89,7 @@ def rise(d, v): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(np.linspace(330,
 def tick(v=1.0, p=1.0): d = .04; return norm(bp(noise(d), 2500 * p, 6000 * p) * env_exp(d, .004)) * v
 glide = lambda v=.09: lp(swish(.45, v), 4500)
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
-for t in [H1('unk') - .3, H1('second') - .25, H1('need') - .25, H1('mind') - .25, H1('term') - .25, H1('chart') - .25, H1('regular') - .25, H1('audience') - .25]: add(fx, mx(lp(swish(.5, .18), 4000), lp(thump(.22, 70), 300) * .2, verb(chime(1047, .03, .6), .7, .3)), t, 1, 0)   # the object flips and transforms into the next
+for t in [H1('unk') - .3, H1('name') - .3, H1('need') - .3, H1('mind') - .3, H1('term') - .3, H1('chart') - .3, H1('regular') - .3, H1('audience') - .3]: add(fx, mx(lp(swish(.55, .2), 4000), lp(thump(.22, 70), 300) * .2, verb(chime(1047, .03, .6), .7, .3)), t, 1, 0)   # the camera glides along the line and the object transforms
 for k in range(6): add(fx, lp(swish(.18, .07), 5000), H1('few') + .1 + k * (H1('name') - H1('few') - .35) / 6, 1, -.4 if k % 2 == 0 else .4)   # the logo spinning on each exposure
 # the phone, the feed; MIRA keeps showing up; the empty cart
 add(fx, mx(glide(.1), pop(.1)), .05, 1, 0)

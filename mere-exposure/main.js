@@ -10,7 +10,7 @@ const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
 const [bufA, actx] = mk(), [bufB, bctx] = mk();
-const TOP = '#111a52', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#0b1438';
+const TOP = '#eef1f4', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#0b1438';
 const GLOW = (() => { const [c, x] = mk(); c.width = c.height = 256; const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,214,120,1)'); g.addColorStop(.25, 'rgba(255,214,120,.45)'); g.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c; })();
 
 function sp(tau, d = .4, b = .2) {   // a spring like Motion's { type: 'spring', visualDuration, bounce }
@@ -89,95 +89,122 @@ function face(c, x, y, r, P, k = 1) { if (k <= 0) return; scaled(c, x, y, Math.m
 const AUD = [['blue2', 'bob'], ['blue1', null], ['blue3', 'pony'], ['blue2', null], ['blue3', 'long']];
 const ME = o => ({ id: 'me', skin: 'blue3', fem: 'pony', s: 1.7, smile: .8, ...o });
 
-// —— one object in the centre that keeps transforming: phone → post → logo → bottle → her head → eye → the chart's line → the week → the audience ——
-const HX = 540, HY = 1270, MD = .5;   // the hero's centre; how long a transformation takes
-const FORMS = { phone: { w: 430, h: 780, r: 64, col: [14, 20, 64] }, card: { w: 540, h: 600, r: 34, col: [251, 246, 234] }, coin: { w: 400, h: 400, r: 200, col: [185, 188, 203] }, gold: { w: 400, h: 400, r: 200, col: [236, 189, 74] },
-  bottle: { w: 190, h: 500, r: 70, col: [93, 127, 196] }, head: { w: 440, h: 440, r: 220, col: [31, 63, 166] }, eye: { w: 640, h: 300, r: 150, col: [246, 239, 220] }, line: { w: 660, h: 14, r: 7, col: [246, 239, 220] } };
-const STEPS = () => { const H = HIT; return [['phone', -9], ['card', H.unk - .3], ['coin', H.second - .25], ['gold', H.second + .3], ['bottle', H.need - .25], ['head', H.mind - .25], ['eye', H.term - .25], ['line', H.chart - .25]]; };
-function form(t) {   // the hero's shape at time t: blending between forms, with a half-turn flip during each change
-  const S = STEPS(); let i = 0; while (i + 1 < S.length && t >= S[i + 1][1]) i++;
-  const cur = FORMS[S[i][0]], p = clamp((t - S[i][1]) / MD), prev = i > 0 ? FORMS[S[i - 1][0]] : cur, e = ss(p), flip = S[i][0] === 'gold' ? 0 : Math.PI * e;
-  const mix = k => lerp(prev[k], cur[k], e); return { name: S[i][0], prevName: i > 0 ? S[i - 1][0] : S[i][0], p, w: mix('w'), h: mix('h'), r: mix('r'), col: [0, 1, 2].map(j => Math.round(lerp(prev.col[j], cur.col[j], e))), rot: i > 0 && p < 1 ? flip : 0 };
+// —— the light world (after the 23 Team reference film): a soft light room, teal bokeh at three depths, a thin teal line the camera travels along; glossy soft-3D objects in the centre, each one transforming into the next ——
+const BG = '#eef1f4', TEAL = '#3ed6c4', TEAL2 = '#1fb3a3', TEALD = '#128a7e', INK = '#14215e', BLU = '#3b6fe0', BLU2 = '#2a4fbf', CORAL = '#ef6b5b';
+const HX = 540, HY = 1250, MOVE = .6;
+const ANCH = [[0, 0], [620, 900], [-60, 1800], [580, 2700], [0, 3600], [600, 4500], [40, 5400], [560, 6300]];
+const SCN = () => { const H = HIT; return [-9, H.unk - .3, H.need - .3, H.mind - .3, H.term - .3, H.chart - .3, H.regular - .3, H.audience - .3]; };
+function camAt(t) { const s = SCN(); let i = 0; while (i + 1 < s.length && t >= s[i + 1]) i++; const p = i > 0 ? ss(clamp((t - s[i]) / MOVE)) : 1, A = ANCH[Math.max(0, i - 1)], B = ANCH[i], drift = [Math.sin(t * .5) * 18, Math.cos(t * .4) * 14 + (t - Math.max(0, s[i])) * 6];
+  return { x: lerp(A[0], B[0], p) + drift[0], y: lerp(A[1], B[1], p) + drift[1], i, p, moving: i > 0 && p < 1 }; }
+const W2S = (cam, x, y, par = 1) => [HX + (x - cam.x) * par, HY + (y - cam.y) * par];
+function lineWorld() { const pts = []; ANCH.forEach(([x, y], i) => { const side = i % 2 ? -1 : 1; pts.push([x + side * 330, y - 380], [x + side * 290, y + 420]); }); return pts; }
+function world(c, t, cam) {   // the light room, the bokeh, the travelling line with its nodes
+  c.fillStyle = BG; c.fillRect(0, 0, 1080, 1920); const g = c.createRadialGradient(540, 1250, 60, 540, 1250, 900); g.addColorStop(0, '#ffffff'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 700, 1080, 1220);
+  for (const [n, par, r0, al] of [[16, .35, 110, .07], [12, .7, 70, .09]]) for (let i = 0; i < n; i++) { const wx = hash(i * 2.7 + par) * 2600 - 700, wy = hash(i * 5.3 + par) * 7600 - 400, [sx, sy] = W2S(cam, wx, wy, par), r = r0 * (.6 + hash(i) * .8); if (sy < 600 || sy > 2100) continue; const gg = c.createRadialGradient(sx, sy, 0, sx, sy, r); gg.addColorStop(0, `rgba(62,214,196,${al})`); gg.addColorStop(1, 'rgba(62,214,196,0)'); c.fillStyle = gg; c.fillRect(sx - r, sy - r, 2 * r, 2 * r); }
+  const P = lineWorld().map(([x, y]) => W2S(cam, x, y)); c.save(); c.strokeStyle = 'rgba(31,179,163,.75)'; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(...P[0]);
+  for (let i = 1; i < P.length - 1; i++) { const mx = (P[i][0] + P[i + 1][0]) / 2, my = (P[i][1] + P[i + 1][1]) / 2; c.quadraticCurveTo(P[i][0], P[i][1], mx, my); } c.stroke();
+  P.forEach(([x, y], i) => { if (i % 2) { c.fillStyle = BG; c.beginPath(); c.arc(x, y, 9, 0, 7); c.fill(); c.strokeStyle = TEAL2; c.lineWidth = 4; c.stroke(); } }); c.restore();
 }
-function stageBack(c, t) {   // depth without a grid: a deep radial room, three layers of soft bokeh drifting with the camera, a light pool on the floor
-  c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920); const g = c.createRadialGradient(540, 1350, 40, 540, 1350, 760); g.addColorStop(0, '#3550b4'); g.addColorStop(.55, '#1b2a78'); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 760, 1080, 1160);
-  const camX = Math.sin(t * .45) * 70, camY = Math.cos(t * .33) * 30;
-  for (const [n, depth, size, al] of [[10, .25, 90, .07], [14, .55, 46, .1], [18, 1, 18, .22]]) for (let i = 0; i < n; i++) {
-    const x = ((hash(i * 3.7 + depth) * 1400 - 160 + camX * depth * 2 + t * 12 * depth) % 1400 + 1400) % 1400 - 160, y = 820 + hash(i * 7.1 + depth) * 1060 + camY * depth - Math.sin(t * .6 + i) * 12 * depth, r = size * (.6 + hash(i * 1.3) * .8);
-    const gg = c.createRadialGradient(x, y, 0, x, y, r); gg.addColorStop(0, i % 3 ? `rgba(246,239,220,${al})` : `rgba(236,189,74,${al * 1.4})`); gg.addColorStop(1, 'rgba(246,239,220,0)'); c.fillStyle = gg; c.fillRect(x - r, y - r, r * 2, r * 2); }
-  const fl = c.createRadialGradient(540, 1720, 10, 540, 1720, 420); fl.addColorStop(0, 'rgba(120,150,255,.28)'); fl.addColorStop(1, 'rgba(120,150,255,0)'); c.save(); c.translate(540, 1720); c.scale(1, .22); c.translate(-540, -1720); c.fillStyle = fl; c.fillRect(100, 1300, 880, 840); c.restore();
+function fgBokeh(c, cam) { for (let i = 0; i < 6; i++) { const wx = hash(i * 9.1) * 2400 - 600, wy = hash(i * 4.7) * 7600, [sx, sy] = W2S(cam, wx, wy, 1.6), r = 140 + hash(i * 3.3) * 120; if (sy < 700 || sy > 2200) continue; const gg = c.createRadialGradient(sx, sy, 0, sx, sy, r); gg.addColorStop(0, 'rgba(62,214,196,.10)'); gg.addColorStop(1, 'rgba(62,214,196,0)'); c.fillStyle = gg; c.fillRect(sx - r, sy - r, 2 * r, 2 * r); } }
+// —— glossy pieces ——
+function soft(c, f, blur = 40, oy = 18, a = .16) { c.save(); c.shadowColor = `rgba(20,40,90,${a})`; c.shadowBlur = blur * K; c.shadowOffsetY = oy * K; f(); c.restore(); }
+function gcard(c, x, y, w, h, r = 28) { soft(c, () => { const g = c.createLinearGradient(0, y - h / 2, 0, y + h / 2); g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#f1f4f8'); c.fillStyle = g; c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, r); c.fill(); }); }
+function gcoin(c, x, y, r, col = 'teal') { soft(c, () => { const g = c.createRadialGradient(x - r * .35, y - r * .45, r * .1, x, y, r); if (col === 'teal') { g.addColorStop(0, '#7ff0e2'); g.addColorStop(.6, TEAL); g.addColorStop(1, TEAL2); } else if (col === 'grey') { g.addColorStop(0, '#f4f6f9'); g.addColorStop(.6, '#d5dae3'); g.addColorStop(1, '#b7bfcc'); } else { g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#e6eaf0'); } c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); }, r * .5, r * .18); }
+function mira(c, x, y, r, o = {}) {   // MIRA: a glossy teal coin with three white waves
+  const gr = o.grey || 0; c.save(); if (gr > 0) c.filter = `grayscale(${gr}) blur(${gr * r * .07 * K}px)`; gcoin(c, x, y, r, 'teal'); c.strokeStyle = '#ffffff'; c.lineWidth = r * .13; c.lineCap = 'round'; for (const d of [-.3, .02, .34]) { c.beginPath(); for (let i = 0; i <= 20; i++) { const u = i / 20; c.lineTo(x - r * .52 + u * r * 1.04, y + d * r + Math.sin(u * Math.PI * 2) * r * .11); } c.stroke(); } c.restore();
+  if (o.name > 0) { c.save(); c.globalAlpha *= Math.min(1, o.name); c.font = `700 ${r * .5}px "Montserrat"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = INK; c.fillText('MIRA', x, y + r * 1.42 + (1 - Math.min(1, o.name)) * 26); c.restore(); }
 }
-function heroPath(c, w, h, r) { c.beginPath(); c.roundRect(-w / 2, -h / 2, w, h, Math.min(r, w / 2, h / 2)); }
-const KICKS = () => STEPS().slice(1).map(s => s[1]).concat([HIT.regular - .25, HIT.audience - .25, HIT.first, HIT.bell]);
-const kick = t => KICKS().reduce((m, k) => t < k ? m : Math.max(m, Math.exp(-(t - k) * 5) * Math.sin(Math.min(1, (t - k) / .1) * Math.PI / 2)), 0);
-const WOMAN = o => ({ id: 'me', skin: 'blue3', fem: 'pony', s: 1.9, smile: .8, ...o });
-const GREYS = [['#8f98b0', 'sq'], ['#6b7aa8', 'tri'], ['#9aa0b8', 'oval'], ['#7d86a6', 'hex'], ['#a1a8c0', 'sq']];
-function otherBrand(c, x, y, r, i) { const [col, sh] = GREYS[i % GREYS.length]; ell(c, x + r * .05, y + r * .08, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#d6d9e4'); c.fillStyle = col; c.beginPath(); if (sh === 'sq') c.roundRect(x - r * .45, y - r * .45, r * .9, r * .9, r * .15); else if (sh === 'tri') { c.moveTo(x, y - r * .55); c.lineTo(x + r * .5, y + r * .4); c.lineTo(x - r * .5, y + r * .4); c.closePath(); } else if (sh === 'oval') c.ellipse(x, y, r * .55, r * .36, 0, 0, 7); else for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; c.lineTo(x + Math.cos(a) * r * .5, y + Math.sin(a) * r * .5); } c.fill(); }
-function almond(c, w, h) { c.beginPath(); c.moveTo(-w / 2, 0); c.quadraticCurveTo(0, -h, w / 2, 0); c.quadraticCurveTo(0, h, -w / 2, 0); c.closePath(); }
-function waves(c, r, col = CREAM) { c.strokeStyle = col; c.lineWidth = r * .14; c.lineCap = 'round'; for (const d of [-.32, .02, .36]) { c.beginPath(); for (let i = 0; i <= 20; i++) { const u = i / 20; c.lineTo(-r * .55 + u * r * 1.1, d * r + Math.sin(u * Math.PI * 2) * r * .12); } c.stroke(); } }
+function gbadge(c, x, y, r, k, icon, kind = 'teal') { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { gcoin(c, x, y, r, kind); const col = kind === 'teal' ? INK : INK; c.save(); c.translate(x, y);
+  if (icon === 'eye') { c.fillStyle = col; c.beginPath(); c.moveTo(-r * .55, 0); c.quadraticCurveTo(0, -r * .5, r * .55, 0); c.quadraticCurveTo(0, r * .5, -r * .55, 0); c.fill(); ell(c, 0, 0, r * .2, r * .2, kind === 'teal' ? TEAL : '#fff'); }
+  if (icon === 'q') { c.font = `700 ${r * 1.05}px "Montserrat"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText('?', 0, r * .06); }
+  if (icon === 'mark') { c.fillStyle = CORAL; c.beginPath(); c.moveTo(-r * .3, -r * .45); c.lineTo(r * .3, -r * .45); c.lineTo(r * .3, r * .45); c.lineTo(0, r * .2); c.lineTo(-r * .3, r * .45); c.closePath(); c.fill(); }
+  if (icon === 'bell') { c.fillStyle = col; c.beginPath(); c.moveTo(-r * .4, r * .25); c.quadraticCurveTo(-r * .38, -r * .45, 0, -r * .48); c.quadraticCurveTo(r * .38, -r * .45, r * .4, r * .25); c.closePath(); c.fill(); c.fillRect(-r * .48, r * .2, r * .96, r * .12); ell(c, 0, r * .42, r * .1, r * .1, col); }
+  if (icon === 'cart') { c.strokeStyle = col; c.lineWidth = r * .1; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(-r * .5, -r * .35); c.lineTo(-r * .32, -r * .35); c.lineTo(-r * .2, r * .2); c.lineTo(r * .36, r * .2); c.lineTo(r * .46, -r * .2); c.lineTo(-r * .28, -r * .2); c.stroke(); ell(c, -r * .14, r * .38, r * .08, r * .08, col); ell(c, r * .3, r * .38, r * .08, r * .08, col); }
+  if (icon === 'heart') heart(c, 0, r * .05, r * .42, 1, CORAL);
+  if (icon === 'star') star(c, 0, 0, r * .48, 1, TEAL2);
+  if (typeof icon === 'number') { c.font = `700 ${r * .9}px "Montserrat"`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(String(icon), 0, r * .05); }
+  c.restore(); }); }
+function xmark(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { gcoin(c, x, y, r, 'white'); c.strokeStyle = CORAL; c.lineWidth = r * .16; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - r * .3, y - r * .3); c.lineTo(x + r * .3, y + r * .3); c.moveTo(x + r * .3, y - r * .3); c.lineTo(x - r * .3, y + r * .3); c.stroke(); }); }
+function pawn(c, x, y, s, col = 'grey', k = 1) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { const g = c.createLinearGradient(x - 30 * s, 0, x + 30 * s, 0); if (col === 'grey') { g.addColorStop(0, '#dfe3ea'); g.addColorStop(1, '#aab2c0'); } else { g.addColorStop(0, '#6fa0ff'); g.addColorStop(1, BLU2); } soft(c, () => { c.fillStyle = g; c.beginPath(); c.ellipse(x, y + 20 * s, 34 * s, 30 * s, 0, Math.PI, 0); c.lineTo(x + 34 * s, y + 40 * s); c.lineTo(x - 34 * s, y + 40 * s); c.closePath(); c.fill(); c.beginPath(); c.arc(x, y - 22 * s, 20 * s, 0, 7); c.fill(); }, 16, 8, .14); if (col !== 'grey') { ell(c, x - 7 * s, y - 24 * s, 2.6 * s, 3.2 * s, INK); ell(c, x + 7 * s, y - 24 * s, 2.6 * s, 3.2 * s, INK); c.strokeStyle = INK; c.lineWidth = 2 * s; c.beginPath(); c.arc(x, y - 18 * s, 6 * s, .3, Math.PI - .3); c.stroke(); } }); }
+function feedPost(c, x, y, w, brand) { const h = w * 1.05; c.fillStyle = '#ffffff'; c.beginPath(); c.roundRect(x - w / 2, y, w, h, 18); c.fill(); ell(c, x - w / 2 + 26, y + 24, 9, 9, brand ? TEAL : '#c5cbd6'); c.fillStyle = '#d5dae3'; c.fillRect(x - w / 2 + 44, y + 19, 90, 10); const g = c.createLinearGradient(0, y + 46, 0, y + 46 + w * .7); g.addColorStop(0, brand ? '#bdf3ec' : '#e3e7ee'); g.addColorStop(1, brand ? '#7fe3d6' : '#cfd5df'); c.fillStyle = g; c.beginPath(); c.roundRect(x - w / 2 + 12, y + 46, w - 24, w * .7, 12); c.fill();
+  if (brand) mira(c, x, y + 46 + w * .35, w * .17); else { c.fillStyle = 'rgba(20,33,94,.25)'; c.beginPath(); c.moveTo(x - w / 2 + 12, y + 46 + w * .7); c.lineTo(x - w * .1, y + 46 + w * .32); c.lineTo(x + w * .15, y + 46 + w * .52); c.lineTo(x + w / 2 - 12, y + 46 + w * .7); c.fill(); } c.fillStyle = '#e1e5ec'; c.fillRect(x - w / 2 + 14, y + 60 + w * .7, w * .6, 9); c.fillRect(x - w / 2 + 14, y + 76 + w * .7, w * .4, 9); }
+function bottleG(c, x, y, s, solid) { if (!solid) { c.save(); c.setLineDash([16, 12]); c.strokeStyle = TEAL2; c.lineWidth = 6; c.beginPath(); c.roundRect(x - 52 * s, y - 220 * s, 104 * s, 220 * s, 30 * s); c.stroke(); c.restore(); return; } soft(c, () => { const g = c.createLinearGradient(x - 52 * s, 0, x + 52 * s, 0); g.addColorStop(0, '#8fb2ff'); g.addColorStop(1, BLU2); c.fillStyle = g; c.beginPath(); c.roundRect(x - 52 * s, y - 220 * s, 104 * s, 220 * s, 30 * s); c.fill(); }); c.fillStyle = INK; c.beginPath(); c.roundRect(x - 32 * s, y - 266 * s, 64 * s, 52 * s, 12 * s); c.fill(); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(x - 36 * s, y - 196 * s, 12 * s, 160 * s); }
 
+const HER = o => ({ id: 'me', skin: 'blue3', fem: 'pony', s: 1.5, smile: .9, ...o });
+let MB = null;   // the motion-blur buffer
 const SHOT = {
   flow(c, t) {
-    const H = HIT; stageBack(c, t);
-    const F = form(t), k = kick(t), sway = Math.sin(t * .8) * .05;
-    c.save(); c.translate(HX, HY); c.scale(1 + .06 * k, 1 + .06 * k); c.translate(-HX, -HY);
-    // where the line goes, the hero goes: the chart's axis sits lower
-    const hy = F.name === 'line' ? lerp(HY, 1600, ss(F.p)) : HY, decoA = F.p < 1 ? Math.abs(Math.cos(F.rot)) : 1, showNew = F.p >= .5 || F.rot === 0, nm = showNew ? F.name : F.prevName;
-    const tilt = F.name === 'line' || F.name === 'head' ? 0 : sway;
-    // the week and the audience take over from the line
-    const wk = ss(seg(t, H.regular - .25, H.regular + .25)), au = ss(seg(t, H.audience - .25, H.audience + .25));
-    if (wk <= 0) {
-      // reflection on the floor
-      c.save(); c.translate(HX, hy); const sx = Math.cos(F.rot + tilt); c.scale(Math.max(.02, Math.abs(sx)), 1);
-      ell(c, 12, F.h / 2 + 24, F.w * .45, 16, 'rgba(0,0,20,.35)');
-      if (nm === 'eye') { c.fillStyle = `rgb(${F.col})`; almond(c, F.w, F.h * 1.05); c.fill(); }
-      else { c.fillStyle = `rgb(${F.col})`; if (nm === 'bottle' && t < H.product) { c.save(); c.setLineDash([22, 14]); c.lineDashOffset = -t * 40; c.strokeStyle = CREAM; c.lineWidth = 7; heroPath(c, F.w, F.h, F.r); c.stroke(); c.restore(); if (F.p < 1) { c.globalAlpha = 1 - F.p; heroPath(c, F.w, F.h, F.r); c.fill(); c.globalAlpha = 1; } } else { heroPath(c, F.w, F.h, F.r); c.fill(); } }
-      c.globalAlpha = decoA;
-      // —— what each form carries ——
-      if (nm === 'phone') { c.fillStyle = '#efe6d2'; c.beginPath(); c.roundRect(-F.w / 2 + 18, -F.h / 2 + 18, F.w - 36, F.h - 36, 44); c.fill(); c.save(); c.beginPath(); c.roundRect(-F.w / 2 + 18, -F.h / 2 + 18, F.w - 36, F.h - 36, 44); c.clip(); const sc = KF(t, [[0, 0], [H.seen, 300], [H.insta, 620], [H.never, 900], [H.unk, 960]]); c.translate(-HX, -HY); for (let i = 0; i < 8; i++) { const brand = i === 2 || i === 4 || i === 6, y = 940 + i * 400 - sc; if (y > 1700 || y < 600) continue; post(c, HX, y, 340, i, brand, t); if (brand && y > 860 && y < 1480) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 7; c.beginPath(); c.roundRect(HX - 176, y - 6, 352, 340 * 1.18 + 12, 18); c.stroke(); c.restore(); } } c.restore(); c.fillStyle = '#0e1440'; c.beginPath(); c.roundRect(-60, -F.h / 2 + 26, 120, 26, 13); c.fill();
-        [H.seen, H.insta].forEach((at, i) => { const kk = E(t, at, .3, .5) * (1 - ss(seg(t, at + 1.1, at + 1.4))); if (kk > 0) scaled(c, 170, -300 + i * 70, Math.min(1.12, kk), () => { ell(c, 170, -300 + i * 70, 46, 46, GOLD); text(c, '+1', 170, -298 + i * 70, 40, NAVY); }); });
-        const ck = E(t, H.never, .3, .5); if (ck > 0) scaled(c, 150, 330, Math.min(1.12, ck), () => { ell(c, 150, 330, 88, 88, '#c4566a'); cart(c, 150, 330, .74, Math.max(0, 1 - (t - H.never - .3) / .6)); }); }
-      if (nm === 'card') { c.fillStyle = '#1f2c62'; c.fillRect(-F.w / 2 + 24, -F.h / 2 + 70, F.w - 48, F.h - 140); ell(c, -F.w / 2 + 50, -F.h / 2 + 38, 18, 18, '#b9bccb'); c.fillStyle = 'rgba(28,36,80,.3)'; c.fillRect(-F.w / 2 + 80, -F.h / 2 + 30, 110, 14);
-        c.save(); c.filter = `grayscale(1) blur(${10 * K}px)`; c.translate(-HX, -HY); logo(c, HX, HY, 140); c.restore(); badge(c, 'q', F.w / 2 - 50, -F.h / 2 + 60, 50, E(t, H.q, .3, .55)); }
-      if (nm === 'coin' || nm === 'gold') { const gr = KF(t, [[H.second, 1], [H.second + .6, .5], [H.few, .5], [H.few + .8, 0]]); c.save(); if (gr > 0) c.filter = `blur(${gr * 8 * K}px)`; waves(c, F.w / 2); c.restore();
-        const mk = E(t, H.memo, .3, .5) * (1 - ss(seg(t, H.few, H.few + .3))); if (mk > 0) scaled(c, 170, -200, Math.min(1.12, mk), () => { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(136, -260); c.lineTo(204, -260); c.lineTo(204, -140); c.lineTo(170, -170); c.lineTo(136, -140); c.closePath(); c.fill(); }); }
-      if (nm === 'bottle') { c.fillStyle = '#26346f'; c.beginPath(); c.roundRect(-58, -F.h / 2 - 62, 116, 70, 16); c.fill(); if (t > H.product) { const fl = ss(seg(t, H.product, H.product + .5)); c.save(); heroPath(c, F.w, F.h, F.r); c.clip(); c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(-F.w / 2 + 26, -F.h / 2 + 40, 22, F.h * .7 * fl); c.restore(); }
-        const ok = E(t, H.offers, .3, .55); if (ok > 0) { c.save(); c.translate(-HX, -HY); logo(c, HX, HY + 20, 62 * Math.min(1.12, ok)); c.restore(); } }
-      if (nm === 'eye' && F.p >= 1) { ell(c, 0, 0, 120, 120, NAVY); c.save(); c.translate(-HX, -HY); logo(c, HX, HY, 86); c.restore(); }
-      if (nm === 'eye' && F.p < 1 && F.p >= .5) { ell(c, 0, 0, 120 * (F.p - .5) * 2, 120 * (F.p - .5) * 2, NAVY); }
-      c.restore();
-      // around the coin: the exposure ring, the eyes that count, the spins, the name and the bell
-      if (nm === 'coin' || nm === 'gold') { const rp = KF(t, [[H.unk + .2, .1], [H.second, .15], [H.second + .5, .4], [H.few, .4], [H.name - .3, .95], [H.name, 1]]); if (F.p >= 1 || F.name === 'gold') ring(c, HX, hy, 250, rp, 18);
-        const ne = Math.min(5, Math.max(1, Math.floor(rp * 5.4))); for (let i = 0; i < ne; i++) scaled(c, HX + (i - (ne - 1) / 2) * 110, hy - 340, Math.min(1, rp * 5.4 - i), () => eyeIcon(c, HX + (i - (ne - 1) / 2) * 110, hy - 340, .5, 1));
-        const nk = E(t, H.name, .35, .45); if (nk > 0) { c.save(); c.globalAlpha = Math.min(1, nk); c.font = '700 96px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = CREAM; c.fillText('MIRA', HX, hy + 330 + (1 - Math.min(1, nk)) * 40); c.restore(); }
-        const bk = E(t, H.bell, .3, .45); if (bk > 0 && t < H.need - .3) { bell(c, HX + 280, hy + 220, 1.3 * Math.min(1.1, bk), .5 * Math.sin((t - H.bell) * 18) * Math.exp(-(t - H.bell) * 2.5)); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(HX + 280, hy + 210, 56 + q * 24, -.6, .6); c.stroke(); } } }
-      // her head: the face appears; brands circle above like a halo; MIRA rises out of it
-      if (nm === 'head' && F.p >= .6) { c.save(); c.globalAlpha = ss(clamp((F.p - .6) / .4)); const f1 = ss(seg(t, H.first - .4, H.first + .3)), items = [0, 1, 2, 3, 4, 'M'];
-        const pos = items.map((it, i) => { const a = (t - H.mind) * .9 + i / items.length * Math.PI * 2; let x = HX + Math.cos(a) * 340, y = HY - 330 + Math.sin(a) * 40, d = Math.sin(a), r = 54 + 14 * d; if (it === 'M') { x = lerp(x, HX, f1); y = lerp(y, HY - 470, f1); d = lerp(d, 2, f1); r = lerp(r, 104, f1); } return { it, x, y, d, r }; }).sort((p, q) => p.d - q.d);
-        const draw = p => { c.save(); c.globalAlpha *= p.it === 'M' ? 1 : lerp(.95, .4, f1) * (.6 + .4 * clamp(p.d + .5)); if (p.it === 'M') { if (f1 > 0) glow(c, p.x, p.y, p.r * 2, .5 * f1); logo(c, p.x, p.y, p.r); } else otherBrand(c, p.x, p.y, p.r, p.it); c.restore(); };
-        pos.filter(p => p.d < 0).forEach(draw); c.save(); c.beginPath(); c.arc(HX, HY - 10, 280, 0, 7); c.clip(); const s = 440 / 2 / .225 / (BASE_H * 1.08); drawMascot(c, { ...WOMAN({ s, smile: f1 > .5 ? 1 : .75, blink: blinkAt(t, 3), look: f1 > .3 ? -.3 : 0 }), x: HX, y: HY + .76 * BASE_H * s * 1.08, f: 0, shadow: false }); c.restore(); pos.filter(p => p.d >= 0).forEach(draw);
-        if (f1 >= 1) spark(c, HX, HY - 470, t, H.first + .3, 6, 160, 18); c.restore(); }
-      // the eye's orbit of copies
-      if (nm === 'eye' && F.p >= 1) for (let q = 0; q < 7; q++) { const a = q / 7 * Math.PI * 2 + (t - H.term) * .9, rr = 380 * ss(seg(t, H.mere - .2 + q * .05, H.mere + .4 + q * .05)); if (rr > 1) logo(c, HX + Math.cos(a) * rr, HY + Math.sin(a) * rr * .7, 44); }
-      // the line becomes the chart: the y axis grows, exposures land, familiarity climbs, liking follows
-      if (nm === 'line' && F.p >= .5) { const x0 = HX - 330, x1 = HX + 330, y0 = 1600, y1 = 1030, ya = ss(seg(t, H.chart + .1, H.chart + .5)); c.strokeStyle = CREAM; c.lineWidth = 12; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, lerp(y0, y1, ya)); c.stroke();
-        H.again.forEach((at, i) => { const kk = E(t, at, .3, .45); if (kk > 0) logo(c, x0 + 100 + i * 150, y0 + 80 - 40 * Math.max(0, 1 - (t - at) / .3), 38 * Math.min(1.12, kk)); });
-        const line = (p, col, lift, end) => { if (p <= 0) return; c.save(); c.strokeStyle = col; c.lineWidth = 14; c.lineJoin = 'round'; c.beginPath(); const n = 30; let ex = 0, ey = 0; for (let i = 0; i <= n * p; i++) { const u = i / n; ex = x0 + 24 + u * (x1 - x0 - 48); ey = y0 - 24 - (1 - Math.exp(-u * 2.4)) / (1 - Math.exp(-2.4)) * (y0 - y1 - 70) * lift; i ? c.lineTo(ex, ey) : c.moveTo(ex, ey); } c.stroke(); c.restore(); glow(c, ex, ey, 56, .55); if (p >= 1) end(ex, ey); };
-        line(ss(seg(t, H.grow, H.grow + 1.0)), GOLD, 1, (x, y) => eyeIcon(c, x + 10, y - 64, .6 * Math.min(1, E(t, H.grow + 1.0, .3, .5)), 1));
-        line(ss(seg(t, H.like, H.like + 1.0)), '#e8664f', .62, (x, y) => heart(c, x + 10, y - 54, 44, Math.min(1.12, E(t, H.like + 1.0, .3, .5)), '#e8664f')); }
-    }
-    // the line splits into the week's seven days; MIRA lands on them in rhythm; then the days round into the audience's faces
-    if (wk > 0) { const cw = 104, chh = 150, gap = 14, row0 = HX - (7 * cw + 6 * gap) / 2, ry = 1180;
-      for (let d = 0; d < 7; d++) { const fx = HX - 330 + d * (660 / 7), cx = row0 + d * (cw + gap) + cw / 2; let x = lerp(fx + 660 / 14, cx, wk), y = lerp(1600, ry, wk), w = lerp(660 / 7 - 4, cw, wk), h = lerp(14, chh, wk), r = lerp(7, 18, wk), a = 1;
-        if (au > 0) { if (d < 5) { const fxx = 200 + d * 170; x = lerp(x, fxx, au); y = lerp(y, 1420, au); w = lerp(w, 156, au); h = lerp(h, 156, au); r = lerp(r, 78, au); } else a = 1 - au; }
-        if (a <= 0) continue; c.save(); c.globalAlpha = a; c.fillStyle = au > .5 ? CREAM : 'rgba(246,239,220,.18)'; c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, r); c.fill();
-        if ((d % 2 === 0 || d === 5) && au < .5) { const kk = E(t, H.rhythm + d * .1, .3, .45); if (kk > 0) logo(c, x, y, 34 * Math.min(1.12, kk) * (1 - au * 2)); }
-        if (d < 5 && au > .4) { const P = { id: 'a' + d, skin: AUD[d][0], fem: AUD[d][1], smile: 1, blink: blinkAt(t, d) }; c.save(); c.beginPath(); c.arc(x, y, w / 2 - 6, 0, 7); c.clip(); drawMascot(c, { ...P, x, y: y + (w / 2) * 1.7, s: (w / 2) / 66, f: 0, shadow: false }); c.restore(); c.strokeStyle = GOLD2; c.lineWidth = 6; c.beginPath(); c.arc(x, y, w / 2 - 3, 0, 7); c.stroke(); if (t > H.audience + .4 + d * .1) logo(c, x + w * .36, y - h * .36, 22 * Math.min(1.12, E(t, H.audience + .4 + d * .1, .3, .5))); }
-        c.restore(); }
-      if (t > H.end) { glow(c, HX, 1500, 420, .3 * ss(seg(t, H.end, H.end + .5))); spark(c, HX, 1500, t, H.end, 8, 360, 18); } }
-    c.restore();
+    const H = HIT, cam = camAt(t), prevCam = camAt(t - 1 / 24), vx = cam.x - prevCam.x, vy = cam.y - prevCam.y, speed = Math.hypot(vx, vy);
+    const x = actx; x.setTransform(K, 0, 0, K, 0, 0); x.clearRect(0, 0, 1080, 1920);
+    world(x, t, cam);
+    scene(x, t, cam);
+    fgBokeh(x, cam);
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(bufA, 0, 0);
+    if (speed > 4) { const n = 6, L = Math.min(90, speed * 1.3) * K, ux = -vx / speed, uy = -vy / speed; for (let i = 1; i < n; i++) { c.globalAlpha = 1 / (i + 1); c.drawImage(bufA, ux * L * i / n, uy * L * i / n); } c.globalAlpha = 1; }
+    c.restore(); c.setTransform(K, 0, 0, K, 0, 0);
   },
 };
+function scene(c, t, cam) {
+  const H = HIT, S = SCN(), at = i => S[i], m = i => ss(clamp((t - S[i]) / MOVE));   // m(i): the change into scene i (0..1)
+  const tilt = cam.moving ? Math.sin(cam.p * Math.PI) * .06 * (cam.i % 2 ? 1 : -1) : 0;
+  c.save(); c.translate(HX, HY); c.rotate(tilt); c.scale(1.15, 1.15); c.translate(-HX, -HY);
+  // 1 · the phone, its feed; MIRA keeps showing up (+1); the empty cart → it turns into the post card
+  const a1 = m(1), a2 = m(2), a3 = m(3), a4 = m(4), a5 = m(5), a6 = m(6), a7 = m(7);
+  if (a2 < 1) {
+    const w = lerp(440, 520, a1), h = lerp(800, 600, a1), fr = lerp(1, 0, a1);
+    c.save(); c.globalAlpha = 1 - a2;
+    if (fr > 0) soft(c, () => { c.fillStyle = INK; c.beginPath(); c.roundRect(HX - w / 2, HY - h / 2, w, h, lerp(64, 28, a1)); c.fill(); }, 50, 24, .22);
+    const inset = 18 * fr; c.fillStyle = a1 > .5 ? '#ffffff' : '#e9edf2'; c.beginPath(); c.roundRect(HX - w / 2 + inset, HY - h / 2 + inset, w - 2 * inset, h - 2 * inset, lerp(46, 28, a1)); if (fr < 1) soft(c, () => c.fill()); else c.fill();
+    if (a1 < .5) { c.save(); c.beginPath(); c.roundRect(HX - w / 2 + inset, HY - h / 2 + inset, w - 2 * inset, h - 2 * inset, 46); c.clip(); c.globalAlpha *= 1 - a1 * 2; const sc = KF(t, [[0, 0], [H.seen, 330], [H.insta, 680], [H.never, 1000], [H.unk, 1060]]); for (let i = 0; i < 8; i++) { const brand = i === 2 || i === 4 || i === 6, y = HY - 360 + i * 420 - sc; if (y > HY + 420 || y < HY - 900) continue; feedPost(c, HX, y, 360, brand); } c.restore(); c.fillStyle = INK; c.beginPath(); c.roundRect(HX - 60, HY - h / 2 + 28, 120, 24, 12); c.fill();
+      [H.seen, H.insta].forEach((tt, i) => gbadge(c, HX - 250, HY - 300 + i * 120, 46, E(t, tt, .3, .5) * (1 - ss(seg(t, tt + 1.4, tt + 1.7))), 'eye'));
+      xmark(c, HX + 250, HY + 300, 54, E(t, H.never, .3, .5)); gbadge(c, HX + 250, HY + 180, 50, E(t, H.never - .15, .3, .5), 'cart', 'white'); }
+    // the post card: the ring of exposures, the logo from grey to colour, the eye count, the question, the bookmark; it flips on each new exposure; then it becomes the coin
+    if (a1 > .4) { c.globalAlpha *= clamp((a1 - .4) / .4) * (1 - ss(seg(t, H.name - .3, H.name)));
+      const flips = ss(seg(t, H.few, H.name - .3)) * Math.PI * 6, sx = Math.cos(flips), rp = KF(t, [[H.unk + .2, .15], [H.second, .15], [H.second + .5, .45], [H.few, .45], [H.name - .3, 1]]);
+      c.save(); c.strokeStyle = 'rgba(31,179,163,.18)'; c.lineWidth = 16; c.beginPath(); c.arc(HX, HY, 400, 0, 7); c.stroke(); c.strokeStyle = TEAL; c.lineCap = 'round'; c.beginPath(); c.arc(HX, HY, 400, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * rp); c.stroke(); c.restore();
+      c.save(); c.translate(HX, HY); c.scale(Math.max(.03, Math.abs(sx)), 1); c.translate(-HX, -HY); c.fillStyle = '#e1e5ec'; c.fillRect(HX - 220, HY - 270, 140, 12); ell(c, HX - 236, HY - 264, 9, 9, TEAL);
+        const gq = c.createLinearGradient(0, HY - 230, 0, HY + 160); gq.addColorStop(0, '#d8f8f3'); gq.addColorStop(1, '#8de8dc'); c.fillStyle = gq; c.beginPath(); c.roundRect(HX - 226, HY - 230, 452, 380, 18); c.fill();
+        mira(c, HX, HY - 40, 120, { grey: KF(t, [[H.unk, 1], [H.second, 1], [H.second + .6, .45], [H.few, .45], [H.few + .9, 0]]) });
+        c.fillStyle = '#e1e5ec'; c.fillRect(HX - 226, HY + 186, 300, 12); c.fillRect(HX - 226, HY + 212, 200, 12); c.restore();
+      const cnt = t < H.second ? 1 : t < H.few ? 2 : Math.min(5, 2 + Math.floor(ss(seg(t, H.few, H.name - .3)) * 3.99)); gbadge(c, HX - 310, HY - 330, 52, E(t, H.unk + .3, .3, .5), cnt);
+      gbadge(c, HX - 310, HY - 220, 34, E(t, H.unk + .4, .3, .5), 'eye', 'white');
+      gbadge(c, HX + 310, HY - 330, 52, E(t, H.q, .3, .55) * (1 - ss(seg(t, H.second, H.second + .3))), 'q', 'white');
+      gbadge(c, HX + 310, HY - 330, 52, E(t, H.memo, .3, .55), 'mark', 'white'); }
+    c.restore(); }
+  // 2 · the coin: MIRA, its name, the bell (the card folds into it)
+  const coinIn = ss(seg(t, H.name - .3, H.name + .15)), coinOut = m(2);
+  if (coinIn > 0 && coinOut < 1) { c.save(); c.globalAlpha = coinIn * (1 - coinOut); const r = lerp(260, 200, coinIn); mira(c, HX, HY - 40, r * (1 - .3 * coinOut), { name: E(t, H.name + .1, .35, .45) * (1 - coinOut) });
+    if (t > H.bell) { gbadge(c, HX + 250, HY + 180, 60, E(t, H.bell, .3, .5), 'bell'); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(31,179,163,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(HX + 250, HY + 180, 80 + q * 26, -.6, .6); c.stroke(); } } c.restore(); }
+  // 3 · the need: the coin becomes a product card, she stands beside it; the bottle's outline, then solid; MIRA's tag lands on it
+  if (a2 > 0 && a3 < 1) { c.save(); c.globalAlpha = Math.min(1, a2 * 1.4) * (1 - a3); const w = lerp(200, 400, a2), h = lerp(200, 520, a2); gcard(c, HX + 120, HY, w, h, lerp(100, 30, a2));
+    if (a2 > .6) { bottleG(c, HX + 120, HY + 170, 1.2, t > H.product); const ok = E(t, H.offers, .3, .55); if (ok > 0) mira(c, HX + 120, HY + 30, 40 * Math.min(1.12, ok)); if (t > H.product) glow(c, HX + 120, HY + 40, 160, .25 * Math.max(0, 1 - (t - H.product) / 1.2)); }
+    mascot(c, HER({ x: lerp(HX - 230, HX - 260, a2), y: HY + 470, f: .45, alpha: 1, smile: .9, blink: blinkAt(t, 3), look: .2 })); c.restore(); }
+  // 4 · first to mind: the card splits into a row of brand coins; MIRA rises, ringed in teal
+  if (a3 > 0 && a4 < 1) { c.save(); c.globalAlpha = Math.min(1, a3 * 1.4) * (1 - a4); const f1 = ss(seg(t, H.first - .4, H.first + .3));
+    [0, 1, 2, 3, 4].forEach(i => { const tx = HX + (i - 2) * 170, x = lerp(HX + 120, tx, a3), isM = i === 3; let y = HY - 60, r = 66; if (isM) { y = lerp(y, HY - 330, f1); r = lerp(66, 110, f1); } c.save(); if (!isM) c.globalAlpha *= lerp(1, .45, f1); if (isM) { mira(c, lerp(x, HX, f1), y, r); if (f1 > 0) { c.strokeStyle = TEAL; c.lineWidth = 8; c.beginPath(); c.arc(lerp(x, HX, f1), y, r + 22 * f1, 0, 7 * f1); c.stroke(); } } else gcoin(c, x, y, r, 'grey'); c.restore(); if (!isM) gbadge(c, x + 46, y - 60, 22, E(t, H.mind + .3 + i * .08, .3, .5) * (1 - f1), 'q', 'white'); });
+    mascot(c, HER({ x: HX, y: HY + 480, f: 0, smile: f1 > .5 ? 1 : .8, blink: blinkAt(t, 3), look: -.3 })); if (f1 >= 1) spark(c, HX, HY - 330, t, H.first + .3, 6, 170, 16); c.restore(); }
+  // 5 · the Mere Exposure Effect: the coins merge into a teal eye badge; copies orbit it
+  if (a4 > 0 && a5 < 1) { c.save(); c.globalAlpha = Math.min(1, a4 * 1.4) * (1 - a5); const r = lerp(110, 190, a4); c.strokeStyle = 'rgba(62,214,196,.35)'; c.lineWidth = 6; c.beginPath(); c.arc(HX, HY - 60, r + 70, 0, 7); c.stroke(); gbadge(c, HX, lerp(HY - 330, HY - 60, a4), r, 1, 'eye');
+    for (let q = 0; q < 7; q++) { const an = q / 7 * Math.PI * 2 + (t - H.term) * .9, rr = 340 * ss(seg(t, H.mere - .2 + q * .05, H.mere + .4 + q * .05)); if (rr > 1) mira(c, HX + Math.cos(an) * rr, HY - 60 + Math.sin(an) * rr * .75, 40); } c.restore(); }
+  // 6 · the chart card: exposures land, familiarity climbs (eye badge), liking follows (heart badge)
+  if (a5 > 0 && a7 < 1) { c.save(); c.globalAlpha = Math.min(1, a5 * 1.4) * (1 - a7); const w = lerp(380, 640, a5), h = lerp(380, 520, a5); gcard(c, HX, HY, w, h, lerp(190, 32, a5));
+    if (a5 > .6 && a6 < .5) { c.save(); c.globalAlpha *= 1 - a6 * 2; const x0 = HX - 260, x1 = HX + 260, y0 = HY + 180, y1 = HY - 190; c.strokeStyle = '#c9cfda'; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, y1); c.lineTo(x0, y0); c.lineTo(x1, y0); c.stroke();
+      H.again.forEach((tt, i) => { const kk = E(t, tt, .3, .45); if (kk > 0) mira(c, x0 + 80 + i * 120, y0 + 50, 26 * Math.min(1.12, kk)); });
+      const line = (p, col, lift) => { if (p <= 0) return null; c.save(); c.strokeStyle = col; c.lineWidth = 12; c.lineJoin = 'round'; c.lineCap = 'round'; c.beginPath(); const n = 30; let ex = 0, ey = 0; for (let i = 0; i <= n * p; i++) { const u = i / n; ex = x0 + 20 + u * (x1 - x0 - 40); ey = y0 - 20 - (1 - Math.exp(-u * 2.4)) / (1 - Math.exp(-2.4)) * (y0 - y1 - 40) * lift; i ? c.lineTo(ex, ey) : c.moveTo(ex, ey); } c.stroke(); c.restore(); return [ex, ey]; };
+      const e1 = line(ss(seg(t, H.grow, H.grow + 1.0)), TEAL, 1); if (e1) gbadge(c, e1[0] + 10, e1[1] - 60, 40, E(t, H.grow + 1.0, .3, .5), 'eye');
+      const e2 = line(ss(seg(t, H.like, H.like + 1.0)), CORAL, .6); if (e2) gbadge(c, e2[0] + 10, e2[1] - 54, 38, E(t, H.like + 1.0, .3, .5), 'heart', 'white'); c.restore(); }
+    // 7 · the chart becomes the week: seven day cells; MIRA lands on them in rhythm
+    if (a6 > 0 && a7 < 1) { c.save(); c.globalAlpha *= Math.min(1, a6 * 1.6) * (1 - a7); c.fillStyle = TEAL2; c.beginPath(); c.roundRect(HX - w / 2 + 30, HY - h / 2 + 30, w - 60, 40, 12); c.fill(); for (let d = 0; d < 7; d++) { const cx = HX - 255 + d * 85, cy = HY + 40; c.fillStyle = '#eef1f4'; c.beginPath(); c.roundRect(cx - 36, cy - 100, 72, 200, 14); c.fill(); if (d % 2 === 0 || d === 5) { const kk = E(t, H.rhythm + d * .1, .3, .45); if (kk > 0) mira(c, cx, cy, 30 * Math.min(1.12, kk)); } } c.restore(); }
+    c.restore(); }
+  // 8 · the audience: a crowd of people; lines run from MIRA to some of them and they light up
+  if (a7 > 0) { const top = [HX, HY - 400]; c.save(); c.globalAlpha = Math.min(1, a7 * 1.4); gbadge(c, top[0], top[1], 80, a7, 'eye'); mira(c, top[0], top[1], 70 * a7);
+    const lit = [[0, 1], [1, 3], [2, 0], [2, 4], [3, 2], [1, 1]];
+    for (let r = 0; r < 3; r++) for (let q = 0; q < 5; q++) { const px = HX - 280 + q * 140, py = HY - 60 + r * 200, isLit = lit.findIndex(([a, b]) => a === q && b === r), lk = isLit >= 0 ? ss(seg(t, H.audience + .3 + isLit * .12, H.audience + .6 + isLit * .12)) : 0;
+      if (lk > 0) { c.save(); c.strokeStyle = TEAL2; c.lineWidth = 4; c.globalAlpha *= lk; c.beginPath(); c.moveTo(top[0], top[1] + 70); c.quadraticCurveTo(px, top[1] + 120, lerp(top[0], px, lk), lerp(top[1] + 70, py - 60, lk)); c.stroke(); c.restore(); }
+      pawn(c, px, py, 1.25, lk > .5 ? 'blue' : 'grey', E(t, S[7] + .1 + (r * 5 + q) * .025, .3, .45)); if (lk >= 1 && t > H.end) heart(c, px + 26, py - 52, 12, Math.min(1, (t - H.end) * 3), CORAL); }
+    c.restore(); }
+  c.restore();
+}
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
@@ -200,14 +227,14 @@ const PAGES = (() => {   // group the words into short pages: a new page after a
 function captions(c, t) {
   c.setTransform(K, 0, 0, K, 0, 0);
   // behind the words, plain: the same blue as the top of every scene, fading into the picture
-  c.fillStyle = TOP; c.fillRect(0, 0, 1080, 660); const g = c.createLinearGradient(0, 660, 0, 760); g.addColorStop(0, TOP); g.addColorStop(1, 'rgba(17,26,82,0)'); c.fillStyle = g; c.fillRect(0, 660, 1080, 100);
+  c.fillStyle = TOP; c.fillRect(0, 0, 1080, 660); const g = c.createLinearGradient(0, 660, 0, 760); g.addColorStop(0, TOP); g.addColorStop(1, 'rgba(238,241,244,0)'); c.fillStyle = g; c.fillRect(0, 660, 1080, 100);
   const p = PAGES.find(p => t >= p.t0 && t < p.t1); if (!p) return;
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
   p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
-    const hot = w === now, col = hot || w.key ? GOLD : CREAM;
+    const hot = w === now, col = hot || w.key ? '#12a393' : '#14215e';   // this film is light: navy words, the spoken and key words in teal
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
-    c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10; c.shadowOffsetY = 3; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
+    c.shadowColor = 'rgba(20,40,90,.12)'; c.shadowBlur = 6; c.shadowOffsetY = 2; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
     c.restore(); });
   c.restore();
 }
@@ -221,7 +248,7 @@ function endCard(c, t) {
   c.save(); c.globalAlpha = u * .75; c.filter = u < 1 ? `blur(${(1 - u) * 6 * K}px)` : 'none';
   c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO_W, -w / 2, -h / 2, w, h); c.restore();
 }
-function vignette(c) { c.setTransform(1, 0, 0, 1, 0, 0); const g = c.createRadialGradient(W / 2, H * .5, H * .3, W / 2, H * .5, H * .8); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, 'rgba(4,6,30,.4)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }
+function vignette(c) { c.setTransform(1, 0, 0, 1, 0, 0); const g = c.createRadialGradient(W / 2, H * .5, H * .3, W / 2, H * .5, H * .8); g.addColorStop(0, 'rgba(120,135,165,0)'); g.addColorStop(1, 'rgba(120,135,165,.18)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }
 const WHIP = .24, PUNCH = .26, DREAM = .6, CLOCK = .55, PAGE = .6;
 function draw(c, t) {
   if (t >= STORY) return endCard(c, t);
