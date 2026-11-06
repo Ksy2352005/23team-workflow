@@ -173,10 +173,10 @@ const SHOT = {
     const sw = SWIPES(), step = (420 - 70) * 1.2 + 26; let scroll = 0, thumb = null; sw.forEach(s => { scroll += step * ss(clamp((t - s) / .35)); if (t > s - .12 && t < s + .4) thumb = (t - s + .12) / .52; });
     // the left panel: her, in each place
     const PL = SPLIT_PLACES(); let pi = 0; while (pi + 1 < PL.length && t >= PL[pi + 1][0]) pi++;
-    c.save(); c.translate(LP.x, LP.y); c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(10, 14, LP.w, LP.h, 36); c.fill(); c.beginPath(); c.roundRect(0, 0, LP.w, LP.h, 36); c.clip();
+    const away = ss(seg(t, 5.2, 5.62)); c.save(); c.globalAlpha = 1 - away; c.translate(LP.x - 320 * away, LP.y); c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(10, 14, LP.w, LP.h, 36); c.fill(); c.beginPath(); c.roundRect(0, 0, LP.w, LP.h, 36); c.clip();
     panelPlace(c, PL[pi][1], t); if (pi > 0) { const w = ss(clamp((t - PL[pi][0]) / .3)); if (w < 1) { c.save(); c.beginPath(); c.rect(0, 0, LP.w * (1 - w), LP.h); c.clip(); panelPlace(c, PL[pi - 1][1], t); c.restore(); c.fillStyle = GOLD; c.fillRect(LP.w * (1 - w) - 4, 0, 8, LP.h); } }
     const smile = t > H.name ? 1 : t > H.second ? .9 : .75; mascot(c, HER({ x: 235, y: 905, s: 1.55, f: .2, smile, look: .35, blink: blinkAt(t, 3), handR: [278, 800] })); handPhone(c, 282, 790, .95); if (thumb != null) glow(c, 282, 790, 50, .45 * Math.sin(clamp(thumb) * Math.PI));
-    c.restore(); c.strokeStyle = 'rgba(246,239,220,.25)'; c.lineWidth = 4; c.beginPath(); c.roundRect(LP.x, LP.y, LP.w, LP.h, 36); c.stroke();
+    c.restore(); c.save(); c.globalAlpha = 1 - away; c.strokeStyle = 'rgba(246,239,220,.25)'; c.lineWidth = 4; c.beginPath(); c.roundRect(LP.x - 320 * away, LP.y, LP.w, LP.h, 36); c.stroke(); c.restore();
     // the right: her phone, big
     const px = 790, py = 1270;
     scrollerPhone(c, t, px, py, 420, 800, { scroll, adAt: AD_AT, thumb, grey: n => n === 9 ? 1 : n === 11 ? KF(t, [[H.second, .6], [H.memo, .15]]) : 0, gold: n => n >= 11, buyOff: false });
@@ -191,9 +191,10 @@ const SHOT = {
     if (t > H.unk - .2) { c.save(); c.globalAlpha = ss(seg(t, H.unk - .2, H.unk + .2)); c.fillStyle = 'rgba(246,239,220,.15)'; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, mw, 32, 16); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, Math.max(32, mw * mt), 32, 16); c.fill(); eyeIcon(c, mx - mw / 2 - 46, my, .34, 1); if (mt >= .99) heart(c, mx + mw / 2 + 40, my, 20, 1, '#e8664f'); c.restore(); }
   },
   recog(c, t) {   // how the mere exposure effect works: one mark in the centre; each time it's seen, an ad flies in and is absorbed into it with a ripple: it gains colour and sharpness, the familiarity ring fills a step, the count ticks up: unknown (1×), noticed (2×), then again and again (3×, 4×, 5×) until it's familiar and liked
-    const H = HIT; bg(c, '#2c46a0'); const X = 540, Y = 1230, R = 150; c.save(); c.translate(X, Y); c.scale(1.2, 1.2); c.translate(-X, -Y);
-    const hits = [H.unk + .1, H.second, H.few, H.few + .5, H.few + 1.0], from = [[1.1, -.3], [-1.1, -.2], [1, .5], [-1, .55], [0, -1.2]];
+    const H = HIT; bg(c, '#2c46a0'); const X = 540, Y = 1130, R = 150; c.save(); c.translate(X, Y); c.scale(1.1, 1.1); c.translate(-X, -Y);
+    const hits = [H.unk + .15, H.second, H.few, H.few + .5, H.few + 1.0], from = [[1.1, -.3], [-1.1, -.2], [1, .5], [-1, .55], [0, -1.2]];
     const n = hits.filter(h => t > h + .4).length, fam = KF(t, [[H.unk, 0], [hits[0] + .45, .08], [hits[1] + .45, .4], [hits[2] + .45, .6], [hits[3] + .45, .78], [hits[4] + .45, .92], [H.name, 1]]);
+    const intro = ss(seg(t, 5.7, 6.2)); c.globalAlpha = intro;
     // the familiarity ring with its five steps
     c.save(); c.lineCap = 'round'; c.lineWidth = 16; c.strokeStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.arc(X, Y, R + 90, 0, 7); c.stroke(); c.strokeStyle = GOLD; c.beginPath(); c.arc(X, Y, R + 90, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fam); c.stroke(); c.restore();
     for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + Math.PI * 2 * (k + 1) / 5, on = n > k; ell(c, X + Math.cos(a) * (R + 90), Y + Math.sin(a) * (R + 90), on ? 12 : 8, on ? 12 : 8, on ? CREAM : 'rgba(246,239,220,.3)'); }
@@ -202,16 +203,22 @@ const SHOT = {
     c.save(); c.globalAlpha = .35 + .65 * Math.min(1, fam * 1.6); if (fam < 1) c.filter = `grayscale(${1 - fam}) blur(${(1 - fam) * 7 * K}px)`; mark(c, X, Y, R * (1 + .04 * Math.sin(t * 2))); c.restore();
     if (fam < .35) { c.save(); c.strokeStyle = `rgba(246,239,220,${.7 * (1 - fam / .35)})`; c.lineWidth = 5; c.setLineDash([18, 14]); c.lineDashOffset = -t * 30; c.beginPath(); c.arc(X, Y, R + 18, 0, 7); c.stroke(); c.restore(); }
     // the ads flying in and being absorbed; a ripple each time
-    hits.forEach((h, i) => { const u = seg(t, h - .45, h + .05); if (u > 0 && u < 1) { const e = ss(u), [fx, fy] = from[i], x = lerp(X + fx * 640, X, e), y = lerp(Y + fy * 640, Y, e), sc = lerp(1, .25, e * e), w = 170;
+    { const u = seg(t, 5.62, H.unk + .2); if (u < 1) { const e = ss(u), px = lerp(767, X, e), py = lerp(1257, Y, e), sc = lerp(1 / 1.1, .12, e * e), w = 420, h = 800;   // starts exactly where (and as big as) the phone was in the split
+        const step = (420 - 70) * 1.2 + 26; let scroll = 0; SWIPES().forEach(sw => { scroll += step * ss(clamp((5.62 - sw) / .35)); }); c.save(); c.globalAlpha = 1 - ss(clamp((u - .75) / .25)); c.translate(px, py); c.scale(sc, sc); scrollerPhone(c, t, 0, 0, w, h, { scroll, adAt: AD_AT, thumb: null, grey: n => n === 9 ? 1 : 0, gold: () => false, buyOff: false }); c.restore(); } }
+    hits.forEach((h, i) => { if (i === 0) { const r = seg(t, h + .05, h + .9); if (r > 0 && r < 1) { c.save(); c.strokeStyle = `rgba(236,189,74,${.8 * (1 - r)})`; c.lineWidth = 6; c.beginPath(); c.arc(X, Y, R + 20 + r * 200, 0, 7); c.stroke(); c.restore(); } return; } const u = seg(t, h - .45, h + .05); if (u > 0 && u < 1) { const e = ss(u), [fx, fy] = from[i], x = lerp(X + fx * 640, X, e), y = lerp(Y + fy * 640, Y, e), sc = lerp(1, .25, e * e), w = 170;
         c.save(); c.globalAlpha = 1 - ss(clamp((u - .7) / .3)); c.translate(x, y); c.rotate((1 - e) * fx * .4); c.scale(sc, sc); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(-w / 2 + 6, -w * .6 + 8, w, w * 1.2, 18); c.fill(); c.fillStyle = '#fbf6ea'; c.beginPath(); c.roundRect(-w / 2, -w * .6, w, w * 1.2, 18); c.fill(); c.fillStyle = '#1f2c62'; c.fillRect(-w / 2 + 10, -w * .6 + 34, w - 20, w - 20); mark(c, 0, -w * .6 + 34 + (w - 20) / 2, 44); c.fillStyle = GOLD; c.beginPath(); c.roundRect(-w / 2 + 10, w * .6 - 34, w - 20, 22, 11); c.fill(); c.restore(); }
       const r = seg(t, h + .05, h + .9); if (r > 0 && r < 1) { c.save(); c.strokeStyle = `rgba(236,189,74,${.8 * (1 - r)})`; c.lineWidth = 6; c.beginPath(); c.arc(X, Y, R + 20 + r * 200, 0, 7); c.stroke(); c.restore(); } });
+    // one bold icon above the count, matching the words: unknown (?), noticed (an eye), again and again (repeat), familiar: it rings a bell
+    const IC = [[H.unk + .5, 'q'], [H.second + .1, 'eye'], [H.few + .1, 'again'], [H.name, 'bell']]; let ic = -1; IC.forEach(([at], k) => { if (t >= at) ic = k; });
+    if (ic >= 0) { const [at, kind] = IC[ic], k = E(t, at, .3, .55), ix = X, iy = Y + 340, r = 64; scaled(c, ix, iy, Math.min(1.12, k), () => { ell(c, ix + 4, iy + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, ix, iy, r, r, CREAM); c.strokeStyle = GOLD2; c.lineWidth = 8; c.beginPath(); c.arc(ix, iy, r * .9, 0, 7); c.stroke();
+        if (kind === 'q') text(c, '?', ix, iy + 6, 92, NAVY);
+        if (kind === 'eye') { c.fillStyle = NAVY; c.beginPath(); c.moveTo(ix - 44, iy); c.quadraticCurveTo(ix, iy - 42, ix + 44, iy); c.quadraticCurveTo(ix, iy + 42, ix - 44, iy); c.fill(); ell(c, ix, iy, 17, 17, GOLD); ell(c, ix + 5, iy - 5, 5, 5, CREAM); }
+        if (kind === 'again') { c.strokeStyle = NAVY; c.lineWidth = 10; c.lineCap = 'round'; for (const d of [0, Math.PI]) { c.beginPath(); c.arc(ix, iy, 30, d + .3, d + Math.PI - .2); c.stroke(); const a = d + Math.PI - .2, hx = ix + Math.cos(a) * 30, hy = iy + Math.sin(a) * 30; c.fillStyle = NAVY; c.beginPath(); c.moveTo(hx + Math.cos(a + 1.9) * 16, hy + Math.sin(a + 1.9) * 16); c.lineTo(hx + Math.cos(a - .3) * 14, hy + Math.sin(a - .3) * 14); c.lineTo(hx + Math.cos(a - 2.4) * 14, hy + Math.sin(a - 2.4) * 14); c.closePath(); c.fill(); } }
+        if (kind === 'bell') { const sw = t > H.bell ? .45 * Math.sin((t - H.bell) * 18) * Math.exp(-(t - H.bell) * 2.2) : 0; c.save(); c.translate(ix, iy - 4); c.rotate(sw); c.fillStyle = GOLD2; c.beginPath(); c.moveTo(-34, 22); c.quadraticCurveTo(-32, -36, 0, -38); c.quadraticCurveTo(32, -36, 34, 22); c.closePath(); c.fill(); c.fillRect(-40, 18, 80, 10); ell(c, 0, 34, 9, 9, GOLD2); c.restore(); } });
+      if (kind === 'bell' && t > H.bell) for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.75 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 7; for (const d of [-1, 1]) { c.beginPath(); c.arc(ix, iy, r + 20 + q * 24, d > 0 ? -.6 : Math.PI - .6, d > 0 ? .6 : Math.PI + .6); c.stroke(); } } }
     // the count under it
-    if (n > 0) { const pk = E(t, hits[n - 1] + .4, .3, .5); scaled(c, X, Y + R + 190, Math.min(1.15, pk), () => { c.fillStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.roundRect(X - 90, Y + R + 160, 180, 64, 32); c.fill(); c.font = '700 44px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = n >= 5 ? GOLD : CREAM; c.fillText(n + '×', X, Y + R + 194); }); }
-    // the reactions: unknown, noticed, familiar (liked), it rings a bell
-    badge(c, 'q', X + 210, Y - 210, 44, E(t, H.q, .3, .5) * (1 - ss(seg(t, hits[1] - .3, hits[1]))));
-    badge(c, 'pin', X + 210, Y - 210, 44, E(t, H.memo, .3, .5) * (1 - ss(seg(t, hits[2] - .3, hits[2]))));
-    if (t > H.name) { heart(c, X, Y - R - 90, 30, Math.min(1.12, E(t, H.name, .3, .5)), '#e8664f'); spark(c, X, Y, t, H.name, 8, 300, 18); }
-    const bk = E(t, H.bell, .3, .45); if (bk > 0) { badge(c, 'bell', X + 220, Y - 220, 46 * Math.min(1.1, bk), 1); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(X + 220, Y - 220, 66 + q * 22, -.6, .6); c.stroke(); } }
+    if (n > 0) { const pk = E(t, hits[n - 1] + .4, .3, .5), cy2 = Y + 450; scaled(c, X, cy2, Math.min(1.15, pk), () => { c.fillStyle = 'rgba(246,239,220,.16)'; c.beginPath(); c.roundRect(X - 100, cy2 - 36, 200, 72, 36); c.fill(); c.font = '700 50px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = n >= 5 ? GOLD : CREAM; c.fillText(n + '×', X, cy2 + 2); }); }
+    if (t > H.name) spark(c, X, Y, t, H.name, 8, 300, 18);
     c.restore();
   },
   mirror(c, t) {   // one day she needs it: at her bathroom mirror; her reflection; the cream jar on the shelf is empty, puff; she touches her dry cheek

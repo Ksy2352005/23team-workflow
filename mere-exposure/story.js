@@ -3,7 +3,7 @@
 export const STORY = 41.5, DUR = 43.7;   // in the timeline's own clock (made for the voice at 1.22x)
 export const TS = 1.22 / 1.18;   // the voice now runs at 1.18x: real time = timeline time × TS
 export const VO = 'refs/voiceover-hu-x1.18.mp3';
-export const SHOTS = [[0, 'split', 'cut'], [5.9, 'recog', 'soft'], [15.15, 'mirror', 'soft'], [18.3, 'product', 'soft'], [19.85, 'shop', 'soft'], [23.75, 'eye', 'soft'], [27.4, 'chart', 'soft'], [36.2, 'finale', 'soft']];
+export const SHOTS = [[0, 'split', 'cut'], [5.62, 'recog', 'cut'], [15.15, 'mirror', 'soft'], [18.3, 'product', 'soft'], [19.85, 'shop', 'soft'], [23.75, 'eye', 'soft'], [27.4, 'chart', 'soft'], [36.2, 'finale', 'soft']];
 // the beats, on the words of the voice
 export const HIT = {
   seen: 1.68, insta: 2.62, never: 4.1,
