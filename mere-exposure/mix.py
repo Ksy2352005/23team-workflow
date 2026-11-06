@@ -16,7 +16,7 @@ for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
-STORY = 41.20
+STORY = 42.907
 def buf(): return np.zeros((N, 2))
 def verb(x, t60=.7, wet=.25):
     n = int(t60 * SR); ir = rng.standard_normal(n) * np.exp(-6.9 * np.arange(n) / n); ir = lp(ir, 5000) * .06
@@ -89,8 +89,7 @@ def rise(d, v): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(np.linspace(330,
 def tick(v=1.0, p=1.0): d = .04; return norm(bp(noise(d), 2500 * p, 6000 * p) * env_exp(d, .004)) * v
 def tap(v=1.0): return mx(click(v, 1.4), lp(thump(.05, 200), 900) * v * .3)   # a finger tapping the screen
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
-for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
-for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
+for t in HIT['whips'] + HIT['punches']: add(fx, lp(swish(.7, .16), 3500), t - .05, 1, 0)   # a soft whoosh under each dissolve
 for t in HIT['kicks']: add(fx, lp(thump(.12, 80), 300) * .1, t, 1, 0)
 for t in HIT.get('dives', []): add(fx, mx(lp(swish(.6, .2), 4500), verb(chime(1568, .04, .6), .7, .3)), t - .05, 1, .2)   # diving into her phone
 for t in HIT.get('rises', []): add(fx, mx(lp(swish(.55, .17, False), 4000), lp(thump(.15, 90), 300) * .15), t - .05, 1, .2)   # rising back out into her day
@@ -127,7 +126,7 @@ _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.lin
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— voice ——
-vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.22.mp3'))   # the voice at 1.22×, pitch kept
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.18.mp3'))   # the voice at 1.18×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)

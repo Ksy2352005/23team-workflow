@@ -2,7 +2,7 @@
 // The story plays in the middle of the frame; the script is written word by word in the top left as it is spoken.
 import { lerp, seg, ss, hash, clamp } from '/core/lib.js';
 import { drawMascot, BASE_H } from './char2d.js';
-import { DUR, STORY, SHOTS, HIT } from './story.js';
+import { DUR, STORY, SHOTS, HIT, TS } from './story.js';
 import { WORDS } from './captions.js';
 
 await Promise.all([document.fonts.load('74px "Lilita One"', 'VIRÁG Ft?'), document.fonts.load('700 74px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű„”…abcABC')]);
@@ -232,7 +232,7 @@ const SHOT = {
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1310); c.scale(1.08, 1.08); c.translate(-540, -1310); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['többször','Instagramon','soha','először','ismeretlen','Másodszor','logóját','ismerősen','szükséged','első','Mere','Exposure','Effectnek','újra','ismerősség','szimpátiánkat','rendszeresen','célközönsége']);
@@ -273,12 +273,19 @@ function endCard(c, t) {
   c.translate(W / 2, H / 2); c.scale(sc, sc); c.drawImage(LOGO_W, -w / 2, -h / 2, w, h); c.restore();
 }
 function vignette(c) { c.setTransform(1, 0, 0, 1, 0, 0); const g = c.createRadialGradient(W / 2, H * .5, H * .3, W / 2, H * .5, H * .8); g.addColorStop(0, 'rgba(4,6,30,0)'); g.addColorStop(1, 'rgba(4,6,30,.4)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }
-const DIVE = .6, WHIP = .24, PUNCH = .26, DREAM = .6, CLOCK = .55, PAGE = .6;
+const SOFT = .7, DIVE = .6, WHIP = .24, PUNCH = .26, DREAM = .6, CLOCK = .55, PAGE = .6;
 function draw(c, t) {
   if (t >= STORY) return endCard(c, t);
   const i = shotAt(t), [t0, , kind] = SHOTS[i], dt = t - t0;
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
-  if ((kind === 'dive' || kind === 'rise') && dt < DIVE && i > 0) {
+  if (kind === 'soft' && dt < SOFT && i > 0) {
+    const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1310); cx.scale(1.08, 1.08); cx.translate(-540, -1310); SHOT[SHOTS[j][1]](cx, tt); };
+    pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
+    const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
+    at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);
+    c.setTransform(K, 0, 0, K, 0, 0); captions(c, t);   // the words stay crisp on top while the picture dissolves
+  } else if ((kind === 'dive' || kind === 'rise') && dt < DIVE && i > 0) {
     const e = ss(dt / DIVE), px = PH[0] * K, py = PH[1] * K, dive = kind === 'dive';
     const pic = (cx, j, tt) => { cx.setTransform(K, 0, 0, K, 0, 0); NOW = tt; SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
@@ -315,9 +322,9 @@ function draw(c, t) {
 
 // sound cues: the fixed hits and the footsteps
 const EV = [];
-for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.push({ t, type });
-window.DUR = DUR;
+for (const [type, v] of Object.entries(HIT)) for (const t of [].concat(v)) EV.push({ t: +(t * TS).toFixed(3), type });   // the sound follows the real clock
+window.DUR = +(DUR * TS).toFixed(2);
 window.EV = EV.sort((a, b) => a.t - b.t);
-window.render = t => draw(ctx, t);
+window.render = t => draw(ctx, t / TS);   // the picture runs on the timeline's clock
 window.render(0);
 window.READY = true;

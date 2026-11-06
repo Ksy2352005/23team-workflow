@@ -1,8 +1,9 @@
-// Seen Again: timing. The voice is the supplied Hungarian voiceover at 1.22x (pitch kept), 41.2 s.
+// Seen Again: timing. The voice is the supplied Hungarian voiceover at 1.18x (pitch kept), 42.6 s.
 // Her story: a skincare brand she keeps seeing on her phone, until it's the first she reaches for.
-export const STORY = 41.20, DUR = 43.40;
-export const VO = 'refs/voiceover-hu-x1.22.mp3';
-export const SHOTS = [[0, 'split', 'cut'], [5.9, 'recog', 'whip'], [15.15, 'mirror', 'whip'], [18.3, 'product', 'punch'], [19.85, 'shop', 'whip'], [23.75, 'eye', 'punch'], [27.4, 'chart', 'whip'], [36.2, 'finale', 'whip']];
+export const STORY = 41.5, DUR = 43.7;   // in the timeline's own clock (made for the voice at 1.22x)
+export const TS = 1.22 / 1.18;   // the voice now runs at 1.18x: real time = timeline time × TS
+export const VO = 'refs/voiceover-hu-x1.18.mp3';
+export const SHOTS = [[0, 'split', 'cut'], [5.9, 'recog', 'soft'], [15.15, 'mirror', 'soft'], [18.3, 'product', 'soft'], [19.85, 'shop', 'soft'], [23.75, 'eye', 'soft'], [27.4, 'chart', 'soft'], [36.2, 'finale', 'soft']];
 // the beats, on the words of the voice
 export const HIT = {
   seen: 1.68, insta: 2.62, never: 4.1,
