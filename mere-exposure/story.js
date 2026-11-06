@@ -2,7 +2,7 @@
 // Her story: a skincare brand she keeps seeing on her phone, until it's the first she reaches for.
 export const STORY = 41.20, DUR = 43.40;
 export const VO = 'refs/voiceover-hu-x1.22.mp3';
-export const SHOTS = [[0, 'sofa', 'cut'], [5.6, 'day', 'whip'], [15.1, 'mirror', 'whip'], [19.85, 'shop', 'whip'], [23.75, 'eye', 'punch'], [27.4, 'chart', 'whip'], [36.2, 'everyone', 'whip']];
+export const SHOTS = [[0, 'home', 'cut'], [1.45, 'feed', 'dive'], [5.85, 'bus', 'rise'], [7.2, 'first', 'dive'], [9.45, 'cafe', 'rise'], [10.1, 'second', 'dive'], [12.0, 'days', 'rise'], [13.2, 'familiar', 'dive'], [15.15, 'mirror', 'whip'], [18.3, 'product', 'punch'], [19.85, 'shop', 'whip'], [23.75, 'eye', 'punch'], [27.4, 'chart', 'whip'], [36.2, 'week', 'whip'], [38.85, 'audience', 'whip']];
 // the beats, on the words of the voice
 export const HIT = {
   seen: 1.68, insta: 2.62, never: 4.1,
@@ -12,6 +12,6 @@ export const HIT = {
   term: 23.87, mere: 25.67,
   chart: 27.53, again: [29.23, 29.7, 29.98, 30.66], grow: 31.63, like: 34.72,
   regular: 36.36, rhythm: 38.36, audience: 39.58, end: 40.35,
-  whips: [5.6, 15.1, 19.85, 27.4, 36.2], punches: [23.75],
+  whips: [15.15, 19.85, 27.4, 36.2, 38.85], punches: [18.3, 23.75], dives: [1.45, 7.2, 10.1, 13.2], rises: [5.85, 9.45, 12.0],
   kicks: [1.68, 2.62, 4.1, 9.59, 10.31, 12.03, 12.63, 13.23, 13.95, 16.35, 18.79, 21.93, 25.67, 29.23, 29.7, 29.98, 30.66, 32.63, 35.72, 39.58],
 };
