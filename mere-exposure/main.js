@@ -89,56 +89,115 @@ function face(c, x, y, r, P, k = 1) { if (k <= 0) return; scaled(c, x, y, Math.m
 const AUD = [['blue2', 'bob'], ['blue1', null], ['blue3', 'pony'], ['blue2', null], ['blue3', 'long']];
 const ME = o => ({ id: 'me', skin: 'blue3', fem: 'pony', s: 1.7, smile: .8, ...o });
 
+// —— the world: a camera flying forward through a 3D space, over a glowing floor, past floating motes; each idea waits at its own station on the path ——
+const FOC = 900, CX = 540, CY = 1310, FLOOR_Y = 560;
+const STA = [['feed', 0, 0], ['unknown', 330, -60], ['second', -330, 40], ['named', 0, 0], ['need', 360, 0], ['mind', -280, 0], ['term', 0, -40], ['chart', 320, 0], ['regular', 0, 0]].map(([id, x, y], i) => ({ id, x, y, z: i * 1700 + (i >= 3 ? 1400 : 0) }));
+const HOLD = () => { const H = HIT; return [[0, H.unk - .3], [H.unk, H.second - .25], [H.second, H.few - .1], [H.name - .35, H.need - .3], [H.need, H.mind - .3], [H.mind, H.term - .3], [H.term, H.chart - .3], [H.chart, H.regular - .3], [H.regular, 99]]; };
+function camAt(t) {   // where the camera is: holding in front of a station (drifting slowly in), or flying to the next
+  const hs = HOLD(); let i = 0; while (i + 1 < hs.length && t >= hs[i + 1][0]) i++;
+  const [a, b] = hs[i], S = STA[i]; const hold = { x: S.x, y: S.y, z: S.z - FOC + Math.min(t - a, 6) * 30 };
+  if (t <= b || i + 1 >= hs.length) return { ...hold, roll: 0, travel: 0 };
+  return hold;
+}
+function camera(t) {
+  const hs = HOLD(); let i = 0; while (i + 1 < hs.length && t >= hs[i + 1][0]) i++;
+  const at = j => ({ x: STA[j].x, y: STA[j].y, z: STA[j].z - FOC + Math.min(Math.max(0, t - hs[j][0]), 6) * 30 });
+  const [a, b] = hs[i]; if (i + 1 < hs.length && t > b) {   // flying to the next station
+    const n = hs[i + 1][0], p = ss(clamp((t - b) / Math.max(.01, n - b))), A = { x: STA[i].x, y: STA[i].y, z: STA[i].z - FOC + Math.min(b - a, 6) * 30 }, B = { x: STA[i + 1].x, y: STA[i + 1].y, z: STA[i + 1].z - FOC };
+    return { x: lerp(A.x, B.x, p), y: lerp(A.y, B.y, p) - Math.sin(p * Math.PI) * 120, z: lerp(A.z, B.z, p), roll: Math.sin(p * Math.PI) * .07 * (i % 2 ? 1 : -1) };
+  }
+  if (t > b && i + 1 >= hs.length) return { ...at(i), roll: 0 };
+  return { ...at(i), roll: 0 };
+}
+function proj(cam, X, Y, Z) { const d = Z - cam.z; if (d < 1) return null; const s = FOC / d; return { x: CX + (X - cam.x) * s, y: CY + (Y - cam.y) * s, s, d }; }
+function worldBack(c, t, cam) {   // the sky (the caption blue at the top), the glowing floor grid, the motes
+  const g = c.createLinearGradient(0, 760, 0, 1500); g.addColorStop(0, TOP); g.addColorStop(1, '#2a3f96'); c.fillStyle = TOP; c.fillRect(0, 0, 1080, 1920); c.fillStyle = g; c.fillRect(0, 760, 1080, 760);
+  const hy = CY + (FLOOR_Y - cam.y) * 0; glow(c, CX, 1330, 520, .25);
+  const fg = c.createLinearGradient(0, 1300, 0, 1920); fg.addColorStop(0, '#22348a'); fg.addColorStop(1, '#0d1442'); c.fillStyle = fg; c.beginPath(); const p0 = proj(cam, -20000, FLOOR_Y, cam.z + 20000), p1 = proj(cam, 20000, FLOOR_Y, cam.z + 20000); c.moveTo(-200, p0.y); c.lineTo(1280, p1.y); c.lineTo(1280, 1920); c.lineTo(-200, 1920); c.closePath(); c.fill();
+  c.save(); c.lineWidth = 2; const z0 = Math.floor(cam.z / 300) * 300;
+  for (let k = 1; k < 34; k++) { const Z = z0 + k * 300, a = proj(cam, -4000, FLOOR_Y, Z), b = proj(cam, 4000, FLOOR_Y, Z); if (!a) continue; c.strokeStyle = `rgba(236,189,74,${.22 * clamp(1 - (Z - cam.z) / 9000) * clamp((Z - cam.z) / 400)})`; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+  for (let k = -12; k <= 12; k++) { const X = Math.round(cam.x / 400) * 400 + k * 400, a = proj(cam, X, FLOOR_Y, cam.z + 60), b = proj(cam, X, FLOOR_Y, cam.z + 10000); if (!a || !b) continue; const gr = c.createLinearGradient(a.x, a.y, b.x, b.y); gr.addColorStop(0, 'rgba(236,189,74,.22)'); gr.addColorStop(1, 'rgba(236,189,74,0)'); c.strokeStyle = gr; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+  c.restore();
+  for (let i = 0; i < 90; i++) { const span = 6000, X = (hash(i * 1.7) - .5) * 3600, Y = (hash(i * 3.1) - .5) * 1600 - 200, Z = cam.z + 100 + (((hash(i * 5.3) * span - cam.z) % span) + span) % span, p = proj(cam, X, Y, Z); if (!p || p.y > 1900 || p.y < 760) continue; const a = clamp(1 - p.d / span) * clamp(p.d / 300); ell(c, p.x, p.y, 3 + 9 * p.s, 3 + 9 * p.s, i % 3 ? `rgba(246,239,220,${.35 * a})` : `rgba(236,189,74,${.55 * a})`); }
+}
+function billboard(c, cam, X, Y, Z, draw, near = 260, fade = 1) {   // something standing in the world, drawn flat facing the camera, scaled by its distance
+  const p = proj(cam, X, Y, Z); if (!p || p.d < 120) return; const a = clamp((p.d - 160) / near) * clamp(1 - (p.d - FOC * 1.25) / 1000);
+  if (a * fade <= 0) return; c.save(); c.globalAlpha *= a * fade; c.translate(p.x, p.y); c.scale(p.s, p.s); c.translate(-CX, -CY); draw(); c.restore();
+}
+const WOMAN = o => ({ id: 'me', skin: 'blue3', fem: 'pony', s: 1.9, smile: .8, ...o });
+const GREYS = [['#8f98b0', 'sq'], ['#6b7aa8', 'tri'], ['#9aa0b8', 'oval'], ['#7d86a6', 'hex'], ['#a1a8c0', 'sq']];
+function otherBrand(c, x, y, r, i) { const [col, sh] = GREYS[i % GREYS.length]; ell(c, x + r * .05, y + r * .08, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#d6d9e4'); c.fillStyle = col; c.beginPath(); if (sh === 'sq') c.roundRect(x - r * .45, y - r * .45, r * .9, r * .9, r * .15); else if (sh === 'tri') { c.moveTo(x, y - r * .55); c.lineTo(x + r * .5, y + r * .4); c.lineTo(x - r * .5, y + r * .4); c.closePath(); } else if (sh === 'oval') c.ellipse(x, y, r * .55, r * .36, 0, 0, 7); else for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2; c.lineTo(x + Math.cos(a) * r * .5, y + Math.sin(a) * r * .5); } c.fill(); }
+
+const STATION = {
+  feed(t) {   // she scrolls her feed; MIRA keeps turning up (its cards fly out of the phone at us); she has never bought anything: the empty cart
+    const H = HIT, sc = KF(t, [[0, 0], [H.seen, 300], [H.insta, 620], [H.never, 900], [H.unk, 960]]);
+    mascot(c, WOMAN({ x: 300, y: 1780, f: .45, smile: .9, look: .25, blink: blinkAt(t, 3), handR: [470, 1500] }));
+    c.save(); c.translate(650, 1260); c.rotate(-.06); c.translate(-650, -1260); phone(c, 650, 1260, 400, 740, () => { for (let i = 0; i < 8; i++) { const brand = i === 2 || i === 4 || i === 6, y = 940 + i * 400 - sc; if (y > 1700 || y < 600) continue; post(c, 650, y, 330, i, brand, t); } }); c.restore();
+    const ck = E(t, H.never, .3, .45); if (ck > 0) scaled(c, 880, 1640, Math.min(1.12, ck), () => { ell(c, 880, 1640, 92, 92, '#c4566a'); cart(c, 880, 1640, .78, Math.max(0, 1 - (t - H.never - .3) / .6)); });
+  },
+  unknown(t) {   // the first time: a stranger: grey, blurred, a question
+    const H = HIT, k = E(t, H.unk + .1, .35, .45), rp = ss(seg(t, H.unk + .3, H.unk + .9)) * .2;
+    glow(c, 540, 1300, 300, .2); ring(c, 540, 1300, 240, rp, 18); scaled(c, 540, 1300, Math.min(1.08, k), () => logo(c, 540, 1300, 160, { grey: 1 })); badge(c, 'q', 730, 1110, 52, E(t, H.q, .3, .55));
+    eyeIcon(c, 540, 980, .55, 1);
+  },
+  second(t) {   // the second time: sharper, in colour; the brain bookmarks it
+    const H = HIT, rp = .2 + ss(seg(t, H.second + .1, H.second + .7)) * .3, gr = KF(t, [[H.second, 1], [H.second + .6, .4]]);
+    glow(c, 540, 1300, 300, .3); ring(c, 540, 1300, 240, rp, 18); logo(c, 540, 1300, 165, { grey: gr });
+    const mk = E(t, H.memo, .3, .5); if (mk > 0) scaled(c, 745, 1110, Math.min(1.1, mk), () => { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(712, 1050); c.lineTo(778, 1050); c.lineTo(778, 1170); c.lineTo(745, 1140); c.lineTo(712, 1170); c.closePath(); c.fill(); });
+    for (let k = 0; k < 2; k++) eyeIcon(c, 485 + k * 110, 980, .5, 1);
+  },
+  named(t) {   // a few times later: full colour, the ring full, its name appears and rings a bell
+    const H = HIT, nk = E(t, H.name, .35, .45), bk = E(t, H.bell, .3, .45);
+    glow(c, 540, 1300, 360, .45); ring(c, 540, 1300, 240, ss(seg(t, H.name - .3, H.name + .3)) * .1 + .9, 18); logo(c, 540, 1300, 170, { name: nk });
+    if (bk > 0) { bell(c, 790, 1600, 1.3 * Math.min(1.1, bk), .5 * Math.sin((t - H.bell) * 18) * Math.exp(-(t - H.bell) * 2.5)); for (let k = 0; k < 2; k++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(790, 1590, 56 + k * 24, -.6, .6); c.stroke(); } }
+    for (let k = 0; k < 5; k++) eyeIcon(c, 320 + k * 110, 980, .5, 1);
+  },
+  need(t) {   // one day she needs something MIRA also makes: her list, the bottle, MIRA's tag on it
+    const H = HIT; mascot(c, WOMAN({ x: 310, y: 1780, f: .4, blink: blinkAt(t, 3), look: .2, handR: [440, 1520] }));
+    c.save(); c.translate(660, 1240); c.rotate(.04); c.translate(-660, -1240); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(488, 1000, 360, 480, 20); c.fill(); c.fillStyle = CREAM; c.beginPath(); c.roundRect(480, 990, 360, 480, 20); c.fill(); c.fillStyle = '#c4566a'; c.fillRect(480, 990, 360, 24);
+    for (let k = 0; k < 3; k++) { c.strokeStyle = 'rgba(28,36,80,.4)'; c.lineWidth = 4; c.strokeRect(512, 1060 + k * 70, 30, 30); c.fillStyle = 'rgba(28,36,80,.25)'; c.fillRect(562, 1070 + k * 70, 180 - k * 30, 12); }
+    const pk = E(t, H.product, .35, .45); if (pk > 0) scaled(c, 660, 1440, Math.min(1.12, pk), () => { glow(c, 660, 1360, 130, .35); bottle(c, 660, 1450, 1.15); });
+    const ok = E(t, H.offers, .3, .55); if (ok > 0) logo(c, 724, 1310, 38 * Math.min(1.12, ok)); c.restore();
+  },
+  mind(t) {   // the first to come to mind: brands circling her head; MIRA swings round to the front, big and glowing
+    const H = HIT, f1 = ss(seg(t, H.first - .4, H.first + .3)), items = [0, 1, 2, 3, 4, 'M'];
+    const pos = items.map((it, i) => { const a = (t - H.mind) * .9 + i / items.length * Math.PI * 2; let x = 540 + Math.cos(a) * 360, y = 1080 + Math.sin(a) * 45, d = Math.sin(a), r = 56 + 14 * d; if (it === 'M') { x = lerp(x, 540, f1); y = lerp(y, 860, f1); d = lerp(d, 2, f1); r = lerp(r, 120, f1); } return { it, x, y, d, r }; }).sort((p, q) => p.d - q.d);
+    const draw = p => { c.save(); c.globalAlpha *= p.it === 'M' ? 1 : lerp(.95, .45, f1) * (.6 + .4 * clamp(p.d + .5)); if (p.it === 'M') { if (f1 > 0) glow(c, p.x, p.y, p.r * 2, .5 * f1); logo(c, p.x, p.y, p.r); } else otherBrand(c, p.x, p.y, p.r, p.it); c.restore(); };
+    pos.filter(p => p.d < 0).forEach(draw); mascot(c, WOMAN({ x: 540, y: 1900, s: 2.9, f: 0, smile: f1 > .5 ? 1 : .7, blink: blinkAt(t, 3), look: f1 > .3 ? -.3 : 0 })); pos.filter(p => p.d >= 0).forEach(draw);
+    if (f1 >= 1) spark(c, 540, 860, t, H.first + .3, 6, 170, 18);
+  },
+  term(t) {   // the Mere Exposure Effect: an eye opens, MIRA in its pupil; copies of the logo orbit it
+    const H = HIT, op = ss(seg(t, H.term + .1, H.term + .5));
+    for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2 + (t - H.term) * .9, rr = 320 * ss(seg(t, H.mere - .2 + k * .05, H.mere + .4 + k * .05)); if (rr > 1) logo(c, 540 + Math.cos(a) * rr, 1300 + Math.sin(a) * rr * .75, 46); }
+    eyeIcon(c, 540, 1300, 2.4, op, () => logo(c, 540, 1300, 64));
+  },
+  chart(t) {   // again and again: exposures land on the line; familiarity climbs; liking follows
+    const H = HIT, x0 = 230, x1 = 880, y0 = 1600, y1 = 1020; c.strokeStyle = 'rgba(246,239,220,.65)'; c.lineWidth = 7; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, y1 - 20); c.lineTo(x0, y0); c.lineTo(x1 + 20, y0); c.stroke();
+    H.again.forEach((at, i) => { const k = E(t, at, .3, .45); if (k > 0) logo(c, x0 + 90 + i * 150, y0 + 72 - 40 * Math.max(0, 1 - (t - at) / .3), 36 * Math.min(1.12, k)); });
+    const line = (p, col, lift, end) => { if (p <= 0) return; c.save(); c.strokeStyle = col; c.lineWidth = 13; c.lineJoin = 'round'; c.beginPath(); const n = 30; let ex = 0, ey = 0; for (let i = 0; i <= n * p; i++) { const u = i / n; ex = x0 + 20 + u * (x1 - x0 - 40); ey = y0 - 20 - (1 - Math.exp(-u * 2.4)) / (1 - Math.exp(-2.4)) * (y0 - y1 - 60) * lift; i ? c.lineTo(ex, ey) : c.moveTo(ex, ey); } c.stroke(); c.restore(); glow(c, ex, ey, 50, .5); if (p >= 1) end(ex, ey); };
+    line(ss(seg(t, H.grow, H.grow + 1.0)), GOLD, 1, (x, y) => eyeIcon(c, x + 10, y - 60, .55 * Math.min(1, E(t, H.grow + 1.0, .3, .5)), 1));
+    line(ss(seg(t, H.like, H.like + 1.0)), '#e8664f', .62, (x, y) => heart(c, x + 10, y - 50, 40, Math.min(1.12, E(t, H.like + 1.0, .3, .5)), '#e8664f'));
+  },
+  regular(t) {   // that's why a brand should be present regularly: the week fills with MIRA; the audience lights up
+    const H = HIT; for (let d = 0; d < 7; d++) { const x = 210 + d * 96, y = 990; c.fillStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.roundRect(x, y, 88, 130, 14); c.fill(); if (d % 2 === 0 || d === 5) { const k = E(t, H.rhythm + d * .1, .3, .45); if (k > 0) logo(c, x + 44, y + 65, 30 * Math.min(1.12, k)); } }
+    AUD.forEach(([sk, fem], i) => { const x = 260 + i * 140, k = E(t, H.audience + i * .1, .35, .45); if (k <= 0) return; scaled(c, x, 1720, Math.min(1.1, k), () => mascot(c, { id: 'a' + i, skin: sk, fem, s: 1.25, x, y: 1720, f: 0, smile: 1, blink: blinkAt(t, i) })); if (t > H.audience + .5 + i * .1) logo(c, x + 40, 1430, 18); });
+    if (t > H.end) { glow(c, 540, 1500, 380, .3 * ss(seg(t, H.end, H.end + .5))); spark(c, 540, 1450, t, H.end, 8, 330, 18); }
+  },
+};
+let c = null;
 const SHOT = {
-  flow(c, t) {
-    const H = HIT; bg(c, '#2c46a0');
-    stage(c, [120, 880, 960, 1760], 0, () => {
-      // 1 · the phone, the feed scrolling; MIRA keeps showing up; the empty cart
-      const P1 = life(t, 0, H.unk + .3, .4, .35);
-      enter(c, 540, 1320, P1, 'up', () => phone(c, 540, 1320, 470, 860, () => { const sc = KF(t, [[0, 0], [H.seen, 260], [H.insta, 560], [H.never, 840], [H.unk, 880]]);
-        for (let i = 0; i < 8; i++) { const brand = i === 2 || i === 4 || i === 6, y = 920 + i * 450 - sc; if (y > 2000 || y < 400) continue; post(c, 540, y, 400, i, brand, t); if (brand && y > 820 && y < 1500) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 6; c.globalAlpha = .9; c.beginPath(); c.roundRect(340, y - 6, 400, 400 * 1.18 + 12, 18); c.stroke(); c.restore(); } } }));
-      if (P1 > 0) { const ck = E(t, H.never, .3, .45) * (1 - ss(seg(t, H.unk - .2, H.unk + .1))); if (ck > 0) scaled(c, 860, 1640, Math.min(1.1, ck), () => { ell(c, 860, 1640, 90, 90, '#c4566a'); cart(c, 860, 1640, .75, Math.max(0, 1 - (t - H.never - .3) / .6)); }); }
-      // 2-4 · one post, close: the logo and its ring of exposures: unknown, noticed, familiar; the name rings a bell
-      const P2 = life(t, H.unk, H.need + .1, .4, .35), ringP = KF(t, [[H.unk, 0], [H.unk + .6, .15], [H.second, .15], [H.second + .5, .45], [H.few, .45], [H.few + 1.4, .9], [H.name, 1]]), grey = KF(t, [[H.unk, 1], [H.second, 1], [H.second + .5, .45], [H.few, .45], [H.few + .8, 0]]);
-      enter(c, 540, 1300, P2, 'zoom', () => { glow(c, 540, 1300, 300, .2 + .3 * ringP); ring(c, 540, 1300, 230, ringP, 18);
-        if (t > H.few && t < H.name + .2) for (let k = 0; k < 4; k++) { const u = seg(t, H.few + k * .3, H.few + k * .3 + .45); if (u > 0 && u < 1) { c.save(); c.globalAlpha = Math.sin(u * Math.PI) * .6; logo(c, 540 + (k % 2 ? 1 : -1) * (130 + 60 * u), 1300 - 60 + k * 40, 70 * (1 - .3 * u)); c.restore(); } }
-        logo(c, 540, 1300, 150 + 10 * Math.sin(Math.min(1, E(t, H.second, .3, .4)) * Math.PI), { grey, name: E(t, H.name, .35, .45) });
-        badge(c, 'q', 720, 1130, 46, E(t, H.q, .3, .5) * (1 - ss(seg(t, H.second, H.second + .3))));
-        const mk = E(t, H.memo, .3, .5) * (1 - ss(seg(t, H.few, H.few + .3))); if (mk > 0) scaled(c, 730, 1140, Math.min(1.1, mk), () => { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(700, 1090); c.lineTo(760, 1090); c.lineTo(760, 1190); c.lineTo(730, 1165); c.lineTo(700, 1190); c.closePath(); c.fill(); });
-        const bk = E(t, H.bell, .3, .45); if (bk > 0) { bell(c, 760, 1570, 1.2 * Math.min(1.1, bk), .5 * Math.sin((t - H.bell) * 18) * Math.exp(-(t - H.bell) * 2.5)); for (let k = 0; k < 2; k++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 5; c.beginPath(); c.arc(760, 1560, 50 + k * 22, -.6, .6); c.stroke(); } }
-        const ne = Math.min(5, Math.floor(ringP * 5.5)); for (let k = 0; k < ne; k++) scaled(c, 540 + (k - (ne - 1) / 2) * 110, 990, Math.min(1, ringP * 5.5 - k), () => eyeIcon(c, 540 + (k - (ne - 1) / 2) * 110, 990, .5, 1)); });
-      // 5 · one day you need something this brand also offers: her list; the bottle; MIRA's tag on it
-      const P5 = life(t, H.need, H.mind + .1, .4, .35);
-      enter(c, 540, 1320, P5, 'right', () => { mascot(c, ME({ x: 330, y: 1720, f: .4, blink: blinkAt(t, 3), look: .2, handR: [440, 1520] }));
-        c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(486, 1000, 360, 470, 20); c.fill(); c.fillStyle = CREAM; c.beginPath(); c.roundRect(478, 990, 360, 470, 20); c.fill(); c.fillStyle = '#c4566a'; c.fillRect(478, 990, 360, 22);
-        for (let k = 0; k < 3; k++) { c.strokeStyle = 'rgba(28,36,80,.4)'; c.lineWidth = 4; c.strokeRect(510, 1060 + k * 70, 30, 30); c.fillStyle = 'rgba(28,36,80,.25)'; c.fillRect(560, 1070 + k * 70, 180 - k * 30, 12); }
-        const pk = E(t, H.product, .35, .45); if (pk > 0) scaled(c, 658, 1420, Math.min(1.1, pk), () => { glow(c, 658, 1350, 120, .3); bottle(c, 658, 1430, 1.1); });
-        const ok = E(t, H.offers, .3, .5); if (ok > 0) logo(c, 720, 1300, 34 * Math.min(1.1, ok)); });
-      // 6 · it's one of the first to come to mind: a line-up of brands; MIRA jumps to the top
-      const P6 = life(t, H.mind, H.term + .1, .4, .35), up = ss(seg(t, H.first - .3, H.first + .25));
-      enter(c, 540, 1320, P6, 'up', () => { const order = [1, 2, 0, 3]; [0, 1, 2, 3].forEach(i => { const slot = i === 2 ? lerp(2, 0, up) : (i < 2 ? i + up : i), y = 1050 + slot * 170, mira = i === 2, w = 560;
-          c.save(); c.translate(mira ? Math.sin(up * Math.PI) * 60 : 0, 0); c.fillStyle = mira ? (up > .5 ? '#2a3a86' : 'rgba(246,239,220,.1)') : 'rgba(246,239,220,.1)'; c.beginPath(); c.roundRect(540 - w / 2, y - 64, w, 128, 24); c.fill(); if (mira && up > .5) { c.strokeStyle = GOLD; c.lineWidth = 6; c.stroke(); }
-          badge(c, Math.round(slot) + 1, 540 - w / 2 + 64, y, 34, 1);
-          if (mira) logo(c, 540 - 40, y, 46); else { c.fillStyle = ['#8f98b0', '#6b6f86', '#7d86a6', '#9aa0b8'][i]; if (i === 0) { c.beginPath(); c.roundRect(500 - 44, y - 44, 88, 88, 16); c.fill(); } else if (i === 1) { c.beginPath(); c.moveTo(500, y - 48); c.lineTo(548, y + 40); c.lineTo(452, y + 40); c.closePath(); c.fill(); } else { c.beginPath(); c.ellipse(500, y, 50, 36, 0, 0, 7); c.fill(); } }
-          c.fillStyle = mira ? CREAM : 'rgba(246,239,220,.3)'; c.fillRect(570, y - 10, mira ? 150 : 120, 20); c.restore(); });
-        if (up >= 1) spark(c, 540, 1050, t, H.first + .25, 6, 300, 18); });
-      // 7 · the Mere Exposure Effect: an eye, the logo in its pupil, copies of it circling
-      const P7 = life(t, H.term, H.chart + .1, .4, .35), op = ss(seg(t, H.term + .1, H.term + .5));
-      enter(c, 540, 1320, P7, 'zoom', () => { for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2 + (t - H.term) * .8, rr = 300 * ss(seg(t, H.mere - .2 + k * .06, H.mere + .4 + k * .06)); if (rr > 1) { c.save(); c.globalAlpha = .85; logo(c, 540 + Math.cos(a) * rr, 1320 + Math.sin(a) * rr * .8, 44); c.restore(); } }
-        eyeIcon(c, 540, 1320, 2.3, op, () => logo(c, 540, 1320, 62)); });
-      // 8 · again and again: exposures stack up on the timeline; familiarity climbs; liking follows
-      const P8 = life(t, H.chart, H.regular + .1, .4, .35);
-      enter(c, 540, 1320, P8, 'up', () => { const x0 = 230, x1 = 880, y0 = 1600, y1 = 1020; c.strokeStyle = 'rgba(246,239,220,.6)'; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, y1 - 20); c.lineTo(x0, y0); c.lineTo(x1 + 20, y0); c.stroke();
-        H.again.forEach((at, i) => { const k = E(t, at, .3, .45); if (k > 0) logo(c, x0 + 90 + i * 150, y0 + 70, 34 * Math.min(1.1, k)); });
-        const line = (p, col, lift, end) => { if (p <= 0) return; c.save(); c.strokeStyle = col; c.lineWidth = 12; c.lineJoin = 'round'; c.beginPath(); const n = 30; for (let i = 0; i <= n * p; i++) { const u = i / n, x = x0 + 20 + u * (x1 - x0 - 40), y = y0 - 20 - (1 - Math.exp(-u * 2.4)) / (1 - Math.exp(-2.4)) * (y0 - y1 - 60) * lift; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); c.restore(); if (p >= 1) end(x1 - 20, y0 - 20 - (y0 - y1 - 60) * lift); };
-        line(ss(seg(t, H.grow, H.grow + 1.0)), GOLD, 1, (x, y) => eyeIcon(c, x + 40, y - 40, .5 * Math.min(1, E(t, H.grow + 1.0, .3, .5)), 1));
-        line(ss(seg(t, H.like, H.like + 1.0)), '#e8664f', .62, (x, y) => heart(c, x + 40, y - 30, 36, Math.min(1.1, E(t, H.like + 1.0, .3, .5)), '#e8664f')); });
-      // 9 · that's why a brand should be regularly present in its audience's life: a week, the logo on its days; the audience's faces light up
-      const P9 = life(t, H.regular, 99, .4, .3);
-      enter(c, 540, 1320, P9, 'up', () => { const days = 7, cx0 = 220, gw = 92; for (let d = 0; d < days; d++) { const x = cx0 + d * (gw + 8), y = 1040; c.fillStyle = 'rgba(246,239,220,.12)'; c.beginPath(); c.roundRect(x, y, gw, 130, 14); c.fill(); if (d % 2 === 0 || d === 5) { const k = E(t, H.rhythm + d * .12, .3, .45); if (k > 0) logo(c, x + gw / 2, y + 65, 30 * Math.min(1.1, k)); } }
-        AUD.forEach(([sk, fem], i) => { const k = E(t, H.audience + i * .1, .35, .45); const x = 260 + i * 140; face(c, x, 1440, 62, { skin: sk, fem, smile: 1 }, k); if (t > H.audience + .5 + i * .1) { logo(c, x + 42, 1400, 16); } });
-        if (t > H.end) { glow(c, 540, 1440, 380, .3 * ss(seg(t, H.end, H.end + .5))); spark(c, 540, 1440, t, H.end, 8, 330, 18); } });
-    });
+  flow(cc, t) {
+    c = cc; const H = HIT, cam = camera(t);
+    c.save(); c.translate(CX, CY); c.rotate(cam.roll); c.translate(-CX, -CY); c.translate(0, 0);
+    worldBack(c, t, cam);
+    const items = [];
+    const HS = HOLD(); STA.forEach((S, j) => { const out = j + 1 < HS.length ? 1 - ss(seg(t, HS[j][1] - .05, HS[j][1] + .14)) : 1; if (out <= 0) return; items.push({ z: S.z, f: () => billboard(c, cam, S.x, S.y, S.z, () => STATION[S.id](t), 500, out) }); });
+    // MIRA's cards flying out of the phone, past us
+    [H.seen, H.insta].forEach((at, i) => { if (t < at || t > at + .9) return; const Z = STA[0].z + 60 - (t - at) * 1500, X = STA[0].x + 110 + (i ? -1 : 1) * (t - at) * 520, Y = -40 - (t - at) * 160; items.push({ z: Z, f: () => billboard(c, cam, X, Y, Z, () => post(c, 540, 1080, 330, 2, true, t), 120) }); });
+    // the encounters along the road: MIRA billboards on both sides as we fly through them
+    for (let k = 0; k < 6; k++) { const Z = STA[2].z + 500 + k * 420, X = STA[2].x * .2 + (k % 2 ? 1 : -1) * 400, Y = -120 + (k % 3) * 70; items.push({ z: Z, f: () => billboard(c, cam, X, Y, Z, () => { glow(c, 540, 1310, 220, .35); logo(c, 540, 1310, 120); }, 200) }); }
+    items.sort((a, b) => b.z - a.z).forEach(it => it.f());
+    c.restore();
   },
 };
 
