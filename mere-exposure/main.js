@@ -119,57 +119,91 @@ function bigPhone(c, t, o = {}) {
 }
 function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = CREAM; c.beginPath(); c.moveTo(x - 90 * s, y); c.quadraticCurveTo(x, y - 80 * s * open, x + 90 * s, y); c.quadraticCurveTo(x, y + 80 * s * open, x - 90 * s, y); c.fill(); ell(c, x, y, 34 * s, 34 * s, NAVY); c.restore(); }
 
-const SHOT = {
-  home(c, t) { scenery(c, 'home', t); her(c, t, { smile: 1 }); },
-  feed(c, t) {   // inside her phone: the feed; the ad comes past once, twice (+1); its buy button stays untouched: never bought
-    const H = HIT, sc = KF(t, [[1.45, 0], [H.seen, 330], [H.insta, 840], [H.never, 1290], [5.9, 1400]]); bigPhone(c, t, { feed: true, scroll: sc, gold: true, buyOff: t > H.never });
-    [H.seen, H.insta].forEach((at, i) => { const k = E(t, at + .1, .3, .5) * (1 - ss(seg(t, at + 1.2, at + 1.5))); if (k > 0) scaled(c, 830, 900 + i * 90, Math.min(1.12, k), () => { ell(c, 830, 900 + i * 90, 50, 50, GOLD); text(c, '+1', 830, 902 + i * 90, 44, NAVY); }); });
-    badge(c, 'x', 790, 1500, 42, E(t, H.never, .3, .5)); },
-  bus(c, t) { scenery(c, 'bus', t); her(c, t, { smile: .9, look: .2 }); },
-  first(c, t) {   // the first time: the ad is a blur; unknown; the meter barely moves
-    const H = HIT; bigPhone(c, t, { grey: 1, meter: KF(t, [[7.2, 0], [7.8, .12]]) }); badge(c, 'q', 800, 880, 50, E(t, H.q, .3, .55)); },
-  cafe(c, t) { scenery(c, 'cafe', t); her(c, t, { smile: 1, look: .25 }); },
-  second(c, t) {   // the second time: clearer; she notices the mark: a pin; the meter grows
-    const H = HIT; bigPhone(c, t, { grey: KF(t, [[10.1, .8], [10.6, .25]]), meter: KF(t, [[10.1, .12], [10.6, .4]]), gold: true }); badge(c, 'pin', 800, 880, 50, E(t, H.memo, .3, .55)); },
-  days(c, t) {   // a few more days: the gym, the park, her bed, the phone in her hand lights up each time
-    const H = HIT, k = clamp((t - H.few) / .4), seq = ['gym', 'park', 'bed'], i = Math.min(2, Math.floor((t - H.few) / .4)); scenery(c, seq[i], t);
-    if (i > 0) { const w = ss(clamp((t - H.few - i * .4) / .2)); if (w < 1) { c.save(); c.globalAlpha = 1 - w; scenery(c, seq[i - 1], t); c.restore(); } }
-    her(c, t, { smile: 1 }); const fl = Math.sin(clamp(((t - H.few) % .4) / .3) * Math.PI); glow(c, PH[0], PH[1], 90, .6 * fl); mark(c, PH[0] + 50, PH[1] - 80, 22 * fl); },
-  familiar(c, t) {   // a few times later the name sounds familiar: the ad clear and glowing, the meter full, a little bell rings
-    const H = HIT; bigPhone(c, t, { meter: KF(t, [[13.2, .55], [H.name, 1]]), gold: true });
-    const bk = E(t, H.bell, .3, .45); if (bk > 0) { badge(c, 'bell', 800, 880, 50 * Math.min(1.1, bk), 1); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(800, 880, 70 + q * 24, -.6, .6); c.stroke(); } } },
-  mirror(c, t) {   // one day she needs it: her jar is empty, puff; her skin is dry
-    const H = HIT, op = ss(seg(t, H.empty - .2, H.empty + .2)), dry = ss(seg(t, H.dry - .1, H.dry + .4)); scenery(c, 'bath', t);
-    mascot(c, HER({ x: 470, y: 1790, f: .35, smile: lerp(.8, 0, dry), sad: .5 * dry, blink: blinkAt(t, 3), handR: t > H.empty - .4 ? [690, 1400] : undefined }));
-    jar(c, 790, 1420, 1, { open: op > .5, empty: 1, plain: 1 }); if (op > 0 && op < 1) for (let k = 0; k < 5; k++) ell(c, 790 + Math.cos(k * 1.3) * 60 * op, 1290 - 40 * op + Math.sin(k * 1.3) * 30 * op, 14 * (1 - op), 14 * (1 - op), `rgba(246,239,220,${.7 * (1 - op)})`);
-    if (dry > 0) { c.strokeStyle = `rgba(246,239,220,${.7 * dry})`; c.lineWidth = 4; for (const [dx, dy] of [[-55, 0], [60, 10]]) { c.beginPath(); c.moveTo(470 + dx - 14, 1360 + dy); c.lineTo(470 + dx, 1370 + dy); c.lineTo(470 + dx + 12, 1360 + dy); c.stroke(); } } },
-  product(c, t) {   // the empty jar turns into the brand's jar: exactly what it makes
+function SHOT_PRODUCT(c, t) {   // the empty jar turns into the brand's jar: exactly what it makes
     const H = HIT, k = E(t, 18.3, .45, .4); bg(c, '#2c46a0'); glow(c, 540, 1300, 320, .35 * Math.min(1, k)); c.save(); c.strokeStyle = GOLD; c.lineWidth = 8; c.globalAlpha = Math.min(1, k); c.beginPath(); c.arc(540, 1310, 300 * Math.min(1, k), 0, 7); c.stroke(); c.restore();
-    scaled(c, 540, 1500, Math.min(1.08, k), () => jar(c, 540, 1500, 2.2, { glow: .5 })); if (t > H.offers) spark(c, 540, 1300, t, H.offers, 6, 300, 18); },
-  shop(c, t) {   // in the drugstore: unknown jars, and the familiar one; she takes it first
+    scaled(c, 540, 1500, Math.min(1.08, k), () => jar(c, 540, 1500, 2.2, { glow: .5 })); if (t > H.offers) spark(c, 540, 1300, t, H.offers, 6, 300, 18); }
+function SHOT_SHOP(c, t) {   // in the drugstore: unknown jars, and the familiar one; she takes it first
     const H = HIT, f1 = ss(seg(t, H.first - .3, H.first + .3)), take = ss(seg(t, H.take, H.take + .5)); scenery(c, 'shop', t);
     [[160, 1], [320, 2], [680, 1], [840, 2]].forEach(([x, p]) => { c.save(); c.globalAlpha = 1 - .45 * f1; jar(c, x, 1290, .85, { plain: p }); c.restore(); });
     const bx = lerp(500, 640, take), by = lerp(1290, 1690, take) - 60 * f1 * (1 - take); jar(c, bx, by, lerp(.85, 1, f1), { glow: f1 }); if (f1 >= 1) spark(c, bx, by - 80, t, H.first + .3, 6, 120, 14);
-    mascot(c, HER({ x: 760, y: 1790, f: -.35, smile: f1 > .5 ? 1 : .8, look: -.3, blink: blinkAt(t, 3), handL: take > 0 ? reach([710, 1640], [bx + 50, by - 60], Math.min(1, take * 2)) : undefined })); },
-  eye(c, t) {   // the Mere Exposure Effect: an eye opens, the mark its pupil; rings of the mark ripple out
+    mascot(c, HER({ x: 760, y: 1790, f: -.35, smile: f1 > .5 ? 1 : .8, look: -.3, blink: blinkAt(t, 3), handL: take > 0 ? reach([710, 1640], [bx + 50, by - 60], Math.min(1, take * 2)) : undefined })); }
+function SHOT_EYE(c, t) {   // the Mere Exposure Effect: an eye opens, the mark its pupil; rings of the mark ripple out
     const H = HIT, op = ss(seg(t, 23.9, 24.4)); bg(c);
     for (let k = 0; k < 5; k++) { const u = ((t - H.mere) * .55 + k / 5) % 1; if (t > H.mere - .1) { c.save(); c.globalAlpha = .8 * (1 - u) * ss(seg(t, H.mere - .1, H.mere + .3)); c.strokeStyle = GOLD; c.lineWidth = 5; c.beginPath(); c.arc(540, 1300, 190 + u * 320, 0, 7); c.stroke(); c.restore(); for (let q = 0; q < 6; q++) { const a = q / 6 * Math.PI * 2 + k; if (u > .15 && u < .8) { c.save(); c.globalAlpha = .7 * (1 - u); mark(c, 540 + Math.cos(a) * (190 + u * 320), 1300 + Math.sin(a) * (190 + u * 320), 26); c.restore(); } } } }
-    c.save(); c.fillStyle = CREAM; c.beginPath(); c.moveTo(250, 1300); c.quadraticCurveTo(540, 1300 - 270 * op, 830, 1300); c.quadraticCurveTo(540, 1300 + 270 * op, 250, 1300); c.fill(); if (op > .3) { c.clip(); ell(c, 540, 1300, 115, 115, NAVY); mark(c, 540, 1300, 86); } c.restore(); },
-  chart(c, t) {   // again and again: phones land on the timeline; familiarity climbs; liking follows; she smiles beside it
+    c.save(); c.fillStyle = CREAM; c.beginPath(); c.moveTo(250, 1300); c.quadraticCurveTo(540, 1300 - 270 * op, 830, 1300); c.quadraticCurveTo(540, 1300 + 270 * op, 250, 1300); c.fill(); if (op > .3) { c.clip(); ell(c, 540, 1300, 115, 115, NAVY); mark(c, 540, 1300, 86); } c.restore(); }
+function SHOT_CHART(c, t) {   // again and again: phones land on the timeline; familiarity climbs; liking follows; she smiles beside it
     const H = HIT; bg(c); const x0 = 170, x1 = 720, y0 = 1540, y1 = 1000, ax = ss(seg(t, 27.5, 28.1));
     c.strokeStyle = 'rgba(246,239,220,.7)'; c.lineWidth = 7; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, lerp(y0, y1 - 20, ax)); c.lineTo(x0, y0); c.lineTo(lerp(x0, x1 + 20, ax), y0); c.stroke();
     H.again.forEach((at, i) => { const k = E(t, at, .3, .45); if (k > 0) scaled(c, x0 + 90 + i * 140, y0 + 80, Math.min(1.12, k), () => { handPhone(c, x0 + 90 + i * 140, y0 + 80, 1.2); mark(c, x0 + 112 + i * 140, y0 + 46, 14); }); });
     const line = (p, col, lift) => { if (p <= 0) return null; c.save(); c.strokeStyle = col; c.lineWidth = 12; c.lineJoin = 'round'; c.beginPath(); const n = 30; let ex = 0, ey = 0; for (let i = 0; i <= n * p; i++) { const u = i / n; ex = x0 + 20 + u * (x1 - x0 - 40); ey = y0 - 20 - (1 - Math.exp(-u * 2.4)) / (1 - Math.exp(-2.4)) * (y0 - y1 - 60) * lift; i ? c.lineTo(ex, ey) : c.moveTo(ex, ey); } c.stroke(); c.restore(); glow(c, ex, ey, 50, .5); return [ex, ey]; };
     const fam = ss(seg(t, H.grow, H.grow + 1.0)), lik = ss(seg(t, H.like, H.like + 1.0)); const e1 = line(fam, GOLD, 1); if (e1 && fam >= 1) mark(c, e1[0] + 10, e1[1] - 46, 30 * Math.min(1.1, E(t, H.grow + 1.0, .3, .5)));
     const e2 = line(lik, '#e8664f', .62); if (e2 && lik >= 1) heart(c, e2[0] + 10, e2[1] - 40, 34, Math.min(1.12, E(t, H.like + 1.0, .3, .5)), '#e8664f');
-    mascot(c, HER({ x: 880, y: 1790, s: 1.7, f: -.4, smile: lerp(.8, 1, Math.max(fam, lik)), blink: blinkAt(t, 3), look: -.2 })); },
-  week(c, t) {   // a brand should be there regularly: a week; the mark lands on its days in rhythm
-    const H = HIT; bg(c); for (let d = 0; d < 7; d++) { const x = 140 + d * 116, y = 1180, k = E(t, 36.3 + d * .05, .3, .45); if (k <= 0) continue; scaled(c, x + 50, y + 90, Math.min(1, k), () => { c.fillStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.roundRect(x, y, 100, 180, 16); c.fill(); }); if (d % 2 === 0 || d === 5) { const kk = E(t, H.rhythm + d * .1, .3, .45); if (kk > 0) mark(c, x + 50, y + 90, 34 * Math.min(1.12, kk)); } } },
-  audience(c, t) {   // in its audience's life: women with their phones; one after another the mark lights up on them, and they smile
-    const H = HIT; scenery(c, 'none', t);
-    AUD.forEach(([sk, fem], i) => { const x = 150 + i * 195, lit = t > H.audience + .1 + i * .12, k = E(t, 38.9 + i * .06, .35, .45); if (k <= 0) return;
-      scaled(c, x, 1790, Math.min(1, k), () => { mascot(c, { id: 'a' + i, skin: sk, fem, s: 1.35, x, y: 1790, f: .2, smile: lit ? 1 : .7, blink: blinkAt(t, i), handR: [x + 52, 1600] }); handPhone(c, x + 54, 1594, .95); if (lit) { glow(c, x + 54, 1560, 60, .55); mark(c, x + 58, 1500, 20 * Math.min(1.1, E(t, H.audience + .1 + i * .12, .3, .5))); } }); });
-    if (t > H.end) { glow(c, 540, 1500, 420, .3 * ss(seg(t, H.end, H.end + .5))); spark(c, 540, 1450, t, H.end, 8, 360, 18); } },
+    mascot(c, HER({ x: 880, y: 1790, s: 1.7, f: -.4, smile: lerp(.8, 1, Math.max(fam, lik)), blink: blinkAt(t, 3), look: -.2 })); }
+// —— 0..15 s: half and half: her day on the left, her phone on the right, scrolling ——
+const LP = { x: 54, y: 860, w: 470, h: 940 };   // the left panel
+function panelPlace(c, kind, t) {   // a place, drawn small inside the left panel (local coordinates 0..470 × 0..940)
+  const g = c.createLinearGradient(0, 0, 0, 940); g.addColorStop(0, '#22348a'); g.addColorStop(1, '#2d4596'); c.fillStyle = g; c.fillRect(0, 0, 470, 940); c.fillStyle = '#1b2660'; c.fillRect(0, 820, 470, 120); c.fillStyle = 'rgba(246,239,220,.12)'; c.fillRect(0, 820, 470, 3);
+  if (kind === 'home') { c.fillStyle = '#e9dcc0'; c.fillRect(40, 200, 150, 190); c.fillStyle = '#16205a'; c.fillRect(50, 210, 130, 170); c.fillStyle = '#24306e'; c.fillRect(56, 300, 40, 80); c.fillRect(110, 270, 50, 110); c.fillStyle = 'rgba(255,214,140,.7)'; c.fillRect(70, 320, 8, 10); c.fillStyle = CREAM; c.fillRect(112, 210, 5, 170); glow(c, 400, 260, 140, .35); c.fillStyle = '#8f98b0'; c.fillRect(398, 280, 5, 540); c.fillStyle = '#f0d9a8'; c.beginPath(); c.moveTo(366, 280); c.lineTo(436, 280); c.lineTo(420, 236); c.lineTo(382, 236); c.closePath(); c.fill(); }
+  if (kind === 'bus') { c.save(); c.beginPath(); c.roundRect(20, 180, 430, 220, 30); c.clip(); c.fillStyle = '#f2b68a'; c.fillRect(20, 180, 430, 220); const off = (t * 300) % 300; for (let i = -1; i < 3; i++) { const bx = 20 + i * 300 - off; c.fillStyle = '#6576b8'; c.fillRect(bx, 290, 110, 110); c.fillStyle = '#7d86c0'; c.fillRect(bx + 140, 240, 90, 160); } c.restore(); c.strokeStyle = '#b9bccb'; c.lineWidth = 12; c.beginPath(); c.roundRect(20, 180, 430, 220, 30); c.stroke(); c.fillStyle = GOLD2; c.fillRect(420, 120, 12, 700); }
+  if (kind === 'cafe') { c.fillStyle = '#e9dcc0'; c.fillRect(30, 200, 160, 160); c.fillStyle = '#9fc7f0'; c.fillRect(40, 210, 140, 140); glow(c, 140, 260, 70, .5); ell(c, 140, 260, 20, 20, '#ffe08a'); c.fillStyle = WOOD; c.beginPath(); c.ellipse(390, 660, 90, 18, 0, 0, 7); c.fill(); c.fillRect(384, 660, 12, 160); c.fillStyle = CREAM; c.fillRect(372, 616, 36, 42); c.strokeStyle = CREAM; c.lineWidth = 6; c.beginPath(); c.arc(412, 636, 10, -1.3, 1.3); c.stroke(); }
+  if (kind === 'gym') { for (let k = 0; k < 3; k++) { c.fillStyle = '#3c4c98'; c.fillRect(300, 520 + k * 60, 150, 8); c.fillStyle = '#5a6aa8'; for (const d of [-1, 1]) c.fillRect(375 + d * 50 - 8, 502 + k * 60, 16, 42); } c.fillStyle = '#2b3a80'; c.beginPath(); c.roundRect(30, 800, 180, 20, 10); c.fill(); }
+  if (kind === 'park') { c.fillStyle = '#3f6b4a'; c.fillRect(0, 820, 470, 120); for (const [tx, s] of [[70, .8], [400, 1]]) { c.fillStyle = '#6e4a2c'; c.fillRect(tx - 10 * s, 560, 20 * s, 260); ell(c, tx, 500, 90 * s, 100 * s, '#4f8a5e'); } }
+  if (kind === 'bed') { c.fillStyle = '#e9dcc0'; c.fillRect(300, 200, 140, 150); c.fillStyle = '#0b1440'; c.fillRect(310, 210, 120, 130); ell(c, 380, 260, 20, 20, '#f1e7cf'); ell(c, 388, 254, 18, 18, '#0b1440'); glow(c, 70, 520, 110, .4); c.fillStyle = '#f0d9a8'; c.beginPath(); c.moveTo(40, 520); c.lineTo(100, 520); c.lineTo(88, 482); c.lineTo(52, 482); c.closePath(); c.fill(); c.fillStyle = '#8f98b0'; c.fillRect(67, 520, 6, 300); }
+}
+const SPLIT_PLACES = () => { const H = HIT; return [[0, 'home'], [H.unk - .2, 'bus'], [H.second - .2, 'cafe'], [H.few, 'gym'], [H.few + .55, 'park'], [H.few + 1.1, 'bed']]; };
+function scrollerPhone(c, t, x, y, w, h, o) {   // her phone, big: the feed scrolls up with each swipe of her thumb; the ad comes past
+  c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - w / 2 + 12, y - h / 2 + 16, w, h, 54); c.fill(); c.fillStyle = '#0e1440'; c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, 54); c.fill(); c.fillStyle = '#efe6d2'; c.beginPath(); c.roundRect(x - w / 2 + 16, y - h / 2 + 16, w - 32, h - 32, 42); c.fill();
+  c.save(); c.beginPath(); c.roundRect(x - w / 2 + 16, y - h / 2 + 16, w - 32, h - 32, 42); c.clip();
+  const pw = w - 70, ph = pw * 1.2, step = ph + 26, sc = o.scroll, first = Math.floor(sc / step);
+  for (let n = first - 1; n < first + 4; n++) { const py = y - h / 2 + 70 + n * step - sc, isAd = o.adAt.includes(n);
+    c.fillStyle = '#fbf6ea'; c.beginPath(); c.roundRect(x - pw / 2, py, pw, ph, 18); c.fill(); ell(c, x - pw / 2 + 28, py + 28, 14, 14, isAd ? GOLD : '#9aa0b8'); c.fillStyle = 'rgba(28,36,80,.3)'; c.fillRect(x - pw / 2 + 52, py + 21, 96, 13);
+    c.fillStyle = isAd ? '#1f2c62' : ['#d9ccab', '#c9d6b0', '#e6c3b8', '#b8c6e6'][((n % 4) + 4) % 4]; c.fillRect(x - pw / 2 + 12, py + 56, pw - 24, pw - 24);
+    if (isAd) { c.save(); const gr = o.grey(n); if (gr > 0) c.filter = `grayscale(${gr}) blur(${gr * 9 * K}px)`; glow(c, x, py + 56 + (pw - 24) / 2, 130, .35); jar(c, x, py + 56 + (pw - 24) * .8, 1.05); c.restore(); if (o.gold(n)) { c.strokeStyle = GOLD; c.lineWidth = 7; c.beginPath(); c.roundRect(x - pw / 2 - 4, py - 4, pw + 8, ph + 8, 20); c.stroke(); } c.fillStyle = o.buyOff ? '#b9bccb' : GOLD; c.beginPath(); c.roundRect(x - pw / 2 + 12, py + ph - 62, pw - 24, 44, 22); c.fill(); }
+    else { ell(c, x - pw * .14, py + 56 + pw * .3, pw * .11, pw * .11, 'rgba(255,255,255,.5)'); c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.moveTo(x - pw / 2 + 12, py + 56 + pw - 24); c.lineTo(x - pw * .05, py + 56 + pw * .4); c.lineTo(x + pw / 2 - 12, py + 56 + pw - 24); c.fill(); } }
+  // her thumb: a soft dot sliding up the screen on each swipe
+  if (o.thumb != null) { const u = o.thumb; if (u > 0 && u < 1) { const ty = lerp(y + h * .3, y - h * .15, ss(u)); c.fillStyle = `rgba(255,255,255,${.55 * Math.sin(u * Math.PI)})`; c.beginPath(); c.arc(x + w * .18, ty, 34, 0, 7); c.fill(); c.strokeStyle = `rgba(255,255,255,${.35 * Math.sin(u * Math.PI)})`; c.lineWidth = 10; c.lineCap = 'round'; c.beginPath(); c.moveTo(x + w * .18, ty + 30); c.lineTo(x + w * .18, Math.min(y + h * .3, ty + 140)); c.stroke(); } }
+  c.restore(); c.fillStyle = '#0e1440'; c.beginPath(); c.roundRect(x - 50, y - h / 2 + 26, 100, 22, 11); c.fill();
+}
+// the swipes: [time, how far], each one a flick of her thumb
+const SWIPES = () => { const H = HIT, sw = [.5, 1.25, H.seen - .45, 2.15, H.insta - .45, 3.3, H.never - .5, 4.9, H.unk + .2, H.unk + 1.3, H.second + .2, H.few - .1, H.few + .45, H.few + 1.0]; return sw; };
+const AD_AT = [3, 5, 7, 9, 11, 12, 13, 14];
+const SHOT = {
+  split(c, t) {   // her day on the left (the place changes around her), her phone on the right (the feed scrolls with her thumb; the ad keeps coming back)
+    const H = HIT; bg(c, '#26398c');
+    const sw = SWIPES(), step = (420 - 70) * 1.2 + 26; let scroll = 0, thumb = null; sw.forEach(s => { scroll += step * ss(clamp((t - s) / .35)); if (t > s - .12 && t < s + .4) thumb = (t - s + .12) / .52; });
+    // the left panel: her, in each place
+    const PL = SPLIT_PLACES(); let pi = 0; while (pi + 1 < PL.length && t >= PL[pi + 1][0]) pi++;
+    c.save(); c.translate(LP.x, LP.y); c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(10, 14, LP.w, LP.h, 36); c.fill(); c.beginPath(); c.roundRect(0, 0, LP.w, LP.h, 36); c.clip();
+    panelPlace(c, PL[pi][1], t); if (pi > 0) { const w = ss(clamp((t - PL[pi][0]) / .3)); if (w < 1) { c.save(); c.beginPath(); c.rect(0, 0, LP.w * (1 - w), LP.h); c.clip(); panelPlace(c, PL[pi - 1][1], t); c.restore(); c.fillStyle = GOLD; c.fillRect(LP.w * (1 - w) - 4, 0, 8, LP.h); } }
+    const smile = t > H.name ? 1 : t > H.second ? .9 : .75; mascot(c, HER({ x: 235, y: 905, s: 1.55, f: .2, smile, look: .35, blink: blinkAt(t, 3), handR: [278, 800] })); handPhone(c, 282, 790, .95); if (thumb != null) glow(c, 282, 790, 50, .45 * Math.sin(clamp(thumb) * Math.PI));
+    c.restore(); c.strokeStyle = 'rgba(246,239,220,.25)'; c.lineWidth = 4; c.beginPath(); c.roundRect(LP.x, LP.y, LP.w, LP.h, 36); c.stroke();
+    // the right: her phone, big
+    const px = 790, py = 1270;
+    scrollerPhone(c, t, px, py, 420, 800, { scroll, adAt: AD_AT, thumb, grey: n => n === 9 ? 1 : n === 11 ? KF(t, [[H.second, .6], [H.memo, .15]]) : 0, gold: n => n >= 11, buyOff: false });
+    // the badges: +1, +1; the buy button left alone; unknown; pinned; familiar: the bell
+    [H.seen, H.insta].forEach((at, i) => { const k = E(t, at + .05, .3, .5) * (1 - ss(seg(t, at + .8, at + 1.0))); if (k > 0) scaled(c, 985, 940, Math.min(1.12, k), () => { ell(c, 985, 940, 44, 44, GOLD); text(c, '+1', 985, 942, 38, NAVY); }); });
+    badge(c, 'x', 985, 1560, 40, E(t, H.never, .3, .5) * (1 - ss(seg(t, H.unk - .3, H.unk))));
+    badge(c, 'q', 985, 940, 40, E(t, H.q, .3, .5) * (1 - ss(seg(t, H.second, H.second + .2))));
+    badge(c, 'pin', 985, 940, 40, E(t, H.memo, .3, .5) * (1 - ss(seg(t, H.few - .1, H.few + .1))));
+    const bk = E(t, H.bell, .3, .45); if (bk > 0) { badge(c, 'bell', 985, 940, 42 * Math.min(1.1, bk), 1); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(985, 940, 62 + q * 22, -.6, .6); c.stroke(); } }
+    // the familiarity meter under the phone
+    const mt = KF(t, [[H.unk, 0], [H.unk + .6, .12], [H.second + .2, .12], [H.second + .7, .4], [H.few, .4], [H.few + .3, .58], [H.few + .85, .74], [H.few + 1.4, .9], [H.name, 1]]); const mx = 790, my = 1730, mw = 340;
+    if (t > H.unk - .2) { c.save(); c.globalAlpha = ss(seg(t, H.unk - .2, H.unk + .2)); c.fillStyle = 'rgba(246,239,220,.15)'; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, mw, 32, 16); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, Math.max(32, mw * mt), 32, 16); c.fill(); eyeIcon(c, mx - mw / 2 - 46, my, .34, 1); if (mt >= .99) heart(c, mx + mw / 2 + 40, my, 20, 1, '#e8664f'); c.restore(); }
+  },
+  mirror(c, t) {   // one day she needs it: at her bathroom mirror; her reflection; the cream jar on the shelf is empty, puff; she touches her dry cheek
+    const H = HIT, op = ss(seg(t, H.empty - .2, H.empty + .2)), dry = ss(seg(t, H.dry - .1, H.dry + .4)); scenery(c, 'bath', t);
+    const mxc = 720, myc = 1200; c.fillStyle = '#e9dcc0'; c.beginPath(); c.ellipse(mxc, myc, 230, 300, 0, 0, 7); c.fill(); c.save(); c.beginPath(); c.ellipse(mxc, myc, 212, 282, 0, 0, 7); c.clip(); const mg = c.createLinearGradient(mxc - 200, myc - 280, mxc + 200, myc + 280); mg.addColorStop(0, '#5272c4'); mg.addColorStop(1, '#2b4396'); c.fillStyle = mg; c.fillRect(mxc - 220, myc - 290, 440, 580);
+      mascot(c, HER({ x: mxc + 30, y: myc + 420, s: 2.0, f: -.5, smile: lerp(.8, 0, dry), sad: .5 * dry, blink: blinkAt(t, 3), handL: dry > .3 ? [mxc - 10, myc + 120] : undefined })); c.fillStyle = 'rgba(255,255,255,.14)'; c.beginPath(); c.ellipse(mxc - 90, myc - 120, 40, 120, -.4, 0, 7); c.fill(); c.restore();
+    c.fillStyle = WOOD; c.fillRect(560, 1530, 330, 16); jar(c, 800, 1530, .9, { open: op > .5, empty: 1, plain: 1 }); if (op > 0 && op < 1) for (let k = 0; k < 5; k++) ell(c, 800 + Math.cos(k * 1.3) * 54 * op, 1400 - 36 * op + Math.sin(k * 1.3) * 26 * op, 12 * (1 - op), 12 * (1 - op), `rgba(246,239,220,${.7 * (1 - op)})`);
+    mascot(c, HER({ x: 340, y: 1790, f: .55, smile: lerp(.8, 0, dry), sad: .5 * dry, blink: blinkAt(t, 3), handR: t > H.empty - .4 && t < H.dry ? [760, 1440] : dry > .3 ? [380, 1500] : undefined }));
+    if (dry > 0) { c.strokeStyle = `rgba(246,239,220,${.8 * dry})`; c.lineWidth = 4; for (const [dx, dy] of [[-48, 0], [30, 14]]) { c.beginPath(); c.moveTo(370 + dx - 12, 1450 + dy); c.lineTo(370 + dx, 1460 + dy); c.lineTo(370 + dx + 10, 1450 + dy); c.stroke(); } } },
+  product: SHOT_PRODUCT, shop: SHOT_SHOP, eye: SHOT_EYE, chart: SHOT_CHART,
+  finale(c, t) {   // so a brand should be there regularly in its audience's life: the week fills with the mark; then the women of its audience: one by one their phones light up with it, and they smile
+    const H = HIT; bg(c);
+    for (let d = 0; d < 7; d++) { const x = 140 + d * 116, y = 960, k = E(t, 36.3 + d * .06, .3, .45); if (k <= 0) continue; scaled(c, x + 50, y + 80, Math.min(1, k), () => { c.fillStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.roundRect(x, y, 100, 160, 16); c.fill(); }); if (d % 2 === 0 || d === 5) { const kk = E(t, 37.0 + d * .14, .3, .45); if (kk > 0) mark(c, x + 50, y + 80, 32 * Math.min(1.12, kk)); } }
+    AUD.forEach(([sk, fem], i) => { const x = 150 + i * 195, k = E(t, 38.3 + i * .08, .35, .45), lt = 39.3 + i * .18, lit = t > lt; if (k <= 0) return;
+      scaled(c, x, 1790, Math.min(1, k), () => { mascot(c, { id: 'a' + i, skin: sk, fem, s: 1.35, x, y: 1790, f: .2, smile: lit ? 1 : .75, blink: blinkAt(t, i), handR: [x + 52, 1620] }); handPhone(c, x + 54, 1614, .95); if (lit) { glow(c, x + 54, 1580, 60, .55); mark(c, x + 58, 1520, 20 * Math.min(1.1, E(t, lt, .3, .5))); } }); });
+    if (t > 40.35) { glow(c, 540, 1500, 420, .3 * ss(seg(t, 40.35, 40.85))); spark(c, 540, 1450, t, 40.35, 8, 360, 18); } },
 };
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
