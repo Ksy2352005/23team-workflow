@@ -90,7 +90,7 @@ const BUYER = o => ({ id: 'buyer', skin: 'blue3', fem: 'bob', s: 1.5, smile: .8,
 const SHOT = {
   flow(c, t) {
     bg(c, '#2c46a0');
-    stage(c, [40, 860, 1040, 1800], 0, () => { c.translate(0, -80);
+    stage(c, [150, 900, 930, 1700], 0, () => { c.translate(0, -80);
       const H = HIT, MENU = { x: 540, y: 1300, w: 660, h: 560 }, rowY = [1170, 1300, 1430];
       // the menu board (10.0 .. 18.8)
       const mk = E(t, H.menu, .4, .35) * (1 - ss(seg(t, H.menuOut, H.menuOut + .45)));
@@ -101,40 +101,40 @@ const SHOT = {
         const slot = ss(seg(t, H.third - .1, H.third + .3)) * (1 - ss(seg(t, H.medium - .1, H.medium + .2))); if (slot > 0) { c.save(); c.globalAlpha *= slot; c.strokeStyle = GOLD; c.lineWidth = 4; c.setLineDash([14, 10]); c.lineDashOffset = -t * 40; c.beginPath(); c.roundRect(x - w / 2 + 30, rowY[1] - 46, w - 60, 92, 16); c.stroke(); c.restore(); badge(c, 'q', x, rowY[1], 34, E(t, H.third, .3, .5) * (1 - ss(seg(t, H.medium - .1, H.medium + .1)))); }
         row(1, 'KÖZEPES', '', E(t, H.medium + .3, .3, .5)); if (t > H.mPrice) { const pk = E(t, H.mPrice, .3, .5); c.save(); c.globalAlpha *= Math.min(1, pk); c.font = '700 40px "Montserrat"'; c.textAlign = 'right'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('1 200 Ft', x + w / 2 - 40, rowY[1] + 4); c.restore(); if (pk > 0) glow(c, x + w / 2 - 120, rowY[1], 90, .4 * Math.max(0, 1 - (t - H.mPrice) / 1.2)); } });
       // the three cups: their paths through the film
-      const big = { x: KF(t, [[2.34, 700], [2.8, 600], [5.4, 600], [5.9, 770], [H.menu, 770], [H.menu + .5, 330], [H.menuOut, 330], [H.menuOut + .5, 700], [H.best, 700], [H.best + .5, 540], [H.decoy, 540], [H.decoy + .45, 820], [H.row, 820], [H.row + .5, 790]]),
-        y: KF(t, [[0, 1600], [H.menu, 1600], [H.menu + .5, rowY[2] + 24], [H.menuOut, rowY[2] + 24], [H.menuOut + .5, 1640], [H.best, 1640], [H.best + .5, 1650], [H.decoy, 1650], [H.decoy + .45, 1640]]),
-        s: KF(t, [[2.34, 0], [2.8, 1.45], [5.4, 1.45], [5.9, 1.05], [H.menu, 1.05], [H.menu + .5, .3], [H.menuOut, .3], [H.menuOut + .5, 1.3], [H.best, 1.3], [H.best + .5, 1.75], [H.decoy, 1.75], [H.decoy + .45, .95], [H.row, .95], [H.row + .5, 1.0], [H.win - .1, 1.0], [H.win + .4, 1.22]]),
+      const big = { x: KF(t, [[2.28, 700], [2.73, 600], [5.26, 600], [5.75, 770], [H.menu, 770], [H.menu + .5, 330], [H.menuOut, 330], [H.menuOut + .5, 700], [H.best, 700], [H.best + .5, 540], [H.decoy, 540], [H.decoy + .45, 820], [H.row, 820], [H.row + .5, 790], [H.butWhy, 790], [H.butWhy + .6, 600]]),
+        y: KF(t, [[0, 1600], [H.menu, 1600], [H.menu + .5, rowY[2] + 24], [H.menuOut, rowY[2] + 24], [H.menuOut + .5, 1640], [H.best, 1640], [H.best + .5, 1650], [H.decoy, 1650], [H.decoy + .45, 1640], [H.butWhy + .15, 1640], [H.butWhy + .75, 1490]]),
+        s: KF(t, [[2.28, 0], [2.73, 1.45], [5.26, 1.45], [5.75, 1.05], [H.menu, 1.05], [H.menu + .5, .3], [H.menuOut, .3], [H.menuOut + .5, 1.3], [H.best, 1.3], [H.best + .5, 1.75], [H.decoy, 1.75], [H.decoy + .45, .95], [H.row, .95], [H.row + .5, 1.0], [H.win - .1, 1.0], [H.win + .4, 1.3]]),
         a: KF(t, [[H.decoy, 1], [H.decoy + .45, .45], [H.row, .45], [H.row + .5, 1]]) };
-      const sm = { x: KF(t, [[2.34, 540], [2.8, 250], [5.4, 250], [5.9, 320], [H.menu, 320], [H.menu + .5, 330], [H.row, 330], [H.row + .5, 290]]),
+      const sm = { x: KF(t, [[2.28, 540], [2.73, 250], [5.26, 250], [5.75, 320], [H.menu, 320], [H.menu + .5, 330], [H.row, 330], [H.row + .5, 290], [H.butWhy, 290], [H.butWhy + .6, 330]]),
         y: KF(t, [[0, 1600], [H.menu, 1600], [H.menu + .5, rowY[0] + 24], [H.row, rowY[0] + 24], [H.row + .5, 1640]]),
-        s: KF(t, [[0, 0], [.45, 1.5], [2.34, 1.5], [2.8, .9], [5.4, .9], [5.9, 1.05], [H.menu, 1.05], [H.menu + .5, .3], [H.menuOut, .3], [H.menuOut + .4, 0], [H.row, 0], [H.row + .5, 1.0]]),
-        a: KF(t, [[2.34, 1], [2.8, .45], [5.4, .45], [5.9, 1], [H.row, 1], [H.row + .5, 1], [H.win - .1, 1], [H.win + .4, .5]]) };
-      const md = { x: KF(t, [[H.medium, 330], [H.menuOut, 330], [H.menuOut + .5, 390], [H.best, 390], [H.best + .5, 200], [H.decoy, 470], [H.row, 470], [H.row + .5, 540]]),
+        s: KF(t, [[0, 0], [0.44, 1.5], [2.28, 1.5], [2.73, .9], [5.26, .9], [5.75, 1.05], [H.menu, 1.05], [H.menu + .5, .3], [H.menuOut, .3], [H.menuOut + .4, 0], [H.row, 0], [H.row + .5, 1.0]]),
+        a: KF(t, [[2.28, 1], [2.73, .45], [5.26, .45], [5.75, 1], [H.row, 1], [H.row + .5, 1], [H.butWhy, 1], [H.butWhy + .5, .45], [H.win, .45], [H.win + .4, .3]]) };
+      const md = { x: KF(t, [[H.medium, 330], [H.menuOut, 330], [H.menuOut + .5, 390], [H.best, 390], [H.best + .5, 200], [H.decoy, 470], [H.row, 470], [H.row + .5, 540], [H.butWhy, 540], [H.butWhy + .45, 600]]),
         y: KF(t, [[H.medium, rowY[1] - 260], [H.medium + .35, rowY[1] + 24], [H.menuOut, rowY[1] + 24], [H.menuOut + .5, 1640], [H.best + .5, 1640], [H.decoy - .01, 980], [H.decoy, 980], [H.decoy + .55, 1560], [H.row, 1560], [H.row + .5, 1640]]),
-        s: KF(t, [[H.medium - .05, 0], [H.medium + .1, .3], [H.menuOut, .3], [H.menuOut + .5, 1.3], [H.best, 1.3], [H.best + .5, .8], [H.decoy, 1.05], [H.row, 1.05], [H.row + .5, 1.0]]),
-        a: KF(t, [[H.best, 1], [H.best + .45, 0], [H.decoy, 0], [H.decoy + .2, 1], [H.notThis - .1, 1], [H.notThis + .4, .5]]) };
+        s: KF(t, [[H.medium - .05, 0], [H.medium + .1, .3], [H.menuOut, .3], [H.menuOut + .5, 1.3], [H.best, 1.3], [H.best + .5, .8], [H.decoy, 1.05], [H.row, 1.05], [H.row + .5, 1.0], [H.butWhy + .2, 1.0], [H.butWhy + .6, .6]]),
+        a: KF(t, [[H.best, 1], [H.best + .45, 0], [H.decoy, 0], [H.decoy + .2, 1], [H.notThis - .1, 1], [H.notThis + .4, .5], [H.butWhy + .3, .5], [H.butWhy + .6, 0]]) };
       const bob = t > H.decoy + .55 && t < H.row + .2 ? Math.sin((t - H.decoy) * 3.2) * 16 : 0, lineOn = ss(seg(t, H.decoy, H.decoy + .3)) * (1 - ss(seg(t, H.row - .1, H.row + .35)));
       const xr = ss(seg(t, H.menuOut + .3, H.menuOut + .8)) * (1 - ss(seg(t, H.best, H.best + .4))), mFill = .5, lFill = KF(t, [[H.more - .1, .5], [H.more + .7, .95]]), extra = ss(seg(t, H.more, H.more + .7));
       // the customer (5.6 .. 10.0): she reaches for the small cup; its price glows
-      const bk = ss(seg(t, 5.55, 5.95)) * (1 - ss(seg(t, H.menu - .2, H.menu + .2)));
+      const bk = ss(seg(t, 5.41, 5.80)) * (1 - ss(seg(t, H.menu - .2, H.menu + .2)));
       if (bk > 0) { c.save(); c.globalAlpha = bk; mascot(c, BUYER({ x: 545, y: 1795 + (1 - bk) * 40, f: -.15, smile: t > H.cheap ? 1 : .7, look: -.3, blink: blinkAt(t, 3), handL: t > H.pick - .25 ? reach([500, 1640], [395, 1520], ss(seg(t, H.pick - .25, H.pick + .1))) : undefined })); c.restore(); }
       // the cups themselves
       cup(c, sm.x, sm.y, sm.s, 0, { a: sm.a, glow: t > H.pick && t < H.menu ? ss(seg(t, H.pick, H.pick + .3)) : 0 });
       if (lineOn > 0) { c.save(); c.strokeStyle = `rgba(246,239,220,${.8 * lineOn})`; c.lineWidth = 3; c.beginPath(); c.moveTo(md.x, 960); c.lineTo(md.x, md.y + bob - cupH(md.s, 1) - 30 * md.s); c.stroke(); c.strokeStyle = `rgba(185,188,203,${lineOn})`; c.lineWidth = 6; c.beginPath(); c.arc(md.x + 10, md.y + bob - cupH(md.s, 1) - 22 * md.s, 12, Math.PI * .9, Math.PI * 2.1); c.stroke(); c.restore(); }
-      cup(c, md.x, md.y + bob, md.s, 1, { a: md.a, xray: xr, fill: mFill, glow: t > H.decoyWord && t < H.row ? .8 * Math.sin(clamp((t - H.decoyWord) / 1.2) * Math.PI) : 0, dashed: ss(seg(t, H.notThis, H.notThis + .4)), t });
+      cup(c, md.x, md.y + bob, md.s, 1, { a: md.a, xray: xr, fill: mFill, glow: t > H.decoyWord && t < H.row ? .8 * Math.sin(clamp((t - H.decoyWord) / 1.2) * Math.PI) : 0, dashed: ss(seg(t, H.notThis, H.notThis + .4)) * (1 - ss(seg(t, H.butWhy, H.butWhy + .3))), t });
+      const pod = ss(seg(t, H.butWhy + .15, H.butWhy + .75)); if (pod > 0) { const ph = 150 * pod, px = 600, pw = 250; if (t > H.win) { const rk = ss(seg(t, H.win, H.win + .5)); c.save(); c.translate(px, 1490 - 160); c.rotate((t - H.win) * .5); for (let i = 0; i < 12; i++) { c.rotate(Math.PI / 6); c.fillStyle = `rgba(236,189,74,${.16 * rk})`; c.beginPath(); c.moveTo(0, 0); c.lineTo(-38, -360 * rk); c.lineTo(38, -360 * rk); c.closePath(); c.fill(); } c.restore(); }
+        ell(c, px + 8, 1644, pw * .56, 12, 'rgba(0,0,20,.3)'); c.fillStyle = '#e9dcc0'; c.fillRect(px - pw / 2, 1640 - ph, pw, ph); c.fillStyle = GOLD; c.fillRect(px - pw / 2 - 12, 1640 - ph - 10, pw + 24, 18); c.fillStyle = 'rgba(0,0,0,.08)'; c.fillRect(px - pw / 2, 1640 - ph + 8, pw * .18, ph - 8); if (pod > .6) heart(c, px, 1640 - ph / 2 + 4, 22 * pod, 1, GOLD2); }
       cup(c, big.x, big.y, big.s, 2, { a: big.a, xray: xr, fill: lFill, extra, extraFrom: mFill, glow: t > H.best + .3 && t < H.decoy ? .8 : t > H.win ? ss(seg(t, H.win, H.win + .4)) : 0 });
       if (extra > 0 && xr > .5) for (let k = 0; k < 4; k++) { const u = ((t - H.more) * .8 + k / 4) % 1; c.save(); c.globalAlpha = extra * Math.sin(u * Math.PI); text(c, '+', big.x + (k - 1.5) * 34, big.y - cupH(big.s, 2) * (.6 + .5 * u) - 40, 44, GOLD); c.restore(); }
       // price tags, riding under the cups
-      tag(c, sm.x, sm.y + 70, 1, '850 Ft', E(t, .66, .35, .4) * (1 - ss(seg(t, H.menu - .1, H.menu + .2))) * Math.min(1, sm.a * 1.4), t > H.cheap && t < H.menu ? ss(seg(t, H.cheap, H.cheap + .3)) : 0);
-      tag(c, big.x, big.y + 70, 1, '1 350 Ft', E(t, 3.3, .35, .4) * (1 - ss(seg(t, H.menu - .1, H.menu + .2))));
+      tag(c, sm.x, sm.y + 70, 1, '850 Ft', E(t, 0.64, .35, .4) * (1 - ss(seg(t, H.menu - .1, H.menu + .2))) * Math.min(1, sm.a * 1.4), t > H.cheap && t < H.menu ? ss(seg(t, H.cheap, H.cheap + .3)) : 0);
+      tag(c, big.x, big.y + 70, 1, '1 350 Ft', E(t, 3.22, .35, .4) * (1 - ss(seg(t, H.menu - .1, H.menu + .2))));
       if (t > H.plus) { const k = E(t, H.plus, .35, .4) * (1 - ss(seg(t, H.best - .1, H.best + .2))); if (k > 0) { tag(c, 545, 1190, 1.05, '+150 Ft', k, .6); c.save(); c.globalAlpha = Math.min(1, k); c.strokeStyle = GOLD; c.lineWidth = 8; c.lineCap = 'round'; c.beginPath(); c.moveTo(430, 1260); c.quadraticCurveTo(545, 1250, 640, 1280); c.stroke(); c.fillStyle = GOLD; c.beginPath(); c.moveTo(660, 1290); c.lineTo(626, 1294); c.lineTo(642, 1266); c.closePath(); c.fill(); c.restore(); } }
       // the interesting part: a big "!"
       badge(c, 'ex', 540, 930, 54, E(t, H.wow, .3, .5) * (1 - ss(seg(t, H.menuOut - .1, H.menuOut + .2))));
       // the best choice: a crown, sparkles
       crown(c, 540, 1650 - cupH(1.75, 2) - 110, 1.1, E(t, H.crown, .35, .4) * (1 - ss(seg(t, H.decoy - .1, H.decoy + .2)))); if (t > H.crown && t < H.decoy) spark(c, 540, 1350, t, H.crown, 6, 260, 18);
-      // not chosen, but it makes the large one shine: the arrow
-      const ar = ss(seg(t, H.butWhy, H.butWhy + .6)); if (ar > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 9; c.lineCap = 'round'; const p0 = [560, 1350], p1 = [770, 1330]; c.beginPath(); c.moveTo(...p0); const n = 20; for (let i = 1; i <= n * ar; i++) { const u = i / n; c.lineTo(lerp(p0[0], p1[0], u), lerp(p0[1], p1[1], u) - Math.sin(u * Math.PI) * 120); } c.stroke(); if (ar >= 1) { c.fillStyle = GOLD; c.beginPath(); c.moveTo(790, 1336); c.lineTo(758, 1350); c.lineTo(764, 1316); c.closePath(); c.fill(); } c.restore(); }
-      if (t > H.win) spark(c, big.x, big.y - 160, t, H.win, 7, 230, 18); });
+      if (t > H.win) spark(c, big.x, big.y - 170, t, H.win, 8, 250, 20); });
   },
 };
 

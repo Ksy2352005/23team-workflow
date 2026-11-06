@@ -16,7 +16,7 @@ for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
-STORY = 40.1
+STORY = 39.08
 def buf(): return np.zeros((N, 2))
 def verb(x, t60=.7, wet=.25):
     n = int(t60 * SR); ir = rng.standard_normal(n) * np.exp(-6.9 * np.arange(n) / n); ir = lp(ir, 5000) * .06
@@ -109,14 +109,14 @@ add(fx, glide(.1), H1('best'), 1, 0); add(fx, verb(mx(shimmer(.16, 1.3), chime(1
 add(fx, mx(glide(.09), reel(.55, .1)), H1('decoy'), 1, -.2); add(fx, verb(shimmer(.1, 1.0), .8, .3), H1('decoyWord'), 1, -.2)
 # the three in a row: the middle one isn't the point; the arrow; the large one wins
 add(fx, mx(reel(.35, .08), glide(.09), pop(.1)), H1('row'), 1, 0); add(fx, boing(.08, 300, 200, .3), H1('notThis'), 1, 0)
-add(fx, swish(.6, .12), H1('butWhy'), 1, .3); add(fx, verb(mx(shimmer(.18, 1.4), chime(1568, .08, 1.4), chime(2349, .05, 1.4)), 1.0, .4), H1('win'), 1, .4)
+add(fx, mx(swish(.5, .1), lp(thump(.3, 70), 300) * .35, S('impactWood_light_002', .12)), H1('butWhy') + .2, 1, .1);   # the decoy slides under and rises as a podium add(fx, verb(mx(shimmer(.18, 1.4), chime(1568, .08, 1.4), chime(2349, .05, 1.4)), 1.0, .4), H1('win'), 1, .4)
 
 # the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only the locked logo sound
 _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.linspace(1, 0, _n1 - _n0)[:, None]; fx[_n1:] = 0
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— voice ——
-vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.15.mp3'))   # the voice at 1.15×, pitch kept
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.18.mp3'))   # the voice at 1.18×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
