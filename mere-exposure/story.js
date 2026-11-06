@@ -1,15 +1,15 @@
-// Seen Again: timing. The voice is the supplied Hungarian voiceover at 1.2x (pitch kept), 41.9 s.
-// One continuous motion-graphic: a single bold visual at a time, handing over to the next.
-export const STORY = 41.89, DUR = 44.09;
-export const VO = 'refs/voiceover-hu-x1.2.mp3';
+// Seen Again: timing. The voice is the supplied Hungarian voiceover at 1.22x (pitch kept), 41.2 s.
+// One continuous shot: a single object in the centre that keeps transforming into the next idea.
+export const STORY = 41.20, DUR = 43.40;
+export const VO = 'refs/voiceover-hu-x1.22.mp3';
 export const SHOTS = [[0, 'flow', 'cut']];
 // the beats, on the words of the voice
 export const HIT = {
-  seen: 1.71, insta: 2.66, never: 4.17,
-  unk: 6.12, q: 7.73, second: 9.75, memo: 10.48, few: 12.23, name: 13.57, bell: 14.18,
-  need: 15.56, product: 17.92, offers: 19.1,
-  mind: 20.39, first: 22.3,
-  term: 24.27, mere: 26.1,
-  chart: 27.99, again: [29.72, 30.19, 30.48, 31.17], grow: 32.16, like: 35.3,
-  regular: 36.97, rhythm: 39, audience: 40.24, end: 41.02,
+  seen: 1.68, insta: 2.62, never: 4.1,
+  unk: 6.02, q: 7.6, second: 9.59, memo: 10.31, few: 12.03, name: 13.35, bell: 13.95,
+  need: 15.3, product: 17.63, offers: 18.79,
+  mind: 20.06, first: 21.93,
+  term: 23.87, mere: 25.67,
+  chart: 27.53, again: [29.23, 29.7, 29.98, 30.66], grow: 31.63, like: 34.72,
+  regular: 36.36, rhythm: 38.36, audience: 39.58, end: 40.35,
 };

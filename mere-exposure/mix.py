@@ -16,7 +16,7 @@ for e in EVS: HIT.setdefault(e['type'], []).append(e['t'])
 H1 = lambda k: HIT[k][0]
 N = int(DUR * SR) + SR
 rng = np.random.default_rng(23)
-STORY = 41.89
+STORY = 41.20
 def buf(): return np.zeros((N, 2))
 def verb(x, t60=.7, wet=.25):
     n = int(t60 * SR); ir = rng.standard_normal(n) * np.exp(-6.9 * np.arange(n) / n); ir = lp(ir, 5000) * .06
@@ -89,8 +89,8 @@ def rise(d, v): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(np.linspace(330,
 def tick(v=1.0, p=1.0): d = .04; return norm(bp(noise(d), 2500 * p, 6000 * p) * env_exp(d, .004)) * v
 glide = lambda v=.09: lp(swish(.45, v), 4500)
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
-for t in [H1('unk') - .3, H1('second') - .25, H1('few') - .1, H1('need') - .3, H1('mind') - .3, H1('term') - .3, H1('chart') - .3, H1('regular') - .3]: add(fx, mx(lp(swish(.55, .16), 3500), lp(thump(.25, 60), 250) * .12), t, 1, 0)   # the camera flying to the next station
-for k in range(6): add(fx, lp(swish(.22, .07), 5000), H1('few') + .25 + k * .17, 1, -.6 if k % 2 == 0 else .6)   # MIRA billboards whooshing past
+for t in [H1('unk') - .3, H1('second') - .25, H1('need') - .25, H1('mind') - .25, H1('term') - .25, H1('chart') - .25, H1('regular') - .25, H1('audience') - .25]: add(fx, mx(lp(swish(.5, .18), 4000), lp(thump(.22, 70), 300) * .2, verb(chime(1047, .03, .6), .7, .3)), t, 1, 0)   # the object flips and transforms into the next
+for k in range(6): add(fx, lp(swish(.18, .07), 5000), H1('few') + .1 + k * (H1('name') - H1('few') - .35) / 6, 1, -.4 if k % 2 == 0 else .4)   # the logo spinning on each exposure
 # the phone, the feed; MIRA keeps showing up; the empty cart
 add(fx, mx(glide(.1), pop(.1)), .05, 1, 0)
 for t in [H1('seen') - .35, H1('insta') - .35, H1('never') - .35]: add(fx, swish(.3, .08), t, 1, .2)
@@ -124,7 +124,7 @@ _n0, _n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[_n0:_n1] *= np.lin
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 
 # —— voice ——
-vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.2.mp3'))   # the voice at 1.20×, pitch kept
+vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.22.mp3'))   # the voice at 1.22×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
