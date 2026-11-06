@@ -94,10 +94,11 @@ for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25,
 add(fx, mx(lp(thump(.3, 70), 300) * .3, pop(.12)), .1, 1, -.3)
 a, b = HIT['clone']; add(fx, mx(swish(b - a, .14), verb(chime(1568, .06, .9), .8, .3)), a, 1, .3); add(fx, verb(chime(2093, .07, 1.0), .8, .3), b, 1, .3)
 for k, t in enumerate(HIT['icons']): add(fx, mx(pop(.14), verb(chime(1319 * 2 ** (k * 2 / 12), .05, .6), .8, .3)), t, 1, 0)
-for k, t in enumerate(HIT['walkers']):
-    to = [2, 1, 2, 2, 2][k]
-    for j in range(3): add(fx, lp(S(pick('footstep_concrete_00', 5, j + k), .07), 3500), t + .15 + j * .3, 1, [.5, -.5][to - 1])
-    add(fx, mx(S('doorOpen_1', .05), pop(.1), chime(1568 * 2 ** (k * 2 / 12), .04, .5)), t + 1.1, 1, [.4, -.4][to - 1])
+for k, t in enumerate(HIT['walkers']):   # a tidy queue from the left: the second into gym one, the rest into gym two
+    to = 1 if k == 1 else 2; arr = t + ((270 if to == 1 else 810) - 70) / 520
+    j = 0
+    while t + .1 + j * .3 < arr - .1: add(fx, lp(S(pick('footstep_concrete_00', 5, j + k), .06), 3500), t + .1 + j * .3, 1, -.5 + .9 * min(1, j * .3 / 1.4)); j += 1
+    add(fx, mx(S('doorOpen_1', .05), pop(.1), chime(1568 * 2 ** (k * 2 / 12), .04, .5)), arr - .3, 1, [-.4, .4][to - 1])
 add(fx, lp(swish(1.0, .12), 3000), H1('push'), 1, -.2)
 for j in range(3): add(fx, lp(S(pick('footstep_concrete_00', 5, j), .08), 3500), H1('her') + .15 + j * .3, 1, -.4)
 add(fx, S('doorOpen_2', .07), H1('her') + .8, 1, -.3)
