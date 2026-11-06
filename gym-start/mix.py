@@ -90,12 +90,17 @@ def gauge_s(d, v): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(np.linspace(3
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
 for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
 for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
-# two gyms open; the same machines, equipment, price; beginners walk into one
-add(fx, mx(click(.2, .8), verb(chime(1568, .08, 1.0), .8, .3), click(.15, 1.1)), H1('open'), 1, 0)
+# the first gym rises, its twin copies itself out of it; the same machines, rack and price in both; beginners walk in, the doors open, the tallies grow
+add(fx, mx(lp(thump(.3, 70), 300) * .3, pop(.12)), .1, 1, -.3)
+a, b = HIT['clone']; add(fx, mx(swish(b - a, .14), verb(chime(1568, .06, .9), .8, .3)), a, 1, .3); add(fx, verb(chime(2093, .07, 1.0), .8, .3), b, 1, .3)
 for k, t in enumerate(HIT['icons']): add(fx, mx(pop(.14), verb(chime(1319 * 2 ** (k * 2 / 12), .05, .6), .8, .3)), t, 1, 0)
 for k, t in enumerate(HIT['walkers']):
-    for j in range(4): add(fx, lp(S(pick('footstep_concrete_00', 5, j + k), .08), 3500), t + .2 + j * .35, 1, [-.6, .6, .6, -.6][k])
-add(fx, verb(shimmer(.1, 1.0), .8, .3), H1('why'), 1, .4)
+    to = [2, 1, 2, 2, 2][k]
+    for j in range(3): add(fx, lp(S(pick('footstep_concrete_00', 5, j + k), .07), 3500), t + .15 + j * .3, 1, [.5, -.5][to - 1])
+    add(fx, mx(S('doorOpen_1', .05), pop(.1), chime(1568 * 2 ** (k * 2 / 12), .04, .5)), t + 1.1, 1, [.4, -.4][to - 1])
+add(fx, lp(swish(1.0, .12), 3000), H1('push'), 1, -.2)
+for j in range(3): add(fx, lp(S(pick('footstep_concrete_00', 5, j), .08), 3500), H1('her') + .15 + j * .3, 1, -.4)
+add(fx, S('doorOpen_2', .07), H1('her') + .8, 1, -.3)
 # gym one: the salesman's flood of talk; she leaves in a tangle
 add(fx, mx(S('doorOpen_1', .08), shopbell(.04)), H1('enter') - .2, 1, -.5)
 for t in [H1('b1'), H1('b2'), H1('b3')] + HIT['flood']: add(fx, pop(.11 + .02 * rng.random()), t, 1, -.2 + .6 * rng.random())
@@ -107,7 +112,7 @@ add(fx, mx(S('doorOpen_2', .08), shopbell(.04)), H1('enter2') - .2, 1, -.5)
 add(fx, mx(S('bookFlip2', .15), swish(.4, .1)), H1('fan'), 1, .2); add(fx, mx(S('bookFlip3', .12), swish(.4, .1, False)), H1('fold'), 1, .2); add(fx, mx(bp(noise(.3), 600, 4000) * env_exp(.3, .08) * .1, pop(.08)), H1('fold') + .5, 1, .2)
 add(fx, mx(pop(.16), verb(chime(1760, .07, .9), .8, .3)), H1('q'), 1, .2)
 # the question, her answer
-add(fx, mx(pop(.16), S('impactWood_light_002', .12)), H1('ask'), 1, .3); add(fx, pop(.15), H1('fit'), 1, -.3); add(fx, mx(pop(.1), boing(.08, 300, 220, .3)), H1('where'), 1, -.3)
+add(fx, pop(.16), H1('ask'), 1, .3); add(fx, mx(swish(.25, .1), S('impactWood_light_002', .2)), H1('ask') + .5, 1, .2)   # the arrow flies in and thuds into the bullseye; add(fx, pop(.15), H1('fit'), 1, -.3); add(fx, mx(pop(.1), boing(.08, 300, 220, .3)), H1('where'), 1, -.3)
 # the plan: the wall becomes steps; the three steps light; she steps up
 add(fx, mx(lp(thump(.4, 60), 300) * .3, swish(1.0, .1, False)), H1('morph'), 1, 0)
 for k in range(3): add(fx, S('impactWood_medium_00' + str(k), .14), H1('morph') + .3 + k * .25, 1, -.3 + .3 * k)

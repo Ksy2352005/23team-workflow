@@ -5,7 +5,7 @@ export const VO = 'refs/voiceover-hu-x1.15.mp3';
 export const SHOTS = [[0, 'street', 'cut'], [9.7, 'gym1', 'whip'], [21.4, 'gym2', 'whip'], [29.7, 'talk', 'punch'], [35.6, 'plan', 'whip'], [47.5, 'psych', 'punch'], [51.2, 'weigh', 'whip'], [60.4, 'got', 'punch'], [63.2, 'final', 'whip']];
 // the beats, on the words of the voice
 export const HIT = {
-  open: .74, icons: [2.9, 3.94, 5.32], walkers: [6.1, 6.4, 6.7, 6.25], why: 8.24,
+  clone: [1.08, 1.7], icons: [2.9, 3.94, 5.32], walkers: [6.0, 6.2, 6.45, 6.7, 6.95], push: 8.4, her: 8.6,
   enter: 10.32, talk: 12.38, b1: 13.22, b2: 13.98, b3: 15.6, flood: [16.1, 16.3, 16.5, 16.7, 16.9], leave: 18.22, stop: 19.0, tangle: 19.42, out: 20.5,
   enter2: 22.16, fan: 24.8, fold: 26.12, one: 27.36, q: 28.2,
   ask: 30.0, fit: 32.4, where: 34.24,
