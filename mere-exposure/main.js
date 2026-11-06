@@ -190,28 +190,29 @@ const SHOT = {
     const mt = KF(t, [[H.unk, 0], [H.unk + .6, .12], [H.second + .2, .12], [H.second + .7, .4], [H.few, .4], [H.few + .3, .58], [H.few + .85, .74], [H.few + 1.4, .9], [H.name, 1]]); const mx = 790, my = 1730, mw = 340;
     if (t > H.unk - .2) { c.save(); c.globalAlpha = ss(seg(t, H.unk - .2, H.unk + .2)); c.fillStyle = 'rgba(246,239,220,.15)'; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, mw, 32, 16); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(mx - mw / 2, my - 16, Math.max(32, mw * mt), 32, 16); c.fill(); eyeIcon(c, mx - mw / 2 - 46, my, .34, 1); if (mt >= .99) heart(c, mx + mw / 2 + 40, my, 20, 1, '#e8664f'); c.restore(); }
   },
-  recog(c, t) {   // from stranger to familiar: she stands on the left; the ad swoops in beside her each time she sees it: first a grey blur (a question by her), then clearer (she notices: a pin), then again and again, brighter, until she smiles and it rings a bell
-    const H = HIT; bg(c, '#2c46a0');
-    const visits = [[H.unk - .05, H.second - .45, 1, 'R'], [H.second - .2, H.few - .2, .3, 'T'], [H.few, H.few + .5, 0, 'R'], [H.few + .55, H.few + 1.05, 0, 'T'], [H.few + 1.1, 99, 0, 'R']];
-    const cx = 750, cy = 1170, cw = 360; let lit = 0;
-    visits.forEach(([a, b, grey, from], i) => { if (t < a || t > b + .4) return; const inn = ss(seg(t, a, a + .35)), out = ss(seg(t, b, b + .35)); if (out >= 1) return; const dx = from === 'R' ? 520 : from === 'L' ? -520 : 0, dy = from === 'T' ? -500 : 0;
-      const x = cx + dx * (1 - inn) + 600 * out, y = cy + dy * (1 - inn) - 140 * out, rot = (1 - inn) * (from === 'T' ? -.2 : .3) + out * .25, al = Math.min(inn * 1.5, 1 - out);
-      c.save(); c.globalAlpha = al; c.translate(x, y); c.rotate(rot); c.translate(-x, -y); const ch = cw * 1.22;
-      if (i >= 2) glow(c, x, y, 260, .25 + .1 * i); c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - cw / 2 + 10, y - ch / 2 + 14, cw, ch, 22); c.fill(); c.fillStyle = '#fbf6ea'; c.beginPath(); c.roundRect(x - cw / 2, y - ch / 2, cw, ch, 22); c.fill();
-      ell(c, x - cw / 2 + 32, y - ch / 2 + 32, 15, 15, grey > .5 ? '#9aa0b8' : GOLD); c.fillStyle = 'rgba(28,36,80,.3)'; c.fillRect(x - cw / 2 + 58, y - ch / 2 + 25, 110, 14); c.fillStyle = '#1f2c62'; c.fillRect(x - cw / 2 + 14, y - ch / 2 + 62, cw - 28, cw - 28);
-      c.save(); if (grey > 0) c.filter = `grayscale(${grey}) blur(${grey * 10 * K}px)`; glow(c, x, y - ch / 2 + 62 + (cw - 28) / 2, 120, .35); jar(c, x, y - ch / 2 + 62 + (cw - 28) * .8, 1.15); c.restore();
-      if (i >= 2) { c.strokeStyle = GOLD; c.lineWidth = 8; c.beginPath(); c.roundRect(x - cw / 2 - 4, y - ch / 2 - 4, cw + 8, ch + 8, 24); c.stroke(); } c.fillStyle = GOLD; c.beginPath(); c.roundRect(x - cw / 2 + 14, y + ch / 2 - 62, cw - 28, 44, 22); c.fill(); c.restore();
-      if (i === 1) badge(c, 'pin', cx + 150, cy - 210, 40, E(t, H.memo, .3, .5) * (1 - out)); });
-    // her: blank at first, then noticing, then smiling
-    const notice = t > H.memo - .1 && t < H.few, fam = ss(seg(t, H.name - .2, H.name + .3));
-    mascot(c, HER({ x: 300, y: 1790, s: 2.2, f: .45, smile: t < H.second ? .75 : lerp(.85, 1, fam), o: notice ? .6 : 0, look: .35, blink: blinkAt(t, 3), handR: [380, 1640] })); handPhone(c, 384, 1632, 1.2);
-    badge(c, 'q', 470, 1180, 44, E(t, H.q, .3, .5) * (1 - ss(seg(t, H.second - .4, H.second - .1))));
-    badge(c, 'ex', 470, 1180, 40, E(t, H.memo, .3, .5) * (1 - ss(seg(t, H.memo + .9, H.memo + 1.2))));
-    if (fam > 0) for (let k = 0; k < 3; k++) heart(c, 400 + k * 46, 1220 - 60 * clamp((t - H.name - k * .15) / 1.3), 14 + 4 * k, Math.max(0, Math.sin(clamp((t - H.name - k * .15) / 1.3) * Math.PI)), '#c4566a');
-    const bk = E(t, H.bell, .3, .45); if (bk > 0) { badge(c, 'bell', cx + 190, cy - 250, 44 * Math.min(1.1, bk), 1); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(cx + 190, cy - 250, 64 + q * 22, -.6, .6); c.stroke(); } }
-    // the familiarity meter: it fills a step with every encounter
-    const mt = KF(t, [[H.unk, 0], [H.unk + .6, .12], [H.second, .12], [H.second + .5, .4], [H.few, .4], [H.few + .3, .58], [H.few + .85, .74], [H.few + 1.4, .9], [H.name, 1]]), mx = 750, my = 1680, mw = 380;
-    c.fillStyle = 'rgba(246,239,220,.15)'; c.beginPath(); c.roundRect(mx - mw / 2, my - 18, mw, 36, 18); c.fill(); c.fillStyle = GOLD; c.beginPath(); c.roundRect(mx - mw / 2, my - 18, Math.max(36, mw * mt), 36, 18); c.fill(); eyeIcon(c, mx - mw / 2 - 52, my, .38, 1); if (mt >= .99) heart(c, mx + mw / 2 + 44, my, 22, 1, '#e8664f');
+  recog(c, t) {   // how the mere exposure effect works: one mark in the centre; each time it's seen, an ad flies in and is absorbed into it with a ripple: it gains colour and sharpness, the familiarity ring fills a step, the count ticks up: unknown (1×), noticed (2×), then again and again (3×, 4×, 5×) until it's familiar and liked
+    const H = HIT; bg(c, '#2c46a0'); const X = 540, Y = 1230, R = 150; c.save(); c.translate(X, Y); c.scale(1.2, 1.2); c.translate(-X, -Y);
+    const hits = [H.unk + .1, H.second, H.few, H.few + .5, H.few + 1.0], from = [[1.1, -.3], [-1.1, -.2], [1, .5], [-1, .55], [0, -1.2]];
+    const n = hits.filter(h => t > h + .4).length, fam = KF(t, [[H.unk, 0], [hits[0] + .45, .08], [hits[1] + .45, .4], [hits[2] + .45, .6], [hits[3] + .45, .78], [hits[4] + .45, .92], [H.name, 1]]);
+    // the familiarity ring with its five steps
+    c.save(); c.lineCap = 'round'; c.lineWidth = 16; c.strokeStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.arc(X, Y, R + 90, 0, 7); c.stroke(); c.strokeStyle = GOLD; c.beginPath(); c.arc(X, Y, R + 90, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fam); c.stroke(); c.restore();
+    for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + Math.PI * 2 * (k + 1) / 5, on = n > k; ell(c, X + Math.cos(a) * (R + 90), Y + Math.sin(a) * (R + 90), on ? 12 : 8, on ? 12 : 8, on ? CREAM : 'rgba(246,239,220,.3)'); }
+    // the mark: from a grey dashed ghost to full gold
+    if (fam > .5) glow(c, X, Y, R * 2.2, .5 * (fam - .5) * 2);
+    c.save(); c.globalAlpha = .35 + .65 * Math.min(1, fam * 1.6); if (fam < 1) c.filter = `grayscale(${1 - fam}) blur(${(1 - fam) * 7 * K}px)`; mark(c, X, Y, R * (1 + .04 * Math.sin(t * 2))); c.restore();
+    if (fam < .35) { c.save(); c.strokeStyle = `rgba(246,239,220,${.7 * (1 - fam / .35)})`; c.lineWidth = 5; c.setLineDash([18, 14]); c.lineDashOffset = -t * 30; c.beginPath(); c.arc(X, Y, R + 18, 0, 7); c.stroke(); c.restore(); }
+    // the ads flying in and being absorbed; a ripple each time
+    hits.forEach((h, i) => { const u = seg(t, h - .45, h + .05); if (u > 0 && u < 1) { const e = ss(u), [fx, fy] = from[i], x = lerp(X + fx * 640, X, e), y = lerp(Y + fy * 640, Y, e), sc = lerp(1, .25, e * e), w = 170;
+        c.save(); c.globalAlpha = 1 - ss(clamp((u - .7) / .3)); c.translate(x, y); c.rotate((1 - e) * fx * .4); c.scale(sc, sc); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(-w / 2 + 6, -w * .6 + 8, w, w * 1.2, 18); c.fill(); c.fillStyle = '#fbf6ea'; c.beginPath(); c.roundRect(-w / 2, -w * .6, w, w * 1.2, 18); c.fill(); c.fillStyle = '#1f2c62'; c.fillRect(-w / 2 + 10, -w * .6 + 34, w - 20, w - 20); mark(c, 0, -w * .6 + 34 + (w - 20) / 2, 44); c.fillStyle = GOLD; c.beginPath(); c.roundRect(-w / 2 + 10, w * .6 - 34, w - 20, 22, 11); c.fill(); c.restore(); }
+      const r = seg(t, h + .05, h + .9); if (r > 0 && r < 1) { c.save(); c.strokeStyle = `rgba(236,189,74,${.8 * (1 - r)})`; c.lineWidth = 6; c.beginPath(); c.arc(X, Y, R + 20 + r * 200, 0, 7); c.stroke(); c.restore(); } });
+    // the count under it
+    if (n > 0) { const pk = E(t, hits[n - 1] + .4, .3, .5); scaled(c, X, Y + R + 190, Math.min(1.15, pk), () => { c.fillStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.roundRect(X - 90, Y + R + 160, 180, 64, 32); c.fill(); c.font = '700 44px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = n >= 5 ? GOLD : CREAM; c.fillText(n + '×', X, Y + R + 194); }); }
+    // the reactions: unknown, noticed, familiar (liked), it rings a bell
+    badge(c, 'q', X + 210, Y - 210, 44, E(t, H.q, .3, .5) * (1 - ss(seg(t, hits[1] - .3, hits[1]))));
+    badge(c, 'pin', X + 210, Y - 210, 44, E(t, H.memo, .3, .5) * (1 - ss(seg(t, hits[2] - .3, hits[2]))));
+    if (t > H.name) { heart(c, X, Y - R - 90, 30, Math.min(1.12, E(t, H.name, .3, .5)), '#e8664f'); spark(c, X, Y, t, H.name, 8, 300, 18); }
+    const bk = E(t, H.bell, .3, .45); if (bk > 0) { badge(c, 'bell', X + 220, Y - 220, 46 * Math.min(1.1, bk), 1); for (let q = 0; q < 2; q++) { c.strokeStyle = `rgba(236,189,74,${.7 * Math.max(0, 1 - (t - H.bell) / 1.4)})`; c.lineWidth = 6; c.beginPath(); c.arc(X + 220, Y - 220, 66 + q * 22, -.6, .6); c.stroke(); } }
+    c.restore();
   },
   mirror(c, t) {   // one day she needs it: at her bathroom mirror; her reflection; the cream jar on the shelf is empty, puff; she touches her dry cheek
     const H = HIT, op = ss(seg(t, H.empty - .2, H.empty + .2)), dry = ss(seg(t, H.dry - .1, H.dry + .4)); scenery(c, 'bath', t);
