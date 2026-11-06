@@ -34,7 +34,8 @@ function ell(c, x, y, rx, ry, col, rot = 0) { c.fillStyle = col; c.beginPath(); 
 // the stage: the part of the frame under the captions where the story plays; each shot names the box its content needs, and the camera fits that box inside the stage
 const STAGE = { x0: 50, x1: 1030, y0: 760, y1: 1860 };   // the story plays under the caption area
 const lerpBox = (a, b, u) => a.map((v, i) => lerp(v, b[i], u));
-function stage(c, box, push, f) { const [x0, y0, x1, y1] = box, z = Math.min((STAGE.x1 - STAGE.x0) / (x1 - x0), (STAGE.y1 - STAGE.y0) / (y1 - y0)) * (.96 + .04 * push);
+let NOW = 0; const KICK = () => (HIT.kicks || []).reduce((m, k) => NOW < k ? m : Math.max(m, Math.exp(-(NOW - k) * 6) * Math.sin(Math.min(1, (NOW - k) / .08) * Math.PI / 2)), 0);   // a quick punch-in of the camera on the key beats
+function stage(c, box, push, f) { const [x0, y0, x1, y1] = box, z = Math.min((STAGE.x1 - STAGE.x0) / (x1 - x0), (STAGE.y1 - STAGE.y0) / (y1 - y0)) * (.96 + .04 * push) * (1 + .035 * KICK());
   c.save(); c.translate((STAGE.x0 + STAGE.x1) / 2, (STAGE.y0 + STAGE.y1) / 2); c.scale(z, z); c.translate(-(x0 + x1) / 2, -(y0 + y1) / 2); f(); c.restore(); }
 function cam(c, x, y, z = 1, rot = 0, f) { c.save(); c.translate(540, 960); c.rotate(rot); c.scale(z, z); c.translate(-x, -y); f(); c.restore(); }
 function star(c, x, y, r, k = 1, col = GOLD) { scaled(c, x, y, k, () => { c.fillStyle = col; c.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); c.fill(); }); }
@@ -70,14 +71,13 @@ function star5(c, x, y, r, k, gap) { for (let i = 0; i < 5; i++) star(c, x + (i 
 function restaurant(c, x0, y0, w, h, o = {}) {   // a little restaurant front: striped awning, sign, a big window onto the room (tables; the owner; or empty with a fly), a door; o.stars and o.plate: what the passers-by imagine about it
   const x1 = x0 + w, y1 = y0 + h, mine = !o.rival, wall = mine ? '#e9dcc0' : '#b9bccb', trim = mine ? WOOD : '#6b6f86', aw = mine ? '#c4566a' : '#8f98b0';
   c.fillStyle = 'rgba(0,0,20,.25)'; c.fillRect(x0 + 12, y0 + 12, w, h); c.fillStyle = wall; c.fillRect(x0, y0, w, h); c.fillStyle = trim; c.fillRect(x0 - 14, y0 - 20, w + 28, 26);
-  c.fillStyle = trim; c.beginPath(); c.roundRect(x0 + w / 2 - 150, y0 + 24, 300, 74, 12); c.fill(); c.save(); c.font = '700 44px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = mine ? GOLD : CREAM; c.fillText(mine ? 'BISZTRÓ' : 'ÉTTEREM', x0 + w / 2, y0 + 62); c.restore();
+  c.fillStyle = trim; c.beginPath(); c.roundRect(x0 + w / 2 - 150, y0 + 24, 300, 74, 12); c.fill(); if (o.out) { c.fillStyle = `rgba(11,20,56,${.5 * o.out})`; c.fillRect(x0 - 14, y0 - 20, w + 28, h + 20); } c.save(); c.font = '700 44px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = mine ? GOLD : o.out ? `rgba(246,239,220,${1 - .6 * o.out})` : CREAM; c.fillText(mine ? 'BISZTRÓ' : 'ÉTTEREM', x0 + w / 2, y0 + 62); c.restore();
   if (o.stars > 0) { glow(c, x0 + w / 2, y0 - 60, 200, .3 * Math.min(1, o.stars)); star5(c, x0 + w / 2, y0 - 60, 26, o.stars, 62); }
   const ay = y0 + 120; for (let i = 0; i < 8; i++) { const sx = x0 + 10 + i * (w - 20) / 8; c.fillStyle = i % 2 ? CREAM : aw; c.beginPath(); c.moveTo(sx, ay); c.lineTo(sx + (w - 20) / 8, ay); c.lineTo(sx + (w - 20) / 8, ay + 50); c.arc(sx + (w - 20) / 16, ay + 50, (w - 20) / 16, 0, Math.PI); c.closePath(); c.fill(); }
   const dw = 120, dx = o.door ?? (mine ? x0 + 100 : x1 - 80), left = dx < x0 + w / 2, wx0 = left ? dx + dw / 2 + 24 : x0 + 24, wx1 = left ? x1 - 30 : dx - dw / 2 - 20, wy = ay + 100, wh = h - (wy - y0) - 90;
-  c.fillStyle = o.empty ? '#c9c6b8' : '#f0d9a8'; c.fillRect(wx0, wy, wx1 - wx0, wh); c.save(); c.beginPath(); c.rect(wx0, wy, wx1 - wx0, wh); c.clip();
+  c.fillStyle = '#f0d9a8'; c.fillRect(wx0, wy, wx1 - wx0, wh); if (o.empty) { c.fillStyle = `rgba(20,26,60,${.55 * Math.min(1, o.empty)})`; c.fillRect(wx0, wy, wx1 - wx0, wh); } c.save(); c.beginPath(); c.rect(wx0, wy, wx1 - wx0, wh); c.clip();
   for (const tx of [wx0 + (wx1 - wx0) * .28, wx0 + (wx1 - wx0) * .72]) { c.fillStyle = 'rgba(90,58,34,.55)'; c.fillRect(tx - 4, wy + wh - 70, 8, 70); ell(c, tx, wy + wh - 70, 50, 10, 'rgba(90,58,34,.65)'); }
   (o.inside || []).forEach(f => f(wx0, wy, wx1, wh));
-  if (o.empty) { const fx = (wx0 + wx1) / 2 + Math.cos((o.t || 0) * 3) * 60, fy = wy + 60 + Math.sin((o.t || 0) * 5) * 20; ell(c, fx, fy, 6, 5, '#2a2f45'); ell(c, fx - 4, fy - 5, 5, 3, 'rgba(255,255,255,.6)'); ell(c, fx + 4, fy - 5, 5, 3, 'rgba(255,255,255,.6)'); }
   c.restore(); c.fillStyle = trim; c.fillRect(wx0 - 8, wy + wh, wx1 - wx0 + 16, 12);
   if (o.plate > 0) scaled(c, (wx0 + wx1) / 2, wy + wh * .45, Math.min(1.1, o.plate), () => { glow(c, (wx0 + wx1) / 2, wy + wh * .45, 140, .4); plate(c, (wx0 + wx1) / 2, wy + wh * .5, 80, o.t || 0); });
   const dop = o.doorOpen || 0, pw = (dw - 20) * (1 - .82 * dop); c.fillStyle = '#3a2416'; c.fillRect(dx - dw / 2, y1 - 210, dw, 210); c.fillStyle = `rgba(255,214,140,${.35 + .6 * dop})`; c.fillRect(dx - dw / 2 + 10, y1 - 200, dw - 20, 200); if (dop > 0) glow(c, dx, y1 - 90, 140, .5 * dop);
@@ -130,19 +130,27 @@ const SHOT = {
         HIT.plan.forEach((pt, i) => { const k = E(t, pt, .3, .5); if (k <= 0) return; const hx = 780 - i * 70; scaled(c, hx, 1330, Math.min(1.1, k), () => { c.beginPath(); c.arc(hx, 1310, 18, 0, 7); c.stroke(); c.beginPath(); c.moveTo(hx, 1328); c.lineTo(hx, 1372); c.moveTo(hx - 18, 1350); c.lineTo(hx + 18, 1350); c.stroke(); }); });
         if (t > HIT.plan[2] + .3) { const k = ss(seg(t, HIT.plan[2] + .3, HIT.plan[2] + .7)); c.strokeStyle = 'rgba(236,189,74,.9)'; c.beginPath(); c.moveTo(620, 1180); c.quadraticCurveTo(700, 1140, 780 * k + 620 * (1 - k), 1180); c.stroke(); } }); });
   },
-  call(c, t) {   // he rang a few friends: their faces pop up; his plan in a bubble: tomorrow, gather in front of the bistro, pretend to wait for it to open; the friends agreed: thumbs up
-    const ph = ss(seg(t, HIT.phone - .2, HIT.phone + .2)), pb = E(t, HIT.planB, .35, .45), gk = E(t, HIT.gather, .3, .5), wk = E(t, HIT.wait, .3, .5), out = ss(seg(t, HIT.agree[0] - .4, HIT.agree[0] - .1));
-    bg(c);
+  call(c, t) {   // he rang a few friends: three panels slam in, each friend picks up; they fly together into one storyboard: the calendar flips to tomorrow, the bistro builds itself, the friends drop in front of it, wink, a stopwatch ticks; the friends agree: big thumbs-up stamps and confetti
+    const ph = ss(seg(t, HIT.phone - .2, HIT.phone + .15)), sb = ss(seg(t, HIT.planB - .45, HIT.planB)), back = ss(seg(t, HIT.agree[0] - .45, HIT.agree[0] - .05)), cal = ss(seg(t, HIT.planB + .1, HIT.planB + .5)), bld = E(t, HIT.planB + .55, .35, .4), wk = t > HIT.wink && t < HIT.wink + .35, clk = E(t, HIT.wait, .3, .45), sign = Math.sin(clamp((t - HIT.wait - .6) / 1.2) * Math.PI * 3) * Math.exp(-Math.max(0, t - HIT.wait - .6) * 1.5) * .5;
+    bg(c, '#2a43a0');
     stage(c, [60, 880, 1020, 1800], 0, () => {
-      mascot(c, OWNER({ x: 230, y: 1790, s: 1.9, f: .35, smile: 1, blink: blinkAt(t, 1), handR: ph > 0 ? reach([300, 1600], [295, 1430], ph) : undefined }));
-      if (ph > 0) { phone(c, 295, 1440, .9 * ph, -.3); if (t < HIT.friends[2] + .4) ringWaves(c, 330, 1400, 60, t); }
-      HIT.friends.forEach((ft, i) => { const k = E(t, ft, .35, .45); face(c, 870, 1070 + i * 200, 74, friend(i, { smile: 1, blink: blinkAt(t, 5 + i), o: t < HIT.planB ? .3 : 0 }), k); badge(c, 'thumb', 950, 1020 + i * 200, 28, E(t, HIT.agree[i], .3, .5)); });
-      if (pb > 0 && out < 1) bubble(c, 520, 1150, 420, 280, pb * (1 - out), 340, 1400, () => {
-        c.save(); c.beginPath(); c.roundRect(320, 1020, 400, 260, 40); c.clip(); c.fillStyle = '#2a3054'; c.fillRect(320, 1210, 400, 80);
-        c.fillStyle = '#e9dcc0'; c.fillRect(470, 1060, 200, 150); c.fillStyle = '#c4566a'; c.fillRect(470, 1060, 200, 18); c.fillStyle = '#3a2416'; c.fillRect(620, 1130, 40, 80);
-        c.fillStyle = CREAM; c.beginPath(); c.roundRect(340, 1040, 90, 70, 8); c.fill(); c.fillStyle = '#c4566a'; c.fillRect(340, 1040, 90, 18); c.save(); c.font = '700 30px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = NAVY; c.fillText('+1', 385, 1086); c.restore();
-        [0, 1, 2].forEach(i => { const k = Math.min(1, gk * 3 - i); if (k > 0) scaled(c, 590 - i * 50, 1210, k, () => headIcon(c, 590 - i * 50, 1170, 14, ['#3b5bd1', '#2f4bb0', '#5d7fc4'][i])); });
-        if (wk > 0) scaled(c, 400, 1170, Math.min(1, wk), () => clockIcon(c, 400, 1170, 34, t * 3)); c.restore(); }); });
+      const panel = (i, x, y, w, h, k, f) => { if (k <= 0) return; scaled(c, x, y, Math.min(1.08, k), () => { c.save(); c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 10, w, h, 26); c.fill(); c.fillStyle = ['#3b4f9e', '#4a3f8c', '#2f6a7a'][i % 3]; c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, 26); c.fill(); c.clip(); f(); c.restore(); c.strokeStyle = GOLD; c.lineWidth = 6; c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, 26); c.stroke(); }); };
+      // the owner, ringing
+      if (sb < 1) { c.save(); c.globalAlpha = 1 - sb; mascot(c, OWNER({ x: 240, y: 1790, s: 1.9, f: .35, smile: 1, blink: blinkAt(t, 1), handR: ph > 0 ? reach([300, 1600], [292, 1430], ph) : undefined })); if (ph > 0) { phone(c, 292, 1440, .9 * ph, -.3); ringWaves(c, 330, 1400, 70, t); } c.restore(); }
+      // three friends pick up, each in a panel that slams in from the right
+      if (sb < 1) HIT.friends.forEach((ft, i) => { const k = E(t, ft, .3, .3), slide = 1 - ss(seg(t, ft - .15, ft + .15)); if (t < ft - .15) return; const x = 740 + slide * 400 + sb * (540 - 740), y = lerp(1060 + i * 250, 1300, sb); c.save(); c.globalAlpha = 1 - sb; panel(i, x, y, 360, 220, k, () => { mascot(c, friend(i, { x: x - 40, y: y + 230, s: 1.25, f: .3, smile: 1, o: t < ft + .5 ? .5 : 0, blink: blinkAt(t, 5 + i), handR: [x + 40, y - 20] })); phone(c, x + 40, y - 20, .7, .4); if (t < ft + .6) ringWaves(c, x + 70, y - 50, 40, t); }); c.restore(); });
+      // the storyboard: tomorrow, the bistro, the friends in front, a wink, a stopwatch, the closed sign
+      if (sb > 0 && back < 1) { const k = Math.min(1, sb * 1.2) * (1 - back); c.save(); c.globalAlpha = k; panel(0, 540, 1300, 880, 760, lerp(.6, 1, sb), () => {
+          c.fillStyle = '#1f2c62'; c.fillRect(100, 920, 880, 760); c.fillStyle = '#2a3054'; c.fillRect(100, 1560, 880, 140);
+          c.save(); c.translate(250, 1060); c.scale(1, Math.abs(Math.cos(cal * Math.PI)) || .02); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-90, -80, 180, 160, 14); c.fill(); c.fillStyle = '#c4566a'; c.fillRect(-90, -80, 180, 40); c.font = '700 40px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = NAVY; c.fillText(cal < .5 ? 'MA' : 'HOLNAP', 0, 20); c.restore();
+          if (bld > 0) scaled(c, 640, 1560, Math.min(1.08, bld), () => { c.fillStyle = '#e9dcc0'; c.fillRect(440, 1180, 400, 380); for (let i = 0; i < 6; i++) { c.fillStyle = i % 2 ? CREAM : '#c4566a'; c.fillRect(440 + i * 400 / 6, 1180, 400 / 6, 50); } c.fillStyle = WOOD; c.beginPath(); c.roundRect(540, 1120, 200, 50, 8); c.fill(); c.save(); c.font = '700 28px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = GOLD; c.fillText('BISZTRÓ', 640, 1146); c.restore(); c.fillStyle = '#3a2416'; c.fillRect(480, 1380, 110, 180);
+            c.save(); c.translate(535, 1400); c.rotate(sign); c.fillStyle = CREAM; c.beginPath(); c.roundRect(-44, 10, 88, 36, 6); c.fill(); c.strokeStyle = '#b9a888'; c.lineWidth = 3; c.beginPath(); c.moveTo(-30, 10); c.lineTo(0, -6); c.lineTo(30, 10); c.stroke(); c.font = '700 18px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#c4566a'; c.fillText('ZÁRVA', 0, 29); c.restore(); });
+          [0, 1, 2].forEach(i => { const dk = HIT.gatherAt[i], u = ss(seg(t, dk, dk + .35)); if (u <= 0) return; const x = 300 + i * 150, y = lerp(1100, 1660, u) - 40 * Math.max(0, Math.sin(clamp((t - dk - .35) / .3) * Math.PI)); mascot(c, friend(i, { x, y, s: 1.35, f: .2, smile: 1, blink: wk && i !== 1 ? 1 : blinkAt(t, 5 + i), look: .2 })); });
+          if (wk) for (let i = 0; i < 3; i++) star(c, 340 + i * 150, 1360, 14, 1);
+          if (clk > 0) scaled(c, 840, 1020, Math.min(1.1, clk), () => { clockIcon(c, 840, 1020, 70, t * 4); c.fillStyle = NAVY; c.fillRect(828, 935, 24, 18); }); }); c.restore(); }
+      // they agree: the three panels stamp back in a row, big thumbs-up, confetti
+      if (back > 0) HIT.agree.forEach((at, i) => { const k = E(t, at - .25, .3, .3); const x = 220 + i * 320, y = 1260; panel(i, x, y, 280, 360, k, () => mascot(c, friend(i, { x, y: y + 230, s: 1.2, f: 0, smile: 1, blink: blinkAt(t, 5 + i) }))); const th = E(t, at, .25, .55); badge(c, 'thumb', x + 90, y - 140, 58, th);
+        if (t > at) for (let p = 0; p < 10; p++) { const u = clamp((t - at) / 1.1), a = p / 10 * Math.PI * 2 + i, d = 60 + 220 * u; if (u < 1) { c.fillStyle = [GOLD, '#c4566a', CREAM, '#5d7fc4'][p % 4]; c.save(); c.globalAlpha = 1 - u; c.translate(x + 90 + Math.cos(a) * d, y - 140 + Math.sin(a) * d + 160 * u * u); c.rotate(u * 6 + p); c.fillRect(-8, -4, 16, 8); c.restore(); } } }); });
   },
   morning(c, t) {   // next morning a few people were already standing in front of the bistro, chatting: the sun comes up, the friends stand in the queue, little chat bubbles pass between them
     const dawn = ss(seg(t, 24.1, 25.6)), st = E(t, HIT.stand, .35, .45);
@@ -152,10 +160,11 @@ const SHOT = {
       HIT.chats.forEach((ct, i) => { const k = E(t, ct, .3, .5) * (1 - ss(seg(t, ct + 1.0, ct + 1.3))); if (k <= 0) return; const x = [196, 308, 196][i], y = 1470; bubble(c, x, y, 90, 60, k, x + (i % 2 ? 30 : -30), y + 55, () => { for (let d = 0; d < 3; d++) ell(c, x - 22 + d * 22, y, 6, 6, NAVY); }); }); });
   },
   man(c, t) {   // a man came walking down the street; two restaurants side by side: one almost empty, a fly circling inside; in front of the other, several people waiting
-    const [a, b] = HIT.manWalk, u = seg(t, a, b), mx = lerp(1060, 760, ss(u)), em = E(t, HIT.empty, .3, .5), qg = ss(seg(t, HIT.queueGlow - .2, HIT.queueGlow + .4));
+    const [a, b] = HIT.manWalk, u = seg(t, a, b), mx = lerp(1060, 760, ss(u)), em = ss(seg(t, HIT.empty - .2, HIT.empty + .4)), qg = ss(seg(t, HIT.queueGlow - .2, HIT.queueGlow + .4));
     stage(c, [-20, 820, 1100, 1860], 0, () => { street(c, t, { dawn: 1 });
-      restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: em > 0 ? 1 : 0 });
-      if (em > 0) { c.save(); c.globalAlpha = .6 * Math.min(1, em); c.fillStyle = '#0b1438'; c.fillRect(0, 0, 0, 0); c.restore(); }
+      restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: em, out: em });
+      [[OURS, HIT.two], [RIVAL, HIT.two + .35]].forEach(([[x, y, w, h], at]) => { const k = ss(seg(t, at, at + .4)) * (1 - ss(seg(t, at + 1.4, at + 1.8))); if (k <= 0) return; c.save(); c.strokeStyle = GOLD; c.lineWidth = 8; c.globalAlpha = k; c.setLineDash([30, 18]); c.lineDashOffset = -t * 80; c.strokeRect(x - 26, y - 40, w + 52, h + 60); c.restore(); });
+      const cnt = E(t, HIT.queueGlow, .35, .4); if (cnt > 0) { scaled(c, 252, 1450, Math.min(1.15, cnt), () => { ell(c, 252, 1450, 44, 44, GOLD); c.save(); c.font = '700 50px "Montserrat"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = NAVY; c.fillText('3', 252, 1453); c.restore(); }); }
       if (qg > 0) { glow(c, 250, 1650, 300, .3 * qg); }
       [0, 1, 2].forEach(i => mascot(c, friend(i, { x: SLOT[i], y: 1815, f: i === 1 ? -.5 : .5, smile: 1, blink: blinkAt(t, 5 + i), squash: .02 * Math.sin(t * 9 + i * 2) })));
       c.save(); c.globalAlpha = clamp((t - a + .1) / .3); mascot(c, MAN({ x: mx, y: 1815, f: -.6, walk: u > 0 && u < 1 ? 1 : 0, phi: u * (b - a) * 7, blink: blinkAt(t, 2) })); c.restore(); });
@@ -163,14 +172,14 @@ const SHOT = {
   decide(c, t) {   // he stopped for a moment: looks at the empty one, looks at the busy one, and goes to the busy one: he joins the end of the queue
     const lookR = ss(seg(t, HIT.look[0], HIT.look[0] + .3)) * (1 - ss(seg(t, HIT.look[1], HIT.look[1] + .3))), go = seg(t, ...HIT.go), mx = lerp(760, SLOT[3], ss(go)), q1 = E(t, HIT.look[0] + .1, .3, .5) * (1 - ss(seg(t, HIT.look[1], HIT.look[1] + .2))), q2 = E(t, HIT.look[1] + .1, .3, .5) * (1 - ss(seg(t, HIT.go[0], HIT.go[0] + .3)));
     stage(c, [-20, 820, 1100, 1860], 0, () => { street(c, t, { dawn: 1 });
-      restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: 1 });
+      restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: 1, out: 1 });
       [0, 1, 2].forEach(i => mascot(c, friend(i, { x: SLOT[i], y: 1815, f: i === 1 ? -.5 : .5, smile: 1, blink: blinkAt(t, 5 + i), squash: .02 * Math.sin(t * 9 + i * 2) })));
-      mascot(c, MAN({ x: mx, y: 1815, f: go > 0 ? -.6 : lerp(-.3, .6, lookR), walk: go > 0 && go < 1 ? 1 : 0, phi: go * 8, smile: go > 0 ? .9 : .5, blink: blinkAt(t, 2) }));
-      if (q1 > 0) badge(c, 'q', 900, 1460, 30, q1); if (q2 > 0) badge(c, 'ok', 252, 1450, 30, q2); });
+      mascot(c, MAN({ x: mx, y: 1815 - 50 * Math.max(0, Math.sin(clamp((t - HIT.go[0] + .25) / .3) * Math.PI)), f: go > 0 ? -.6 : lerp(-.3, .6, lookR), walk: go > 0 && go < 1 ? 1 : 0, phi: go * 8, smile: go > 0 ? .9 : .5, blink: blinkAt(t, 2) }));
+      if (q1 > 0) badge(c, 'q', 920, 1430, 46, q1); if (q2 > 0) badge(c, 'ok', 252, 1430, 46, q2); });
   },
   more(c, t) {   // a few minutes later more guests did the same: they walk up and join the queue, one after another
     stage(c, [-20, 820, 1100, 1860], 0, () => { street(c, t, { dawn: 1 });
-      restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: 1 });
+      restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: 1, out: 1 });
       [0, 1, 2].forEach(i => mascot(c, friend(i, { x: SLOT[i], y: 1815, f: i === 1 ? -.5 : .5, smile: 1, blink: blinkAt(t, 5 + i), squash: .02 * Math.sin(t * 9 + i * 2) })));
       mascot(c, MAN({ x: SLOT[3], y: 1815, f: -.3, smile: .9, blink: blinkAt(t, 2) }));
       HIT.joiners.forEach((jt, i) => { const tx = SLOT[4 + i], from = 1060, u = seg(t, jt, jt + 1.3); if (u <= 0) return; const x = lerp(from, tx, ss(u)); c.save(); c.globalAlpha = clamp(u / .2); mascot(c, guest(i, { x, y: 1815, f: u < 1 ? -.6 : -.3, walk: u < 1 ? 1 : 0, phi: u * 9, smile: .8, blink: blinkAt(t, 7 + i) })); c.restore(); }); });
@@ -189,10 +198,10 @@ const SHOT = {
   },
   nobody(c, t) {   // but none of the guests knew why those people were really standing there: the queue up close; a question over each guest; then a spotlight picks out the friends, gold rings
     const qk = E(t, HIT.qs, .3, .5), rv = ss(seg(t, HIT.reveal - .2, HIT.reveal + .4));
-    stage(c, [-20, 1180, 1100, 1860], 0, () => { street(c, t, { dawn: 1 }); restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: 1 });
+    stage(c, [-20, 1180, 1100, 1860], 0, () => { street(c, t, { dawn: 1 }); restaurant(c, ...OURS, { t, closed: 1 }); restaurant(c, ...RIVAL, { rival: 1, t, empty: 1, out: 1 });
       if (rv > 0) { c.fillStyle = `rgba(11,20,56,${.45 * rv})`; c.fillRect(-400, 700, 1880, 1400); }
       const ppl = [[SLOT[0], o => friend(0, o), 1], [SLOT[1], o => friend(1, o), 1], [SLOT[2], o => friend(2, o), 1], [SLOT[3], MAN, 0], [SLOT[4], o => guest(0, o), 0], [SLOT[5], o => guest(1, o), 0]];
-      ppl.forEach(([x, P, isF], i) => { if (isF && rv > 0) { glow(c, x, 1700, 120, .45 * rv); c.save(); c.strokeStyle = GOLD; c.lineWidth = 6; c.globalAlpha = rv; c.beginPath(); c.ellipse(x, 1818, 70, 18, 0, 0, 7); c.stroke(); c.restore(); } mascot(c, P({ x, y: 1815, f: isF ? (i === 1 ? -.5 : .5) : -.3, smile: isF ? 1 : .6, look: isF ? 0 : -.4, blink: blinkAt(t, i + 3) })); if (!isF) badge(c, 'q', x, 1500, 26, qk * (1 - .5 * rv)); }); });
+      ppl.forEach(([x, P, isF], i) => { if (isF && rv > 0) { glow(c, x, 1700, 120, .45 * rv); c.save(); c.strokeStyle = GOLD; c.lineWidth = 6; c.globalAlpha = rv; c.beginPath(); c.ellipse(x, 1818, 70, 18, 0, 0, 7); c.stroke(); c.restore(); } mascot(c, P({ x, y: 1815, f: isF ? (i === 1 ? -.5 : .5) : -.3, smile: isF ? 1 : .6, look: isF ? 0 : -.4, blink: blinkAt(t, i + 3) })); if (!isF) badge(c, 'q', x, 1490, 36, qk * (1 - .5 * rv)); }); });
   },
   think(c, t) {   // they simply assumed the food here must be so good it's even worth the wait: five stars on the bistro's sign, a steaming plate in its window; a clock and a check: worth waiting for
     const sk = ss(seg(t, HIT.stars - .1, HIT.stars + .7)), pk = E(t, HIT.plate, .35, .45), wk = E(t, HIT.worth, .3, .5);
@@ -231,7 +240,7 @@ const SHOT = {
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); SHOT[SHOTS[i][1]](c, t); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['belefáradt','elsétáltak','konkurenciához','szokatlant','barátját','várnának','beleegyeztek','beszélgettek','férfi','üres','várakoztak','forgalmasabb','ugyanezt','boldogan','sort','legérdekesebb','miért','biztosan','megéri','viselkedése','sokan','ösztönösen','hányan','kipróbálnák']);

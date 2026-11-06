@@ -88,6 +88,7 @@ def fire(d, v):   # the oven's fire: a soft roar with crackles
 def ring(d, v): tt = t_(d); return (np.sin(2 * np.pi * 880 * tt) + .6 * np.sin(2 * np.pi * 1320 * tt)) * (np.sin(2 * np.pi * 20 * tt) > 0) * ((tt % .5) < .3) * np.minimum(1, (d - tt) / .05) * v   # a phone ringing
 def tick(v=1.0, p=1.0): d = .04; return norm(bp(noise(d), 2500 * p, 6000 * p) * env_exp(d, .004)) * v
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
+for t in HIT['kicks']: add(fx, lp(thump(.15, 80), 300) * .14, t, 1, 0)   # a soft low thump under each camera kick
 for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
 for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
 # people walk past the bistro into the competitor
@@ -101,12 +102,16 @@ for k, t in enumerate(HIT['passers']):
 add(fx, verb(mx(shimmer(.14, 1.0), chime(1760, .07, 1.0)), .8, .3), H1('spark'), 1, -.2); add(fx, mx(pop(.12), S('impactWood_light_000', .12)), H1('board'), 1, .3)
 add(fx, chalk(.5, .14), H1('board') + .1, 1, .4)
 for t in HIT['plan']: add(fx, chalk(.25, .12), t, 1, .4)
-# the phone call; the friends; the plan; thumbs up
-add(fx, ring(.9, .05), H1('phone') - .1, 1, -.3)
-for k, t in enumerate(HIT['friends']): add(fx, mx(pop(.14), chime(1319 * 2 ** (k * 2 / 12), .05, .5)), t, 1, .5)
-add(fx, mx(pop(.15), swish(.3, .08)), H1('planB'), 1, 0); add(fx, mx(pop(.08), pop(.08)), H1('gather'), 1, 0)
-for k in range(4): add(fx, tick(.06), H1('wait') + k * .5, 1, -.2)
-for k, t in enumerate(HIT['agree']): add(fx, mx(pop(.13), verb(chime(1568 * 2 ** (k * 2 / 12), .05, .6), .8, .3)), t, 1, .5)
+# the phone call: three panels slam in, each friend picks up; the storyboard; thumbs-up stamps and confetti
+add(fx, ring(.7, .05), H1('phone') - .1, 1, -.3)
+for k, t in enumerate(HIT['friends']): add(fx, mx(swish(.25, .16), lp(thump(.12, 120), 600) * .25, ring(.25, .025), pop(.1)), t - .15, 1, .5)
+add(fx, mx(swish(.5, .18), verb(chime(1568, .06, .9), .8, .3)), H1('planB') - .45, 1, 0); add(fx, S('bookFlip2', .2), H1('planB') + .1, 1, -.4)
+add(fx, mx(pop(.14), S('impactWood_light_001', .12)), H1('planB') + .55, 1, .2)
+for k, t in enumerate(HIT['gatherAt']): add(fx, mx(swish(.2, .08, False), S(pick('impactSoft_medium_00', 3, k), .18), boing(.06, 260, 420, .25)), t + .3, 1, -.3 + .3 * k)
+add(fx, mx(click(.12, 1.3), verb(chime(2349, .06, .6), .8, .3)), H1('wink'), 1, 0)
+for k in range(5): add(fx, tick(.07, 1 if k % 2 else .8), H1('wait') + k * .3, 1, .4)
+add(fx, S('creak1', .1), H1('wait') + .6, 1, .2)
+for k, t in enumerate(HIT['agree']): add(fx, mx(stamp(.2), pop(.12), verb(chime(1568 * 2 ** (k * 2 / 12), .06, .7), .8, .3), crinkle(.5, .06)), t, 1, -.5 + .5 * k)
 # next morning: the friends waiting, chatting
 add(fx, verb(shimmer(.08, 1.4), .9, .3), 24.4, 1, .4)
 for k in range(3): add(fx, lp(S(pick('footstep_concrete_00', 5, k), .07), 3500), H1('stand') + k * .2, 1, -.5)
@@ -114,8 +119,9 @@ for k, t in enumerate(HIT['chats']): add(fx, pop(.09), t, 1, -.5 + .2 * k)
 # the man walks up; the empty place, a fly; the queue
 a, b = HIT['manWalk']; j = 0
 while a + j * .33 < b: add(fx, lp(S(pick('footstep_concrete_00', 5, j), .07), 3500), a + j * .33, 1, .6 - .4 * j * .33 / (b - a)); j += 1
-add(fx, fade(bp(noise(1.6), 180, 260) * .02 * (1 + np.sin(2 * np.pi * 9 * t_(1.6))), .2, .4), H1('empty'), 1, .6)   # a fly buzzing
-add(fx, verb(shimmer(.08, 1.0), .8, .3), H1('queueGlow'), 1, -.3)
+add(fx, mx(click(.12, .7), lp(swish(.4, .06, False), 2000)), H1('empty'), 1, .6)   # the lights next door dim
+add(fx, mx(pop(.16), verb(shimmer(.08, 1.0), .8, .3)), H1('queueGlow'), 1, -.3)
+for t in [H1('two'), H1('two') + .35]: add(fx, swish(.35, .1), t, 1, -.3 if t == H1('two') else .5)
 # he weighs the two, then joins the queue
 add(fx, pop(.12), HIT['look'][0] + .1, 1, .5); add(fx, mx(click(.12), chime(2093, .05, .6)), HIT['look'][1] + .1, 1, -.3)
 a, b = HIT['go']
