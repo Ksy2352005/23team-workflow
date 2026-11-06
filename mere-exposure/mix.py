@@ -87,36 +87,36 @@ def fire(d, v):   # the oven's fire: a soft roar with crackles
     return norm(lp(brown(d), 500) * .8 + bp(noise(d), 2000, 7000) * cr * 1.5) * np.minimum(1, tt / .4) * np.minimum(1, (d - tt) / .4) * v
 def rise(d, v): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(np.linspace(330, 880, len(tt))) / SR) * np.sin(np.pi * tt / d) * v   # a rising tone as the line draws
 def tick(v=1.0, p=1.0): d = .04; return norm(bp(noise(d), 2500 * p, 6000 * p) * env_exp(d, .004)) * v
-glide = lambda v=.09: lp(swish(.45, v), 4500)
+def tap(v=1.0): return mx(click(v, 1.4), lp(thump(.05, 200), 900) * v * .3)   # a finger tapping the screen
 add(fx, fade(bed(STORY, 50, 300, .02), .5, .5), 0, 1)
-for t in [H1('unk') - .3, H1('name') - .3, H1('need') - .3, H1('mind') - .3, H1('term') - .3, H1('chart') - .3, H1('regular') - .3, H1('audience') - .3]: add(fx, mx(lp(swish(.55, .2), 4000), lp(thump(.22, 70), 300) * .2, verb(chime(1047, .03, .6), .7, .3)), t, 1, 0)   # the camera glides along the line and the object transforms
-for k in range(6): add(fx, lp(swish(.18, .07), 5000), H1('few') + .1 + k * (H1('name') - H1('few') - .35) / 6, 1, -.4 if k % 2 == 0 else .4)   # the logo spinning on each exposure
-# the phone, the feed; MIRA keeps showing up; the empty cart
-add(fx, mx(glide(.1), pop(.1)), .05, 1, 0)
-for t in [H1('seen') - .35, H1('insta') - .35, H1('never') - .35]: add(fx, swish(.3, .08), t, 1, .2)
-for t in [H1('seen'), H1('insta')]: add(fx, mx(pop(.13), chime(1568, .05, .5)), t, 1, 0)
-add(fx, mx(lp(thump(.2, 90), 400) * .4, boing(.08, 260, 180, .3)), H1('never'), 1, .5)
-# one post up close: unknown, noticed, familiar; the name rings a bell
-add(fx, mx(glide(.12), verb(chime(1047, .04, .8), .8, .3)), H1('unk'), 1, 0); add(fx, pop(.14), H1('q'), 1, .4)
-add(fx, mx(roll(.5, .08), chime(1319, .05, .6)), H1('second'), 1, 0); add(fx, mx(click(.12), pop(.1)), H1('memo'), 1, .4)
-for k in range(4): add(fx, mx(pop(.08), chime(1568 * 2 ** (k * 2 / 12), .04, .4)), H1('few') + k * .3, 1, -.4 + .27 * k)
-add(fx, verb(mx(chime(1760, .07, 1.0), shimmer(.08, .8)), .8, .3), H1('name'), 1, 0)
-add(fx, verb(mx(chime(2349, .14, 1.4), chime(2793, .08, 1.2), chime(3136, .05, 1.0)), .9, .35), H1('bell'), 1, .4)   # the little bell: "cseng"
-# the need: her list, the bottle, the MIRA tag
-add(fx, mx(glide(.1), S('bookFlip1', .12)), H1('need'), 1, .3); add(fx, mx(pop(.14), S('impactPlate_light_000', .08)), H1('product'), 1, .3); add(fx, mx(pop(.12), chime(1760, .05, .5)), H1('offers'), 1, .4)
-# first to mind: the line-up, MIRA to the top
-add(fx, glide(.1), H1('mind'), 1, 0); add(fx, mx(swish(.4, .12), verb(mx(shimmer(.12, 1.0), chime(1568, .06, 1.0)), .8, .3)), H1('first') - .2, 1, 0)
-# the term: the eye opens; the logo copies circle
-add(fx, mx(swish(.5, .1, False), lp(thump(.2, 80), 300) * .3), H1('term'), 1, 0); add(fx, verb(mx(shimmer(.14, 1.4), chime(1047, .06, 1.4)), 1.0, .35), H1('mere'), 1, 0)
-# the chart: exposures stack, familiarity climbs, liking follows
-add(fx, glide(.1), H1('chart'), 1, 0)
-for k, t in enumerate(HIT['again']): add(fx, mx(pop(.12), chime(1319 * 2 ** (k * 2 / 12), .04, .5)), t, 1, -.4 + .25 * k)
-add(fx, rise(1.0, .05), H1('grow'), 1, .2); add(fx, mx(click(.12), chime(2093, .05, .6)), H1('grow') + 1.0, 1, .4)
-add(fx, rise(1.0, .04), H1('like'), 1, .2); add(fx, mx(pop(.12), verb(chime(1760, .06, .8), .8, .3)), H1('like') + 1.0, 1, .4)
-# regularly present: the week fills; the audience lights up
-add(fx, glide(.1), H1('regular'), 1, 0)
-for d in [0, 2, 4, 5, 6]: add(fx, mx(tick(.1), pop(.06)), H1('rhythm') + d * .12, 1, -.5 + d * .15)
-for i in range(5): add(fx, pop(.1), H1('audience') + i * .1, 1, -.5 + .25 * i)
+for t in HIT['whips']: add(fx, swish(.3, .45), t - .08, 1, .3)
+for t in HIT['punches']: add(fx, mx(lp(thump(.18, 90), 300) * .7, swish(.2, .25, False)), t - .02, 1, 0)
+for t in HIT['kicks']: add(fx, lp(thump(.12, 80), 300) * .1, t, 1, 0)
+# the sofa: she scrolls; the ad again; the empty bag
+for k in range(5): add(fx, mx(lp(swish(.18, .05), 6000), tap(.05)), .5 + k * .9, 1, .3)
+for t in [H1('seen'), H1('insta')]: add(fx, mx(pop(.13), chime(1568, .05, .5)), t, 1, .4)
+add(fx, mx(S('cloth2', .12), boing(.08, 260, 180, .3)), H1('never'), 1, -.2)
+# her days: the bus, the café, the gym, the park, her bed; the ring fills; the bell
+add(fx, fade(lp(brown(3.5), 300) * .05, .3, .4), 5.6, 1, 0); add(fx, pop(.12), H1('q'), 1, .4)
+add(fx, mx(S('impactPlate_light_002', .1), swish(.3, .08)), H1('second') - .25, 1, -.3); add(fx, mx(click(.12), verb(chime(1760, .05, .6), .8, .3)), H1('memo'), 1, .4)
+for k, t in enumerate([H1('few'), H1('few') + .6, H1('few') + 1.2]): add(fx, mx(swish(.3, .12), pop(.1), chime(1319 * 2 ** (k * 2 / 12), .05, .5)), t, 1, -.3 + .3 * k)
+add(fx, verb(mx(chime(2349, .14, 1.4), chime(2793, .08, 1.2), chime(3136, .05, 1.0)), .9, .35), H1('bell'), 1, .4)
+# the mirror: the empty jar, puff; the dry skin; the ad comes back
+add(fx, mx(S('metalLatch', .1), bp(noise(.4), 400, 3000) * env_exp(.4, .1) * .1), H1('empty'), 1, .3); add(fx, boing(.08, 300, 200, .4), H1('dry'), 1, 0)
+add(fx, mx(pop(.14), verb(shimmer(.1, .9), .8, .3)), H1('offers'), 1, .4)
+# the drugstore: she walks in; the familiar jar glows; she takes it
+for k in range(3): add(fx, lp(S(pick('footstep_wood_00', 5, k), .1), 3500), 20.0 + k * .3, 1, -.4 + .2 * k)
+add(fx, verb(mx(shimmer(.14, 1.2), chime(1568, .07, 1.2)), 1.0, .35), H1('first'), 1, -.2); add(fx, mx(S('impactSoft_medium_000', .12), click(.08)), H1('take') + .4, 1, 0)
+# the term: the eye opens; ripples of the mark
+add(fx, mx(swish(.5, .1, False), lp(thump(.2, 80), 300) * .3), 23.9, 1, 0)
+for k in range(4): add(fx, verb(chime(1047 * 2 ** (k * 2 / 12), .04, .9), .8, .3), H1('mere') + k * .45, 1, -.3 + .2 * k)
+# the chart: phones land, familiarity climbs, liking follows
+for k, t in enumerate(HIT['again']): add(fx, mx(pop(.12), tap(.06), chime(1319 * 2 ** (k * 2 / 12), .04, .5)), t, 1, -.4 + .25 * k)
+add(fx, rise(1.0, .05), H1('grow'), 1, -.2); add(fx, mx(click(.12), chime(2093, .05, .6)), H1('grow') + 1.0, 1, .2)
+add(fx, rise(1.0, .04), H1('like'), 1, -.2); add(fx, mx(pop(.12), verb(chime(1760, .06, .8), .8, .3)), H1('like') + 1.0, 1, .2)
+# everyone: the week fills; the audience's phones light up
+for d in [0, 2, 4, 5, 6]: add(fx, mx(tick(.1), pop(.06)), H1('rhythm') + d * .1, 1, -.5 + d * .15)
+for i in range(5): add(fx, mx(tap(.05), chime(1568 * 2 ** (i * 2 / 12), .04, .4)), H1('audience') + i * .12, 1, -.6 + .3 * i)
 add(fx, verb(mx(shimmer(.16, 1.4), chime(1319, .07, 1.4)), 1.0, .4), H1('end'), 1, 0)
 
 # the end (as locked in ANIMATION-STYLE.md): everything fades out with the picture, then only the locked logo sound
