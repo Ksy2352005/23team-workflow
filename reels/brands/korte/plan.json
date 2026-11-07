@@ -1,0 +1,21 @@
+{
+  "audio": "../../music/sample-01.mp4",
+  "start": 3.45,
+  "end": 12.86,
+  "frames": "frames",
+  "out": "out/korte-reel.mp4",
+  "shots": [
+    {"bg": "bg-intro",   "logo": null,         "beats": 1, "fx": "drift"},
+    {"bg": "bg-intro",   "logo": "logo-cream", "beats": 2, "fx": "punch", "flash": true, "pop": true},
+    {"bg": "bg-pattern", "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-can",     "logo": "logo-cream", "beats": 2},
+    {"bg": "bg-stripes", "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-poster",  "logo": "logo-cream", "beats": 2},
+    {"bg": "bg-sticker", "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-tote",    "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-pattern", "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-can",     "logo": "logo-cream", "beats": 1},
+    {"bg": "bg-spec",    "logo": "logo-bur",   "beats": 2, "fx": "drift"},
+    {"bg": "end",        "logo": null,         "fx": "punch", "flash": true}
+  ]
+}
