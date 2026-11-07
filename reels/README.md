@@ -25,4 +25,6 @@ runs to `end`. `start` and `end` are times in the song.
 
 ## Photo scenes (ChatGPT)
 Every photo must have its label or flat surface dead centre, facing the camera and blank,
-so the locked logo lands on it. See `brands/korte/prompts.md` for the prompt pattern.
+so the locked logo lands on it. Each `prompts.md` is made to be uploaded to ChatGPT as a file:
+it states the total number of images, and ChatGPT generates them one at a time each time you say "next".
+See `brands/korte/prompts.md`.
