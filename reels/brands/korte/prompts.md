@@ -14,13 +14,15 @@ This file contains **8 image prompts** for a fictional drink brand. Please:
 4. Start every reply with the image number and name, e.g. "Image 3 of 8 — pears".
 5. If I say **"redo"**, generate the same image again with the fixes I give.
 6. After Image 8, tell me "All 8 images done."
+7. **Ignore your memory, my earlier chats and any other brand you know about me** (including 23 Team, mascots or characters). Only use what is written in this file. No people or characters unless a prompt asks for them.
 
 ### Brand
 KÖRTE ("pear" in Hungarian): a premium sparkling pear drink from Budapest, cold pressed, no sugar added.
 Colours: deep burgundy #5B1A2E, butter yellow #F3D35B, cream #F5EEDF.
 
 ### Style rules (every image)
-- Vertical 9:16 format (1080×1920).
+- **Tall portrait format**: use the tallest portrait size you can make (1024×1536). Never square or landscape.
+- The image will be cropped to 9:16, which trims the left and right edges, so keep everything important in the **middle 75% of the width**.
 - Premium editorial product photography, soft natural light, subtle film grain, minimal props, real textures.
 - The product's label or main flat surface is **exactly in the centre** of the frame, facing the camera straight on.
 - That label or surface is **plain and blank**, about 60% of the image width.

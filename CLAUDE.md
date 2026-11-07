@@ -10,5 +10,7 @@ This repo belongs to 23 Team, a Budapest branding, web and marketing studio.
 - ChatGPT image prompts go in `brands/<name>/prompts.md`, written so the user can upload the whole file to ChatGPT and just say "next":
   - Title and first line state the total, e.g. "**Total images: 8**".
   - An "Instructions for ChatGPT" block: generate only Image 1, then one image per "next", "redo" to retry, announce each as "Image N of TOTAL — name", say when all are done.
-  - Brand + style rules once (9:16, product label dead centre, blank, no text/logos), then each prompt headed "Image N of TOTAL — name".
+  - Tell ChatGPT to ignore its memory/earlier chats/other brands of the user (it otherwise pulls in the 23 Team mascot).
+  - ChatGPT can't make true 9:16: ask for its tallest portrait size (1024×1536) and keep the subject in the middle 75% of the width; the reel tools crop to 9:16.
+  - Brand + style rules once (9:16 crop, product label dead centre, blank, no text/logos), then each prompt headed "Image N of TOTAL — name".
 - Whenever you hand over a prompts file, tell the user in your message how many images it contains.
