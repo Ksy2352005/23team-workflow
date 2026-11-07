@@ -1,0 +1,118 @@
+{
+ "audio": "../../music/sample-01.mp4",
+ "start": 3.45,
+ "end": 12.86,
+ "frames": "frames",
+ "out": "out/korte-reel-v4.mp4",
+ "shots": [
+  {
+   "bg": "g-super",
+   "logo": null,
+   "beats": 1,
+   "fx": "drift"
+  },
+  {
+   "bg": "g-meaning",
+   "logo": null,
+   "beats": 1.5,
+   "fx": "drift",
+   "flash": true
+  },
+  {
+   "bg": "g-construct",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-palette",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-type",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-pattern",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-icons",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-dieline",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-can-hand",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-glass",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-cup",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-tote",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-pears",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-fourpack",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-store",
+   "logo": null,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-can-cream",
+   "logo": null,
+   "beats": 0.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-posters",
+   "logo": null,
+   "beats": 1,
+   "fx": "drift"
+  },
+  {
+   "bg": "end",
+   "logo": null,
+   "fx": "punch",
+   "flash": true
+  }
+ ]
+}

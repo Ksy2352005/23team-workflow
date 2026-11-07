@@ -8,6 +8,7 @@ the logo stays perfectly still in the centre while the scenes behind it cut on t
 - `tools/render.js`: render a brand's `frames.html` into 1080×1920 PNGs (logo layers transparent)
 - `tools/fit.py`: fit a ChatGPT photo into a 1080×1920 frame so its blank label sits exactly under the locked logo: `python3 tools/fit.py photo.png frames/photo-x.png <label cx> <label cy> <label width>`
 - `tools/printart.py`: print flat artwork (label designs) onto a fitted photo, keeping the photo's light and shadow; `--cyl x0 x1` wraps it round cans, cups and glasses
+- `tools/zoomout.py`: zoomed-out version of a printed photo (whole scene visible, 9:16), with the label artwork moved and scaled to match
 - `tools/build.py`: build the reel from `plan.json`: detects the beats, cuts exactly on them, adds punch-ins, flashes and the logo reveal, and muxes the song
 - `brands/<name>/`: one folder per fictional brand: `brand.md`, `frames.html`, `23promtsN.md` (ChatGPT photo prompts, numbered across all brands), `photos/` (ChatGPT originals), `plan.json`, `frames/`, `out/`
 - `music/`: songs and screen recordings (kept out of git)
@@ -34,6 +35,7 @@ See `brands/korte/23promts1.md`.
 ## What a reel should show (design first, not just the logo)
 Your references sell the whole identity, so each reel should include:
 - Identity frames: a supergraphic, a name-meaning card, logo construction, palette, type specimen, patterns, icons, the flat packaging label, a poster/campaign layout
-- Applications: ChatGPT photos with the full label artwork printed on them (`printart.py`), not only the logo
+- Applications: ChatGPT photos with the full label artwork printed on them, zoomed out so the whole scene shows (`zoomout.py`), not only the logo
+- No near-empty frames (e.g. just the logo on a plain colour)
 - Order: identity → packaging → real-world applications → 23 Team end card
-See `brands/korte/frames-v3.html` and `plan-v3.json`.
+See `brands/korte/frames-v3.html` and `plan-v4.json`.
