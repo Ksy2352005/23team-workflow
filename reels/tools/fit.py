@@ -20,7 +20,10 @@ W, H = 1080, 1920
 
 def fit(photo, out, cx, cy, lw, target=680):
     im = Image.open(photo).convert("RGB")
-    s = max(target / lw, W / im.width, H / im.height)
+    # smallest scale that makes the label `target` wide AND lets a 9:16 window
+    # sit exactly centred on the label without running off the photo
+    s = max(target / lw, W / im.width, H / im.height,
+            W / (2 * cx), W / (2 * (im.width - cx)), H / (2 * cy), H / (2 * (im.height - cy)))
     im = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
     x0 = min(max(round(cx * s - W / 2), 0), im.width - W)
     y0 = min(max(round(cy * s - H / 2), 0), im.height - H)
