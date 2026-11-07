@@ -58,6 +58,11 @@ def main(plan_path):
     start, end = plan["start"], plan["end"]
     info = analyse(rel(plan["audio"]))
     grid, period = beat_grid(info["beats"], start, end)
+    # half-beat grid so shots can be 0.5, 1.5 ... beats long
+    half = np.empty(len(grid) * 2 - 1)
+    half[0::2] = grid
+    half[1::2] = (grid[:-1] + grid[1:]) / 2
+    grid = half
     print(f"tempo {info['tempo']:.1f} BPM, beat every {period:.3f}s")
 
     # assign each shot its [t0, t1) on the beat grid (video time = song time - start)
@@ -65,7 +70,7 @@ def main(plan_path):
     for s in plan["shots"]:
         t0 = grid[k] if k < len(grid) else end
         if "beats" in s:
-            k += s["beats"]
+            k += int(round(s["beats"] * 2))
             t1 = grid[k] if k < len(grid) else end
         else:
             t1 = end

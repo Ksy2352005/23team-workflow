@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KÖRTE design system frames</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..900,0..100,0..1;1,9..144,400..900,0..100,0..1&family=JetBrains+Mono:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bur:#5B1A2E; --deep:#3E0F1E; --butter:#F3D35B; --cream:#F5EEDF; --pear:#B9C24A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;width:1080px}
+  section{width:1080px;height:1920px;position:relative;overflow:hidden}
+  .abs{position:absolute}
+  .mono{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:24px;letter-spacing:.08em;text-transform:uppercase;line-height:1.45}
+  .serif{font-family:'Fraunces',serif;font-weight:900;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144}
+  .serif-i{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 72}
+  .rule{position:absolute;height:2px;background:currentColor}
+  .grain::after{content:"";position:absolute;inset:0;opacity:.08;mix-blend-mode:multiply;pointer-events:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>")}
+
+  /* logo: <div class="lg" style="font-size:..."></div> is filled by script */
+  .lg{font-family:'Fraunces',serif;font-weight:900;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;
+      letter-spacing:-.045em;line-height:1;display:inline-flex;align-items:baseline;white-space:nowrap}
+  .lg .o{position:relative;display:inline-block}
+  .lg .seed{position:absolute;width:.12em;height:.18em;background:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat;top:-.04em}
+  .lg .seed.a{left:.11em;transform:rotate(-18deg)}
+  .lg .seed.b{left:.31em;transform:rotate(18deg)}
+  .center{display:flex;align-items:center;justify-content:center}
+
+  /* seed shape used as a graphic element */
+  .seedshape{position:absolute;background:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat}
+
+  /* print overlays: transparent full frames, art boxes positioned over the photo labels */
+  .art{position:absolute;overflow:hidden}
+</style>
+</head>
+<body>
+
+<!-- ============ DESIGN SYSTEM FRAMES ============ -->
+
+<!-- giant ö supergraphic -->
+<section data-out="g-super" class="grain" style="background:var(--butter);color:var(--bur)">
+  <div class="abs serif" style="font-size:1900px;line-height:1;left:50%;top:330px;transform:translateX(-50%);letter-spacing:0">o</div>
+  <div class="seedshape" style="width:250px;height:355px;left:250px;top:310px;transform:rotate(-18deg)"></div>
+  <div class="seedshape" style="width:250px;height:355px;left:600px;top:310px;transform:rotate(18deg)"></div>
+  <div class="abs mono" style="top:140px;left:70px">Körte®</div>
+  <div class="abs mono" style="top:140px;right:70px;text-align:right">Identity system<br>2026</div>
+</section>
+
+<!-- name meaning -->
+<section data-out="g-meaning" class="grain" style="background:var(--cream);color:var(--bur)">
+  <div class="abs mono" style="top:150px;left:80px">01 — The name</div>
+  <div class="abs mono" style="top:150px;right:80px">HU / EN</div>
+  <div class="rule" style="top:210px;left:80px;right:80px"></div>
+  <div class="abs" style="top:560px;left:80px"><div class="lg" style="font-size:270px"></div></div>
+  <div class="abs mono" style="top:880px;left:84px;font-size:30px">/ˈkør.tɛ/ &nbsp; noun · Hungarian</div>
+  <div class="abs serif-i" style="top:990px;left:80px;right:80px;font-size:66px;line-height:1.08">1. pear.<br>2. a sparkling drink cold&#8209;pressed from Hungarian pears in Budapest.</div>
+  <div class="rule" style="bottom:210px;left:80px;right:80px"></div>
+  <div class="abs mono" style="bottom:150px;left:80px">The two dots of the ö are pear seeds</div>
+</section>
+
+<!-- logo construction -->
+<section data-out="g-construct" style="background:var(--bur);color:var(--cream)">
+  <svg class="abs" width="1080" height="1920" style="inset:0">
+    <g stroke="#F3D35B" stroke-width="2" fill="none" opacity=".9">
+      <line x1="0" y1="960" x2="1080" y2="960" stroke-dasharray="8 10"/>
+      <line x1="540" y1="0" x2="540" y2="1920" stroke-dasharray="8 10"/>
+    </g>
+    <g id="cons" stroke="#F3D35B" stroke-width="2" fill="none"></g>
+  </svg>
+  <div class="abs center" style="inset:0"><div class="lg" id="clogo" style="font-size:250px;transform:translateY(-.06em)"></div></div>
+  <div class="abs mono" style="top:150px;left:80px;color:var(--butter)">02 — Logo construction</div>
+  <div class="abs mono" style="bottom:150px;left:80px;color:var(--butter)">Fraunces Black · Soft 100 · Wonk</div>
+  <div class="abs mono" style="bottom:150px;right:80px;color:var(--butter)">Seed = 0.12 em</div>
+</section>
+
+<!-- palette -->
+<section data-out="g-palette">
+  <div class="abs" style="top:0;left:0;right:0;height:760px;background:var(--bur);color:var(--cream)">
+    <div class="abs mono" style="top:150px;left:80px">03 — Colour</div>
+    <div class="abs serif" style="bottom:60px;left:80px;font-size:96px">Burgundy</div>
+    <div class="abs mono" style="bottom:72px;right:80px;text-align:right">#5B1A2E<br>C30 M95 Y60 K45</div>
+  </div>
+  <div class="abs" style="top:760px;left:0;right:0;height:520px;background:var(--butter);color:var(--bur)">
+    <div class="abs serif" style="bottom:50px;left:80px;font-size:96px">Butter</div>
+    <div class="abs mono" style="bottom:62px;right:80px;text-align:right">#F3D35B<br>C5 M15 Y75 K0</div>
+  </div>
+  <div class="abs" style="top:1280px;left:0;right:0;height:380px;background:var(--cream);color:var(--bur)">
+    <div class="abs serif" style="bottom:46px;left:80px;font-size:80px">Cream</div>
+    <div class="abs mono" style="bottom:56px;right:80px;text-align:right">#F5EEDF<br>C3 M5 Y12 K0</div>
+  </div>
+  <div class="abs" style="top:1660px;left:0;right:0;height:260px;background:var(--deep);color:var(--butter)">
+    <div class="abs serif" style="bottom:120px;left:80px;font-size:60px">Deep</div>
+    <div class="abs mono" style="bottom:128px;right:80px">#3E0F1E</div>
+  </div>
+</section>
+
+<!-- typography -->
+<section data-out="g-type" class="grain" style="background:var(--cream);color:var(--bur)">
+  <div class="abs mono" style="top:150px;left:80px">04 — Typography</div>
+  <div class="rule" style="top:210px;left:80px;right:80px"></div>
+  <div class="abs serif" style="top:200px;left:60px;font-size:560px;line-height:1;letter-spacing:-.04em">Aa</div>
+  <div class="abs mono" style="top:820px;left:80px">Fraunces Black — Display</div>
+  <div class="abs serif" style="top:880px;left:80px;right:80px;font-size:62px;line-height:1.1;letter-spacing:-.01em">AÁBCDEÉFGHIÍJKLMNOÖŐ PQRSTUÚÜŰVWXYZ 0123456789</div>
+  <div class="rule" style="top:1190px;left:80px;right:80px"></div>
+  <div class="abs" style="top:1230px;left:72px;font-family:'JetBrains Mono';font-weight:700;font-size:250px;line-height:1">Aa</div>
+  <div class="abs mono" style="top:1510px;left:80px">JetBrains Mono — Labels &amp; info</div>
+  <div class="abs mono" style="top:1570px;left:80px;right:80px;font-size:30px;text-transform:none;letter-spacing:.02em">abcdefghijklmnopqrstuvwxyz<br>330 ml · 0 g sugar · N° 001</div>
+</section>
+
+<!-- patterns 2x2 -->
+<section data-out="g-pattern">
+  <svg class="abs" width="1080" height="1920" style="inset:0">
+    <defs>
+      <pattern id="seeds" width="120" height="150" patternUnits="userSpaceOnUse">
+        <path d="M44 28C48 40 59 52 59 62A15 14 0 0 1 29 62C29 52 40 40 44 28Z" fill="#5B1A2E" transform="rotate(-18 44 52)"/>
+        <path d="M80 28C84 40 95 52 95 62A15 14 0 0 1 65 62C65 52 76 40 80 28Z" fill="#5B1A2E" transform="rotate(18 80 52)"/>
+      </pattern>
+      <pattern id="pearline" width="180" height="230" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="#F3D35B" stroke-width="5">
+          <path d="M90 50c-12 0-17 12-17 25 0 15-25 25-25 58 0 32 20 52 42 52s42-20 42-52c0-33-25-43-25-58 0-13-5-25-17-25z"/>
+          <path d="M90 50c0-10 3-18 10-23"/><path d="M95 37c12-8 25-7 30 2-12 7-23 5-30-2z"/>
+        </g>
+      </pattern>
+      <pattern id="bubbles" width="90" height="90" patternUnits="userSpaceOnUse">
+        <circle cx="20" cy="20" r="9" fill="none" stroke="#5B1A2E" stroke-width="4"/>
+        <circle cx="62" cy="58" r="5" fill="#5B1A2E"/>
+        <circle cx="70" cy="18" r="3" fill="#5B1A2E"/>
+      </pattern>
+    </defs>
+    <rect x="0" y="0" width="540" height="960" fill="#F3D35B"/><rect x="0" y="0" width="540" height="960" fill="url(#seeds)"/>
+    <rect x="540" y="0" width="540" height="960" fill="#5B1A2E"/><rect x="540" y="0" width="540" height="960" fill="url(#pearline)"/>
+    <rect x="0" y="960" width="540" height="960" fill="#F5EEDF"/><rect x="0" y="960" width="540" height="960" fill="url(#bubbles)"/>
+    <rect x="540" y="960" width="540" height="960" fill="#3E0F1E"/>
+  </svg>
+  <div class="seedshape" style="color:var(--butter);width:300px;height:430px;left:660px;top:1200px;transform:rotate(18deg)"></div>
+  <div class="abs mono" style="top:150px;left:80px;color:var(--bur);background:var(--butter);padding:4px 10px">05 — Patterns</div>
+  <div class="abs mono" style="top:880px;left:80px;color:var(--bur);background:var(--butter);padding:4px 10px">Seeds</div>
+  <div class="abs mono" style="top:880px;left:620px;color:var(--butter);background:var(--bur);padding:4px 10px">Orchard</div>
+  <div class="abs mono" style="top:1800px;left:80px;color:var(--bur);background:var(--cream);padding:4px 10px">Fizz</div>
+  <div class="abs mono" style="top:1800px;left:620px;color:var(--butter)">Seed mark</div>
+</section>
+
+<!-- icons -->
+<section data-out="g-icons" class="grain" style="background:var(--butter);color:var(--bur)">
+  <div class="abs mono" style="top:150px;left:80px">06 — Icons</div>
+  <div class="rule" style="top:210px;left:80px;right:80px"></div>
+  <svg class="abs" width="1080" height="1500" style="top:320px;left:0" fill="none" stroke="#5B1A2E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <!-- row 1 -->
+    <g transform="translate(200,200)"><path d="M0 -70c-12 0-16 12-16 24 0 14-30 24-30 60 0 30 22 50 46 50s46-20 46-50c0-36-30-46-30-60 0-12-4-24-16-24z"/><path d="M0 -70c0-10 4-18 12-24"/></g>
+    <g transform="translate(540,200)"><path d="M-50 60c0-80 40-120 110-130-10 70-50 110-110 130z"/><path d="M-50 60l60-60"/></g>
+    <g transform="translate(880,200)"><circle cx="-25" cy="30" r="28"/><circle cx="30" cy="-20" r="18"/><circle cx="-10" cy="-55" r="10"/><circle cx="40" cy="45" r="8"/></g>
+    <!-- row 2 -->
+    <g transform="translate(200,620)"><rect x="-42" y="-80" width="84" height="160" rx="16"/><path d="M-30 -80l6 -14h48l6 14"/></g>
+    <g transform="translate(540,620)"><path d="M0 -85v170M-74 -42l148 84M-74 42l148 -84"/><path d="M-14 -70l14 14 14 -14M-14 70l14 -14 14 14"/></g>
+    <g transform="translate(880,620)"><circle r="78"/><path d="M-55 55l110 -110"/></g>
+    <!-- row 3 -->
+    <g transform="translate(200,1040)"><path d="M0 85c-40-50-62-80-62-110a62 62 0 0 1 124 0c0 30-22 60-62 110z"/><circle cy="-25" r="20"/></g>
+    <g transform="translate(540,1040)"><circle r="40"/><path d="M0 -85v-15M0 85v15M-85 0h-15M85 0h15M-60 -60l-10 -10M60 60l10 10M-60 60l-10 10M60 -60l10 -10"/></g>
+    <g transform="translate(880,1040)"><path d="M-80 40h160M-60 40c0-30 10-60 20-60s15 30 40 30 30-50 45-50 15 50 15 80"/></g>
+  </svg>
+  <div class="abs mono" style="top:640px;width:100%;display:flex;justify-content:space-around;padding:0 40px"><span>Pear</span><span>Leaf</span><span>Fizz</span></div>
+  <div class="abs mono" style="top:1060px;width:100%;display:flex;justify-content:space-around;padding:0 40px"><span>Can</span><span>Cold</span><span>No sugar</span></div>
+  <div class="abs mono" style="top:1480px;width:100%;display:flex;justify-content:space-around;padding:0 40px"><span>Budapest</span><span>Summer</span><span>Orchard</span></div>
+</section>
+
+<!-- dieline: flat can label with print marks -->
+<section data-out="g-dieline" style="background:var(--cream);color:var(--bur)">
+  <div class="abs mono" style="top:150px;left:80px">07 — Packaging</div>
+  <div class="abs mono" style="top:150px;right:80px">330 ml can · label flat</div>
+  <div class="abs" style="left:199px;top:170px;width:682px;height:1580px;overflow:hidden;box-shadow:0 30px 60px rgba(62,15,30,.25)" data-canart="bg"></div>
+  <svg class="abs" width="1080" height="1920" style="inset:0" stroke="#5B1A2E" stroke-width="2" fill="none">
+    <path d="M199 130v-40M881 130v-40M159 170h-40M159 1750h-40M921 170h40M921 1750h40M199 1790v40M881 1790v40"/>
+    <path d="M199 1870h682M199 1860v20M881 1860v20"/>
+    <path d="M1000 170v1580M990 170h20M990 1750h20"/>
+  </svg>
+  <div class="abs mono" style="top:1844px;width:100%;text-align:center;background:var(--cream)"><span style="background:var(--cream);padding:0 12px">209 mm</span></div>
+  <div class="abs mono" style="top:940px;right:-4px;transform:rotate(90deg);background:var(--cream);padding:0 10px">146 mm</div>
+</section>
+
+<!-- poster series -->
+<section data-out="g-posters" class="grain" style="background:var(--cream)">
+  <div class="abs mono" style="top:150px;left:80px;color:var(--bur)">08 — Campaign</div>
+  <div class="abs" style="left:60px;top:300px;width:470px;height:660px;background:var(--bur);color:var(--butter)">
+    <div class="abs mono" style="top:28px;left:28px;font-size:16px">Now pouring</div>
+    <div class="abs serif" style="left:28px;bottom:90px;font-size:62px;line-height:.95">Pear, but<br>make it fizz.</div>
+    <div class="abs mono" style="bottom:28px;left:28px;font-size:16px">Bp. VII.</div>
+    <div class="seedshape" style="color:var(--butter);width:120px;height:170px;right:40px;top:70px;transform:rotate(18deg)"></div>
+  </div>
+  <div class="abs" style="left:550px;top:300px;width:470px;height:660px;background:var(--butter);color:var(--bur)">
+    <div class="abs mono" style="top:28px;left:28px;font-size:16px">0 g added sugar</div>
+    <div class="abs serif" style="left:28px;bottom:90px;font-size:62px;line-height:.95">Drink the<br>orchard.</div>
+    <div class="abs mono" style="bottom:28px;left:28px;font-size:16px">körte.hu</div>
+    <svg class="abs" width="200" height="260" style="right:20px;top:40px" fill="none" stroke="#5B1A2E" stroke-width="7"><path d="M100 40c-14 0-19 14-19 28 0 17-28 28-28 66 0 36 22 58 47 58s47-22 47-58c0-38-28-49-28-66 0-14-5-28-19-28z"/><path d="M100 40c0-12 4-20 12-26"/></svg>
+  </div>
+  <div class="abs" style="left:60px;top:980px;width:960px;height:660px;background:var(--deep);color:var(--cream);overflow:hidden">
+    <div class="abs mono" style="top:28px;left:28px;font-size:16px;color:var(--butter)">Summer 2026</div>
+    <div class="abs serif" style="left:28px;bottom:40px;font-size:150px;line-height:.85;letter-spacing:-.03em">Cold<br>pressed.</div>
+    <div class="abs serif" style="right:-60px;top:-120px;font-size:900px;line-height:1;color:var(--bur)">ö</div>
+  </div>
+  <div class="abs mono" style="top:1700px;left:80px;color:var(--bur)">A0 · A3 · Billboard 6×3 m</div>
+</section>
+
+<!-- ============ PRINT ARTWORK FOR THE PHOTOS (transparent) ============ -->
+<!-- boxes are the label positions in the fitted 1080x1920 photo frames -->
+
+<section data-out="art-can" data-transparent><div class="art" style="left:199px;top:170px;width:682px;height:1580px" data-canart></div></section>
+
+<section data-out="art-pears" data-transparent>
+  <div class="art" style="left:200px;top:617px;width:680px;height:688px;color:var(--butter)">
+    <div class="abs mono" style="top:40px;left:40px;font-size:20px">N° 001</div>
+    <div class="abs mono" style="top:40px;right:40px;font-size:20px">Körte®</div>
+    <div class="abs mono" style="bottom:40px;left:40px;font-size:20px">Sparkling pear</div>
+    <div class="abs mono" style="bottom:40px;right:40px;font-size:20px">Budapest</div>
+  </div>
+  <div class="abs center" style="inset:0;color:var(--cream)"><div class="lg" style="font-size:200px;transform:translateY(-.06em)"></div></div>
+</section>
+
+<section data-out="art-glass" data-transparent>
+  <div class="art" style="left:200px;top:702px;width:680px;height:517px;color:var(--bur)">
+    <div class="abs mono" style="top:34px;width:100%;text-align:center;font-size:20px">Sparkling pear · Cold pressed</div>
+    <div class="rule" style="top:80px;left:60px;right:60px;height:2px"></div>
+    <div class="rule" style="bottom:80px;left:60px;right:60px;height:2px"></div>
+    <div class="abs mono" style="bottom:34px;width:100%;text-align:center;font-size:20px">0 g added sugar · Bp.</div>
+  </div>
+  <div class="abs center" style="inset:0;color:var(--bur)"><div class="lg" style="font-size:210px;transform:translateY(-.06em)"></div></div>
+</section>
+
+<section data-out="art-cup" data-transparent>
+  <div class="art" style="left:184px;top:712px;width:713px;height:497px;color:var(--bur)">
+    <svg class="abs" width="713" height="60" style="top:18px;left:0"><rect width="713" height="60" fill="url(#cupseeds)"/>
+      <defs><pattern id="cupseeds" width="60" height="60" patternUnits="userSpaceOnUse">
+        <path d="M22 12c-5 0-8 6-8 13 0 6 4 10 8 10s8-4 8-10c0-7-3-13-8-13z" fill="#5B1A2E" transform="rotate(-18 22 24)"/>
+        <path d="M40 12c-5 0-8 6-8 13 0 6 4 10 8 10s8-4 8-10c0-7-3-13-8-13z" fill="#5B1A2E" transform="rotate(18 40 24)"/></pattern></defs></svg>
+    <div class="abs mono" style="bottom:36px;width:100%;text-align:center;font-size:20px">To go · Bp. VII. · Est. 2026</div>
+  </div>
+  <div class="abs center" style="inset:0;color:var(--bur)"><div class="lg" style="font-size:200px;transform:translateY(-.06em)"></div></div>
+</section>
+
+<section data-out="art-tote" data-transparent>
+  <div class="art" style="left:-71px;top:356px;width:1224px;height:1212px;color:var(--bur)">
+    <svg class="abs" width="1224" height="1212" fill="none" stroke="#5B1A2E" stroke-width="7"><g transform="translate(612 560) scale(1.38) translate(-612 -500)">
+      <path d="M612 150c-40 0-56 40-56 80 0 50-150 90-150 300 0 190 100 300 206 300s206-110 206-300c0-210-150-250-150-300 0-40-16-80-56-80z"/>
+      <path d="M612 150c0-34 14-62 40-80"/><path d="M630 110c40-30 90-26 106 6-40 26-82 20-106-6z"/></g>
+    </svg>
+    <div class="abs mono" style="bottom:60px;width:100%;text-align:center;font-size:26px">Drink the orchard</div>
+  </div>
+  <div class="abs center" style="inset:0;color:var(--bur)"><div class="lg" style="font-size:200px;transform:translateY(-.06em)"></div></div>
+</section>
+
+<section data-out="art-store" data-transparent>
+  <div class="art" style="left:-165px;top:798px;width:1412px;height:324px;color:var(--bur)">
+    <div class="abs mono" style="top:50%;left:205px;transform:translateY(-50%);font-size:22px">Sparkling<br>pear bar</div>
+    <div class="abs mono" style="top:50%;right:205px;transform:translateY(-50%);font-size:22px;text-align:right">Est.<br>2026</div>
+  </div>
+  <div class="abs center" style="inset:0;color:var(--bur)"><div class="lg" style="font-size:190px;transform:translateY(-.06em)"></div></div>
+</section>
+
+<section data-out="art-fourpack" data-transparent>
+  <div class="art" style="left:-141px;top:576px;width:1364px;height:851px;color:var(--bur)">
+    <div class="abs serif-i" style="top:110px;width:100%;text-align:center;font-size:52px">Drink the orchard.</div>
+    <div class="abs mono" style="bottom:110px;width:100%;text-align:center;font-size:24px">4 × 330 ml · Sparkling pear · 0 g added sugar</div>
+    <div class="seedshape" style="width:90px;height:128px;left:240px;top:340px;transform:rotate(-18deg)"></div>
+    <div class="seedshape" style="width:90px;height:128px;right:240px;top:340px;transform:rotate(18deg)"></div>
+  </div>
+  <div class="abs center" style="inset:0;color:var(--bur)"><div class="lg" style="font-size:200px;transform:translateY(-.06em)"></div></div>
+</section>
+
+<!-- can label artwork template (cloned into [data-canart]) -->
+<template id="canart">
+  <div class="abs" style="inset:0;color:var(--butter)">
+    <div class="abs mono" style="top:70px;left:60px;font-size:22px">Sparkling<br>pear</div>
+    <div class="abs mono" style="top:70px;right:60px;font-size:22px;text-align:right">330<br>ml</div>
+    <div class="rule" style="top:160px;left:60px;right:60px"></div>
+    <div class="abs serif-i" style="top:1000px;width:100%;text-align:center;font-size:44px">Pear, but make it fizz.</div>
+    <div class="abs mono" style="top:1080px;width:100%;text-align:center;font-size:20px">Cold pressed in Budapest · N° 001</div>
+    <div class="abs" style="left:-40px;right:-40px;bottom:-260px;height:560px;background:var(--butter);border-radius:50% 50% 0 0"></div>
+    <div class="abs mono" style="bottom:90px;width:100%;text-align:center;font-size:20px;color:var(--bur)">0 g added sugar · Hungarian pears</div>
+    <div class="abs center" style="left:0;right:0;top:0;height:1580px"><div class="lg" style="font-size:200px;color:var(--cream);transform:translateY(-.06em)"></div></div>
+  </div>
+</template>
+
+<script>
+  const LOGO = '<span>k</span><span class="o">o<i class="seed a"></i><i class="seed b"></i></span><span>rte</span>';
+  document.querySelectorAll('[data-canart]').forEach(el => {
+    if (el.dataset.canart === 'bg') el.style.background = 'var(--bur)';
+    el.appendChild(document.getElementById('canart').content.cloneNode(true));
+  });
+  document.querySelectorAll('.lg').forEach(el => el.innerHTML = LOGO);
+  // construction marks around the real seed and logo positions
+  document.fonts.ready.then(() => {
+    const sec = document.querySelector('[data-out="g-construct"]').getBoundingClientRect();
+    const g = document.getElementById('cons');
+    const lg = document.getElementById('clogo').getBoundingClientRect();
+    const add = (tag, attrs) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]); g.appendChild(e); };
+    add('rect', {x: lg.left - sec.left - 30, y: lg.top - sec.top - 30, width: lg.width + 60, height: lg.height + 60});
+    document.querySelectorAll('#clogo .seed').forEach(s => {
+      const r = s.getBoundingClientRect();
+      const cx = r.left - sec.left + r.width / 2, cy = r.top - sec.top + r.height / 2;
+      add('circle', {cx, cy, r: r.height * .75});
+      add('line', {x1: cx, y1: cy - 260, x2: cx, y2: cy + 420, 'stroke-dasharray': '4 8'});
+    });
+    const base = lg.bottom - sec.top - lg.height * .22;
+    add('line', {x1: 60, y1: base, x2: 1020, y2: base});
+    add('line', {x1: 60, y1: base - 120, x2: 1020, y2: base - 120, 'stroke-dasharray': '4 8'});
+    document.body.dataset.ready = '1';
+  });
+</script>
+</body>
+</html>

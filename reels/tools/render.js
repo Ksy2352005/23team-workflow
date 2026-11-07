@@ -13,6 +13,7 @@ const fs = require('fs');
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
   await page.goto('file://' + path.resolve(html), { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(300); // let page scripts that run after fonts finish
   for (const el of await page.$$('section[data-out]')) {
     const name = await el.getAttribute('data-out');
     const transparent = (await el.getAttribute('data-transparent')) !== null;
