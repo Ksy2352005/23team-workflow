@@ -7,7 +7,7 @@ the logo stays perfectly still in the centre while the scenes behind it cut on t
 - `tools/beats.py`: analyse a song (tempo, beats, loudness). `python3 tools/beats.py music/song.mp4`
 - `tools/render.js`: render a brand's `frames.html` into 1080×1920 PNGs (logo layers transparent)
 - `tools/build.py`: build the reel from `plan.json`: detects the beats, cuts exactly on them, adds punch-ins, flashes and the logo reveal, and muxes the song
-- `brands/<name>/`: one folder per fictional brand: `brand.md`, `frames.html`, `prompts.md` (ChatGPT photo prompts), `plan.json`, `frames/`, `out/`
+- `brands/<name>/`: one folder per fictional brand: `brand.md`, `frames.html`, `23promtsN.md` (ChatGPT photo prompts, numbered across all brands), `plan.json`, `frames/`, `out/`
 - `music/`: songs and screen recordings (kept out of git)
 
 ## Make a reel
@@ -25,6 +25,6 @@ runs to `end`. `start` and `end` are times in the song.
 
 ## Photo scenes (ChatGPT)
 Every photo must have its label or flat surface dead centre, facing the camera and blank,
-so the locked logo lands on it. Each `prompts.md` is made to be uploaded to ChatGPT as a file:
+so the locked logo lands on it. Each prompt file (`23promts1.md`, `23promts2.md`, … numbered across all brands) is made to be uploaded to ChatGPT as a file:
 it states the total number of images, and ChatGPT generates them one at a time each time you say "next".
-See `brands/korte/prompts.md`.
+See `brands/korte/23promts1.md`.

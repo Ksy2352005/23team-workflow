@@ -7,7 +7,7 @@ This repo belongs to 23 Team, a Budapest branding, web and marketing studio.
 
 ## Branding reels (`reels/`)
 - Every fictional brand starts with a short concept in `brand.md`: what the name means, the product, the audience, and why each design choice (logo, colours, font, taglines) fits.
-- ChatGPT image prompts go in `brands/<name>/prompts.md`, written so the user can upload the whole file to ChatGPT and just say "next":
+- ChatGPT image prompt files are named `23promts1.md`, `23promts2.md`, … (exact spelling, one number per file, counting across ALL brands, never reusing a number). Before making one, find the highest existing number with `find reels -name '23promts*.md'` and use the next. Save it in `brands/<name>/`. Write it so the user can upload the whole file to ChatGPT and just say "next":
   - Title and first line state the total, e.g. "**Total images: 8**".
   - An "Instructions for ChatGPT" block: generate only Image 1, then one image per "next", "redo" to retry, announce each as "Image N of TOTAL — name", say when all are done.
   - Tell ChatGPT to ignore its memory/earlier chats/other brands of the user (it otherwise pulls in the 23 Team mascot).
