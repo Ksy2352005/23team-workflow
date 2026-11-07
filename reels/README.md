@@ -6,8 +6,9 @@ the logo stays perfectly still in the centre while the scenes behind it cut on t
 ## Folders
 - `tools/beats.py`: analyse a song (tempo, beats, loudness). `python3 tools/beats.py music/song.mp4`
 - `tools/render.js`: render a brand's `frames.html` into 1080×1920 PNGs (logo layers transparent)
+- `tools/fit.py`: fit a ChatGPT photo into a 1080×1920 frame so its blank label sits exactly under the locked logo: `python3 tools/fit.py photo.png frames/photo-x.png <label cx> <label cy> <label width>`
 - `tools/build.py`: build the reel from `plan.json`: detects the beats, cuts exactly on them, adds punch-ins, flashes and the logo reveal, and muxes the song
-- `brands/<name>/`: one folder per fictional brand: `brand.md`, `frames.html`, `23promtsN.md` (ChatGPT photo prompts, numbered across all brands), `plan.json`, `frames/`, `out/`
+- `brands/<name>/`: one folder per fictional brand: `brand.md`, `frames.html`, `23promtsN.md` (ChatGPT photo prompts, numbered across all brands), `photos/` (ChatGPT originals), `plan.json`, `frames/`, `out/`
 - `music/`: songs and screen recordings (kept out of git)
 
 ## Make a reel
