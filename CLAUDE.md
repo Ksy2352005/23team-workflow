@@ -13,4 +13,6 @@ This repo belongs to 23 Team, a Budapest branding, web and marketing studio.
   - Tell ChatGPT to ignore its memory/earlier chats/other brands of the user (it otherwise pulls in the 23 Team mascot).
   - ChatGPT can't make true 9:16: ask for its tallest portrait size (1024×1536) and keep the subject in the middle 75% of the width; the reel tools crop to 9:16.
   - Brand + style rules once (9:16 crop, product label dead centre, blank, no text/logos), then each prompt headed "Image N of TOTAL — name".
+  - Include a "Look" block (clean colour-blocked studio backdrops in the brand colours, daylight/one crisp shadow, matte plain products, one hero product, straight-on and centred) and an "Avoid" block (dark moody bar, bokeh, droplets, splashes, garnish, wrong fruit, glossy CGI, stock-ad look, any text). Without these ChatGPT makes generic stock-advert images.
+  - Ask ChatGPT to first confirm in one line what it read (brand, product, colours, Image 1) and wait for "start".
 - Whenever you hand over a prompts file, tell the user in your message how many images it contains.
