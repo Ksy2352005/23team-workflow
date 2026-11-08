@@ -38,6 +38,6 @@ Lines in use: "Your business. Your goals. Your package." · "Stay visible, stay 
 - Fictional brand identities that show off 23 Team's branding skills.
 - Vertical 9:16, 1080×1920, 6–13 seconds, 8–12 shots cut on the beat.
 - Signature look: the logo stays fixed in the centre while the scenes behind it change, and each scene is composed so the logo still sits correctly on the object (cup, bag, sign).
-- Ending: brand awareness only, no call to action: the locked **23 logo end card** from the 23motion films (same logo file, size, centring, timing and sound), recoloured to each fictional brand's palette (darkest colour behind, lightest colour for the logo at 75% opacity).
+- Ending: brand awareness only, no call to action: the last picture of the edit (cut on the beat, same music) is the **23 logo** at the size and position locked in the 23motion films (324×177, centred, 75% opacity), coloured with the fictional brand's palette: darkest colour behind, lightest colour for the logo.
 - Images: the user prefers OpenAI (ChatGPT) image generation.
 - Music: chosen per reel to match the cuts. Instagram trending audio can also be added in the app when posting.

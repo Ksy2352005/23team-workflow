@@ -1,4 +1,6 @@
-"""The locked 23 Team end card, as in the 23motion films (ANIMATION-STYLE.md on
+"""The 23 Team end card. In the reels it is `card()`: a still, cut on the beat
+as the last shot inside the music (no sting, no fade, no extra length).
+The logo size, position and opacity are the ones locked in the 23motion films (ANIMATION-STYLE.md on
 the `mere-exposure` branch), with one difference: the colours come from the
 fictional brand's palette (background = the brand's darkest colour, logo = its
 lightest/soft colour), so the ending matches each reel.
@@ -20,6 +22,18 @@ from PIL import Image, ImageFilter
 W, H = 1080, 1920
 FADE, GAP, LOGO_IN, HOLD = 0.7, 0.15, 0.9, 1.2
 LOGO_PATH = os.path.join(os.path.dirname(__file__), "..", "brand-assets", "logo-23.png")
+
+
+def card(bg, logo):
+    """The end card as a single still: the brand's darkest colour with the 23
+    logo at the locked size and position (30% of width, centred, 75% opacity)
+    in the brand's lightest colour. Used as the last shot of the edit, cut on
+    the beat inside the music: no separate sound, no extra length."""
+    base = Image.new("RGBA", (W, H), bg)
+    lg = _logo(logo).copy()
+    lg.putalpha(lg.getchannel("A").point(lambda v: int(v * 0.75)))
+    base.alpha_composite(lg, ((W - lg.width) // 2, (H - lg.height) // 2))
+    return base
 
 
 def total(fade_start):

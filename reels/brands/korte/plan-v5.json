@@ -78,11 +78,15 @@
   },
   {
    "bg": "p5-cafe",
-   "fx": "punch"
+   "fx": "punch",
+   "beats": 1.5
+  },
+  {
+   "bg": "end23",
+   "fx": "none"
   }
  ],
  "end23": {
-  "fade_start": 7.11,
   "bg": "#3E0F1E",
   "logo": "#F5EEDF"
  }

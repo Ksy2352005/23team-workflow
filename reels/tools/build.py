@@ -80,16 +80,12 @@ def main(plan_path):
         shots.append({**s, "t0": t0 - start, "t1": t1 - start})
         print(f"  {t0 - start:5.2f}s -> {t1 - start:5.2f}s  {s.get('type', s.get('bg')):<12} {s.get('logo') or ''}")
     duration = end - start
-    E = plan.get("end23")   # locked 23 end card in the brand's colours
-    if E:
-        fs = E["fade_start"] - start
-        fe = fs + end23.FADE
-        shots[-1]["t1"] = fe
-        duration = end23.total(fs)
-        print(f"  {fs:5.2f}s -> {duration:5.2f}s  23 end card (bg {E['bg']}, logo {E['logo']})")
+    E = plan.get("end23")   # colours for the 23 end card shot ("bg": "end23")
 
     cache = {}
     def img(name):
+        if name == "end23" and name not in cache:
+            cache[name] = end23.card(E["bg"], E["logo"])
         if name not in cache:
             im = Image.open(os.path.join(rel(plan["frames"]), name + ".png")).convert("RGBA")
             cache[name] = im.resize((W, H)) if im.size != (W, H) else im
@@ -98,18 +94,8 @@ def main(plan_path):
     out = rel(plan["out"])
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fade = plan.get("fade", 0.05)   # keep tiny so the last beat is not swallowed
-    if E:
-        sting_path = out + ".sting.wav"
-        lead = end23.write_sting(sting_path)
-        boom = fe + end23.GAP                      # boom lands as the logo starts to appear
-        audio_in = ["-ss", str(start), "-t", str(fe), "-i", rel(plan["audio"]), "-i", sting_path]
-        afilter = (f"[1:a]aresample=48000,afade=t=out:st={fs}:d={end23.FADE}[m];"
-                   f"[2:a]adelay={int((boom - lead) * 1000)}:all=1[s];"
-                   f"[m][s]amix=inputs=2:normalize=0:duration=longest,apad,atrim=0:{duration}[a]")
-        amap = ["-filter_complex", afilter, "-map", "0:v", "-map", "[a]"]
-    else:
-        audio_in = ["-ss", str(start), "-t", str(duration), "-i", rel(plan["audio"])]
-        amap = ["-map", "0:v", "-map", "1:a", "-af", f"afade=t=out:st={duration - fade}:d={fade}"]
+    audio_in = ["-ss", str(start), "-t", str(duration), "-i", rel(plan["audio"])]
+    amap = ["-map", "0:v", "-map", "1:a", "-af", f"afade=t=out:st={duration - fade}:d={fade}"]
     ff = subprocess.Popen([
         "ffmpeg", "-v", "error", "-y",
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
@@ -159,13 +145,9 @@ def main(plan_path):
             frame.alpha_composite(logo)
         if s.get("flash") and local < 0.16:
             frame = Image.blend(frame, white, 0.85 * (1 - local / 0.16))
-        if E and t >= fs:
-            frame = end23.frame(t, fs, frame if t < fe else None, E["bg"], E["logo"])
         ff.stdin.write(frame.convert("RGB").tobytes())
     ff.stdin.close()
     ff.wait()
-    if E:
-        os.remove(sting_path)
     print("wrote", out)
 
 
