@@ -38,6 +38,6 @@ Lines in use: "Your business. Your goals. Your package." · "Stay visible, stay 
 - Fictional brand identities that show off 23 Team's branding skills.
 - Vertical 9:16, 1080×1920, 6–13 seconds, 8–12 shots cut on the beat.
 - Signature look: the logo stays fixed in the centre while the scenes behind it change, and each scene is composed so the logo still sits correctly on the object (cup, bag, sign).
-- Ending: a call-to-action card, e.g. "DM FOR LOGO", plus the 23 Team handle.
+- Ending: brand awareness only, no call to action. A short end card that just says **"23 Marketing"** (Bricolage Grotesque, off-white on Persian navy, turquoise underline).
 - Images: the user prefers OpenAI (ChatGPT) image generation.
 - Music: chosen per reel to match the cuts. Instagram trending audio can also be added in the app when posting.
