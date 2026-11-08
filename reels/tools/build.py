@@ -79,7 +79,9 @@ def main(plan_path):
             t0 = start
         shots.append({**s, "t0": t0 - start, "t1": t1 - start})
         print(f"  {t0 - start:5.2f}s -> {t1 - start:5.2f}s  {s.get('type', s.get('bg')):<12} {s.get('logo') or ''}")
-    duration = end - start
+    duration = end - start + plan.get("tail", 0)   # tail: seconds the last picture holds after the song
+    if plan.get("tail"):
+        shots[-1]["t1"] = duration
     E = plan.get("end23")   # colours for the 23 end card shot ("bg": "end23")
 
     cache = {}
@@ -94,8 +96,11 @@ def main(plan_path):
     out = rel(plan["out"])
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fade = plan.get("fade", 0.05)   # keep tiny so the last beat is not swallowed
-    audio_in = ["-ss", str(start), "-t", str(duration), "-i", rel(plan["audio"])]
-    amap = ["-map", "0:v", "-map", "1:a", "-af", f"afade=t=out:st={duration - fade}:d={fade}"]
+    song_len = end - start
+    fade_from = plan.get("fade_from", end - fade) - start   # song fades out from here (song time)
+    audio_in = ["-ss", str(start), "-t", str(song_len), "-i", rel(plan["audio"])]
+    amap = ["-map", "0:v", "-map", "1:a",
+            "-af", f"afade=t=out:st={fade_from}:d={max(song_len - fade_from, 0.01)},apad"]
     ff = subprocess.Popen([
         "ffmpeg", "-v", "error", "-y",
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",

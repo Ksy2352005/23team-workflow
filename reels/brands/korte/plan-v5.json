@@ -73,13 +73,13 @@
   },
   {
    "bg": "p5-fourpack",
-   "beats": 1.5,
+   "beats": 2,
    "fx": "punch"
   },
   {
    "bg": "p5-cafe",
    "fx": "punch",
-   "beats": 1.5
+   "beats": 2
   },
   {
    "bg": "end23",
@@ -89,5 +89,7 @@
  "end23": {
   "bg": "#3E0F1E",
   "logo": "#F5EEDF"
- }
+ },
+ "fade_from": 7.11,
+ "tail": 1.0
 }
