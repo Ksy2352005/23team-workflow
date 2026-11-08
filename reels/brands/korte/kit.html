@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KÖRTE brand kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..900,0..100,0..1;1,9..144,400..900,0..100,0..1&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bur:#5B1A2E;--deep:#3E0F1E;--butter:#F3D35B;--cream:#F5EEDF;--pear:#C9CF5A}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;width:1600px}
+  section{position:relative;overflow:hidden}
+  .abs{position:absolute}
+  .mono{font-family:'JetBrains Mono',monospace;font-weight:500;letter-spacing:.08em;text-transform:uppercase;line-height:1.4}
+  .serif{font-family:'Fraunces',serif;font-weight:900;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144}
+  .serif-i{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 72}
+  .lg{font-family:'Fraunces',serif;font-weight:900;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;letter-spacing:-.045em;line-height:1;display:inline-flex;align-items:baseline;white-space:nowrap}
+  .lg .o{position:relative;display:inline-block}
+  .lg .seed{position:absolute;width:.12em;height:.18em;background:currentColor;top:-.04em;
+    -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat}
+  .lg .seed.a{left:.11em;transform:rotate(-18deg)} .lg .seed.b{left:.31em;transform:rotate(18deg)}
+  .center{display:flex;align-items:center;justify-content:center}
+  .label{font-family:'JetBrains Mono';font-weight:700;font-size:20px;letter-spacing:.12em;color:var(--bur);text-transform:uppercase}
+  svg{overflow:visible}
+</style>
+</head>
+<body>
+
+<!-- reusable drawings -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <path id="seed" d="M0 -30C3 -18 16 -6 16 6A16 15 0 0 1 -16 6C-16 -6 -3 -18 0 -30Z"/>
+    <!-- mascot: the pear whose seeds are its eyes -->
+    <g id="mascot-body">
+      <path id="pearpath" d="M200 70C170 70 160 100 158 132C155 168 92 192 92 300C92 404 150 462 200 462C250 462 308 404 308 300C308 192 245 168 242 132C240 100 230 70 200 70Z"/>
+    </g>
+    <g id="mascot">
+      <!-- sticker border -->
+      <g stroke="#F5EEDF" stroke-width="44" stroke-linejoin="round" stroke-linecap="round" fill="#F5EEDF">
+        <use href="#pearpath"/><path d="M200 72C200 50 206 34 220 22" fill="none"/><path d="M212 44C238 18 278 20 290 40C266 60 234 62 212 44Z"/>
+        <path d="M96 290C62 282 48 250 58 222" fill="none"/><path d="M304 290C338 270 346 240 336 214" fill="none"/>
+        <path d="M168 455L162 500M232 455L238 500" fill="none"/>
+      </g>
+      <g stroke="#5B1A2E" stroke-width="11" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M96 290C62 282 48 250 58 222" fill="none"/><path d="M304 290C338 270 346 240 336 214" fill="none"/>
+        <path d="M168 455L162 500M232 455L238 500" fill="none"/>
+        <ellipse cx="150" cy="503" rx="22" ry="10" fill="#5B1A2E"/><ellipse cx="250" cy="503" rx="22" ry="10" fill="#5B1A2E"/>
+        <use href="#pearpath" fill="#F3D35B"/>
+        <path d="M200 72C200 50 206 34 220 22" fill="none"/>
+        <path d="M212 44C238 18 278 20 290 40C266 60 234 62 212 44Z" fill="#C9CF5A"/>
+        <path d="M182 322Q200 342 218 322" fill="none"/>
+        <path d="M120 230C118 200 130 180 150 168" fill="none" stroke="#F5EEDF" stroke-width="9" opacity=".8"/>
+      </g>
+      <use href="#seed" transform="translate(170 272) rotate(12) scale(1.05)" fill="#5B1A2E"/>
+      <use href="#seed" transform="translate(230 272) rotate(-12) scale(1.05)" fill="#5B1A2E"/>
+      <circle cx="166" cy="276" r="5.5" fill="#F5EEDF"/><circle cx="226" cy="276" r="5.5" fill="#F5EEDF"/>
+      <circle cx="146" cy="300" r="14" fill="#E8A35A" opacity=".55"/><circle cx="254" cy="300" r="14" fill="#E8A35A" opacity=".55"/>
+    </g>
+  </defs>
+</svg>
+
+<!-- ================= KIT SHEET (upload to ChatGPT) ================= -->
+<section data-out="brand-kit" style="width:1600px;height:2600px;background:var(--cream)">
+  <div class="abs serif" style="top:60px;left:70px;font-size:40px;color:var(--bur)">KÖRTE — brand kit</div>
+  <div class="abs mono" style="top:72px;right:70px;font-size:20px;color:var(--bur)">Use exactly as shown</div>
+
+  <!-- logo -->
+  <div class="abs label" style="top:150px;left:70px">1 · Logo</div>
+  <div class="abs center" style="top:190px;left:70px;width:700px;height:300px;background:var(--bur);color:var(--cream)"><div class="lg" style="font-size:170px;transform:translateY(-.06em)"></div></div>
+  <div class="abs center" style="top:190px;left:830px;width:700px;height:300px;background:var(--butter);color:var(--bur)"><div class="lg" style="font-size:170px;transform:translateY(-.06em)"></div></div>
+
+  <!-- colours -->
+  <div class="abs label" style="top:530px;left:70px">2 · Colours</div>
+  <div class="abs" style="top:570px;left:70px;width:1460px;height:120px;display:flex">
+    <div style="flex:3;background:var(--bur)"></div><div style="flex:2;background:var(--butter)"></div><div style="flex:2;background:var(--cream);outline:2px solid var(--bur);outline-offset:-2px"></div><div style="flex:1;background:var(--deep)"></div><div style="flex:1;background:var(--pear)"></div>
+  </div>
+
+  <!-- mascot + stickers -->
+  <div class="abs label" style="top:730px;left:70px">3 · Mascot "Körti" &amp; stickers</div>
+  <svg class="abs" width="1460" height="560" style="top:770px;left:70px" data-stickers></svg>
+
+  <!-- patterns -->
+  <div class="abs label" style="top:1360px;left:70px">4 · Patterns</div>
+  <svg class="abs" width="1460" height="220" style="top:1400px;left:70px">
+    <defs>
+      <pattern id="k-seeds" width="70" height="80" patternUnits="userSpaceOnUse"><use href="#seed" transform="translate(24 42) rotate(-18) scale(.6)" fill="#5B1A2E"/><use href="#seed" transform="translate(46 42) rotate(18) scale(.6)" fill="#5B1A2E"/></pattern>
+      <pattern id="k-stripe" width="60" height="10" patternUnits="userSpaceOnUse"><rect width="30" height="10" fill="#F3D35B"/><rect x="30" width="30" height="10" fill="#F5EEDF"/></pattern>
+    </defs>
+    <rect width="470" height="220" fill="#F3D35B"/><rect width="470" height="220" fill="url(#k-seeds)"/>
+    <rect x="495" width="470" height="220" fill="url(#k-stripe)"/>
+    <rect x="990" width="470" height="220" fill="#5B1A2E"/>
+    <g data-mini fill="none"></g>
+  </svg>
+
+  <!-- applications -->
+  <div class="abs label" style="top:1660px;left:70px">5 · Can label · Cup · Menu · Loyalty card · Bags</div>
+  <div class="abs" style="top:1700px;left:70px;width:300px;height:640px" data-can></div>
+  <div class="abs" style="top:1700px;left:400px;width:330px;height:420px" data-cup></div>
+  <div class="abs" style="top:1700px;left:760px;width:360px;height:500px" data-menu></div>
+  <div class="abs" style="top:1700px;left:1150px;width:380px;height:230px" data-loyalty></div>
+  <div class="abs" style="top:1960px;left:1150px;width:180px;height:240px" data-bag></div>
+  <div class="abs" style="top:1960px;left:1350px;width:180px;height:240px" data-stripebag></div>
+  <div class="abs mono" style="top:2440px;left:70px;right:70px;font-size:18px;color:var(--bur)">Fonts: Fraunces Black (headlines, logo) · JetBrains Mono (small labels) · Sparkling pear drink · Budapest · Hungarian "körte" = pear</div>
+</section>
+
+<!-- ================= REEL TILES / FRAMES ================= -->
+<section data-out="t-mascot" style="width:1080px;height:1920px;background:var(--butter)"><svg class="abs" width="1080" height="1920"><use href="#mascot" transform="translate(140 470) scale(2)"/></svg>
+  <div class="abs mono" style="top:150px;left:80px;font-size:24px;color:var(--bur)">Meet Körti</div>
+  <div class="abs serif-i" style="bottom:200px;left:80px;right:80px;font-size:64px;color:var(--bur);line-height:1.05">The seeds of the logo became its eyes.</div></section>
+
+<section data-out="t-stickers" style="width:1080px;height:1920px;background:var(--bur)"><svg class="abs" width="1080" height="1920" data-stickergrid></svg></section>
+
+<section data-out="t-loyalty" style="width:1080px;height:1920px">
+  <svg class="abs" width="1080" height="1920"><defs><pattern id="rs" width="90" height="10" patternUnits="userSpaceOnUse"><rect width="45" height="10" fill="#5B1A2E"/><rect x="45" width="45" height="10" fill="#521727"/></pattern></defs><rect width="1080" height="1920" fill="url(#rs)"/></svg>
+  <div class="abs" style="left:90px;top:760px;width:900px;height:520px;box-shadow:0 40px 60px rgba(0,0,0,.35)" data-loyalty></div>
+  <svg class="abs" width="1080" height="1920"><use href="#mascot" transform="translate(700 380) scale(.75) rotate(12 200 280)"/></svg>
+</section>
+
+<section data-out="t-menu" style="width:1080px;height:1920px;background:var(--cream)">
+  <div class="abs" style="left:190px;top:330px;width:700px;height:980px;box-shadow:0 40px 60px rgba(62,15,30,.25)" data-menu></div>
+</section>
+
+<section data-out="t-logo" class="center" style="width:1080px;height:780px;background:var(--butter);color:var(--bur);flex-direction:column">
+  <svg width="300" height="390" viewBox="0 0 400 520"><use href="#mascot"/></svg>
+  <div class="lg" style="font-size:190px;margin-top:10px"></div>
+</section>
+<section data-out="t-copy" style="width:600px;height:840px;background:var(--bur);color:var(--butter)">
+  <div class="abs serif-i" style="top:50px;left:44px;right:44px;font-size:58px;line-height:1.02">Pear, but make it fizz.</div>
+  <div class="abs" style="top:250px;left:44px;right:44px;font-family:'Fraunces';font-weight:500;font-size:26px;line-height:1.45;color:var(--cream)">Hungarian pears, pressed cold and bottled the same day in Budapest. No added sugar, just orchard and bubbles.</div>
+  <div class="abs mono" style="bottom:60px;left:44px;font-size:20px;background:var(--butter);color:var(--bur);padding:12px 22px;border-radius:40px">Find a körte</div>
+</section>
+
+<script>
+const LOGO='<span>k</span><span class="o">o<i class="seed a"></i><i class="seed b"></i></span><span>rte</span>';
+const NS='http://www.w3.org/2000/svg';
+// sticker drawings, each roughly in a 300x300 box, with a cream die-cut border
+const STICKERS = {
+  mascot: `<use href="#mascot" transform="translate(30 -5) scale(.56)"/>`,
+  can: `<g stroke-linejoin="round"><rect x="95" y="40" width="110" height="220" rx="22" fill="#F5EEDF" stroke="#F5EEDF" stroke-width="40"/>
+        <rect x="95" y="40" width="110" height="220" rx="22" fill="#5B1A2E" stroke="#3E0F1E" stroke-width="8"/>
+        <rect x="95" y="190" width="110" height="40" fill="#F3D35B"/><use href="#seed" transform="translate(140 120) rotate(-18) scale(.7)" fill="#F3D35B"/><use href="#seed" transform="translate(160 120) rotate(18) scale(.7)" fill="#F3D35B"/>
+        <circle cx="240" cy="70" r="16" fill="#F5EEDF" stroke="#5B1A2E" stroke-width="7"/><circle cx="262" cy="120" r="9" fill="#F5EEDF" stroke="#5B1A2E" stroke-width="6"/><circle cx="60" cy="100" r="12" fill="#F5EEDF" stroke="#5B1A2E" stroke-width="6"/></g>`,
+  half: `<g stroke-linejoin="round" transform="translate(150 160) scale(.62) translate(-200 -270)"><use href="#pearpath" fill="#F5EEDF" stroke="#F5EEDF" stroke-width="60"/><use href="#pearpath" fill="#C9CF5A" stroke="#5B1A2E" stroke-width="14"/>
+        <path d="M200 120C186 120 182 140 181 158C179 185 132 205 132 300C132 384 172 425 200 425C228 425 268 384 268 300C268 205 221 185 219 158C218 140 214 120 200 120Z" fill="#F5EEDF"/>
+        <use href="#seed" transform="translate(180 300) rotate(-18) scale(1.6)" fill="#5B1A2E"/><use href="#seed" transform="translate(220 300) rotate(18) scale(1.6)" fill="#5B1A2E"/></g>`,
+  badge: `<circle cx="150" cy="150" r="112" fill="#F5EEDF"/><circle cx="150" cy="150" r="92" fill="#F3D35B" stroke="#5B1A2E" stroke-width="8"/>
+        <text x="150" y="160" text-anchor="middle" font-family="Fraunces" font-weight="900" font-size="74" fill="#5B1A2E">0g</text><text x="150" y="200" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" font-size="20" letter-spacing="3" fill="#5B1A2E">SUGAR</text>`,
+  sparkle: `<path d="M150 40C160 110 190 140 260 150C190 160 160 190 150 260C140 190 110 160 40 150C110 140 140 110 150 40Z" fill="#F3D35B" stroke="#F5EEDF" stroke-width="34" stroke-linejoin="round" paint-order="stroke"/><path d="M150 40C160 110 190 140 260 150C190 160 160 190 150 260C140 190 110 160 40 150C110 140 140 110 150 40Z" fill="#F3D35B" stroke="#5B1A2E" stroke-width="9" stroke-linejoin="round"/>`,
+  ticket: `<g transform="rotate(-10 150 150)"><rect x="40" y="95" width="220" height="110" rx="14" fill="#F5EEDF" stroke="#F5EEDF" stroke-width="36"/><rect x="40" y="95" width="220" height="110" rx="14" fill="#5B1A2E"/><text x="150" y="168" text-anchor="middle" font-family="Fraunces" font-weight="900" font-size="54" fill="#F3D35B">Bp. VII.</text></g>`,
+  leaf: `<path d="M60 230C70 120 150 60 250 60C245 160 170 235 60 230Z" fill="#C9CF5A" stroke="#F5EEDF" stroke-width="40" stroke-linejoin="round" paint-order="stroke"/><path d="M60 230C70 120 150 60 250 60C245 160 170 235 60 230Z" fill="#C9CF5A" stroke="#5B1A2E" stroke-width="9" stroke-linejoin="round"/><path d="M60 230C110 170 160 120 220 90" fill="none" stroke="#5B1A2E" stroke-width="8" stroke-linecap="round"/>`,
+  bubbles: `<g fill="#F5EEDF" stroke="#5B1A2E" stroke-width="8"><circle cx="120" cy="170" r="62" stroke="#F5EEDF" stroke-width="40"/><circle cx="210" cy="90" r="38" stroke="#F5EEDF" stroke-width="40"/><circle cx="220" cy="210" r="24" stroke="#F5EEDF" stroke-width="40"/>
+        <circle cx="120" cy="170" r="62"/><circle cx="210" cy="90" r="38"/><circle cx="220" cy="210" r="24"/></g><path d="M90 140a40 40 0 0 1 30 -20M195 72a20 20 0 0 1 16 -8" fill="none" stroke="#5B1A2E" stroke-width="7" stroke-linecap="round"/>`,
+};
+function drawSticker(svg, key, x, y, s=1, rot=0){ const g=document.createElementNS(NS,'g'); g.setAttribute('transform',`translate(${x} ${y}) rotate(${rot} ${150*s} ${150*s}) scale(${s})`); g.innerHTML=STICKERS[key]; svg.appendChild(g); }
+
+document.querySelectorAll('[data-stickers]').forEach(svg => { Object.keys(STICKERS).forEach((k,i)=>drawSticker(svg,k,(i%4)*370+20,Math.floor(i/4)*280-10,.9)); });
+document.querySelectorAll('[data-stickergrid]').forEach(svg => {
+  const pos=[['mascot',120,150,1.6,-6],['badge',640,170,1.2,10],['can',600,640,1.3,8],['half',90,760,1.3,-8],['sparkle',780,1050,.9,0],['leaf',120,1230,1.1,-12],['ticket',480,1220,1.4,-4],['bubbles',700,1500,1,0],['sparkle',80,1560,.6,0]];
+  pos.forEach(p=>drawSticker(svg,...p));
+});
+document.querySelectorAll('[data-mini]').forEach(g => { for(let i=0;i<5;i++){ const u=document.createElementNS(NS,'use'); u.setAttribute('href','#mascot'); u.setAttribute('transform',`translate(${1010+i*88} ${40}) scale(.2)`); g.appendChild(u);} });
+
+// application artwork blocks (sized by their container)
+const fill = (sel, fn) => document.querySelectorAll(sel).forEach(el => { el.style.position='absolute'; el.innerHTML = fn(el.offsetWidth, el.offsetHeight); });
+fill('[data-can]', (w,h)=>`<div style="position:absolute;inset:0;background:#5B1A2E;border-radius:${w*.12}px;overflow:hidden;color:#F3D35B">
+  <div class="mono" style="position:absolute;top:${h*.05}px;left:${w*.09}px;font-size:${w*.04}px">Sparkling<br>pear</div><div class="mono" style="position:absolute;top:${h*.05}px;right:${w*.09}px;font-size:${w*.04}px;text-align:right">330<br>ml</div>
+  <div class="center" style="position:absolute;inset:0;color:#F5EEDF"><div class="lg" style="font-size:${w*.3}px;transform:translateY(-.4em)"></div></div>
+  <div class="serif-i" style="position:absolute;top:${h*.58}px;width:100%;text-align:center;font-size:${w*.07}px">Pear, but make it fizz.</div>
+  <div style="position:absolute;left:-10%;right:-10%;bottom:-${h*.16}px;height:${h*.36}px;background:#F3D35B;border-radius:50% 50% 0 0"></div>
+  <svg style="position:absolute;left:${w*.5-45}px;bottom:${h*.03}px" width="90" height="110" viewBox="0 0 400 520"><use href="#mascot"/></svg></div>`);
+fill('[data-cup]', (w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 330 420"><defs><clipPath id="cupc"><path d="M30 40H300L270 410H60Z"/></clipPath></defs>
+  <g clip-path="url(#cupc)"><rect width="330" height="420" fill="#5B1A2E"/><rect width="330" height="420" fill="url(#k-seeds)" opacity="0"/>
+  <g fill="#F3D35B">${Array.from({length:30},(_,i)=>`<use href="#seed" transform="translate(${40+(i%6)*52} ${70+Math.floor(i/6)*75}) rotate(${i%2?18:-18}) scale(.5)"/>`).join('')}</g>
+  <rect x="0" y="170" width="330" height="110" fill="#F5EEDF"/></g>
+  <path d="M30 40H300L270 410H60Z" fill="none" stroke="#3E0F1E" stroke-width="4"/>
+  <foreignObject x="0" y="170" width="330" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="center" style="width:330px;height:110px;color:#5B1A2E"><div class="lg" style="font-size:72px;transform:translateY(-.06em)"></div></div></foreignObject></svg>`);
+fill('[data-menu]', (w,h)=>`<div style="position:absolute;inset:0;background:#F3D35B;color:#5B1A2E;overflow:hidden">
+  <div class="serif" style="position:absolute;top:${h*.04}px;left:${w*.07}px;font-size:${w*.3}px;line-height:.9;letter-spacing:-.03em">menü</div>
+  <div class="mono" style="position:absolute;top:${h*.05}px;right:${w*.07}px;font-size:${w*.03}px;text-align:right">körte<br>Bp. VII.</div>
+  <div style="position:absolute;top:${h*.24}px;left:${w*.07}px;right:${w*.07}px;font-family:Fraunces;font-weight:700;font-size:${w*.055}px;line-height:1.75">
+   ${[['Körte classic','990 Ft'],['Körte & ginger','1 090 Ft'],['Körte & elderflower','1 090 Ft'],['Körte zero','990 Ft']].map(r=>`<div style="display:flex;justify-content:space-between;border-bottom:2px solid #5B1A2E"><span>${r[0]}</span><span class="mono" style="font-size:${w*.035}px;line-height:3.2">${r[1]}</span></div>`).join('')}</div>
+  <svg style="position:absolute;right:${w*.02}px;bottom:${h*.01}px" width="${w*.36}" height="${w*.46}" viewBox="0 0 400 520"><use href="#mascot"/></svg>
+  <div class="serif-i" style="position:absolute;bottom:${h*.06}px;left:${w*.07}px;font-size:${w*.06}px;width:50%">Pear, but make it fizz.</div></div>`);
+fill('[data-loyalty]', (w,h)=>`<div style="position:absolute;inset:0;background:#5B1A2E;border-radius:${w*.03}px;color:#F3D35B;overflow:hidden">
+  <div class="serif-i" style="position:absolute;top:${h*.08}px;left:${w*.06}px;font-size:${w*.075}px">Loyalty card</div>
+  <div class="mono" style="position:absolute;top:${h*.12}px;right:${w*.06}px;font-size:${w*.022}px;color:#F5EEDF">körte · Bp. VII.</div>
+  <div style="position:absolute;top:${h*.34}px;left:${w*.06}px;right:${w*.06}px;display:grid;grid-template-columns:repeat(5,1fr);gap:${w*.025}px">
+   ${Array.from({length:10},(_,i)=>`<div style="aspect-ratio:1;border:${w*.005}px solid #F5EEDF;border-radius:50%;display:flex;align-items:center;justify-content:center">${i<3?`<svg width="50%" height="60%" viewBox="-20 -32 40 52"><use href="#seed" fill="#F3D35B"/></svg>`:''}${i==9?`<span class="serif" style="font-size:${w*.03}px;color:#F5EEDF">free</span>`:''}</div>`).join('')}</div>
+  <div class="mono" style="position:absolute;bottom:${h*.08}px;left:${w*.06}px;font-size:${w*.022}px;color:#F5EEDF">Collect 9 seeds · the 10th körte is on us</div></div>`);
+fill('[data-bag]', (w,h)=>`<div style="position:absolute;inset:0;background:#5B1A2E;color:#F5EEDF"><svg style="position:absolute;left:${w*.15}px;top:${h*.12}px" width="${w*.7}" height="${h*.6}" viewBox="0 0 400 520"><use href="#mascot"/></svg>
+  <div class="center" style="position:absolute;left:0;right:0;bottom:${h*.06}px"><div class="lg" style="font-size:${w*.22}px"></div></div></div>`);
+fill('[data-stripebag]', (w,h)=>`<div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,#F3D35B 0 ${w*.08}px,#F5EEDF ${w*.08}px ${w*.16}px);color:#5B1A2E">
+  <div class="center" style="position:absolute;inset:0"><div class="lg" style="font-size:${w*.26}px;transform:rotate(-8deg)"></div></div>
+  <svg style="position:absolute;right:${w*.06}px;bottom:${h*.06}px" width="${w*.3}" height="${w*.38}" viewBox="0 0 400 520"><use href="#mascot"/></svg></div>`);
+document.querySelectorAll('.lg').forEach(el=>el.innerHTML=LOGO);
+</script>
+</body>
+</html>

@@ -17,6 +17,8 @@ const fs = require('fs');
   for (const el of await page.$$('section[data-out]')) {
     const name = await el.getAttribute('data-out');
     const transparent = (await el.getAttribute('data-transparent')) !== null;
+    const box = await el.boundingBox();
+    if (box.width > 1080) await page.setViewportSize({ width: Math.ceil(box.width), height: 1920 });
     if (transparent) await page.evaluate(() => (document.body.style.background = 'transparent'));
     await el.screenshot({ path: path.join(outDir, name + '.png'), omitBackground: transparent });
     if (transparent) await page.evaluate(() => (document.body.style.background = ''));

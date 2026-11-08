@@ -77,7 +77,7 @@ def main(plan_path):
         if not shots:  # first shot always starts the video
             t0 = start
         shots.append({**s, "t0": t0 - start, "t1": t1 - start})
-        print(f"  {t0 - start:5.2f}s -> {t1 - start:5.2f}s  {s['bg']:<12} {s.get('logo') or ''}")
+        print(f"  {t0 - start:5.2f}s -> {t1 - start:5.2f}s  {s.get('type', s.get('bg')):<12} {s.get('logo') or ''}")
     duration = end - start
 
     cache = {}
@@ -101,6 +101,7 @@ def main(plan_path):
     ], stdin=subprocess.PIPE)
 
     white = Image.new("RGBA", (W, H), (255, 255, 255, 255))
+    frames_dir = rel(plan["frames"])
     for f in range(int(round(duration * FPS))):
         t = f / FPS
         s = next((x for x in shots if x["t0"] <= t < x["t1"]), shots[-1])
@@ -112,7 +113,12 @@ def main(plan_path):
             scale = 1.0 + 0.04 * (local / max(s["t1"] - s["t0"], 0.01))
         else:
             scale = 1.0
-        bg = img(s["bg"])
+        if s.get("type") == "bento":
+            bg = render_bento(s, local, period, frames_dir)
+        elif s.get("type") == "screen":
+            bg = render_screen(s, local, frames_dir)
+        else:
+            bg = img(s["bg"])
         if scale != 1.0:
             w, h = int(W * scale), int(H * scale)
             bg = bg.resize((w, h), Image.BICUBIC).crop(((w - W) // 2, (h - H) // 2, (w - W) // 2 + W, (h - H) // 2 + H))
@@ -131,6 +137,93 @@ def main(plan_path):
     ff.stdin.close()
     ff.wait()
     print("wrote", out)
+
+
+# ---------------------------------------------------------------- special shots
+_tile_cache = {}
+
+
+def _cover(name, w, h, focus, frames_dir):
+    """Crop a frame image to fill w x h (like CSS object-fit: cover)."""
+    key = (name, w, h, tuple(focus))
+    if key not in _tile_cache:
+        im = Image.open(os.path.join(frames_dir, name + ".png")).convert("RGBA")
+        s = max(w / im.width, h / im.height)
+        im = im.resize((max(w, round(im.width * s)), max(h, round(im.height * s))), Image.LANCZOS)
+        x0 = round((im.width - w) * focus[0]); y0 = round((im.height - h) * focus[1])
+        im = im.crop((x0, y0, x0 + w, y0 + h))
+        mask = Image.new("L", (w, h), 0)
+        from PIL import ImageDraw
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), radius=22, fill=255)
+        im.putalpha(Image.composite(im.getchannel("A"), mask, mask))
+        _tile_cache[key] = im
+    return _tile_cache[key]
+
+
+def render_bento(s, local, period, frames_dir):
+    """Brand board that builds tile by tile. Each tile pops in at `at` beats."""
+    frame = Image.new("RGBA", (W, H), s.get("color", "#F5EEDF"))
+    for t in s["tiles"]:
+        appear = t.get("at", 0) * period
+        if local < appear:
+            continue
+        x, y, w, h = t["rect"]
+        if "fill" in t:
+            tile = Image.new("RGBA", (w, h), t["fill"])
+            from PIL import ImageDraw
+            m = Image.new("L", (w, h), 0); ImageDraw.Draw(m).rounded_rectangle((0, 0, w - 1, h - 1), radius=22, fill=255)
+            tile.putalpha(m)
+        else:
+            tile = _cover(t["src"], w, h, t.get("focus", (0.5, 0.5)), frames_dir)
+        p = ease_out((local - appear) / 0.22)
+        k = 0.86 + 0.14 * p
+        tw, th = max(1, round(w * k)), max(1, round(h * k))
+        im = tile.resize((tw, th), Image.BICUBIC) if k < 0.999 else tile
+        if p < 1:
+            a = im.getchannel("A").point(lambda v: int(v * p))
+            im = im.copy(); im.putalpha(a)
+        frame.alpha_composite(im, (x + (w - tw) // 2, y + (h - th) // 2))
+    return frame
+
+
+def _perspective_coeffs(dst, src):
+    """Coefficients for PIL PERSPECTIVE mapping output quad `dst` back to `src`."""
+    A, b = [], []
+    for (x, y), (u, v) in zip(dst, src):
+        A.append([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.append(u)
+        A.append([0, 0, 0, x, y, 1, -v * x, -v * y]); b.append(v)
+    return np.linalg.solve(np.array(A, float), np.array(b, float)).tolist()
+
+
+def render_screen(s, local, frames_dir):
+    """A monitor photo whose screen shows the logo sliding in, like a designer
+    dragging it onto an artboard; then a selection box appears around it."""
+    from PIL import ImageDraw
+    photo = _cover(s["photo"], W, H, (0.5, 0.5), frames_dir).copy()
+    sw, sh = s.get("screen_size", (1600, 1000))
+    scr = Image.new("RGBA", (sw, sh), s.get("color", "#F3D35B"))
+    logo = Image.open(os.path.join(frames_dir, s["logo_png"] + ".png")).convert("RGBA")
+    logo = logo.crop(logo.getbbox())
+    lw = round(sw * s.get("logo_width", 0.62)); logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
+    slide = s.get("slide", 0.7)
+    p = min(max(local / slide, 0), 1)
+    back = 1 + 2.2 * (p - 1) ** 3 + 1.2 * (p - 1) ** 2          # ease-out with a small overshoot
+    cx = round((sw - lw) / 2 - (1 - back) * (sw * 0.75))
+    cy = (sh - logo.height) // 2
+    scr.alpha_composite(logo, (cx, cy))
+    if local > slide + 0.1:                                      # selection box + handles
+        d = ImageDraw.Draw(scr)
+        bx = ((sw - lw) // 2 - 18, cy - 18, (sw + lw) // 2 + 18, cy + logo.height + 18)
+        d.rectangle(bx, outline="#2F7BFF", width=4)
+        for hx in (bx[0], bx[2]):
+            for hy in (bx[1], bx[3]):
+                d.rectangle((hx - 9, hy - 9, hx + 9, hy + 9), fill="white", outline="#2F7BFF", width=3)
+    quad = s["quad"]   # screen corners in the 1080x1920 frame: TL, TR, BR, BL
+    coeffs = _perspective_coeffs(quad, [(0, 0), (sw, 0), (sw, sh), (0, sh)])
+    warped = scr.transform((W, H), Image.PERSPECTIVE, coeffs, Image.BICUBIC)
+    m = Image.new("L", (W, H), 0); ImageDraw.Draw(m).polygon([tuple(q) for q in quad], fill=255)
+    photo.paste(warped, (0, 0), m)
+    return photo
 
 
 if __name__ == "__main__":

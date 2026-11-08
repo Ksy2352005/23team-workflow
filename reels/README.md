@@ -39,3 +39,18 @@ Your references sell the whole identity, so each reel should include:
 - No near-empty frames (e.g. just the logo on a plain colour)
 - Order: identity → packaging → real-world applications → 23 Team end card
 See `brands/korte/frames-v3.html` and `plan-v4.json`.
+
+## Reel formats (from the user's favourite references)
+- **Brand board** (Belle Bakery style, song `music/ref-belle.mp4`, 172 BPM, drop at 3.6 s):
+  a bento grid of tiles builds one per beat during the quiet intro (`"type": "bento"` shot),
+  then full-screen lifestyle mockups every 2 beats from the drop, then the finished board (loops).
+  Example: `brands/korte/plan-bento.json`.
+- **Desk reveal** (Luwak style, song `music/ref-luwak.mp4`, drop at about 3.3 s):
+  a monitor photo whose screen shows the logo sliding onto the artboard with a selection box
+  (`"type": "screen"` shot with the screen's 4 corners as `quad`), held until the drop,
+  then a fast montage (half-beat cuts) of lifestyle mockups, ending back on the monitor.
+
+## Brand kit for ChatGPT
+Each brand has a `<brand>-brand-kit.png` (rendered from `kit.html`): logo, colours, mascot,
+stickers, patterns and the designs for can, cup, menu, loyalty card and bags. It is uploaded to
+ChatGPT with the prompt file so the lifestyle photos carry the real designs.
