@@ -58,3 +58,12 @@ ChatGPT with the prompt file so the lifestyle photos carry the real designs.
 ## KÖRTE final (v5): `brands/korte/plan-v5.json`
 Belle song. Intro (quiet part): the brand-board flat-lay photo, cutting on every 2 beats between
 full view → logo → colours → typography → mascot. Drop: 6 lifestyle photos, 1.5 beats each. End: 23 Marketing.
+
+## End card: the locked 23 logo (`tools/end23.py`)
+Same as the 23motion films (`ANIMATION-STYLE.md`, branch `mere-exposure`), recoloured per brand:
+```
+"end23": {"fade_start": 7.11, "bg": "<brand darkest>", "logo": "<brand lightest>"}
+```
+`fade_start` is the song time where the last shot starts fading (put it on the last strong beat).
+The last shot (no `beats`) runs into the fade; the video becomes fade_start + 2.95 s long.
+KÖRTE: bg `#3E0F1E`, logo `#F5EEDF`.
