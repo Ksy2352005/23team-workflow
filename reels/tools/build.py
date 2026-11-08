@@ -89,7 +89,7 @@ def main(plan_path):
 
     out = rel(plan["out"])
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    fade = 0.35
+    fade = plan.get("fade", 0.05)   # keep tiny so the last beat is not swallowed
     ff = subprocess.Popen([
         "ffmpeg", "-v", "error", "-y",
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",

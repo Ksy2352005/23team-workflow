@@ -83,6 +83,11 @@
   },
   {
    "bg": "end",
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "end",
    "fx": "punch"
   }
  ]
