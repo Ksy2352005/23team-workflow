@@ -41,7 +41,7 @@ Your references sell the whole identity, so each reel should include:
 See `brands/korte/frames-v3.html` and `plan-v4.json`.
 
 ## Reel formats (from the user's favourite references)
-- **Brand board** (Belle Bakery style, song `music/ref-belle.mp4`, 172 BPM, drop at 3.6 s):
+- **Brand board** (Belle Bakery style, song `music/ref-belle.mp4`, 172 BPM, drop at 3.6 s, song clip ENDS at 6.90 s: after that the recording is silent and then the reel loops — never use audio past 6.90; last real beat 6.73):
   a bento grid of tiles builds one per beat during the quiet intro (`"type": "bento"` shot),
   then full-screen lifestyle mockups every 2 beats from the drop, then the finished board (loops).
   Example: `brands/korte/plan-bento.json`.
@@ -67,3 +67,8 @@ so the size never changes). Logo size/position/opacity locked from the 23motion 
 ... last shot: {"bg": "end23", "fx": "none"}
 ```
 KÖRTE: bg `#3E0F1E`, logo `#F5EEDF`.
+
+## Screen-recorded songs: check the end
+A screen recording of a reel often ends with silence and then the reel restarting (or the next video).
+Before using a song, look at the loudness at the end (`tools/beats.py`): set the plan's `end` to where the
+song really stops and put the 23 card on the last real beat before it.

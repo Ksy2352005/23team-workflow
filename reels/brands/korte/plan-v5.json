@@ -1,7 +1,7 @@
 {
  "audio": "../../music/ref-belle.mp4",
  "start": 0,
- "end": 7.28,
+ "end": 6.9,
  "frames": "frames",
  "out": "out/korte-reel-v5.mp4",
  "shots": [
@@ -73,13 +73,13 @@
   },
   {
    "bg": "p5-fourpack",
-   "beats": 2,
+   "beats": 1.5,
    "fx": "punch"
   },
   {
    "bg": "p5-cafe",
    "fx": "punch",
-   "beats": 2
+   "beats": 1.5
   },
   {
    "bg": "end23",
@@ -90,6 +90,6 @@
   "bg": "#3E0F1E",
   "logo": "#F5EEDF"
  },
- "fade_from": 7.11,
+ "fade_from": 6.73,
  "tail": 1.0
 }
