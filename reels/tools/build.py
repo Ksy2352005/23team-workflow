@@ -119,6 +119,14 @@ def main(plan_path):
             bg = render_screen(s, local, frames_dir)
         else:
             bg = img(s["bg"])
+        if "view" in s:          # zoom into part of the image: [centre x, centre y (0-1), zoom]
+            key = ("view", s.get("bg"), tuple(s["view"]))
+            if key not in cache:
+                vx, vy, z = s["view"]
+                cw, ch = W / z, H / z
+                x0 = min(max(vx * W - cw / 2, 0), W - cw); y0 = min(max(vy * H - ch / 2, 0), H - ch)
+                cache[key] = bg.crop((round(x0), round(y0), round(x0 + cw), round(y0 + ch))).resize((W, H), Image.LANCZOS)
+            bg = cache[key]
         if scale != 1.0:
             w, h = int(W * scale), int(H * scale)
             bg = bg.resize((w, h), Image.BICUBIC).crop(((w - W) // 2, (h - H) // 2, (w - W) // 2 + W, (h - H) // 2 + H))

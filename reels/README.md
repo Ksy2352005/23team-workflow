@@ -22,7 +22,7 @@ python3 tools/build.py brands/korte/plan.json
 
 ## plan.json
 Each shot has a background (`bg`), an optional logo layer (`logo`), a length in beats (`beats`, halves allowed, e.g. 0.5),
-and effects: `fx` = `punch` (zoom settles on the beat) | `drift` (slow push-in) | `none`,
+an optional `view` ([centre x, centre y, zoom], to cut between details of one image), and effects: `fx` = `punch` (zoom settles on the beat) | `drift` (slow push-in) | `none`,
 `flash: true` (white flash on the cut), `pop: true` (logo reveal). The last shot without `beats`
 runs to `end`. `start` and `end` are times in the song.
 
@@ -54,3 +54,7 @@ See `brands/korte/frames-v3.html` and `plan-v4.json`.
 Each brand has a `<brand>-brand-kit.png` (rendered from `kit.html`): logo, colours, mascot,
 stickers, patterns and the designs for can, cup, menu, loyalty card and bags. It is uploaded to
 ChatGPT with the prompt file so the lifestyle photos carry the real designs.
+
+## KÖRTE final (v5): `brands/korte/plan-v5.json`
+Belle song. Intro (quiet part): the brand-board flat-lay photo, cutting on every 2 beats between
+full view → logo → colours → typography → mascot. Drop: 6 lifestyle photos, 1.5 beats each. End: 23 Marketing.
