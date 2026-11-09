@@ -88,6 +88,8 @@ export function drawMascot(ctx, P) {
   // held props
   P_tray = P; if (P.hold) drawHeld(ctx, P.hold, hands, H, x, shY, f);
   if (P.bowtie && !P.back) { const bx2 = x + f * .04 * H, by2 = shY + .005 * H; ctx.fillStyle = '#26346f'; for (const d of [-1, 1]) { ctx.beginPath(); ctx.moveTo(bx2, by2); ctx.lineTo(bx2 + d * .06 * H, by2 - .03 * H); ctx.lineTo(bx2 + d * .06 * H, by2 + .03 * H); ctx.closePath(); ctx.fill(); } ctx.fillStyle = '#ecbd4a'; ctx.beginPath(); ctx.arc(bx2, by2, .014 * H, 0, 7); ctx.fill(); }
+  // the neck: joins the head to the body, so the head never looks detached
+  if (!sit || true) { ctx.fillStyle = bodyGrad(ctx, bx, by, .24 * H, sk, light); ctx.beginPath(); ctx.ellipse(x + (P.headDX || 0) * H * .5, yb - .56 * H * (1 - sq * .3), .1 * H, .075 * H, 0, 0, 7); ctx.fill(); }
   // head
   const hx = x + (P.headDX || 0) * H, hy = headY - (P.headUp || 0) * H;
   ctx.save(); ctx.translate(hx, hy); ctx.rotate(P.tilt || 0); ctx.translate(-hx, -hy);

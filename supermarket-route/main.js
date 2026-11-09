@@ -61,7 +61,7 @@ function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n;
 function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 
 // —— the supermarket: products, shelves, the floor plan ——
-const PCOL = { cookie: '#d9534a', juice: '#f39a2c', apple: '#e2463c', cheese: '#f2c94c', cereal: '#4caf6e', choc: '#8a55b0' };
+const PCOL = { chips: '#d9443a', chipsG: '#3fa45f', tube: '#f08a24', cookie: '#c0563a', roll: '#8a55b0', choc: '#6b3f2a', juice: '#f39a2c', apple: '#e2463c', cheese: '#f2c94c', cereal: '#4caf6e' };
 function prod(c, kind, x, y, s = 1, o = {}) {   // a product, standing on y (its bottom), centred on x; o.grey 0..1 fades it to a dull shape
   c.save(); if (o.grey > 0) { c.filter = `grayscale(${o.grey}) brightness(${1 - .35 * o.grey})`; } if (o.alpha != null) c.globalAlpha = o.alpha;
   if (o.glow) glow(c, x, y - 50 * s, 90 * s, .55 * o.glow);
@@ -70,16 +70,28 @@ function prod(c, kind, x, y, s = 1, o = {}) {   // a product, standing on y (its
     c.fillStyle = '#3f6fd6'; c.beginPath(); c.roundRect(x - w / 2, y - h * .52, w, h * .52, [0, 0, 6 * s, 6 * s]); c.fill(); c.fillStyle = '#f7f4ec'; c.beginPath(); c.moveTo(x, y - h * .44); c.quadraticCurveTo(x + 14 * s, y - h * .2, x, y - h * .12); c.quadraticCurveTo(x - 14 * s, y - h * .2, x, y - h * .44); c.fill(); }
   if (kind === 'bread') { const w = 112 * s, h = 60 * s; c.fillStyle = '#c98843'; c.beginPath(); c.roundRect(x - w / 2, y - h * .7, w, h * .7, [4 * s, 4 * s, 12 * s, 12 * s]); c.fill(); c.fillStyle = '#e3a75e'; c.beginPath(); c.ellipse(x, y - h * .62, w / 2, h * .42, 0, Math.PI, 0); c.fill(); c.fillRect(x - w / 2, y - h * .64, w, 4 * s);
     c.strokeStyle = '#a8692f'; c.lineWidth = 6 * s; c.lineCap = 'round'; for (let k = -1; k <= 1; k++) { c.beginPath(); c.moveTo(x + k * 28 * s - 10 * s, y - h * .72); c.lineTo(x + k * 28 * s + 10 * s, y - h * .94); c.stroke(); } }
+  if (kind === 'chips' || kind === 'chipsG') {   // a pillow bag of crisps, crimped top and bottom; the green one is taller and slimmer
+    const g = kind === 'chipsG', w = (g ? 66 : 80) * s, h = (g ? 108 : 96) * s, col = PCOL[kind];
+    c.fillStyle = col; c.beginPath(); c.moveTo(x - w / 2, y - h); for (let i = 0; i <= 7; i++) c.lineTo(x - w / 2 + i * w / 7, y - h - (i % 2 ? 6 * s : 0)); c.quadraticCurveTo(x + w / 2 + 8 * s, y - h / 2, x + w / 2, y); for (let i = 0; i <= 7; i++) c.lineTo(x + w / 2 - i * w / 7, y + (i % 2 ? 5 * s : 0) - 5 * s); c.quadraticCurveTo(x - w / 2 - 8 * s, y - h / 2, x - w / 2, y - h); c.fill();
+    c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(x - w / 2, y - h + 4 * s, w, 8 * s); c.fillRect(x - w / 2, y - 16 * s, w, 8 * s); c.fillStyle = 'rgba(255,255,255,.2)'; c.fillRect(x - w / 2 + 6 * s, y - h + 16 * s, 10 * s, h - 34 * s);
+    ell(c, x, y - h * .5, w * .32, h * .22, CREAM); for (const [dx, dy, r] of [[-8, -4, 11], [8, 2, 12], [-1, 9, 9]]) ell(c, x + dx * s, y - h * .5 + dy * s, r * s, r * .7 * s, g ? '#e9c45a' : '#f2c94c', g ? .6 : -.3); }
+  if (kind === 'tube') {   // a tall can of stacked crisps with a lid
+    const w = 52 * s, h = 106 * s; c.fillStyle = PCOL.tube; c.fillRect(x - w / 2, y - h, w, h); ell(c, x, y, w / 2, 7 * s, '#c96d16'); c.fillStyle = 'rgba(255,255,255,.22)'; c.fillRect(x - w / 2 + 6 * s, y - h, 9 * s, h);
+    c.fillStyle = '#2b3a80'; c.fillRect(x - w / 2, y - h - 6 * s, w, 14 * s); ell(c, x, y - h - 6 * s, w / 2, 7 * s, '#4a5cae'); c.fillStyle = CREAM; c.fillRect(x - w / 2, y - h * .62, w, h * .3); for (let k = 0; k < 3; k++) ell(c, x, y - h * .54 + k * 9 * s, 17 * s, 6 * s, '#f2c94c'); }
+  if (kind === 'roll') {   // a wrapped roll of cookies lying down, twisted ends
+    const w = 104 * s, h = 46 * s, cy = y - h / 2; c.fillStyle = PCOL.roll; c.beginPath(); c.roundRect(x - w / 2 + 12 * s, y - h, w - 24 * s, h, h / 2); c.fill();
+    for (const d of [-1, 1]) { c.beginPath(); c.moveTo(x + d * (w / 2 - 14 * s), cy - h * .3); c.lineTo(x + d * w / 2, cy - h * .5); c.lineTo(x + d * w / 2, cy + h * .5); c.lineTo(x + d * (w / 2 - 14 * s), cy + h * .3); c.closePath(); c.fill(); }
+    c.save(); c.beginPath(); c.roundRect(x - 26 * s, y - h + 6 * s, 52 * s, h - 12 * s, 8 * s); c.clip(); c.fillStyle = CREAM; c.fill(); for (let k = -1; k <= 1; k++) ell(c, x + k * 16 * s, cy, 7 * s, 16 * s, '#c88a4a'); c.restore(); c.fillStyle = 'rgba(255,255,255,.2)'; c.fillRect(x - w / 2 + 16 * s, y - h + 6 * s, w - 32 * s, 6 * s); }
   if (kind === 'cookie') { const w = 78 * s, h = 94 * s; c.fillStyle = PCOL.cookie; c.beginPath(); c.roundRect(x - w / 2, y - h, w, h, 8 * s); c.fill(); c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(x - w / 2, y - h, w * .22, h); ell(c, x, y - h * .5, 25 * s, 25 * s, '#c88a4a'); for (const [dx, dy] of [[-9, -8], [8, -4], [-2, 9], [11, 10]]) ell(c, x + dx * s, y - h * .5 + dy * s, 4 * s, 4 * s, '#6b3f1e'); }
   if (kind === 'juice') { const w = 50 * s, h = 98 * s; c.fillStyle = PCOL.juice; c.beginPath(); c.roundRect(x - w / 2, y - h * .78, w, h * .78, 10 * s); c.fill(); c.fillRect(x - w * .22, y - h * .92, w * .44, h * .2); c.fillStyle = '#4caf6e'; c.beginPath(); c.roundRect(x - w * .28, y - h, w * .56, h * .12, 3 * s); c.fill();
     c.fillStyle = CREAM; c.fillRect(x - w / 2, y - h * .58, w, h * .28); ell(c, x, y - h * .44, 10 * s, 10 * s, PCOL.juice); }
   if (kind === 'apple') { const r = 34 * s; ell(c, x - r * .4, y - r, r * .75, r * .9, PCOL.apple); ell(c, x + r * .4, y - r, r * .75, r * .9, PCOL.apple); ell(c, x - r * .35, y - r * 1.25, r * .2, r * .3, 'rgba(255,255,255,.35)'); c.strokeStyle = '#6b3f1e'; c.lineWidth = 5 * s; c.beginPath(); c.moveTo(x, y - r * 1.7); c.lineTo(x + 3 * s, y - r * 2.15); c.stroke(); ell(c, x + 14 * s, y - r * 2.1, 13 * s, 6 * s, '#4caf6e', -.5); }
   if (kind === 'cheese') { const w = 96 * s, h = 64 * s; c.fillStyle = PCOL.cheese; c.beginPath(); c.moveTo(x - w / 2, y); c.lineTo(x + w / 2, y); c.lineTo(x + w / 2, y - h * .55); c.lineTo(x - w / 2, y - h); c.closePath(); c.fill(); c.fillStyle = '#ffe08a'; c.beginPath(); c.moveTo(x - w / 2, y - h); c.lineTo(x + w / 2, y - h * .55); c.lineTo(x + w / 2, y - h * .45); c.lineTo(x - w / 2, y - h * .9); c.fill(); for (const [dx, dy, r] of [[-22, -18, 8], [12, -14, 6], [28, -30, 5], [-4, -36, 5]]) ell(c, x + dx * s, y + dy * s, r * s, r * s, '#d9a832'); }
   if (kind === 'cereal') { const w = 72 * s, h = 104 * s; c.fillStyle = PCOL.cereal; c.beginPath(); c.roundRect(x - w / 2, y - h, w, h, 8 * s); c.fill(); c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(x - w / 2, y - h, w * .22, h); ell(c, x, y - h * .36, 24 * s, 12 * s, CREAM); for (const dx of [-12, 0, 12]) ell(c, x + dx * s, y - h * .45, 7 * s, 7 * s, '#f2c94c'); }
-  if (kind === 'choc') { const w = 96 * s, h = 46 * s; c.fillStyle = PCOL.choc; c.beginPath(); c.roundRect(x - w / 2, y - h, w, h, 6 * s); c.fill(); c.fillStyle = '#c9ccd6'; c.fillRect(x + w / 2 - 22 * s, y - h, 22 * s, h); c.fillStyle = CREAM; c.fillRect(x - w / 2 + 12 * s, y - h * .62, w * .42, h * .24); }
+  if (kind === 'choc') { const w = 100 * s, h = 44 * s; c.fillStyle = PCOL.choc; c.beginPath(); c.roundRect(x - w / 2, y - h, w, h, 6 * s); c.fill(); c.fillStyle = GOLD; c.fillRect(x + w / 2 - 24 * s, y - h, 24 * s, h); c.fillRect(x - w / 2, y - h, 10 * s, h); c.fillStyle = CREAM; c.fillRect(x - w / 2 + 18 * s, y - h * .62, w * .42, h * .24); }
   c.restore();
 }
-const KINDS = ['cookie', 'juice', 'apple', 'cheese', 'cereal', 'choc'];
+const KINDS = ['chips', 'cookie', 'tube', 'roll', 'chipsG', 'choc'];
 function basket(c, x, y, s = 1) {   // a hand basket hanging from (x, y): the handle's top
   c.strokeStyle = '#b8482f'; c.lineWidth = 7 * s; c.beginPath(); c.arc(x, y + 40 * s, 36 * s, Math.PI, 0); c.stroke();
   c.fillStyle = '#d9583c'; c.beginPath(); c.moveTo(x - 58 * s, y + 40 * s); c.lineTo(x + 58 * s, y + 40 * s); c.lineTo(x + 46 * s, y + 104 * s); c.lineTo(x - 46 * s, y + 104 * s); c.closePath(); c.fill(); c.fillStyle = 'rgba(0,0,0,.15)'; for (let k = 0; k < 3; k++) c.fillRect(x - 50 * s, y + 56 * s + k * 16 * s, 100 * s, 5 * s);
@@ -141,10 +153,10 @@ const SHOT = {
     if (t > H.enter - .75) { const Hh = Hs(1.7), reachTo = reachM > 0 ? [lerp(sx + 60, 400, reachM), lerp(1700 - Hh * .42, 1400, reachM)] : reachB > 0 ? [lerp(sx + 60, 470, reachB), lerp(1700 - Hh * .42, 1380, reachB)] : undefined;
       c.save(); c.beginPath(); c.rect(56, 0, 2000, 1920); c.clip();   // she comes out of the doorway, not through the wall
       const bx = outU > 0 ? sx + 70 : sx - 70, by = 1700 - Hh * .5; mascot(c, SHOPPER({ s: 1.7, x: sx, y: 1700, f: face, walk: walking ? 1 : 0, phi: sx / 30, blink: blinkAt(t, 2), look: face > 0 ? .3 : -.3, handL: outU > 0 ? undefined : [bx + 4, by + 4], handR: outU > 0 ? [bx - 4, by + 4] : reachTo }));
-      basket(c, bx, by, .95); if (tookM) prod(c, 'milk', bx - 16, by + 78, .65); if (tookB) prod(c, 'bread', bx + 18, by + 76, .52);
+      basket(c, bx, by, .95); c.save(); c.beginPath(); c.moveTo(bx - 55, by + 30); c.lineTo(bx + 55, by + 30); c.lineTo(bx + 44, by + 99); c.lineTo(bx - 44, by + 99); c.closePath(); c.clip(); if (tookM) prod(c, 'milk', bx - 16, by + 97, .45); if (tookB) prod(c, 'bread', bx + 18, by + 97, .42); c.restore(); c.fillStyle = '#d9583c'; c.fillRect(bx - 55, by + 36, 110, 8);
       c.restore(); }
     // the item flying from the stand into the basket
-    for (const [at, kind, fx] of [[H.milk, 'milk', 425], [H.bread, 'bread', 490]]) { const u = seg(t, at - .05, at + .3); if (u > 0 && u < 1) { const bx = 232 - 70, by = 1700 - Hs(1.7) * .5 + 76, x = lerp(fx, bx, ss(u)), y = lerp(1440, by, ss(u)) + 40 * Math.sin(u * Math.PI); prod(c, kind, x, y, lerp(1.1, .6, u)); } }
+    for (const [at, kind, fx] of [[H.milk, 'milk', 425], [H.bread, 'bread', 490]]) { const u = seg(t, at - .05, at + .3); if (u > 0 && u < 1) { const bx = 232 - 70 + (kind === 'milk' ? -16 : 18), by = 1700 - Hs(1.7) * .5 + 97, x = lerp(fx, bx, ss(u)), y = lerp(1440, by, ss(u)) + 40 * Math.sin(u * Math.PI); prod(c, kind, x, y, lerp(1.1, kind === 'milk' ? .45 : .42, u)); } }
     // the owner at the back, watching: he notices
     const ok = E(t, H.owner, .35, .45); if (ok > 0) scaled(c, 890, 1700, Math.min(1, ok), () => owner(c, t, 890, 1700, 1.85, { f: -.35, look: t > H.rest && t < H.never ? .2 : -.4, smile: lerp(.9, .2, dull), sad: .4 * dull }));
     { const k = E(t, H.notice, .3, .5) * (1 - ss(seg(t, H.leave + .6, H.leave + 1))); if (k > 0) scaled(c, 700, 1130, Math.min(1.12, k), () => { ell(c, 705, 1139, 66, 66, 'rgba(0,0,20,.3)'); ell(c, 700, 1130, 66, 66, CREAM); eyeIcon(c, 700, 1130, .55, 1); ell(c, 700, 1130, 11, 11, GOLD); }); }
@@ -165,7 +177,7 @@ const SHOT = {
     if (t > H.there) spark(c, 862, 980, t, H.there, 6, 110, 14);
     // the long way: the line draws along the shopper's walk, through every row, to the back
     if (walkU > 0) { pDraw(c, LONG, 0, ss(walkU), GOLD, 14); token(c, at[0], at[1], 30, 'blue2', 1); }
-    const fk = E(t, H.found, .3, .5); if (fk > 0) { check(c, 872, 1150, 46, fk * 1.4); spark(c, 872, 1030, t, H.found, 7, 140, 16); }
+    const fk = E(t, H.found, .3, .5); if (fk > 0) { check(c, 862, 868, 44, fk * 1.4); spark(c, 862, 900, t, H.found, 7, 140, 16); }
     c.restore();
   },
   aisle(c, t) {   // on the way: she pushes her cart along an aisle (the shelves glide past); products she never planned to buy hop into the cart, one by one
@@ -176,13 +188,13 @@ const SHOT = {
     // her and her cart
     const Hh = Hs(1.7), hx = 400, cx0 = 620; mascot(c, SHOPPER({ x: hx, y: 1700, s: 1.7, f: .4, walk: 1, phi: off / 30, smile: picked[2] ? 1 : .85, blink: blinkAt(t, 2), look: .4, handR: [cx0 - 6, 1528], handL: [cx0 - 14, 1540] }));
     c.strokeStyle = '#c9ccd6'; c.lineWidth = 9; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(cx0 - 20, 1520); c.lineTo(cx0 + 20, 1540); c.lineTo(cx0 + 40, 1650); c.lineTo(cx0 + 290, 1650); c.stroke();
-    const inside = [['milk', -60], ['bread', 10]].concat(H.meet.map((m, k) => [['cookie', 'juice', 'cheese'][k], 70 + k * 60, m]));
-    inside.forEach(([kind, dx, m]) => { if (m != null && t < m) return; prod(c, kind, cx0 + 140 + dx * .9, 1600 - (m != null ? 10 : 0), .62); });
+    const inside = [['milk', -60], ['bread', 10]].concat(H.meet.map((m, k) => [['chips', 'cookie', 'tube'][k], 70 + k * 60, m]));
+    const SLOT = [85, 142, 192, 234, 268]; c.save(); c.beginPath(); c.moveTo(cx0 + 30, 1500); c.lineTo(cx0 + 300, 1500); c.lineTo(cx0 + 300, 1530); c.lineTo(cx0 + 280, 1630); c.lineTo(cx0 + 50, 1630); c.lineTo(cx0 + 30, 1530); c.closePath(); c.clip(); inside.forEach(([kind, dx, m], i) => { if (m != null && t < m) return; prod(c, kind, cx0 + SLOT[i], 1624, kind === 'bread' ? .42 : .5); }); c.restore();
     c.fillStyle = 'rgba(201,204,214,.55)'; c.beginPath(); c.moveTo(cx0 + 30, 1530); c.lineTo(cx0 + 300, 1530); c.lineTo(cx0 + 280, 1630); c.lineTo(cx0 + 50, 1630); c.closePath(); c.fill(); c.strokeStyle = '#e6e8ef'; c.lineWidth = 6; c.stroke(); for (let k = 1; k < 5; k++) { c.beginPath(); c.moveTo(cx0 + 30 + k * 54, 1530); c.lineTo(cx0 + 50 + k * 46, 1630); c.stroke(); }
     for (const wx of [cx0 + 70, cx0 + 260]) { ell(c, wx, 1684, 16, 16, '#2a2f48'); ell(c, wx, 1684, 6, 6, '#9aa0b8'); }
     // the unplanned ones: one lights up on the shelf ahead, hops into the cart, and a gold + pops over the cart
-    H.meet.forEach((m, k) => { const kind = ['cookie', 'juice', 'cheese'][k], sx = 860, sy = tiers[k % 2], ex = cx0 + 140 + (70 + k * 60) * .9, ey = 1590, u = seg(t, m - .5, m);
-      if (u > 0 && u < 1) { const e = ss(u), x = lerp(sx, ex, e), y = lerp(sy, ey, e) - 180 * Math.sin(e * Math.PI); prod(c, kind, x, y, lerp(.95, .62, e), { glow: 1 - e }); }
+    H.meet.forEach((m, k) => { const kind = ['chips', 'cookie', 'tube'][k], sx = 860, sy = tiers[k % 2], ex = cx0 + [192, 234, 268][k], ey = 1624, u = seg(t, m - .5, m);
+      if (u > 0 && u < 1) { const e = ss(u), x = lerp(sx, ex, e), y = lerp(sy, ey, e) - 180 * Math.sin(e * Math.PI); prod(c, kind, x, y, lerp(.95, .5, e), { glow: 1 - e }); }
       else if (t > m - 1.1 && u <= 0) prod(c, kind, sx, sy, .95, { glow: ss(seg(t, m - 1.1, m - .6)) });
       const pk = E(t, m, .3, .5) * (1 - ss(seg(t, m + 1.0, m + 1.2))); if (pk > 0) scaled(c, ex, 1440, Math.min(1.12, pk), () => { ell(c, ex, 1440, 40, 40, GOLD); text(c, '+', ex, 1444, 60, NAVY); }); });
     // not on her list: the list card, milk and bread ticked; the extras are not on it
@@ -190,7 +202,7 @@ const SHOT = {
       prod(c, 'milk', 830, 1010, .62); check(c, 925, 975, 26, 1); prod(c, 'bread', 830, 1110, .5); check(c, 925, 1085, 26, 1); c.fillStyle = 'rgba(28,36,80,.2)'; c.fillRect(800, 1140, 154, 8); c.fillRect(800, 1160, 110, 8); }); c.restore();
   },
   sales(c, t) {   // after the change: the sales of the other products climb; milk and bread stay the same
-    const H = HIT; bg(c); const base = 1600, xs = [200, 370, 540, 710, 880], kinds = ['milk', 'cookie', 'juice', 'apple', 'cheese'], h0 = [300, 110, 90, 120, 100], h1 = [300, 470, 420, 520, 450];
+    const H = HIT; bg(c); const base = 1600, xs = [200, 370, 540, 710, 880], kinds = ['milk', 'chips', 'cookie', 'tube', 'roll'], h0 = [300, 110, 90, 120, 100], h1 = [300, 470, 420, 520, 450];
     // the change, as a little plan icon: the new long way; it turns into the up arrow
     const mapK = E(t, 27.45, .35, .5) * (1 - ss(seg(t, H.up - .3, H.up))), upK = E(t, H.up - .1, .35, .45);
     if (mapK > 0) scaled(c, 540, 940, 1.5 * Math.min(1.1, mapK), () => { c.fillStyle = 'rgba(246,239,220,.14)'; c.beginPath(); c.roundRect(430, 860, 220, 160, 22); c.fill(); for (let k = 0; k < 4; k++) { c.fillStyle = '#5a6aa8'; c.fillRect(470 + k * 40, 885, 16, 110); } c.strokeStyle = GOLD; c.lineWidth = 7; c.lineJoin = 'round'; c.lineCap = 'round'; c.beginPath(); c.moveTo(450, 1010); [[450, 875], [490, 875], [490, 1005], [530, 1005], [530, 875], [570, 875], [570, 1005], [610, 1005], [610, 875], [630, 875]].forEach(p => c.lineTo(...p)); c.stroke(); });
@@ -250,7 +262,7 @@ const SHOT = {
     // the gold way along the floor
     const way = ss(seg(t, H.chances - .3, H.chances + .7)); if (way > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 10; c.lineCap = 'round'; c.setLineDash([30, 22]); c.lineDashOffset = -t * 120; c.beginPath(); c.moveTo(40, 1780); c.lineTo(40 + 1000 * way, 1780); c.stroke(); c.restore(); }
     spots.forEach(([sx], k) => { const u = seg(t, 51.9 + k * .35, 53.5 + k * .35), x = lerp(-120 - k * 40, sx, ss(u)), lk = t > looks[k], skin = ['blue2', 'blue1', 'blue3'][k], fem = ['pony', null, 'bun'][k];
-      if (u <= 0) return; mascot(c, { id: 'f' + k, skin, fem: fem || undefined, tache: k === 1, s: 1.25, x, y: 1700, f: u < 1 ? .5 : .15, walk: u < 1 ? 1 : 0, phi: x / 28, smile: lk ? 1 : .85, look: lk ? .1 : .4, headUp: lk ? .35 : 0, blink: blinkAt(t, 4 + k) });
+      if (u <= 0) return; mascot(c, { id: 'f' + k, skin, fem: fem || undefined, tache: k === 1, s: 1.25, x, y: 1700, f: u < 1 ? .5 : .15, walk: u < 1 ? 1 : 0, phi: x / 28, smile: lk ? 1 : .85, look: lk ? .1 : .4, blink: blinkAt(t, 4 + k) });
       const ek = E(t, looks[k], .3, .5) * (1 - ss(seg(t, H.existing + .6, H.existing + 1))); if (ek > 0) { const ex = x + 112, ey = 1700 - Hs(1.25) * 1.22; scaled(c, ex, ey, Math.min(1.12, ek), () => { ell(c, ex + 3, ey + 6, 40, 40, 'rgba(0,0,20,.3)'); ell(c, ex, ey, 40, 40, CREAM); eyeIcon(c, ex, ey, .33, 1); ell(c, ex, ey, 6, 6, GOLD); }); } });
     if (t > H.end) { glow(c, 540, 1260, 460, .3 * ss(seg(t, H.end, H.end + .5))); spark(c, 540, 1260, t, H.end, 8, 380, 18); }
   },
