@@ -75,6 +75,10 @@ def main(plan_path):
             t1 = grid[k] if k < len(grid) else end
         else:
             t1 = end
+        if "at" in s:   # exact song time for this cut (overrides the beat grid)
+            t0 = s["at"]
+            if shots:
+                shots[-1]["t1"] = t0 - start
         if not shots:  # first shot always starts the video
             t0 = start
         shots.append({**s, "t0": t0 - start, "t1": t1 - start})
@@ -101,6 +105,16 @@ def main(plan_path):
     audio_in = ["-ss", str(start), "-t", str(song_len), "-i", rel(plan["audio"])]
     amap = ["-map", "0:v", "-map", "1:a",
             "-af", f"afade=t=out:st={fade_from}:d={max(song_len - fade_from, 0.01)},apad"]
+    T = plan.get("echo_tail")   # {"from": song time, "fade": s, "delays_ms": [...], "decays": [...]}
+    if T:
+        x0 = T["from"] - start
+        dl = "|".join(str(d) for d in T["delays_ms"]); dc = "|".join(str(d) for d in T["decays"])
+        afilter = (f"[1:a]aresample=48000,asplit=2[d][w];"
+                   f"[d]afade=t=out:st={x0}:d=0.06,apad[dry];"
+                   f"[w]apad=pad_dur={duration},aecho=0.9:0.9:{dl}:{dc},"
+                   f"afade=t=in:st={x0}:d=0.06,afade=t=out:st={x0 + 0.12}:d={duration - x0 - 0.15}[wet];"
+                   f"[dry][wet]amix=inputs=2:normalize=0:duration=longest,atrim=0:{duration}[a]")
+        amap = ["-filter_complex", afilter, "-map", "0:v", "-map", "[a]"]
     ff = subprocess.Popen([
         "ffmpeg", "-v", "error", "-y",
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",

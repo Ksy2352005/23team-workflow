@@ -1,7 +1,7 @@
 {
  "audio": "../../music/ref-belle.mp4",
  "start": 0,
- "end": 6.73,
+ "end": 6.88,
  "frames": "frames",
  "out": "out/korte-reel-v5.mp4",
  "shots": [
@@ -83,14 +83,28 @@
   },
   {
    "bg": "end23",
-   "fx": "none"
+   "fx": "none",
+   "at": 6.68
   }
  ],
  "end23": {
   "bg": "#3E0F1E",
   "logo": "#F5EEDF"
  },
- "fade_from": 6.5,
- "tail": 1.0,
- "audio_end": 6.66
+ "tail": 0.8,
+ "echo_tail": {
+  "from": 6.84,
+  "delays_ms": [
+   174,
+   348,
+   522,
+   696
+  ],
+  "decays": [
+   0.55,
+   0.4,
+   0.28,
+   0.18
+  ]
+ }
 }
