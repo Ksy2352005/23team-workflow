@@ -96,7 +96,7 @@ def main(plan_path):
     out = rel(plan["out"])
     os.makedirs(os.path.dirname(out), exist_ok=True)
     fade = plan.get("fade", 0.05)   # keep tiny so the last beat is not swallowed
-    song_len = end - start
+    song_len = plan.get("audio_end", end) - start   # audio_end: stop the song before a hit we don't want
     fade_from = plan.get("fade_from", end - fade) - start   # song fades out from here (song time)
     audio_in = ["-ss", str(start), "-t", str(song_len), "-i", rel(plan["audio"])]
     amap = ["-map", "0:v", "-map", "1:a",

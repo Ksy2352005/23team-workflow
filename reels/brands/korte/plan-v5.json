@@ -1,7 +1,7 @@
 {
  "audio": "../../music/ref-belle.mp4",
  "start": 0,
- "end": 6.9,
+ "end": 6.73,
  "frames": "frames",
  "out": "out/korte-reel-v5.mp4",
  "shots": [
@@ -90,6 +90,7 @@
   "bg": "#3E0F1E",
   "logo": "#F5EEDF"
  },
- "fade_from": 6.73,
- "tail": 1.0
+ "fade_from": 6.5,
+ "tail": 1.0,
+ "audio_end": 6.66
 }
