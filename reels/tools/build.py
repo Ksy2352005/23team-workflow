@@ -237,6 +237,7 @@ def render_screen(s, local, frames_dir):
     logo = logo.crop(logo.getbbox())
     lw = round(sw * s.get("logo_width", 0.62)); logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
     slide = s.get("slide", 0.7)
+    local = local - s.get("delay", 0)   # wait before the logo starts sliding in
     p = min(max(local / slide, 0), 1)
     back = 1 + 2.2 * (p - 1) ** 3 + 1.2 * (p - 1) ** 2          # ease-out with a small overshoot
     cx = round((sw - lw) / 2 - (1 - back) * (sw * 0.75))

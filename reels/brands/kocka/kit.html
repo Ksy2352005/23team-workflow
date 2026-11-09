@@ -153,6 +153,13 @@
   <div class="abs" style="left:30px;top:1230px;width:230px;height:260px" data-lid></div><div class="abs" style="left:280px;top:1230px;width:230px;height:260px" data-lid></div><div class="abs" style="left:530px;top:1230px;width:230px;height:260px" data-lid></div><div class="abs" style="left:780px;top:1230px;width:230px;height:260px" data-lid></div>
 </section>
 
+<section data-out="logo-gold" data-transparent style="width:1200px;height:700px;background:transparent">
+  <div class="abs" style="inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+    <svg width="170" height="170" viewBox="-50 -50 100 100"><use href="#mono"/></svg>
+    <div class="caps foil" style="font-size:150px;letter-spacing:.24em;padding-left:.24em;margin-top:30px;line-height:1">KOCKA</div>
+    <div class="it foil" style="font-size:64px;margin-top:20px">Signature brownies</div></div>
+</section>
+
 <script>
 const fill=(sel,fn)=>document.querySelectorAll(sel).forEach(el=>{if(!el.style.position)el.style.position='absolute';el.innerHTML=fn(el.offsetWidth,el.offsetHeight,el);});
 const MONO=s=>`<svg width="${s}" height="${s}" viewBox="-50 -50 100 100"><use href="#mono"/></svg>`;

@@ -72,3 +72,8 @@ KÖRTE: bg `#3E0F1E`, logo `#F5EEDF`.
 A screen recording of a reel often ends with silence and then the reel restarting (or the next video).
 Before using a song, look at the loudness at the end (`tools/beats.py`): set the plan's `end` to where the
 song really stops and put the 23 card on the last real beat before it.
+
+## KOCKA (Luwak format): `brands/kocka/plan.json`
+Luwak song: drop 3.42 s, final hit 6.24 s, song ends 6.33 s. Monitor shot: `"type": "screen"` with the gold logo
+(`logo-gold`) sliding in after a 0.5 s `delay`, then a selection box; 9 photo cuts placed with `"at"` on the
+song's hits; 23 card on the final hit, song fades out under it.
