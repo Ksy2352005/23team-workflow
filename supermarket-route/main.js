@@ -144,7 +144,7 @@ const SHOT = {
       basket(c, bx, by, .95); if (tookM) prod(c, 'milk', bx - 16, by + 78, .65); if (tookB) prod(c, 'bread', bx + 18, by + 76, .52);
       c.restore(); }
     // the item flying from the stand into the basket
-    for (const [at, kind, fx] of [[H.milk, 'milk', 425], [H.bread, 'bread', 490]]) { const u = seg(t, at - .05, at + .3); if (u > 0 && u < 1) { const bx = 232 - 70, by = 1700 - Hs(1.7) * .5 + 76, x = lerp(fx, bx, ss(u)), y = lerp(1440, by, ss(u)) - 120 * Math.sin(u * Math.PI); prod(c, kind, x, y, lerp(1.1, .6, u)); } }
+    for (const [at, kind, fx] of [[H.milk, 'milk', 425], [H.bread, 'bread', 490]]) { const u = seg(t, at - .05, at + .3); if (u > 0 && u < 1) { const bx = 232 - 70, by = 1700 - Hs(1.7) * .5 + 76, x = lerp(fx, bx, ss(u)), y = lerp(1440, by, ss(u)) + 40 * Math.sin(u * Math.PI); prod(c, kind, x, y, lerp(1.1, .6, u)); } }
     // the owner at the back, watching: he notices
     const ok = E(t, H.owner, .35, .45); if (ok > 0) scaled(c, 890, 1700, Math.min(1, ok), () => owner(c, t, 890, 1700, 1.85, { f: -.35, look: t > H.rest && t < H.never ? .2 : -.4, smile: lerp(.9, .2, dull), sad: .4 * dull }));
     { const k = E(t, H.notice, .3, .5) * (1 - ss(seg(t, H.leave + .6, H.leave + 1))); if (k > 0) scaled(c, 700, 1130, Math.min(1.12, k), () => { ell(c, 705, 1139, 66, 66, 'rgba(0,0,20,.3)'); ell(c, 700, 1130, 66, 66, CREAM); eyeIcon(c, 700, 1130, .55, 1); ell(c, 700, 1130, 11, 11, GOLD); }); }
