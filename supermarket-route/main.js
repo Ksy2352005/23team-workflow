@@ -177,7 +177,7 @@ const SHOT = {
     if (t > H.there) spark(c, 862, 980, t, H.there, 6, 110, 14);
     // the long way: the line draws along the shopper's walk, through every row, to the back
     if (walkU > 0) { pDraw(c, LONG, 0, ss(walkU), GOLD, 14); token(c, at[0], at[1], 30, 'blue2', 1); }
-    const fk = E(t, H.found, .3, .5); if (fk > 0) { check(c, 862, 868, 44, fk * 1.4); spark(c, 862, 900, t, H.found, 7, 140, 16); }
+    const fk = E(t, H.found, .3, .5); if (fk > 0) { scaled(c, 862, 868, Math.min(1.12, fk), () => { ell(c, 866, 876, 62, 62, 'rgba(0,0,20,.35)'); ell(c, 862, 868, 62, 62, NAVY); c.strokeStyle = CREAM; c.lineWidth = 5; c.beginPath(); c.arc(862, 868, 62, 0, 7); c.stroke(); }); check(c, 862, 868, 40, fk * 1.4); spark(c, 862, 900, t, H.found, 7, 140, 16); }
     c.restore();
   },
   aisle(c, t) {   // on the way: she pushes her cart along an aisle (the shelves glide past); products she never planned to buy hop into the cart, one by one
