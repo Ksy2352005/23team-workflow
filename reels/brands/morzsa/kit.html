@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MORZSA brand kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--choc:#3A1F14;--blue:#A9CBEA;--cream:#F6EEDF;--bisc:#D9984C;--cocoa:#22120B}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;width:1600px}
+  section{position:relative;overflow:hidden}
+  .abs{position:absolute}
+  .center{display:flex;align-items:center;justify-content:center}
+  .fat{font-family:'Bagel Fat One',sans-serif;font-weight:400;line-height:.9}
+  .mono{font-family:'DM Mono',monospace;font-weight:500;letter-spacing:.08em;text-transform:uppercase;line-height:1.4}
+  .label{font-family:'DM Mono';font-weight:500;font-size:20px;letter-spacing:.12em;color:var(--choc);text-transform:uppercase}
+  /* logo: <div class="lg"> filled by script; the o is a bitten cookie */
+  .lg{font-family:'Bagel Fat One',sans-serif;line-height:1;display:inline-flex;align-items:baseline;white-space:nowrap;letter-spacing:-.02em}
+  .lg .ck{display:inline-block;width:.58em;height:.58em;margin:0 .02em;position:relative;top:.02em}
+  svg{overflow:visible}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <!-- bitten cookie (viewBox -50 -50 100 100) -->
+  <mask id="bite"><rect x="-60" y="-60" width="120" height="120" fill="#fff"/>
+    <circle cx="40" cy="-34" r="17" fill="#000"/><circle cx="50" cy="-12" r="13" fill="#000"/><circle cx="24" cy="-48" r="12" fill="#000"/></mask>
+  <g id="cookie"><g mask="url(#bite)"><circle r="48" fill="#D9984C"/><circle r="48" fill="none" stroke="#B8772F" stroke-width="5"/>
+    <path d="M-22 -24l9 -3 4 8 -7 6 -9 -3z M8 -6l10 -2 3 9 -8 5 -7 -5z M-30 10l8 -1 3 8 -7 4 -6 -4z M-6 22l9 -2 3 8 -8 5 -6 -4z M18 24l7 -1 2 7 -6 3 -5 -3z M-8 -40l7 0 2 6 -6 3 -5 -3z" fill="#3A1F14"/></g></g>
+  <g id="cookie-mono"><g mask="url(#bite)"><circle r="48" fill="currentColor"/>
+    <path d="M-22 -24l9 -3 4 8 -7 6 -9 -3z M8 -6l10 -2 3 9 -8 5 -7 -5z M-30 10l8 -1 3 8 -7 4 -6 -4z M-6 22l9 -2 3 8 -8 5 -6 -4z M18 24l7 -1 2 7 -6 3 -5 -3z M-8 -40l7 0 2 6 -6 3 -5 -3z" fill="var(--chip,#3A1F14)"/></g></g>
+  <!-- Morzsi the dachshund with a cookie (viewBox 0 0 640 360) -->
+  <g id="morzsi">
+    <g stroke="#F6EEDF" stroke-width="40" stroke-linejoin="round" stroke-linecap="round" fill="#F6EEDF">
+      <path d="M150 160C150 125 175 112 210 112H430C470 112 495 130 495 165V215C495 245 470 258 440 258H200C170 258 150 245 150 215Z"/>
+      <path d="M150 170C120 160 92 130 84 100" fill="none"/>
+      <path d="M190 250V300M245 250V300M405 250V300M455 250V300" fill="none"/>
+      <path d="M440 118C440 70 470 50 510 50C545 50 565 70 575 95L615 112C632 120 630 145 612 150L560 160C540 185 500 190 470 170Z"/>
+      <circle cx="600" cy="185" r="40"/>
+    </g>
+    <g stroke="#3A1F14" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M150 170C120 160 92 130 84 100" fill="none"/>
+      <path d="M190 250V300M245 250V300M405 250V300M455 250V300" fill="none"/>
+      <path d="M176 300h30M231 300h30M391 300h30M441 300h30" fill="none"/>
+      <path d="M150 160C150 125 175 112 210 112H430C470 112 495 130 495 165V215C495 245 470 258 440 258H200C170 258 150 245 150 215Z" fill="#F6EEDF"/>
+      <path d="M440 118C440 70 470 50 510 50C545 50 565 70 575 95L615 112C632 120 630 145 612 150L560 160C540 185 500 190 470 170Z" fill="#F6EEDF"/>
+      <path d="M498 66C470 80 462 120 476 160C490 150 500 120 498 66Z" fill="#A9CBEA"/>
+      <path d="M250 150C290 140 340 140 380 152" fill="none" stroke-width="7" opacity=".5"/>
+    </g>
+    <circle cx="540" cy="92" r="9" fill="#3A1F14"/><circle cx="543" cy="89" r="3" fill="#F6EEDF"/>
+    <ellipse cx="617" cy="122" rx="12" ry="9" fill="#3A1F14"/>
+    <use href="#cookie" transform="translate(600 188) scale(.55) rotate(30)"/>
+    <path d="M565 150C575 158 586 160 596 156" fill="none" stroke="#3A1F14" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</defs></svg>
+
+<!-- ================= KIT SHEET ================= -->
+<section data-out="brand-kit" style="width:1600px;height:2500px;background:var(--cream)">
+  <div class="abs fat" style="top:56px;left:70px;font-size:44px;color:var(--choc)">MORZSA — brand kit</div>
+  <div class="abs mono" style="top:70px;right:70px;font-size:20px;color:var(--choc)">Use exactly as shown</div>
+
+  <div class="abs label" style="top:150px;left:70px">1 · Logo</div>
+  <div class="abs center" style="top:190px;left:70px;width:700px;height:320px;background:var(--choc);color:var(--cream)"><div class="lg" style="font-size:180px"></div></div>
+  <div class="abs center" style="top:190px;left:830px;width:700px;height:320px;background:var(--blue);color:var(--choc)"><div class="lg" style="font-size:180px"></div></div>
+
+  <div class="abs label" style="top:550px;left:70px">2 · Colours</div>
+  <div class="abs" style="top:590px;left:70px;width:1460px;height:120px;display:flex">
+    <div style="flex:3;background:var(--choc)"></div><div style="flex:3;background:var(--blue)"></div><div style="flex:2;background:var(--cream);outline:2px solid var(--choc);outline-offset:-2px"></div><div style="flex:1;background:var(--bisc)"></div><div style="flex:1;background:var(--cocoa)"></div></div>
+
+  <div class="abs label" style="top:750px;left:70px">3 · Mascot "Morzsi" &amp; stickers</div>
+  <svg class="abs" width="1460" height="560" style="top:790px;left:70px" data-stickers></svg>
+
+  <div class="abs label" style="top:1380px;left:70px">4 · Patterns</div>
+  <svg class="abs" width="1460" height="220" style="top:1420px;left:70px">
+    <defs><pattern id="p-ck" width="110" height="110" patternUnits="userSpaceOnUse"><use href="#cookie" transform="translate(30 30) scale(.32)"/><use href="#cookie" transform="translate(85 85) scale(.32) rotate(90)"/></pattern>
+      <pattern id="p-check" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#F6EEDF"/><rect width="40" height="40" fill="#A9CBEA"/><rect x="40" y="40" width="40" height="40" fill="#A9CBEA"/></pattern></defs>
+    <rect width="470" height="220" fill="#A9CBEA"/><rect width="470" height="220" fill="url(#p-ck)"/>
+    <rect x="495" width="470" height="220" fill="url(#p-check)"/>
+    <rect x="990" width="470" height="220" fill="#3A1F14"/>
+    <use href="#morzsi" transform="translate(1010 20) scale(.28)"/><use href="#morzsi" transform="translate(1200 110) scale(.28)"/><use href="#morzsi" transform="translate(1250 -10) scale(.2)"/>
+  </svg>
+
+  <div class="abs label" style="top:1680px;left:70px">5 · Cookie box · Paper sleeve · Menu · Loyalty card · Tin</div>
+  <div class="abs" style="top:1720px;left:70px;width:520px;height:360px" data-box></div>
+  <div class="abs" style="top:1720px;left:620px;width:220px;height:300px" data-sleeve></div>
+  <div class="abs" style="top:1720px;left:870px;width:300px;height:420px" data-menu></div>
+  <div class="abs" style="top:1720px;left:1200px;width:330px;height:200px" data-loyalty></div>
+  <div class="abs" style="top:1950px;left:1200px;width:330px;height:330px" data-tin></div>
+  <div class="abs mono" style="top:2380px;left:70px;right:70px;font-size:18px;color:var(--choc)">Fonts: Bagel Fat One (logo, headlines) · DM Mono (labels) · Chocolate chip cookie bakery · Budapest VIII. · Hungarian "morzsa" = crumb</div>
+</section>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const COOKIE_O = `<svg class="ck" viewBox="-50 -50 100 100"><use href="#cookie"/></svg>`;
+const LOGO = `<span>m</span>${COOKIE_O}<span>rzsa</span>`;
+const STICKERS = {
+  morzsi: `<use href="#morzsi" transform="translate(-10 40) scale(.5)"/>`,
+  cookie: `<circle cx="150" cy="150" r="118" fill="#F6EEDF"/><use href="#cookie" transform="translate(150 150) scale(2.1)"/>`,
+  milk: `<g stroke-linejoin="round"><path d="M110 60h80v40l20 40v120q0 14-14 14h-92q-14 0-14-14v-120l20-40z" fill="#F6EEDF" stroke="#F6EEDF" stroke-width="40"/>
+     <path d="M110 60h80v40l20 40v120q0 14-14 14h-92q-14 0-14-14v-120l20-40z" fill="#fff" stroke="#3A1F14" stroke-width="9"/><rect x="104" y="40" width="92" height="26" rx="6" fill="#A9CBEA" stroke="#3A1F14" stroke-width="9"/>
+     <rect x="92" y="170" width="116" height="60" fill="#A9CBEA"/><text x="150" y="211" text-anchor="middle" font-family="Bagel Fat One" font-size="34" fill="#3A1F14">milk</text></g>`,
+  star: `<path d="M150 40C160 110 190 140 260 150C190 160 160 190 150 260C140 190 110 160 40 150C110 140 140 110 150 40Z" fill="#A9CBEA" stroke="#F6EEDF" stroke-width="34" stroke-linejoin="round" paint-order="stroke"/><path d="M150 40C160 110 190 140 260 150C190 160 160 190 150 260C140 190 110 160 40 150C110 140 140 110 150 40Z" fill="#A9CBEA" stroke="#3A1F14" stroke-width="9" stroke-linejoin="round"/>`,
+  ticket: `<g transform="rotate(-10 150 150)"><rect x="30" y="95" width="240" height="110" rx="14" fill="#F6EEDF" stroke="#F6EEDF" stroke-width="36"/><rect x="30" y="95" width="240" height="110" rx="14" fill="#3A1F14"/><text x="150" y="168" text-anchor="middle" font-family="Bagel Fat One" font-size="54" fill="#A9CBEA">Bp. VIII.</text></g>`,
+  badge: `<circle cx="150" cy="150" r="115" fill="#F6EEDF"/><circle cx="150" cy="150" r="95" fill="#3A1F14"/><text x="150" y="140" text-anchor="middle" font-family="Bagel Fat One" font-size="44" fill="#A9CBEA">big</text><text x="150" y="182" text-anchor="middle" font-family="Bagel Fat One" font-size="30" fill="#F6EEDF">cookie</text><text x="150" y="212" text-anchor="middle" font-family="Bagel Fat One" font-size="24" fill="#F6EEDF">energy</text>`,
+  paw: `<g fill="#3A1F14" stroke="#F6EEDF" stroke-width="30" paint-order="stroke"><ellipse cx="150" cy="185" rx="62" ry="52"/><ellipse cx="88" cy="118" rx="24" ry="30"/><ellipse cx="128" cy="88" rx="24" ry="30"/><ellipse cx="174" cy="88" rx="24" ry="30"/><ellipse cx="214" cy="118" rx="24" ry="30"/></g>`,
+  heart: `<path d="M150 250C60 190 40 140 60 100C80 60 130 60 150 100C170 60 220 60 240 100C260 140 240 190 150 250Z" fill="#D9984C" stroke="#F6EEDF" stroke-width="36" stroke-linejoin="round" paint-order="stroke"/><path d="M150 250C60 190 40 140 60 100C80 60 130 60 150 100C170 60 220 60 240 100C260 140 240 190 150 250Z" fill="#D9984C" stroke="#3A1F14" stroke-width="9" stroke-linejoin="round"/><circle cx="110" cy="130" r="9" fill="#3A1F14"/><circle cx="170" cy="120" r="8" fill="#3A1F14"/><circle cx="150" cy="180" r="9" fill="#3A1F14"/><circle cx="195" cy="165" r="7" fill="#3A1F14"/>`,
+};
+function drawSticker(svg,key,x,y,s=1,rot=0){const g=document.createElementNS(NS,'g');g.setAttribute('transform',`translate(${x} ${y}) rotate(${rot} ${150*s} ${150*s}) scale(${s})`);g.innerHTML=STICKERS[key];svg.appendChild(g);}
+document.querySelectorAll('[data-stickers]').forEach(svg=>Object.keys(STICKERS).forEach((k,i)=>drawSticker(svg,k,(i%4)*370+20,Math.floor(i/4)*280-10,.9)));
+const fill=(sel,fn)=>document.querySelectorAll(sel).forEach(el=>{el.style.position='absolute';el.innerHTML=fn(el.offsetWidth,el.offsetHeight);});
+fill('[data-box]',(w,h)=>`<div style="position:absolute;inset:0;background:#A9CBEA;border-radius:8px;overflow:hidden;color:#3A1F14">
+  <svg style="position:absolute;inset:0" width="${w}" height="${h}"><rect width="${w}" height="${h*.16}" fill="#3A1F14"/><rect y="${h*.84}" width="${w}" height="${h*.16}" fill="#3A1F14"/></svg>
+  <div class="center" style="position:absolute;inset:0"><div class="lg" style="font-size:${w*.2}px"></div></div>
+  <div class="mono" style="position:absolute;top:${h*.04}px;left:${w*.05}px;font-size:${w*.028}px;color:#A9CBEA">6 chocolate chip cookies</div>
+  <div class="mono" style="position:absolute;top:${h*.04}px;right:${w*.05}px;font-size:${w*.028}px;color:#A9CBEA">Bp. VIII.</div>
+  <div class="mono" style="position:absolute;bottom:${h*.04}px;left:${w*.05}px;font-size:${w*.028}px;color:#F6EEDF">Crumbs worth fighting for.</div>
+  <svg style="position:absolute;right:${w*.03}px;bottom:${h*.18}px" width="${w*.3}" height="${w*.17}" viewBox="0 0 640 360"><use href="#morzsi"/></svg></div>`);
+fill('[data-sleeve]',(w,h)=>`<div style="position:absolute;inset:0;background:#F6EEDF;color:#3A1F14;overflow:hidden;clip-path:polygon(0 6%,10% 0,20% 6%,30% 0,40% 6%,50% 0,60% 6%,70% 0,80% 6%,90% 0,100% 6%,100% 100%,0 100%)">
+  <svg style="position:absolute;inset:0" width="${w}" height="${h}"><defs><pattern id="sl" width="${w/5}" height="${w/5}" patternUnits="userSpaceOnUse"><rect width="${w/10}" height="${w/10}" fill="#A9CBEA"/><rect x="${w/10}" y="${w/10}" width="${w/10}" height="${w/10}" fill="#A9CBEA"/></pattern></defs><rect y="${h*.62}" width="${w}" height="${h*.38}" fill="url(#sl)"/></svg>
+  <div class="center" style="position:absolute;left:0;right:0;top:${h*.18}px;height:${h*.3}px"><div class="lg" style="font-size:${w*.27}px"></div></div>
+  <div class="mono" style="position:absolute;top:${h*.5}px;width:100%;text-align:center;font-size:${w*.05}px">Still warm.</div></div>`);
+fill('[data-menu]',(w,h)=>`<div style="position:absolute;inset:0;background:#3A1F14;color:#F6EEDF;overflow:hidden">
+  <div class="fat" style="position:absolute;top:${h*.04}px;left:${w*.08}px;font-size:${w*.24}px;color:#A9CBEA">menü</div>
+  <div style="position:absolute;top:${h*.24}px;left:${w*.08}px;right:${w*.08}px;font-family:'Bagel Fat One';font-size:${w*.06}px;line-height:1.9">
+  ${[['Classic chip','890 Ft'],['Double cocoa','990 Ft'],['Salted caramel','990 Ft'],['Box of 6','4 900 Ft'],['Cold milk','590 Ft']].map(r=>`<div style="display:flex;justify-content:space-between;border-bottom:2px solid #A9CBEA"><span>${r[0]}</span><span class="mono" style="font-size:${w*.04}px;line-height:3">${r[1]}</span></div>`).join('')}</div>
+  <svg style="position:absolute;left:${w*.08}px;bottom:${h*.03}px" width="${w*.6}" height="${w*.34}" viewBox="0 0 640 360"><use href="#morzsi"/></svg></div>`);
+fill('[data-loyalty]',(w,h)=>`<div style="position:absolute;inset:0;background:#A9CBEA;border-radius:${w*.03}px;color:#3A1F14;overflow:hidden">
+  <div class="fat" style="position:absolute;top:${h*.08}px;left:${w*.06}px;font-size:${w*.08}px">Crumb club</div>
+  <div class="mono" style="position:absolute;top:${h*.12}px;right:${w*.06}px;font-size:${w*.026}px">morzsa · Bp. VIII.</div>
+  <div style="position:absolute;top:${h*.36}px;left:${w*.06}px;right:${w*.06}px;display:grid;grid-template-columns:repeat(5,1fr);gap:${w*.025}px">
+  ${Array.from({length:10},(_,i)=>`<div style="aspect-ratio:1;border:${w*.006}px solid #3A1F14;border-radius:50%;display:flex;align-items:center;justify-content:center">${i<4?`<svg width="80%" height="80%" viewBox="-50 -50 100 100"><use href="#cookie"/></svg>`:''}${i==9?`<span class="fat" style="font-size:${w*.035}px">free</span>`:''}</div>`).join('')}</div>
+  <div class="mono" style="position:absolute;bottom:${h*.08}px;left:${w*.06}px;font-size:${w*.026}px">Collect 9 bites · the 10th cookie is on us</div></div>`);
+fill('[data-tin]',(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 330 330"><circle cx="165" cy="165" r="160" fill="#3A1F14"/><circle cx="165" cy="165" r="146" fill="none" stroke="#A9CBEA" stroke-width="6"/>
+  <use href="#morzsi" transform="translate(45 60) scale(.38)"/></svg><div class="center" style="position:absolute;left:0;right:0;top:${h*.58}px;color:#F6EEDF"><div class="lg" style="font-size:${w*.16}px"></div></div>`);
+document.querySelectorAll('.lg').forEach(el=>el.innerHTML=LOGO);
+</script>
+</body>
+</html>
