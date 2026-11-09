@@ -2,213 +2,120 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>KOCKA brand kit</title>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>KOCKA brand kit v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--choc:#3B2016;--cobalt:#2F5BEA;--cream:#F4ECDD;--caramel:#E0A458;--deep:#1E0F09}
+  /* KOCKA v2: white + chocolate. Premium, appetising, calm. */
+  :root{--white:#FFFFFF;--paper:#F8F4EE;--choc:#3A2218;--milk:#8B5A3C;--cocoa:#CDB49C;--ink:#1C110C}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#222;width:1600px}
   section{position:relative;overflow:hidden}
   .abs{position:absolute}
   .center{display:flex;align-items:center;justify-content:center}
-  .ub{font-family:'Unbounded',sans-serif;font-weight:900;line-height:.95;letter-spacing:-.02em}
-  .mono{font-family:'DM Mono',monospace;font-weight:500;letter-spacing:.08em;text-transform:uppercase;line-height:1.4}
-  .label{font-family:'DM Mono';font-weight:500;font-size:20px;letter-spacing:.12em;color:var(--choc);text-transform:uppercase}
-  .lg{font-family:'Unbounded',sans-serif;font-weight:900;line-height:1;display:inline-flex;align-items:baseline;white-space:nowrap;letter-spacing:-.03em}
-  .lg .sq{display:inline-block;width:.62em;height:.62em;margin:0 .03em;position:relative;top:.01em}
+  .serif{font-family:'Gloock',serif;font-weight:400;line-height:.95}
+  .it{font-family:'Instrument Serif',serif;font-style:italic}
+  .sans{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+  .label{font-family:'Inter Tight';font-weight:600;font-size:18px;letter-spacing:.16em;color:var(--choc);text-transform:uppercase}
+  .lg{font-family:'Gloock',serif;line-height:1;white-space:nowrap;letter-spacing:-.01em}
   svg{overflow:visible}
-  .sk{width:1024px;height:1536px}
-  .shadow{box-shadow:16px 24px 34px rgba(30,15,9,.32)}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute"><defs>
-  <!-- brownie square, viewBox -50 -50 100 100 -->
-  <linearGradient id="bt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5A3424"/><stop offset="1" stop-color="#3B2016"/></linearGradient>
-  <g id="brownie"><rect x="-46" y="-46" width="92" height="92" rx="14" fill="url(#bt)"/>
-    <path d="M-34 -20l14 -8 10 6 12 -9 16 7 10 -5M-30 6l12 -6 14 8 10 -7 14 4 12 -6M-28 28l16 -5 10 6 14 -6 12 5" fill="none" stroke="#7A4A33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="-46" y="-46" width="92" height="92" rx="14" fill="none" stroke="#2A160E" stroke-width="3"/>
-    <path d="M-38 -34q6 -6 16 -6" stroke="#9C6A4E" stroke-width="5" stroke-linecap="round" fill="none"/></g>
-  <!-- isometric cube -->
-  <g id="iso"><path d="M0 -50L43 -25V25L0 50L-43 25V-25Z" fill="#3B2016"/><path d="M0 -50L43 -25L0 0L-43 -25Z" fill="#6B4030"/><path d="M0 0L43 -25V25L0 50Z" fill="#2A160E"/>
-    <path d="M-30 -25l10 -4 8 4 10 -5 9 4" stroke="#8A5A40" stroke-width="3" fill="none"/></g>
+  <!-- brownie: a real-looking fudgy square seen slightly from above, viewBox -60 -60 120 120 -->
+  <linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2A1C"/><stop offset="1" stop-color="#2A160E"/></linearGradient>
+  <radialGradient id="top" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#7A4B34"/><stop offset=".55" stop-color="#5A3424"/><stop offset="1" stop-color="#3F2418"/></radialGradient>
+  <g id="brownie">
+    <path d="M-48 -26L-47 42Q-46 48 -40 48H40Q46 48 47 42L48 -26Z" fill="url(#side)"/>
+    <path d="M-48 -26L-37 -46H37L48 -26Z" fill="url(#top)"/>
+    <path d="M-34 -38Q-22 -42 -10 -37T12 -38T32 -36M-40 -30Q-24 -34 -8 -29T22 -30T42 -29" fill="none" stroke="#A3735A" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+    <path d="M-48 -26H48" stroke="#2A160E" stroke-width="2" opacity=".6"/>
+    <g fill="#24120B" opacity=".55"><circle cx="-30" cy="-6" r="2.4"/><circle cx="-12" cy="14" r="2"/><circle cx="8" cy="-2" r="2.6"/><circle cx="26" cy="20" r="2.2"/><circle cx="-26" cy="30" r="2"/><circle cx="36" cy="-12" r="1.8"/><circle cx="2" cy="34" r="2.3"/></g>
+    <path d="M-44 -20V40" stroke="#5A3626" stroke-width="3" opacity=".5"/>
+  </g>
+  <!-- the mark: a simple rounded square, a brownie seen from above -->
+  <g id="mark"><rect x="-50" y="-50" width="100" height="100" rx="18" fill="currentColor"/>
+    <path d="M-30 -14Q-12 -22 4 -14T34 -14M-30 12Q-10 4 8 12T34 12" fill="none" stroke="var(--crack,#FFFFFF)" stroke-width="6" stroke-linecap="round" opacity=".9"/></g>
 </defs></svg>
 
 <!-- ================= KIT SHEET ================= -->
-<section data-out="brand-kit" style="width:1600px;height:2500px;background:var(--cream)">
-  <div class="abs ub" style="top:56px;left:70px;font-size:40px;color:var(--choc)">KOCKA — brand kit</div>
-  <div class="abs mono" style="top:68px;right:70px;font-size:20px;color:var(--choc)">Use exactly as shown</div>
+<section data-out="brand-kit" style="width:1600px;height:2600px;background:var(--paper)">
+  <div class="abs serif" style="top:60px;left:80px;font-size:46px;color:var(--choc)">kocka — brand kit</div>
+  <div class="abs label" style="top:76px;right:80px">Use exactly as shown</div>
 
-  <div class="abs label" style="top:150px;left:70px">1 · Logo</div>
-  <div class="abs center" style="top:190px;left:70px;width:700px;height:320px;background:var(--cobalt);color:var(--cream)"><div class="lg" style="font-size:150px"></div></div>
-  <div class="abs center" style="top:190px;left:830px;width:700px;height:320px;background:var(--cream);outline:2px solid var(--choc);outline-offset:-2px;color:var(--choc)"><div class="lg" style="font-size:150px"></div></div>
+  <div class="abs label" style="top:160px;left:80px">1 · Logo &amp; mark</div>
+  <div class="abs center" style="top:200px;left:80px;width:700px;height:330px;background:var(--white);color:var(--choc);gap:34px">
+    <svg width="110" height="110" viewBox="-50 -50 100 100" style="color:#3A2218"><use href="#mark"/></svg><div class="lg" style="font-size:170px">kocka</div></div>
+  <div class="abs center" style="top:200px;left:820px;width:700px;height:330px;background:var(--choc);color:var(--white);gap:34px">
+    <svg width="110" height="110" viewBox="-50 -50 100 100" style="color:#FFFFFF;--crack:#3A2218"><use href="#mark"/></svg><div class="lg" style="font-size:170px">kocka</div></div>
 
-  <div class="abs label" style="top:550px;left:70px">2 · Colours</div>
-  <div class="abs" style="top:590px;left:70px;width:1460px;height:120px;display:flex">
-    <div style="flex:3;background:var(--cobalt)"></div><div style="flex:3;background:var(--choc)"></div><div style="flex:2;background:var(--cream);outline:2px solid var(--choc);outline-offset:-2px"></div><div style="flex:1;background:var(--caramel)"></div><div style="flex:1;background:var(--deep)"></div></div>
+  <div class="abs label" style="top:580px;left:80px">2 · Colours</div>
+  <div class="abs" style="top:620px;left:80px;width:1440px;height:150px;display:flex;gap:0">
+    <div style="flex:3;background:#FFFFFF;outline:2px solid #3A2218;outline-offset:-2px"></div><div style="flex:3;background:#3A2218"></div><div style="flex:2;background:#8B5A3C"></div><div style="flex:2;background:#CDB49C"></div><div style="flex:1;background:#1C110C"></div></div>
+  <div class="abs sans" style="top:785px;left:80px;width:1440px;display:flex;font-size:15px;color:var(--choc)">
+    <div style="flex:3">White #FFFFFF</div><div style="flex:3">Dark chocolate #3A2218</div><div style="flex:2">Milk chocolate #8B5A3C</div><div style="flex:2">Cocoa dust #CDB49C</div><div style="flex:1">Ink #1C110C</div></div>
 
-  <div class="abs label" style="top:750px;left:70px">3 · Graphic elements &amp; stickers</div>
-  <svg class="abs" width="1460" height="520" style="top:790px;left:70px" data-stickers></svg>
+  <div class="abs label" style="top:860px;left:80px">3 · Typography</div>
+  <div class="abs" style="top:900px;left:80px;width:1440px;height:260px;background:var(--white);color:var(--choc)">
+    <div class="abs serif" style="left:40px;top:30px;font-size:170px">Aa</div><div class="abs label" style="left:240px;top:70px">Gloock — logo &amp; headlines</div>
+    <div class="abs it" style="left:640px;top:28px;font-size:170px;line-height:1">Aa</div><div class="abs label" style="left:830px;top:70px">Instrument Serif Italic — taglines</div>
+    <div class="abs sans" style="left:640px;top:200px;font-size:26px">Aa Inter Tight — small labels</div>
+    <div class="abs it" style="left:40px;top:210px;font-size:34px">Fudge-dense. Bite-size.</div></div>
 
-  <div class="abs label" style="top:1340px;left:70px">4 · Patterns</div>
-  <svg class="abs" width="1460" height="220" style="top:1380px;left:70px">
-    <defs>
-      <pattern id="p-grid" width="70" height="70" patternUnits="userSpaceOnUse"><rect width="70" height="70" fill="#2F5BEA"/><path d="M0 0H70M0 0V70" stroke="#F4ECDD" stroke-width="3"/></pattern>
-      <pattern id="p-sq" width="110" height="110" patternUnits="userSpaceOnUse"><rect width="110" height="110" fill="#F4ECDD"/><use href="#brownie" transform="translate(30 30) scale(.36)"/><use href="#brownie" transform="translate(85 85) scale(.36) rotate(8)"/></pattern>
-      <pattern id="p-iso" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="#E0A458"/><use href="#iso" transform="translate(50 50) scale(.55)"/></pattern>
-    </defs>
-    <rect width="470" height="220" fill="url(#p-grid)"/><rect x="495" width="470" height="220" fill="url(#p-sq)"/><rect x="990" width="470" height="220" fill="url(#p-iso)"/>
+  <div class="abs label" style="top:1210px;left:80px">4 · Packaging: pouch (8 cubes) · box (16 cubes) · single cube wrap</div>
+  <div class="abs" style="top:1260px;left:80px;width:480px;height:680px" data-pouch></div>
+  <div class="abs" style="top:1260px;left:620px;width:600px;height:600px" data-box></div>
+  <div class="abs" style="top:1260px;left:1270px;width:250px;height:250px" data-wrap></div>
+  <div class="abs" style="top:1550px;left:1270px;width:250px;height:250px" data-wrap="white"></div>
+
+  <div class="abs label" style="top:2000px;left:80px">5 · Graphic elements</div>
+  <svg class="abs" width="1440" height="420" style="top:2040px;left:80px">
+    <rect width="420" height="420" fill="#FFFFFF"/><use href="#brownie" transform="translate(210 220) scale(2.8)"/>
+    <rect x="510" width="420" height="420" fill="#3A2218"/>
+    <rect x="1020" width="420" height="420" fill="#CDB49C"/>
   </svg>
-
-  <div class="abs label" style="top:1640px;left:70px">5 · Pouch (8 cubes) · Box (16 cubes) · Single wrap</div>
-  <div class="abs" style="top:1690px;left:70px;width:440px;height:620px" data-pouch></div>
-  <div class="abs" style="top:1690px;left:560px;width:560px;height:560px" data-box></div>
-  <div class="abs" style="top:1690px;left:1170px;width:360px;height:360px" data-wrap></div>
-  <div class="abs" style="top:2080px;left:1170px;width:360px;height:180px" data-wrap="flat"></div>
-  <div class="abs mono" style="top:2390px;left:70px;right:70px;font-size:18px;color:var(--choc)">Fonts: Unbounded Black (logo, headlines) · DM Mono (labels) · Fudgy chocolate brownie cubes · Baked in Budapest · Hungarian "kocka" = cube</div>
-</section>
-
-<!-- ================= SCENE SKETCHES (1024x1536) ================= -->
-<section data-out="sk-0-monitor" class="sk" style="background:#CFC6B8">
-  <div class="abs" style="left:0;right:0;top:1050px;bottom:0;background:linear-gradient(#B98A5E,#9C6E46)"></div>
-  <div class="abs" style="left:60px;right:60px;top:170px;height:760px;background:#1A1A1C;border-radius:22px"></div>
-  <div class="abs" style="left:92px;right:92px;top:200px;height:690px;background:#2F5BEA"></div>
-  <div class="abs" style="left:452px;top:930px;width:120px;height:110px;background:#2A2A2C"></div>
-  <div class="abs" style="left:372px;top:1040px;width:280px;height:24px;border-radius:12px;background:#2A2A2C"></div>
-  <div class="abs" style="left:120px;top:1180px;width:560px;height:150px;border-radius:12px;background:#E8E4DC;box-shadow:0 10px 20px rgba(0,0,0,.25)"></div>
-  <div class="abs" style="left:720px;top:1090px;width:200px;height:290px;transform:rotate(8deg)" data-pouch></div>
-  <svg class="abs" width="200" height="200" style="left:610px;top:1300px"><use href="#brownie" transform="translate(70 70) scale(.9) rotate(-10)"/></svg>
-</section>
-
-<section data-out="sk-1-pouch-tear" class="sk" style="background:#2F5BEA">
-  <div class="abs shadow" style="left:262px;top:360px;width:500px;height:700px;transform:rotate(-6deg)" data-pouch></div>
-  <svg class="abs" width="1024" height="1536">
-    <use href="#brownie" transform="translate(470 300) scale(1.1) rotate(-12)"/><use href="#brownie" transform="translate(600 230) scale(.9) rotate(14)"/>
-  </svg>
-</section>
-
-<section data-out="sk-2-shelf" class="sk" style="background:#EDEAE4">
-  <div class="abs" style="left:0;right:0;top:0;height:120px;background:#F7F5F0"></div>
-  <div data-shelf></div>
-</section>
-
-<section data-out="sk-3-cube-closeup" class="sk" style="background:#E0A458">
-  <div class="abs" style="left:620px;top:200px;width:330px;height:460px;filter:blur(3px);opacity:.9" data-pouch></div>
-  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(500 820) scale(4.6) rotate(-6)"/></svg>
-</section>
-
-<section data-out="sk-4-box-top" class="sk" style="background:#F4ECDD">
-  <div class="abs shadow" style="left:112px;top:368px;width:800px;height:800px;background:#3B2016;border:18px solid #2F5BEA"></div>
-  <svg class="abs" width="1024" height="1536" data-boxtop></svg>
-</section>
-
-<section data-out="sk-5-floating" class="sk" style="background:#2F5BEA">
-  <div class="abs" style="left:300px;top:430px;width:430px;height:600px;transform:rotate(10deg);box-shadow:20px 30px 40px rgba(0,0,0,.3)" data-pouch></div>
-  <svg class="abs" width="1024" height="1536">
-    <use href="#brownie" transform="translate(200 300) scale(1.2) rotate(-20)"/><use href="#brownie" transform="translate(820 360) scale(1) rotate(25)"/>
-    <use href="#brownie" transform="translate(180 1150) scale(1.3) rotate(15)"/><use href="#brownie" transform="translate(830 1180) scale(1.1) rotate(-14)"/>
-    <use href="#brownie" transform="translate(520 1300) scale(.8) rotate(32)"/></svg>
-</section>
-
-<section data-out="sk-6-basket" class="sk" style="background:#F4ECDD">
-  <div class="abs" style="left:110px;top:560px;width:800px;height:620px;background:#2F5BEA;border-radius:30px 30px 60px 60px"></div>
-  <div class="abs" style="left:260px;top:360px;width:500px;height:300px;border:26px solid #234ACC;border-bottom:none;border-radius:250px 250px 0 0"></div>
-  <div class="abs" style="left:190px;top:380px;width:330px;height:330px;transform:rotate(-8deg)" data-box></div>
-  <div class="abs" style="left:540px;top:330px;width:230px;height:330px;transform:rotate(9deg)" data-pouch></div>
-  <div class="abs" style="left:110px;top:640px;width:800px;height:540px;background:repeating-linear-gradient(90deg,#2F5BEA 0 70px,#234ACC 70px 90px);border-radius:0 0 60px 60px"></div>
-</section>
-
-<section data-out="sk-7-still-life" class="sk" style="background:#F4ECDD">
-  <div class="abs" style="left:0;right:0;top:1100px;bottom:0;background:#E9DFCC"></div>
-  <div class="abs" style="left:90px;top:900px;width:420px;height:300px;background:#E0A458"></div>
-  <div class="abs" style="left:520px;top:780px;width:420px;height:420px;background:#2F5BEA"></div>
-  <div class="abs shadow" style="left:110px;top:470px;width:380px;height:430px" data-pouch></div>
-  <div class="abs shadow" style="left:560px;top:420px;width:340px;height:340px" data-box></div>
-  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(300 1300) scale(1.1) rotate(-8)"/><use href="#brownie" transform="translate(470 1330) scale(.95) rotate(12)"/><use href="#brownie" transform="translate(760 1310) scale(1.05) rotate(4)"/></svg>
-</section>
-
-<section data-out="sk-8-wraps" class="sk" style="background:#3B2016">
-  <div data-wrappile></div>
-</section>
-
-<section data-out="sk-9-billboard" class="sk" style="background:#9DB4CF">
-  <div class="abs" style="left:0;right:0;top:1180px;bottom:0;background:#8E8C88"></div>
-  <div class="abs" style="left:150px;top:210px;width:724px;height:1010px;background:#2A2A2C;border-radius:10px"></div>
-  <div class="abs" style="left:180px;top:240px;width:664px;height:950px;background:#2F5BEA;overflow:hidden">
-    <div class="abs ub" style="left:40px;top:50px;font-size:118px;color:#F4ECDD;line-height:.9">Square<br>up.</div>
-    <div class="abs" style="left:300px;top:380px;width:330px;height:470px;transform:rotate(8deg)" data-pouch></div>
-    <svg class="abs" width="664" height="950"><use href="#brownie" transform="translate(150 640) scale(1.9) rotate(-10)"/></svg>
-    <div class="abs center" style="left:30px;bottom:30px;color:#F4ECDD"><div class="lg" style="font-size:60px"></div></div>
-  </div>
-  <div class="abs" style="left:480px;top:1220px;width:64px;height:316px;background:#2A2A2C"></div>
-</section>
-
-<section data-out="sk-10-lunchbox" class="sk" style="background:#E0A458">
-  <div class="abs shadow" style="left:120px;top:420px;width:784px;height:700px;background:#F4ECDD;border-radius:40px;border:14px solid #FFFFFF"></div>
-  <div class="abs" style="left:170px;top:470px;width:330px;height:600px;background:#CFE0B4;border-radius:24px"></div>
-  <div class="abs" style="left:540px;top:470px;width:320px;height:290px;background:#F7F3EA;border-radius:24px"></div>
-  <div class="abs" style="left:560px;top:490px;width:280px;height:250px" data-wrap></div>
-  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(620 900) scale(1.1) rotate(-6)"/><use href="#brownie" transform="translate(780 940) scale(1.1) rotate(10)"/></svg>
-</section>
-
-<section data-out="sk-11-box-hand" class="sk" style="background:#EDEAE4">
-  <div class="abs shadow" style="left:212px;top:420px;width:600px;height:600px;transform:rotate(-4deg)" data-box></div>
+  <div class="abs" style="top:2040px;left:590px;width:420px;height:420px;color:#FFFFFF" data-grid></div>
+  <div class="abs center" style="top:2040px;left:1100px;width:420px;height:420px;flex-direction:column;color:#3A2218;text-align:center">
+    <div class="it" style="font-size:64px;line-height:1">Square up.</div><div class="sans" style="font-size:16px;margin-top:22px">Baked in Budapest</div></div>
 </section>
 
 <script>
-const NS='http://www.w3.org/2000/svg';
-const SQ=`<svg class="sq" viewBox="-50 -50 100 100"><use href="#brownie"/></svg>`;
-const LOGO=`<span>k</span>${SQ}<span>cka</span>`;
-const STICKERS={
-  brownie:`<use href="#brownie" transform="translate(150 150) scale(2.3)"/>`,
-  iso:`<use href="#iso" transform="translate(150 150) scale(2.2)"/>`,
-  squareup:`<rect x="30" y="30" width="240" height="240" fill="#2F5BEA" stroke="#F4ECDD" stroke-width="18"/><text x="150" y="140" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="46" fill="#F4ECDD">Square</text><text x="150" y="196" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="46" fill="#F4ECDD">up.</text>`,
-  fudgy:`<circle cx="150" cy="150" r="118" fill="#E0A458" stroke="#F4ECDD" stroke-width="18"/><text x="150" y="168" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="50" fill="#3B2016">fudgy</text>`,
-  sixteen:`<rect x="40" y="40" width="220" height="220" rx="30" fill="#3B2016" stroke="#F4ECDD" stroke-width="18"/><text x="150" y="168" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="88" fill="#E0A458">16</text><text x="150" y="215" text-anchor="middle" font-family="DM Mono" font-size="22" fill="#F4ECDD">CUBES</text>`,
-  grid:`<g transform="translate(40 40)"><rect width="220" height="220" fill="#3B2016"/>${[0,1,2,3].map(i=>`<path d="M${i*55} 0V220M0 ${i*55}H220" stroke="#E0A458" stroke-width="5"/>`).join('')}<rect width="220" height="220" fill="none" stroke="#F4ECDD" stroke-width="16"/></g>`,
-  bp:`<g transform="rotate(-8 150 150)"><rect x="5" y="100" width="290" height="100" fill="#F4ECDD"/><rect x="15" y="110" width="270" height="80" fill="#2F5BEA"/><text x="150" y="161" text-anchor="middle" font-family="Unbounded" font-weight="900" font-size="28" fill="#F4ECDD">Baked in Bp.</text></g>`,
-  spark:`<path d="M150 40C160 110 190 140 260 150C190 160 160 190 150 260C140 190 110 160 40 150C110 140 140 110 150 40Z" fill="#E0A458" stroke="#F4ECDD" stroke-width="30" stroke-linejoin="round" paint-order="stroke"/>`,
-};
-function drawSticker(svg,key,x,y,s=1,rot=0){const g=document.createElementNS(NS,'g');g.setAttribute('transform',`translate(${x} ${y}) rotate(${rot} ${150*s} ${150*s}) scale(${s})`);g.innerHTML=STICKERS[key];svg.appendChild(g);}
-document.querySelectorAll('[data-stickers]').forEach(svg=>Object.keys(STICKERS).forEach((k,i)=>drawSticker(svg,k,(i%4)*370+20,Math.floor(i/4)*270-10,.85)));
-// box top-down: 16 brownies in grid
-document.querySelectorAll('[data-boxtop]').forEach(s=>{s.innerHTML=Array.from({length:16},(_,i)=>`<use href="#brownie" transform="translate(${242+(i%4)*180} ${498+Math.floor(i/4)*180}) scale(1.62) rotate(${(i*37%9)-4})"/>`).join('');});
-// supermarket shelf of pouches and boxes
-document.querySelectorAll('[data-shelf]').forEach(el=>{let h='';for(let r=0;r<3;r++){const y=170+r*450;h+=`<div class="abs" style="left:0;right:0;top:${y+400}px;height:40px;background:#D9D4CA;box-shadow:0 8px 12px rgba(0,0,0,.2)"></div>`;
-  for(let c=0;c<5;c++){h+= r===1?`<div class="abs" style="left:${20+c*200}px;top:${y+190}px;width:190px;height:210px" data-box></div>`:`<div class="abs" style="left:${25+c*200}px;top:${y+130}px;width:180px;height:270px" data-pouch></div>`;}}
-  el.innerHTML=h;});
-// wrap pile
-document.querySelectorAll('[data-wrappile]').forEach(el=>{let h='';[[120,260,-12],[420,210,8],[690,300,-5],[200,620,10],[520,560,-14],[760,700,6],[110,980,-4],[430,920,12],[700,1060,-9],[300,1250,5],[620,1300,-7]].forEach(p=>{h+=`<div class="abs" style="left:${p[0]}px;top:${p[1]}px;width:250px;height:250px;transform:rotate(${p[2]}deg);box-shadow:10px 14px 20px rgba(0,0,0,.35)" data-wrap></div>`;});el.innerHTML=h;});
-const fill=(sel,fn)=>document.querySelectorAll(sel).forEach(el=>{if(!el.style.position)el.style.position='absolute';el.innerHTML=fn(el.offsetWidth,el.offsetHeight,el);});
-// stand-up pouch: cobalt, crimped top seal, cream panel with logo, brownie window
-fill('[data-pouch]',(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 440 620" preserveAspectRatio="none" style="position:absolute;inset:0">
-  <defs><linearGradient id="ps${w}" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".25" stop-color="#fff" stop-opacity=".10"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>
-  <path d="M20 40H420V560Q420 610 370 610H70Q20 610 20 560Z" fill="#2F5BEA"/>
-  <rect x="20" y="20" width="400" height="40" fill="#234ACC"/>${Array.from({length:40},(_,i)=>`<rect x="${22+i*10}" y="22" width="5" height="36" fill="#1E3FB0"/>`).join('')}
-  <rect x="20" y="250" width="400" height="190" fill="#F4ECDD"/>
-  <g>${[0,1,2,3].map(i=>`<use href="#brownie" transform="translate(${90+i*88} 512) scale(.8) rotate(${[-6,4,-3,7][i]})"/>`).join('')}</g>
-  <rect x="20" y="40" width="400" height="570" fill="url(#ps${w})"/></svg>
-  <div class="mono" style="position:absolute;left:${w*.08}px;top:${h*.13}px;font-size:${w*.035}px;color:#F4ECDD">Fudgy brownie cubes</div>
-  <div class="mono" style="position:absolute;right:${w*.08}px;top:${h*.13}px;font-size:${w*.035}px;color:#F4ECDD;text-align:right">8 × 25 g</div>
-  <div class="ub" style="position:absolute;left:${w*.08}px;top:${h*.22}px;font-size:${w*.075}px;color:#E0A458">Square up.</div>
-  <div class="center" style="position:absolute;left:0;right:0;top:${h*.4}px;height:${h*.31}px;color:#3B2016"><div class="lg" style="font-size:${w*.17}px"></div></div>
-  <div class="mono" style="position:absolute;left:0;right:0;top:${h*.645}px;text-align:center;font-size:${w*.03}px;color:#3B2016">Baked in Budapest</div>`);
-// box of 16: square box, chocolate band, grid window
-fill('[data-box]',(w,h)=>`<div style="position:absolute;inset:0;background:#F4ECDD;overflow:hidden;color:#3B2016">
-  <div style="position:absolute;left:0;right:0;top:0;height:${h*.14}px;background:#2F5BEA"></div>
-  <div class="mono" style="position:absolute;left:${w*.05}px;top:${h*.045}px;font-size:${w*.026}px;color:#F4ECDD">16 fudgy brownie cubes</div>
-  <div class="mono" style="position:absolute;right:${w*.05}px;top:${h*.045}px;font-size:${w*.026}px;color:#F4ECDD">400 g</div>
-  <div class="center" style="position:absolute;left:0;right:0;top:${h*.18}px;height:${h*.22}px"><div class="lg" style="font-size:${w*.16}px"></div></div>
-  <svg style="position:absolute;left:${w*.18}px;top:${h*.44}px" width="${w*.64}" height="${w*.4}" viewBox="0 0 400 250"><rect width="400" height="250" fill="#3B2016"/>
-   ${Array.from({length:8},(_,i)=>`<use href="#brownie" transform="translate(${50+(i%4)*100} ${62+Math.floor(i/4)*126}) scale(.88)"/>`).join('')}</svg>
-  <div style="position:absolute;left:0;right:0;bottom:0;height:${h*.1}px;background:#E0A458"></div>
-  <div class="mono" style="position:absolute;left:0;right:0;bottom:${h*.03}px;text-align:center;font-size:${w*.026}px">Fudge-dense. Bite-size.</div></div>`);
-// single wrap: small square foil pack
-fill('[data-wrap]',(w,h,el)=>{const flat=el.dataset.wrap==='flat';return `<div style="position:absolute;inset:0;background:#2F5BEA;overflow:hidden;color:#F4ECDD;clip-path:polygon(0 4%,4% 0,8% 4%,12% 0,16% 4%,20% 0,24% 4%,28% 0,32% 4%,36% 0,40% 4%,44% 0,48% 4%,52% 0,56% 4%,60% 0,64% 4%,68% 0,72% 4%,76% 0,80% 4%,84% 0,88% 4%,92% 0,96% 4%,100% 0,100% 96%,96% 100%,92% 96%,88% 100%,84% 96%,80% 100%,76% 96%,72% 100%,68% 96%,64% 100%,60% 96%,56% 100%,52% 96%,48% 100%,44% 96%,40% 100%,36% 96%,32% 100%,28% 96%,24% 100%,20% 96%,16% 100%,12% 96%,8% 100%,4% 96%,0 100%)">
-  <div class="center" style="position:absolute;inset:0"><div class="lg" style="font-size:${(flat?h:w)*.2}px"></div></div>
-  <div class="mono" style="position:absolute;left:0;right:0;bottom:${h*.12}px;text-align:center;font-size:${(flat?h:w)*.05}px;color:#E0A458">1 cube · 25 g</div></div>`;});
-document.querySelectorAll('.lg').forEach(el=>el.innerHTML=LOGO);
+const fill=(sel,fn)=>document.querySelectorAll(sel).forEach(el=>{el.style.position='absolute';el.innerHTML=fn(el.offsetWidth,el.offsetHeight,el);});
+const MARK=(c,crack)=>`<svg width="100%" height="100%" viewBox="-50 -50 100 100" style="color:${c};--crack:${crack}"><use href="#mark"/></svg>`;
+// pouch: white matte stand-up pouch, chocolate "melted" lower half, logo top, real brownie on the chocolate
+fill('[data-pouch]',(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 480 680" preserveAspectRatio="none" style="position:absolute;inset:0">
+  <defs><clipPath id="pc${w}"><path d="M20 30H460V610Q460 666 404 666H76Q20 666 20 610Z"/></clipPath>
+   <linearGradient id="pg${w}" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".10"/><stop offset=".22" stop-color="#fff" stop-opacity=".25"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".14"/></linearGradient></defs>
+  <g clip-path="url(#pc${w})"><rect width="480" height="680" fill="#FFFFFF"/>
+   <path d="M0 420Q60 395 120 418T240 412T360 420T480 410V680H0Z" fill="#3A2218"/>
+   <rect width="480" height="680" fill="url(#pg${w})"/></g>
+  <rect x="20" y="14" width="440" height="34" fill="#F1ECE5"/>${Array.from({length:44},(_,i)=>`<rect x="${22+i*10}" y="16" width="4" height="30" fill="#E2DBD1"/>`).join('')}
+  <use href="#brownie" transform="translate(240 540) scale(1.25)"/></svg>
+  <div class="sans" style="position:absolute;left:0;right:0;top:${h*.12}px;text-align:center;font-size:${w*.028}px;color:#8B5A3C">Fudgy chocolate brownie cubes</div>
+  <div style="position:absolute;left:0;right:0;top:${h*.2}px;display:flex;flex-direction:column;align-items:center;color:#3A2218">
+    <div style="width:${w*.13}px;height:${w*.13}px">${MARK('#3A2218','#FFFFFF')}</div>
+    <div class="lg" style="font-size:${w*.24}px;margin-top:${h*.01}px">kocka</div>
+    <div class="it" style="font-size:${w*.065}px;margin-top:${h*.01}px">Square up.</div></div>
+  <div class="sans" style="position:absolute;left:${w*.08}px;bottom:${h*.05}px;font-size:${w*.025}px;color:#CDB49C">8 cubes · 200 g</div>
+  <div class="sans" style="position:absolute;right:${w*.08}px;bottom:${h*.05}px;font-size:${w*.025}px;color:#CDB49C">Baked in Budapest</div>`);
+// box of 16: white square box, big chocolate square on the front holding the brownie
+fill('[data-box]',(w,h)=>`<div style="position:absolute;inset:0;background:#FFFFFF;color:#3A2218;box-shadow:inset 0 0 0 2px #EFE8DF">
+  <div style="position:absolute;left:${w*.07}px;top:${h*.07}px;display:flex;align-items:center;gap:${w*.025}px">
+    <div style="width:${w*.08}px;height:${w*.08}px">${MARK('#3A2218','#FFFFFF')}</div><div class="lg" style="font-size:${w*.12}px">kocka</div></div>
+  <div class="sans" style="position:absolute;right:${w*.07}px;top:${h*.1}px;font-size:${w*.022}px;text-align:right;color:#8B5A3C">16 cubes<br>400 g</div>
+  <div style="position:absolute;left:${w*.07}px;right:${w*.07}px;top:${h*.28}px;bottom:${h*.07}px;background:#3A2218">
+    <svg style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%)" width="${w*.5}" height="${w*.5}" viewBox="-60 -60 120 120"><use href="#brownie"/></svg>
+    <div class="it" style="position:absolute;left:${w*.05}px;bottom:${h*.05}px;font-size:${w*.06}px;color:#FFFFFF">Fudge-dense. Bite-size.</div>
+    </div></div>`);
+// single wrap: crinkle-edged square wrapper
+fill('[data-wrap]',(w,h,el)=>{const white=el.dataset.wrap==='white';const bg=white?'#FFFFFF':'#3A2218',fg=white?'#3A2218':'#FFFFFF';
+  const zz=Array.from({length:26},(_,i)=>`${i*4}% ${i%2?0:3}%`).join(',')+','+Array.from({length:26},(_,i)=>`${100-i*4}% ${i%2?100:97}%`).join(',');
+  return `<div style="position:absolute;inset:0;background:${bg};color:${fg};clip-path:polygon(${zz});box-shadow:inset 0 0 0 2px #EFE8DF">
+  <div class="center" style="position:absolute;inset:0;flex-direction:column;gap:${h*.04}px">
+    <div style="width:${w*.16}px;height:${w*.16}px">${MARK(fg,bg)}</div><div class="lg" style="font-size:${w*.2}px">kocka</div>
+    <div class="sans" style="font-size:${w*.045}px;color:${white?'#8B5A3C':'#CDB49C'}">1 cube · 25 g</div></div></div>`;});
+// cut-grid graphic
+fill('[data-grid]',(w,h)=>`<svg width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="#3A2218"/>${[1,2,3].map(i=>`<path d="M${i*w/4} 30V${h-30}M30 ${i*h/4}H${w-30}" stroke="#FFFFFF" stroke-width="3" opacity=".9"/>`).join('')}</svg>`);
 </script>
-
 </body>
 </html>
