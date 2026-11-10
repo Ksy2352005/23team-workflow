@@ -3,7 +3,7 @@
  "start": 0,
  "end": 6.33,
  "fade_from": 6.24,
- "tail": 0.6,
+ "tail": 0.3,
  "frames": "frames",
  "out": "out/kocka-reel.mp4",
  "end23": {
