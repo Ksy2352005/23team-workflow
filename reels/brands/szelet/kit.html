@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SZELET brand kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{--red:#FF3B1F;--green:#2DBE4E;--cream:#FFF4DC;--sky:#6FD3FF;--yellow:#FFD21F;--crust:#8A3B12}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;width:1600px}
+  section{position:relative;overflow:hidden}
+  .abs{position:absolute}
+  .center{display:flex;align-items:center;justify-content:center}
+  .fat{font-family:'Bagel Fat One',sans-serif;line-height:.9}
+  .mono{font-family:'DM Mono',monospace;font-weight:500;letter-spacing:.1em;text-transform:uppercase}
+  .label{font-family:'DM Mono';font-weight:500;font-size:20px;letter-spacing:.12em;color:#1A1A1A;text-transform:uppercase}
+  .lg{display:inline-flex;align-items:flex-start;font-family:'Bagel Fat One',sans-serif;line-height:1;white-space:nowrap;letter-spacing:-.01em}
+  .lg svg{width:.55em;height:.62em;margin-left:.06em;transform:rotate(18deg);margin-top:-.05em}
+  svg{overflow:visible}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <!-- pizza slice, viewBox -50 -60 100 120, tip pointing down -->
+  <g id="slice">
+    <path d="M-46 -40Q0 -62 46 -40L0 56Z" fill="#FFD21F" stroke="#1A1A1A" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M-48 -42Q0 -66 48 -42L44 -30Q0 -50 -44 -30Z" fill="#E08A2E" stroke="#1A1A1A" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="-14" cy="-16" r="8" fill="#FF3B1F" stroke="#1A1A1A" stroke-width="4"/><circle cx="14" cy="-6" r="7" fill="#FF3B1F" stroke="#1A1A1A" stroke-width="4"/><circle cx="-2" cy="20" r="6" fill="#FF3B1F" stroke="#1A1A1A" stroke-width="4"/>
+    <path d="M18 -26q6 -4 10 2q-6 4 -10 -2z" fill="#2DBE4E"/>
+  </g>
+</defs></svg>
+
+<section data-out="brand-kit" style="width:1600px;height:1820px;background:var(--cream)">
+  <div class="abs fat" style="top:56px;left:70px;font-size:44px;color:#1A1A1A">SZELET — brand kit</div>
+  <div class="abs mono" style="top:72px;right:70px;font-size:20px;color:#1A1A1A">Use exactly as shown</div>
+
+  <div class="abs label" style="top:150px;left:70px">1 · Logo</div>
+  <div class="abs center" style="top:190px;left:70px;width:700px;height:320px;background:var(--red);color:var(--cream)"><div class="lg" style="font-size:150px"></div></div>
+  <div class="abs center" style="top:190px;left:830px;width:700px;height:320px;background:var(--sky);color:#1A1A1A"><div class="lg" style="font-size:150px"></div></div>
+
+  <div class="abs label" style="top:550px;left:70px">2 · Colours</div>
+  <div class="abs" style="top:590px;left:70px;width:1460px;height:120px;display:flex">
+    <div style="flex:1;background:#FF3B1F"></div><div style="flex:1;background:#FFD21F"></div><div style="flex:1;background:#2DBE4E"></div><div style="flex:1;background:#6FD3FF"></div><div style="flex:1;background:#FFF4DC;outline:2px solid #1A1A1A;outline-offset:-2px"></div><div style="flex:.6;background:#8A3B12"></div></div>
+  <div class="abs mono" style="top:725px;left:70px;width:1460px;display:flex;font-size:15px;color:#1A1A1A">
+    <div style="flex:1">Tomato #FF3B1F</div><div style="flex:1">Sunny #FFD21F</div><div style="flex:1">Basil #2DBE4E</div><div style="flex:1">Sky #6FD3FF</div><div style="flex:1">Mozzarella #FFF4DC</div><div style="flex:.6">Crust #8A3B12</div></div>
+
+  <div class="abs label" style="top:800px;left:70px">3 · Pizza boxes (one colour per flavour)</div>
+  <div class="abs" style="top:840px;left:70px;width:1460px;height:700px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px" data-boxes></div>
+
+  <div class="abs label" style="top:1250px;left:70px">4 · Patterns &amp; stickers</div>
+  <svg class="abs" width="1460" height="260" style="top:1290px;left:70px">
+    <defs><pattern id="p-sl" width="120" height="130" patternUnits="userSpaceOnUse"><use href="#slice" transform="translate(30 35) scale(.42) rotate(-20)"/><use href="#slice" transform="translate(90 100) scale(.42) rotate(160)"/></pattern>
+      <pattern id="p-ch" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#FFF4DC"/><rect width="40" height="40" fill="#FF3B1F"/><rect x="40" y="40" width="40" height="40" fill="#FF3B1F"/></pattern></defs>
+    <rect width="460" height="260" fill="#6FD3FF"/><rect width="460" height="260" fill="url(#p-sl)"/>
+    <rect x="500" width="460" height="260" fill="url(#p-ch)"/>
+    <g transform="translate(1000 0)"><rect width="460" height="260" fill="#2DBE4E"/>
+      <circle cx="110" cy="130" r="92" fill="#FFD21F" stroke="#1A1A1A" stroke-width="6"/><text x="110" y="122" text-anchor="middle" font-family="Bagel Fat One" font-size="40" fill="#1A1A1A">stone</text><text x="110" y="166" text-anchor="middle" font-family="Bagel Fat One" font-size="40" fill="#1A1A1A">baked</text>
+      <g transform="translate(330 130) rotate(-8)"><rect x="-100" y="-50" width="200" height="100" rx="50" fill="#FF3B1F" stroke="#1A1A1A" stroke-width="6"/><text y="14" text-anchor="middle" font-family="Bagel Fat One" font-size="38" fill="#FFF4DC">pull it!</text></g></g>
+  </svg>
+  <div class="abs fat" style="top:1600px;left:70px;font-size:72px;color:#FF3B1F">Slice of the good life.</div>
+  <div class="abs mono" style="top:1710px;left:74px;font-size:20px;color:#1A1A1A">Fonts: Bagel Fat One (logo, headlines) · DM Mono (labels) · Frozen stone-baked pizza · Hungarian "szelet" = slice</div>
+</section>
+
+<script>
+const SL='<svg viewBox="-50 -60 100 120"><use href="#slice"/></svg>';
+const LOGO=`<span>szelet</span>${SL}`;
+const FL=[['Margherita','#FF3B1F','#FFF4DC'],['Pepperoni','#FFD21F','#1A1A1A'],['Funghi','#2DBE4E','#FFF4DC'],['Four Cheese','#6FD3FF','#1A1A1A']];
+document.querySelectorAll('[data-boxes]').forEach(el=>{el.innerHTML=FL.map(([n,bg,fg])=>`
+  <div style="aspect-ratio:1;position:relative;background:${bg};color:${fg};border:6px solid #1A1A1A;overflow:hidden">
+    <div class="mono" style="position:absolute;top:16px;left:16px;font-size:12px">Stone-baked pizza</div>
+    <div class="mono" style="position:absolute;top:16px;right:16px;font-size:12px">380 g</div>
+    <div class="center" style="position:absolute;left:0;right:0;top:54px"><div class="lg" style="font-size:64px"></div></div>
+    <svg style="position:absolute;left:50%;top:128px;transform:translateX(-50%)" width="130" height="130" viewBox="-130 -130 260 260">
+      <circle r="118" fill="#E08A2E" stroke="#1A1A1A" stroke-width="6"/><circle r="96" fill="${n==='Four Cheese'?'#FFE7A8':'#FF6A3D'}" stroke="#1A1A1A" stroke-width="4"/>
+      ${n==='Pepperoni'?[[-40,-30],[30,-45],[45,25],[-20,40],[0,0]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="18" fill="#B3241A" stroke="#1A1A1A" stroke-width="3"/>`).join(''):''}
+      ${n==='Funghi'?[[-40,-25],[30,-40],[40,30],[-25,40]].map(([x,y])=>`<path d="M${x-14} ${y}a14 12 0 0 1 28 0z" fill="#E9D8B8" stroke="#1A1A1A" stroke-width="3"/>`).join(''):''}
+      ${n==='Margherita'?[[-35,-20],[25,-35],[30,30],[-25,35]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="20" fill="#FFF4DC" stroke="#1A1A1A" stroke-width="3"/>`).join('')+'<path d="M-6 -6q8 -8 14 2q-8 6 -14 -2z" fill="#2DBE4E"/>':''}
+      ${n==='Four Cheese'?[[-35,-20],[25,-35],[30,30],[-25,35]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="14" fill="#FFD21F" stroke="#1A1A1A" stroke-width="3"/>`).join(''):''}
+    </svg>
+    <div class="fat" style="position:absolute;left:0;right:0;bottom:46px;text-align:center;font-size:36px">${n}</div>
+    <div class="mono" style="position:absolute;left:0;right:0;bottom:20px;text-align:center;font-size:12px">Pull it, share it.</div>
+  </div>`).join('');});
+document.querySelectorAll('.lg').forEach(el=>el.innerHTML=LOGO);
+</script>
+</body>
+</html>
