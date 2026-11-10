@@ -77,3 +77,7 @@ song really stops and put the 23 card on the last real beat before it.
 Luwak song: drop 3.42 s, final hit 6.24 s, song ends 6.33 s. Monitor shot: `"type": "screen"` with the gold logo
 (`logo-gold`) sliding in after a 0.5 s `delay`, then a selection box; 9 photo cuts placed with `"at"` on the
 song's hits; 23 card on the final hit, song fades out under it.
+
+## Shot counts in the references
+- Luwak: 15 different images after the drop (one every ~0.2 s), 2 of them pure graphic design (illustration sheet, wordmark poster). Plan ~13 ChatGPT photos + 2 design frames per Luwak-style reel.
+- Belle: a brand board build-up, then about 6 full-screen shots.
