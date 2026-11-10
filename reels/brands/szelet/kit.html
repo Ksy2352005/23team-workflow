@@ -5,7 +5,7 @@
 <title>SZELET brand kit</title>
 <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root{--red:#FF3B1F;--green:#2DBE4E;--cream:#FFF4DC;--sky:#6FD3FF;--yellow:#FFD21F;--crust:#8A3B12}
+  :root{--red:#FF7A1A;--green:#FFB000;--cream:#FFF4DC;--sky:#FFD21F;--yellow:#FFD21F;--crust:#8A3B12}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#222;width:1600px}
   section{position:relative;overflow:hidden}
@@ -40,9 +40,9 @@
 
   <div class="abs label" style="top:550px;left:70px">2 · Colours</div>
   <div class="abs" style="top:590px;left:70px;width:1460px;height:120px;display:flex">
-    <div style="flex:1;background:#FF3B1F"></div><div style="flex:1;background:#FFD21F"></div><div style="flex:1;background:#2DBE4E"></div><div style="flex:1;background:#6FD3FF"></div><div style="flex:1;background:#FFF4DC;outline:2px solid #1A1A1A;outline-offset:-2px"></div><div style="flex:.6;background:#8A3B12"></div></div>
+    <div style="flex:1;background:#FF7A1A"></div><div style="flex:1;background:#FFD21F"></div><div style="flex:1;background:#FFB000"></div><div style="flex:1;background:#E8590C"></div><div style="flex:1;background:#FFF4DC;outline:2px solid #1A1A1A;outline-offset:-2px"></div><div style="flex:.6;background:#8A3B12"></div></div>
   <div class="abs mono" style="top:725px;left:70px;width:1460px;display:flex;font-size:15px;color:#1A1A1A">
-    <div style="flex:1">Tomato #FF3B1F</div><div style="flex:1">Sunny #FFD21F</div><div style="flex:1">Basil #2DBE4E</div><div style="flex:1">Sky #6FD3FF</div><div style="flex:1">Mozzarella #FFF4DC</div><div style="flex:.6">Crust #8A3B12</div></div>
+    <div style="flex:1">Orange #FF7A1A</div><div style="flex:1">Sunny #FFD21F</div><div style="flex:1">Amber #FFB000</div><div style="flex:1">Burnt orange #E8590C</div><div style="flex:1">Mozzarella #FFF4DC</div><div style="flex:.6">Crust #8A3B12</div></div>
 
   <div class="abs label" style="top:800px;left:70px">3 · Pizza boxes (one colour per flavour)</div>
   <div class="abs" style="top:840px;left:70px;width:1460px;height:700px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px" data-boxes></div>
@@ -50,14 +50,14 @@
   <div class="abs label" style="top:1250px;left:70px">4 · Patterns &amp; stickers</div>
   <svg class="abs" width="1460" height="260" style="top:1290px;left:70px">
     <defs><pattern id="p-sl" width="120" height="130" patternUnits="userSpaceOnUse"><use href="#slice" transform="translate(30 35) scale(.42) rotate(-20)"/><use href="#slice" transform="translate(90 100) scale(.42) rotate(160)"/></pattern>
-      <pattern id="p-ch" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#FFF4DC"/><rect width="40" height="40" fill="#FF3B1F"/><rect x="40" y="40" width="40" height="40" fill="#FF3B1F"/></pattern></defs>
-    <rect width="460" height="260" fill="#6FD3FF"/><rect width="460" height="260" fill="url(#p-sl)"/>
+      <pattern id="p-ch" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#FFF4DC"/><rect width="40" height="40" fill="#FF7A1A"/><rect x="40" y="40" width="40" height="40" fill="#FF7A1A"/></pattern></defs>
+    <rect width="460" height="260" fill="#FFD21F"/><rect width="460" height="260" fill="url(#p-sl)"/>
     <rect x="500" width="460" height="260" fill="url(#p-ch)"/>
-    <g transform="translate(1000 0)"><rect width="460" height="260" fill="#2DBE4E"/>
+    <g transform="translate(1000 0)"><rect width="460" height="260" fill="#FF7A1A"/>
       <circle cx="110" cy="130" r="92" fill="#FFD21F" stroke="#1A1A1A" stroke-width="6"/><text x="110" y="122" text-anchor="middle" font-family="Bagel Fat One" font-size="40" fill="#1A1A1A">stone</text><text x="110" y="166" text-anchor="middle" font-family="Bagel Fat One" font-size="40" fill="#1A1A1A">baked</text>
-      <g transform="translate(330 130) rotate(-8)"><rect x="-100" y="-50" width="200" height="100" rx="50" fill="#FF3B1F" stroke="#1A1A1A" stroke-width="6"/><text y="14" text-anchor="middle" font-family="Bagel Fat One" font-size="38" fill="#FFF4DC">pull it!</text></g></g>
+      <g transform="translate(330 130) rotate(-8)"><rect x="-100" y="-50" width="200" height="100" rx="50" fill="#E8590C" stroke="#1A1A1A" stroke-width="6"/><text y="14" text-anchor="middle" font-family="Bagel Fat One" font-size="38" fill="#FFF4DC">pull it!</text></g></g>
   </svg>
-  <div class="abs fat" style="top:1600px;left:70px;font-size:72px;color:#FF3B1F">Slice of the good life.</div>
+  <div class="abs fat" style="top:1600px;left:70px;font-size:72px;color:#FF7A1A">Slice of the good life.</div>
   <div class="abs mono" style="top:1710px;left:74px;font-size:20px;color:#1A1A1A">Fonts: Bagel Fat One (logo, headlines) · DM Mono (labels) · Frozen stone-baked pizza · Hungarian "szelet" = slice</div>
 </section>
 
@@ -71,7 +71,7 @@
   <g id="basil"><path d="M0 0q30 -40 60 0q-30 30 -60 0z" fill="#2DBE4E" stroke="#1E8A38" stroke-width="2"/><path d="M0 0h58" stroke="#1E8A38" stroke-width="2"/></g>
 </defs></svg>
 
-<section data-out="sk-01-flatlay" class="sk" style="background:#6FD3FF">
+<section data-out="sk-01-flatlay" class="sk" style="background:#FFD21F">
   <div class="abs sh" style="left:60px;top:150px;width:420px;height:420px;transform:rotate(-8deg)" data-box="Margherita"></div>
   <div class="abs sh" style="left:560px;top:250px;width:400px;height:400px;transform:rotate(7deg)" data-box="Pepperoni"></div>
   <div class="abs sh" style="left:620px;top:1000px;width:380px;height:380px;transform:rotate(-6deg)" data-box="Funghi"></div>
@@ -80,7 +80,7 @@
     <use href="#basil" transform="translate(520 1250) rotate(30)"/><use href="#basil" transform="translate(110 640) rotate(-40)"/></svg>
 </section>
 
-<section data-out="sk-02-cheese-pull" class="sk" style="background:#FFD21F">
+<section data-out="sk-02-cheese-pull" class="sk" style="background:#FF7A1A">
   <div class="abs" style="left:70px;top:250px;width:570px;height:570px" data-box="Pepperoni"></div>
   <div class="abs" style="left:112px;top:820px;width:800px;height:640px;background:#C9A47A;border:6px solid #1A1A1A;transform:perspective(1400px) rotateX(35deg);transform-origin:top"></div>
   <svg class="abs" width="1024" height="1536">
@@ -90,17 +90,17 @@
     <circle cx="520" cy="470" r="22" fill="#FFF4DC"/><circle cx="560" cy="380" r="16" fill="#FFF4DC"/></g></svg>
 </section>
 
-<section data-out="sk-03-pattern" class="sk" style="background:#2DBE4E" data-grid></section>
+<section data-out="sk-03-pattern" class="sk" style="background:#FFD21F" data-grid></section>
 
-<section data-out="sk-04-bite" class="sk" style="background:#6FD3FF">
+<section data-out="sk-04-bite" class="sk" style="background:#FFB000">
   <svg class="abs" width="1024" height="1536">
     <ellipse cx="520" cy="560" rx="210" ry="270" fill="#E6B391" opacity=".55"/>
-    <path d="M240 1536Q260 1000 520 940Q780 1000 800 1536Z" fill="#FF3B1F"/>
+    <path d="M240 1536Q260 1000 520 940Q780 1000 800 1536Z" fill="#FFF4DC"/>
     <path d="M620 700 L860 660 L700 420 Z" fill="#FF6A3D" stroke="#1A1A1A" stroke-width="5" transform="rotate(10 740 560)"/></svg>
   <div class="abs sh" style="left:160px;top:1090px;width:360px;height:360px;transform:rotate(-10deg)" data-box="Four Cheese"></div>
 </section>
 
-<section data-out="sk-05-tomatoes" class="sk" style="background:#FF3B1F">
+<section data-out="sk-05-tomatoes" class="sk" style="background:#FF7A1A">
   <div class="abs sh" style="left:262px;top:300px;width:500px;height:500px;transform:rotate(-6deg)" data-box="Margherita"></div>
   <svg class="abs" width="1024" height="1536"><rect x="452" y="790" width="120" height="420" rx="50" fill="#E6B391" opacity=".75"/>
     <use href="#tomato" transform="translate(487 1353) scale(1.17) rotate(189)"/><use href="#tomato" transform="translate(970 1370) scale(1.19) rotate(310)"/><use href="#tomato" transform="translate(26 1515) scale(1.32) rotate(132)"/><use href="#tomato" transform="translate(479 1148) scale(1.40) rotate(240)"/><use href="#tomato" transform="translate(975 1253) scale(1.22) rotate(77)"/><use href="#tomato" transform="translate(474 1375) scale(0.98) rotate(267)"/><use href="#tomato" transform="translate(798 1429) scale(0.91) rotate(32)"/><use href="#tomato" transform="translate(326 1438) scale(1.38) rotate(21)"/><use href="#tomato" transform="translate(616 1449) scale(0.92) rotate(137)"/><use href="#tomato" transform="translate(968 1354) scale(1.26) rotate(198)"/><use href="#tomato" transform="translate(874 1252) scale(1.26) rotate(295)"/><use href="#tomato" transform="translate(910 1543) scale(1.37) rotate(187)"/><use href="#tomato" transform="translate(199 1068) scale(0.97) rotate(111)"/><use href="#tomato" transform="translate(528 1544) scale(1.24) rotate(320)"/><use href="#tomato" transform="translate(616 1265) scale(1.15) rotate(197)"/><use href="#tomato" transform="translate(718 1323) scale(1.19) rotate(299)"/><use href="#tomato" transform="translate(475 1512) scale(1.07) rotate(14)"/><use href="#tomato" transform="translate(572 1557) scale(1.20) rotate(356)"/><use href="#tomato" transform="translate(334 1407) scale(1.33) rotate(277)"/><use href="#tomato" transform="translate(213 1415) scale(1.23) rotate(324)"/><use href="#tomato" transform="translate(546 1195) scale(0.96) rotate(246)"/><use href="#tomato" transform="translate(990 1095) scale(1.07) rotate(34)"/><use href="#tomato" transform="translate(840 1509) scale(0.98) rotate(150)"/><use href="#tomato" transform="translate(874 1443) scale(1.11) rotate(60)"/><use href="#tomato" transform="translate(90 1359) scale(1.21) rotate(23)"/><use href="#tomato" transform="translate(773 1417) scale(1.19) rotate(282)"/><use href="#tomato" transform="translate(571 1308) scale(1.02) rotate(18)"/><use href="#tomato" transform="translate(634 1053) scale(0.94) rotate(307)"/><use href="#tomato" transform="translate(64 1535) scale(1.00) rotate(208)"/><use href="#tomato" transform="translate(597 1362) scale(1.03) rotate(353)"/><use href="#tomato" transform="translate(86 1551) scale(1.33) rotate(160)"/><use href="#tomato" transform="translate(737 1540) scale(0.97) rotate(193)"/><use href="#tomato" transform="translate(771 1285) scale(1.33) rotate(197)"/><use href="#tomato" transform="translate(210 1367) scale(1.39) rotate(259)"/><use href="#tomato" transform="translate(555 1270) scale(1.22) rotate(121)"/><use href="#tomato" transform="translate(616 1273) scale(1.39) rotate(266)"/><use href="#tomato" transform="translate(620 1330) scale(1.07) rotate(212)"/><use href="#tomato" transform="translate(644 1060) scale(1.09) rotate(301)"/><use href="#tomato" transform="translate(272 1080) scale(1.22) rotate(170)"/><use href="#tomato" transform="translate(954 1230) scale(1.24) rotate(180)"/><use href="#tomato" transform="translate(571 1427) scale(1.14) rotate(301)"/><use href="#tomato" transform="translate(124 1538) scale(1.24) rotate(189)"/><use href="#tomato" transform="translate(514 1371) scale(1.13) rotate(303)"/><use href="#tomato" transform="translate(655 1140) scale(1.08) rotate(160)"/><use href="#tomato" transform="translate(756 1482) scale(1.20) rotate(153)"/><use href="#tomato" transform="translate(772 1103) scale(1.29) rotate(13)"/><use href="#tomato" transform="translate(269 1208) scale(1.15) rotate(334)"/><use href="#tomato" transform="translate(551 1172) scale(1.06) rotate(347)"/><use href="#tomato" transform="translate(891 1382) scale(1.25) rotate(52)"/><use href="#tomato" transform="translate(659 1535) scale(1.07) rotate(114)"/><use href="#tomato" transform="translate(897 1464) scale(1.33) rotate(86)"/><use href="#tomato" transform="translate(163 1222) scale(1.27) rotate(111)"/><use href="#tomato" transform="translate(923 1188) scale(1.01) rotate(61)"/><use href="#tomato" transform="translate(69 1321) scale(1.38) rotate(161)"/><use href="#tomato" transform="translate(375 1492) scale(1.04) rotate(328)"/><use href="#tomato" transform="translate(175 1462) scale(1.21) rotate(301)"/><use href="#tomato" transform="translate(265 1265) scale(1.05) rotate(138)"/><use href="#tomato" transform="translate(951 1227) scale(1.22) rotate(148)"/><use href="#tomato" transform="translate(859 1340) scale(1.10) rotate(211)"/><use href="#tomato" transform="translate(319 1152) scale(0.90) rotate(318)"/><use href="#tomato" transform="translate(889 1336) scale(1.38) rotate(113)"/><use href="#tomato" transform="translate(66 1431) scale(1.13) rotate(339)"/><use href="#tomato" transform="translate(591 1328) scale(1.07) rotate(116)"/><use href="#tomato" transform="translate(139 1489) scale(1.19) rotate(146)"/><use href="#tomato" transform="translate(245 1464) scale(1.02) rotate(17)"/><use href="#tomato" transform="translate(406 1509) scale(1.34) rotate(220)"/><use href="#tomato" transform="translate(101 1056) scale(1.14) rotate(61)"/><use href="#tomato" transform="translate(351 1307) scale(1.05) rotate(339)"/><use href="#tomato" transform="translate(40 1318) scale(1.17) rotate(27)"/><use href="#tomato" transform="translate(232 1224) scale(0.96) rotate(276)"/></svg>
@@ -109,7 +109,7 @@
 <script>
 const SL='<svg viewBox="-50 -60 100 120"><use href="#slice"/></svg>';
 const LOGO=`<span>szelet</span>${SL}`;
-const FL=[['Margherita','#FF3B1F','#FFF4DC'],['Pepperoni','#FFD21F','#1A1A1A'],['Funghi','#2DBE4E','#FFF4DC'],['Four Cheese','#6FD3FF','#1A1A1A']];
+const FL=[['Margherita','#FF7A1A','#FFF4DC'],['Pepperoni','#FFD21F','#1A1A1A'],['Funghi','#E8590C','#FFF4DC'],['Four Cheese','#FFB000','#1A1A1A']];
 document.querySelectorAll('[data-boxes]').forEach(el=>{el.innerHTML=FL.map(([n,bg,fg])=>`
   <div style="aspect-ratio:1;position:relative;background:${bg};color:${fg};border:6px solid #1A1A1A;overflow:hidden">
     <div class="mono" style="position:absolute;top:16px;left:16px;font-size:12px">Stone-baked pizza</div>
