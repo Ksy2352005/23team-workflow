@@ -226,36 +226,94 @@ def _perspective_coeffs(dst, src):
     return np.linalg.solve(np.array(A, float), np.array(b, float)).tolist()
 
 
+def _cursor(scale=1.0):
+    """macOS-style arrow cursor (white with black outline), tip at (0, 0)."""
+    from PIL import ImageDraw
+    pts = [(0, 0), (0, 34), (8, 26), (14, 40), (20, 37), (14, 24), (25, 24)]
+    S = 3 * scale
+    im = Image.new("RGBA", (int(34 * S), int(48 * S)))
+    d = ImageDraw.Draw(im)
+    poly = [(x * S + 3, y * S + 3) for x, y in pts]
+    d.polygon(poly, fill="white", outline="black")
+    d.line(poly + [poly[0]], fill="black", width=max(2, int(1.6 * S)))
+    return im
+
+
+def _lerp(a, b, t):
+    return a + (b - a) * t
+
+
 def render_screen(s, local, frames_dir):
-    """A monitor photo whose screen shows the logo sliding in, like a designer
-    dragging it onto an artboard; then a selection box appears around it."""
+    """A monitor photo whose screen shows a designer at work: the cursor drags
+    the logo onto the artboard, it gets selected, the cursor grabs the corner
+    handle and scales it down a little, then clicks away. The screen's own
+    light is kept on top so it looks like it is really on the display."""
     from PIL import ImageDraw
     photo = _cover(s["photo"], W, H, (0.5, 0.5), frames_dir).copy()
     sw, sh = s.get("screen_size", (1600, 1000))
     scr = Image.new("RGBA", (sw, sh), s.get("color", "#F3D35B"))
-    logo = Image.open(os.path.join(frames_dir, s["logo_png"] + ".png")).convert("RGBA")
-    logo = logo.crop(logo.getbbox())
-    lw = round(sw * s.get("logo_width", 0.62)); logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
-    slide = s.get("slide", 0.7)
-    local = local - s.get("delay", 0)   # wait before the logo starts sliding in
-    p = min(max(local / slide, 0), 1)
-    back = 1 + 2.2 * (p - 1) ** 3 + 1.2 * (p - 1) ** 2          # ease-out with a small overshoot
-    cx = round((sw - lw) / 2 - (1 - back) * (sw * 0.75))
-    cy = (sh - logo.height) // 2
-    scr.alpha_composite(logo, (cx, cy))
-    if local > slide + 0.1:                                      # selection box + handles
-        d = ImageDraw.Draw(scr)
-        bx = ((sw - lw) // 2 - 18, cy - 18, (sw + lw) // 2 + 18, cy + logo.height + 18)
-        d.rectangle(bx, outline="#2F7BFF", width=4)
-        for hx in (bx[0], bx[2]):
-            for hy in (bx[1], bx[3]):
+    key = ("logo", s["logo_png"], sw)
+    if key not in _tile_cache:
+        lg = Image.open(os.path.join(frames_dir, s["logo_png"] + ".png")).convert("RGBA")
+        _tile_cache[key] = lg.crop(lg.getbbox())
+    logo0 = _tile_cache[key]
+    t = local - s.get("delay", 0)
+    cx0, cy0 = sw / 2, sh / 2
+    base_w = sw * s.get("logo_width", 0.5)
+    # timeline (seconds after delay)
+    T_DRAG, T_SEL, T_TO_HANDLE, T_SCALE, T_AWAY, T_DESEL = 0.75, 0.85, 1.35, 2.05, 2.45, 2.6
+    end_scale = s.get("end_scale", 0.82)
+    # logo position and scale
+    if t < T_DRAG:
+        e = ease_out(max(t, 0) / T_DRAG)
+        lx = _lerp(-base_w * 0.6, cx0, e); sc = 1.0
+    else:
+        lx = cx0
+        sc = 1.0 if t < T_TO_HANDLE else _lerp(1.0, end_scale, ease_out((t - T_TO_HANDLE) / (T_SCALE - T_TO_HANDLE)))
+    lw = base_w * sc; lh = lw * logo0.height / logo0.width
+    if t >= 0:
+        lg = logo0.resize((max(1, round(lw)), max(1, round(lh))), Image.LANCZOS)
+        scr.alpha_composite(lg, (round(lx - lw / 2), round(cy0 - lh / 2)))
+    pad = 22
+    box = (lx - lw / 2 - pad, cy0 - lh / 2 - pad, lx + lw / 2 + pad, cy0 + lh / 2 + pad)
+    d = ImageDraw.Draw(scr)
+    if T_SEL <= t < T_DESEL:
+        d.rectangle(box, outline="#2F7BFF", width=4)
+        for hx in (box[0], (box[0] + box[2]) / 2, box[2]):
+            for hy in (box[1], (box[1] + box[3]) / 2, box[3]):
+                if hx == (box[0] + box[2]) / 2 and hy == (box[1] + box[3]) / 2:
+                    continue
                 d.rectangle((hx - 9, hy - 9, hx + 9, hy + 9), fill="white", outline="#2F7BFF", width=3)
+    # cursor path
+    grab = (cx0 + base_w * 0.18, cy0 + 10)                 # where the cursor holds the logo
+    handle_start = (cx0 + base_w / 2 + pad, cy0 + base_w * logo0.height / logo0.width / 2 + pad)
+    if t < T_DRAG:
+        cur = (lx + base_w * 0.18, cy0 + 10)
+    elif t < T_SEL:
+        cur = grab
+    elif t < T_TO_HANDLE:
+        e = ease_out((t - T_SEL) / (T_TO_HANDLE - T_SEL)); cur = (_lerp(grab[0], handle_start[0], e), _lerp(grab[1], handle_start[1], e))
+    elif t < T_SCALE:
+        cur = (box[2], box[3])
+    elif t < T_AWAY:
+        e = ease_out((t - T_SCALE) / (T_AWAY - T_SCALE)); cur = (_lerp(box[2], sw * 0.86, e), _lerp(box[3], sh * 0.84, e))
+    else:
+        cur = (sw * 0.86, sh * 0.84)
+    if t >= -0.3:
+        scr.alpha_composite(_cursor(sw / 1600), (round(cur[0]) - 3, round(cur[1]) - 3))
     quad = s["quad"]   # screen corners in the 1080x1920 frame: TL, TR, BR, BL
     coeffs = _perspective_coeffs(quad, [(0, 0), (sw, 0), (sw, sh), (0, sh)])
     warped = scr.transform((W, H), Image.PERSPECTIVE, coeffs, Image.BICUBIC)
     m = Image.new("L", (W, H), 0); ImageDraw.Draw(m).polygon([tuple(q) for q in quad], fill=255)
-    photo.paste(warped, (0, 0), m)
-    return photo
+    # keep the photo's own screen light (reflections, falloff) on top of the content
+    pa = np.asarray(photo.convert("RGB")).astype(float)
+    wa = np.asarray(warped.convert("RGB")).astype(float)
+    lum = pa.mean(2, keepdims=True)
+    ma = np.asarray(m)[..., None] > 0
+    ref = np.median(lum[ma[..., 0]]) if ma.any() else 1
+    shade = np.clip(lum / max(ref, 1), 0.85, 1.6)
+    out = np.where(ma, np.clip(wa * shade, 0, 255), pa)
+    return Image.fromarray(out.astype(np.uint8)).convert("RGBA")
 
 
 if __name__ == "__main__":

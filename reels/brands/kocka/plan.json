@@ -13,89 +13,72 @@
  "shots": [
   {
    "type": "screen",
-   "photo": "p-monitor",
+   "photo": "p-monitor2",
    "quad": [
     [
-     0,
-     296
+     80,
+     476
     ],
     [
-     1080,
-     296
+     950,
+     451
     ],
     [
-     1080,
-     987
+     955,
+     943
     ],
     [
-     0,
-     987
+     112,
+     1026
     ]
    ],
    "screen_size": [
-    1563,
+    1600,
     1000
    ],
-   "color": "#401F14",
+   "color": "#231109",
    "logo_png": "logo-gold",
-   "logo_width": 0.42,
+   "logo_width": 0.5,
    "slide": 0.7,
-   "delay": 0.5,
+   "delay": 0.35,
    "beats": 1,
-   "fx": "none"
+   "fx": "none",
+   "end_scale": 0.82
   },
   {
-   "bg": "p-box-open",
+   "bg": "p-lid",
    "at": 3.42,
    "beats": 1,
    "fx": "punch",
    "flash": true
   },
   {
-   "bg": "p-drip-dark",
+   "bg": "p-box-coffee",
    "at": 3.85,
    "beats": 1,
    "fx": "punch"
   },
   {
-   "bg": "p-hands-box",
+   "bg": "p-drip-dark",
    "at": 4.23,
    "beats": 1,
    "fx": "punch"
   },
   {
    "bg": "p-fork",
-   "at": 4.6,
-   "beats": 1,
-   "fx": "punch"
-  },
-  {
-   "bg": "p-icecream",
    "at": 4.79,
    "beats": 1,
    "fx": "punch"
   },
   {
-   "bg": "p-lid",
-   "at": 4.97,
-   "beats": 1,
-   "fx": "punch"
-  },
-  {
-   "bg": "p-stack-milk",
+   "bg": "p-icecream",
    "at": 5.36,
    "beats": 1,
    "fx": "punch"
   },
   {
-   "bg": "p-drip-light",
+   "bg": "p-stack-milk",
    "at": 5.74,
-   "beats": 1,
-   "fx": "punch"
-  },
-  {
-   "bg": "p-box-coffee",
-   "at": 5.93,
    "beats": 1,
    "fx": "punch"
   },
