@@ -300,7 +300,7 @@ def render_screen(s, local, frames_dir):
     else:
         cur = (sw * 0.86, sh * 0.84)
     if t >= -0.3:
-        scr.alpha_composite(_cursor(sw / 1600), (round(cur[0]) - 3, round(cur[1]) - 3))
+        scr.alpha_composite(_cursor(sw / 1600 * s.get("cursor_scale", 1.0)), (round(cur[0]) - 3, round(cur[1]) - 3))
     quad = s["quad"]   # screen corners in the 1080x1920 frame: TL, TR, BR, BL
     coeffs = _perspective_coeffs(quad, [(0, 0), (sw, 0), (sw, sh), (0, sh)])
     warped = scr.transform((W, H), Image.PERSPECTIVE, coeffs, Image.BICUBIC)

@@ -13,37 +13,38 @@
  "shots": [
   {
    "type": "screen",
-   "photo": "p-monitor2",
+   "photo": "p-monitor3",
    "quad": [
     [
-     80,
-     476
+     48,
+     441
     ],
     [
-     950,
-     451
+     1027,
+     441
     ],
     [
-     955,
-     943
+     1027,
+     1040
     ],
     [
-     112,
-     1026
+     48,
+     1040
     ]
    ],
    "screen_size": [
     1600,
-    1000
+    979
    ],
-   "color": "#231109",
+   "color": "#1F100B",
    "logo_png": "logo-gold",
    "logo_width": 0.5,
    "slide": 0.7,
    "delay": 0.35,
    "beats": 1,
    "fx": "none",
-   "end_scale": 0.82
+   "end_scale": 0.82,
+   "cursor_scale": 0.65
   },
   {
    "bg": "p-box-coffee",
