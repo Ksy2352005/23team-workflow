@@ -46,39 +46,87 @@
    "end_scale": 0.82
   },
   {
-   "bg": "p-lid",
+   "bg": "p-box-coffee",
    "at": 3.42,
    "beats": 1,
    "fx": "punch",
    "flash": true
   },
   {
-   "bg": "p-box-coffee",
-   "at": 3.85,
+   "bg": "p-drip-dark",
+   "at": 3.64,
    "beats": 1,
    "fx": "punch"
   },
   {
-   "bg": "p-drip-dark",
-   "at": 4.23,
+   "bg": "p-lid",
+   "at": 3.84,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-break",
+   "at": 4.04,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-shelf",
+   "at": 4.24,
    "beats": 1,
    "fx": "punch"
   },
   {
    "bg": "p-fork",
-   "at": 4.79,
+   "at": 4.44,
    "beats": 1,
    "fx": "punch"
   },
   {
-   "bg": "p-icecream",
-   "at": 5.36,
+   "bg": "p-wrap",
+   "at": 4.67,
    "beats": 1,
    "fx": "punch"
   },
   {
-   "bg": "p-stack-milk",
-   "at": 5.74,
+   "bg": "g-monos",
+   "at": 4.87,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-box-of-4",
+   "at": 5.07,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-poster",
+   "at": 5.24,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-flatlay",
+   "at": 5.47,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-gift-hands",
+   "at": 5.67,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-wordmark",
+   "at": 5.87,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-hand-brownie-box",
+   "at": 6.07,
    "beats": 1,
    "fx": "punch"
   },
