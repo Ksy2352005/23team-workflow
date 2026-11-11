@@ -43,7 +43,15 @@ anything one chat makes or decides is written here, so the other chats know it.
 Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
 
 ## Hungarian page rules
-- (add the caption style, hashtags and translation notes here when the user gives them)
+- **Translation rule (into Hungarian): "Instagram tone".** It must sound like someone talking to the viewer, not an article read aloud. The tone reference is the user's own 18 scripts (`scripts-pdf/` and each film's `refs/script-hu.txt`); match them:
+  - storytelling, friendly and professional, never formal or corporate; always **te**, never "Ön"
+  - short spoken lines (about 10 words), plain everyday words; translate the meaning, not the words
+  - spoken connectors and hooks like the scripts use: „De…", „És…", „Pedig…", „Mert…", „Hirtelen…", „Elmondom, miért.", „És itt jön az érdekes rész!", „De vajon…?", „De tudod, miért…?"; takeaways in the „Néha nem kell…, elég, ha…" pattern
+  - avoid written constructions („ki kell derülnie", „érdemes megnézni", „tartalmat gyárt"); prefer what people say („rögtön érthetőnek kell lennie", „miért érdemes megállni", „többet posztolsz")
+  - watch for ambiguity (e.g. „a jó emberek" can mean "good people" → use „a megfelelő emberek")
+  - well-known marketing terms may stay in English (branding, Decoy Effect); prices in forint
+- **Every final Hungarian text comes with a Persian back-translation** (a literal translation of the Hungarian into Persian) so the user can check the meaning. The user may also check it with ChatGPT; weigh its notes against this rule.
+- (add the caption style and hashtags here when the user gives them)
 
 ## Arabic page rules
 - The 18 existing stories are already posted in Hungarian: the Arabic page needs only their Arabic versions (posts AR 1–18), then new stories in both languages.
