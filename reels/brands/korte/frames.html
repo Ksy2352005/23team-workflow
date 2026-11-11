@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KÖRTE frames</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,900,100,1&family=JetBrains+Mono:wght@500&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* KÖRTE — fictional sparkling pear drink, Budapest. Concept by 23 Team. */
+  :root{
+    --bur:#5B1A2E; --bur-deep:#3E0F1E; --butter:#F3D35B; --cream:#F5EEDF; --canvas:#E7DCC3;
+    --persian:#002C66; --firooze:#40E0D0; --offwhite:#F7F7F2;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;width:1080px}
+  section{width:1080px;height:1920px;position:relative;overflow:hidden}
+  .mono{font-family:'JetBrains Mono',monospace;font-size:26px;letter-spacing:.08em;text-transform:uppercase;line-height:1.5}
+  .abs{position:absolute}
+  .grain::after{content:"";position:absolute;inset:0;opacity:.09;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>")}
+
+  /* ---------- LOGO (rendered alone, transparent, locked to frame centre) ---------- */
+  .logo-frame{background:transparent;display:grid;place-items:center}
+  .logo{font-family:'Fraunces',serif;font-weight:900;font-variation-settings:'SOFT' 100,'WONK' 1,'opsz' 144;
+    font-size:250px;letter-spacing:-.045em;line-height:1;display:flex;align-items:baseline;transform:translateY(-.06em)}
+  .logo .o{position:relative;display:inline-block}
+  .logo .seed{position:absolute;width:.12em;height:.18em;background:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140' preserveAspectRatio='none'><path d='M50 0C58 28 100 62 100 92A50 48 0 0 1 0 92C0 62 42 28 50 0Z'/></svg>") center/100% 100% no-repeat;top:-.04em}
+  .logo .seed.a{left:.11em;transform:rotate(-18deg)}
+  .logo .seed.b{left:.31em;transform:rotate(18deg)}
+
+  /* ---------- BACKGROUNDS (no logo — it is overlaid at build time) ---------- */
+  #bg-intro{background:var(--bur)}
+  #bg-pattern{background:var(--butter)}
+  #bg-can{background:var(--cream)}
+  #bg-stripes{background:var(--cream)}
+  #bg-poster{background:var(--butter)}
+  #bg-sticker{background:var(--bur)}
+  #bg-tote{background:var(--butter)}
+  #bg-spec{background:var(--cream)}
+  #end{background:var(--persian);color:var(--offwhite)}
+</style>
+</head>
+<body>
+
+<!-- LOGO LAYERS -->
+<section class="logo-frame" data-out="logo-cream" data-transparent style="color:var(--cream)">
+  <div class="logo"><span>k</span><span class="o">o<i class="seed a"></i><i class="seed b"></i></span><span>rte</span></div>
+</section>
+<section class="logo-frame" data-out="logo-bur" data-transparent style="color:var(--bur)">
+  <div class="logo"><span>k</span><span class="o">o<i class="seed a"></i><i class="seed b"></i></span><span>rte</span></div>
+</section>
+
+<!-- 1 intro: burgundy field -->
+<section id="bg-intro" class="grain" data-out="bg-intro">
+  <div class="abs mono" style="top:150px;left:80px;color:var(--butter)">Körte®<br>Sparkling pear</div>
+  <div class="abs mono" style="top:150px;right:80px;text-align:right;color:var(--butter)">Budapest<br>Est. 2026</div>
+  <div class="abs mono" style="bottom:170px;left:80px;color:var(--butter)">N° 001</div>
+  <div class="abs mono" style="bottom:170px;right:80px;color:var(--butter)">No sugar added</div>
+</section>
+
+<!-- 2 pattern: pear outlines -->
+<section id="bg-pattern" class="grain" data-out="bg-pattern">
+  <svg width="1080" height="1920" class="abs" style="inset:0">
+    <defs>
+      <pattern id="pears" width="216" height="270" patternUnits="userSpaceOnUse" patternTransform="rotate(-8)">
+        <g fill="none" stroke="#5B1A2E" stroke-width="5" opacity=".16">
+          <path d="M108 60c-14 0-20 14-20 30 0 18-30 30-30 70 0 38 24 62 50 62s50-24 50-62c0-40-30-52-30-70 0-16-6-30-20-30z"/>
+          <path d="M108 60c0-12 4-22 12-28"/><path d="M114 44c14-10 30-8 36 2-14 8-28 6-36-2z"/>
+        </g>
+      </pattern>
+    </defs>
+    <rect width="1080" height="1920" fill="url(#pears)"/>
+  </svg>
+</section>
+
+<!-- 3 can close-up, label centred -->
+<section id="bg-can" class="grain" data-out="bg-can">
+  <svg width="1080" height="1920" class="abs" style="inset:0">
+    <defs>
+      <linearGradient id="body" x1="0" x2="1">
+        <stop offset="0" stop-color="#3E0F1E"/><stop offset=".18" stop-color="#6E2238"/>
+        <stop offset=".32" stop-color="#7A2A40"/><stop offset=".55" stop-color="#5B1A2E"/>
+        <stop offset=".85" stop-color="#3E0F1E"/><stop offset="1" stop-color="#2A0913"/>
+      </linearGradient>
+      <linearGradient id="rim" x1="0" x2="1">
+        <stop offset="0" stop-color="#8d8a85"/><stop offset=".3" stop-color="#e9e6df"/>
+        <stop offset=".6" stop-color="#b9b5ad"/><stop offset="1" stop-color="#6f6c67"/>
+      </linearGradient>
+      <radialGradient id="shadow"><stop offset="0" stop-color="#3E0F1E" stop-opacity=".35"/><stop offset="1" stop-color="#3E0F1E" stop-opacity="0"/></radialGradient>
+    </defs>
+    <ellipse cx="540" cy="1760" rx="520" ry="70" fill="url(#shadow)"/>
+    <path d="M190 260 Q190 200 250 190 L830 190 Q890 200 890 260 L890 1660 Q890 1740 820 1750 L260 1750 Q190 1740 190 1660Z" fill="url(#body)"/>
+    <path d="M200 150 Q200 110 260 105 L820 105 Q880 110 880 150 L890 230 L190 230Z" fill="url(#rim)"/>
+    <rect x="190" y="1340" width="700" height="10" fill="#F3D35B"/>
+    <rect x="190" y="560" width="700" height="10" fill="#F3D35B"/>
+    <rect x="300" y="190" width="60" height="1560" fill="#fff" opacity=".07"/>
+  </svg>
+  <div class="abs mono" style="top:640px;width:100%;text-align:center;color:var(--butter)">Sparkling pear · 330 ml</div>
+  <div class="abs mono" style="top:1230px;width:100%;text-align:center;color:var(--butter)">Cold pressed in Budapest</div>
+</section>
+
+<!-- 4 palette bands -->
+<section id="bg-stripes" data-out="bg-stripes">
+  <div class="abs" style="top:0;left:0;right:0;height:600px;background:var(--bur)"></div>
+  <div class="abs" style="bottom:0;left:0;right:0;height:600px;background:var(--butter)"></div>
+  <div class="abs mono" style="top:510px;left:80px;color:var(--cream)">Burgundy #5B1A2E</div>
+  <div class="abs mono" style="top:640px;left:80px;color:var(--bur)">Cream #F5EEDF</div>
+  <div class="abs mono" style="top:1360px;left:80px;color:var(--bur)">Butter #F3D35B</div>
+  <div class="abs mono" style="top:1360px;right:80px;color:var(--bur)">Fraunces Black</div>
+</section>
+
+<!-- 5 poster on a wall -->
+<section id="bg-poster" class="grain" data-out="bg-poster">
+  <div class="abs" style="left:110px;top:330px;width:860px;height:1260px;background:var(--bur);box-shadow:0 40px 80px rgba(62,15,30,.35)">
+    <div class="abs mono" style="top:60px;left:60px;color:var(--butter)">Now pouring</div>
+    <div class="abs mono" style="top:60px;right:60px;color:var(--butter)">Bp. VII.</div>
+    <div class="abs" style="left:60px;right:60px;bottom:210px;font-family:'Fraunces',serif;font-weight:900;font-variation-settings:'SOFT' 100,'WONK' 1;font-size:84px;line-height:.95;color:var(--butter)">Pear, but<br>make it fizz.</div>
+    <div class="abs mono" style="bottom:60px;left:60px;color:var(--butter)">körte.hu</div>
+    <div class="abs mono" style="bottom:60px;right:60px;color:var(--butter)">No sugar added</div>
+  </div>
+</section>
+
+<!-- 6 round sticker -->
+<section id="bg-sticker" class="grain" data-out="bg-sticker">
+  <svg width="1080" height="1920" class="abs" style="inset:0">
+    <circle cx="540" cy="960" r="450" fill="#F3D35B"/>
+    <circle cx="540" cy="960" r="450" fill="none" stroke="#3E0F1E" stroke-opacity=".25" stroke-width="2"/>
+    <path id="ring" d="M540 960 m-380 0 a380 380 0 1 1 760 0 a380 380 0 1 1 -760 0" fill="none"/>
+    <text font-family="JetBrains Mono" font-size="34" letter-spacing="9" fill="#5B1A2E">
+      <textPath href="#ring">SPARKLING PEAR · BUDAPEST · NO SUGAR ADDED · COLD PRESSED · </textPath>
+    </text>
+  </svg>
+</section>
+
+<!-- 7 tote bag -->
+<section id="bg-tote" class="grain" data-out="bg-tote">
+  <svg width="1080" height="1920" class="abs" style="inset:0">
+    <path d="M370 640 C370 330 710 330 710 640" fill="none" stroke="#D8CBAE" stroke-width="44"/>
+    <path d="M370 640 C370 330 710 330 710 640" fill="none" stroke="#C9BA98" stroke-width="44" stroke-dasharray="2 14"/>
+    <path d="M140 600 L940 600 L960 1560 L120 1560Z" fill="#E7DCC3"/>
+    <path d="M140 600 L940 600 L942 640 L138 640Z" fill="#D8CBAE"/>
+  </svg>
+  <div class="abs mono" style="top:1430px;width:100%;text-align:center;color:var(--bur)">Drink the orchard</div>
+</section>
+
+<!-- 8 spec card -->
+<section id="bg-spec" data-out="bg-spec">
+  <div class="abs mono" style="top:170px;left:80px;color:var(--bur)">Körte©<br>Sparkling pear N° 001</div>
+  <div class="abs mono" style="top:170px;right:80px;text-align:right;color:var(--bur)">07.11.2026<br>14:52H</div>
+  <div class="abs mono" style="top:1180px;left:80px;width:420px;color:var(--bur)">Hungarian pears,<br>pressed cold,<br>bottled the same day.</div>
+  <div class="abs mono" style="top:1180px;right:80px;text-align:right;color:var(--bur)">5.0 brix<br>0 g added sugar<br>330 ml</div>
+  <div class="abs mono" style="bottom:170px;left:80px;color:var(--bur)">Identity concept</div>
+  <div class="abs mono" style="bottom:170px;right:80px;color:var(--bur)">by 23 Team</div>
+</section>
+
+<!-- 9 end card (23 Team) -->
+<section id="end" data-out="end">
+  <div class="abs" style="top:860px;width:100%;text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:150px;line-height:.9;letter-spacing:-.03em">23 Marketing</div>
+  <div class="abs" style="top:1020px;left:50%;width:220px;height:10px;margin-left:-110px;border-radius:5px;background:var(--firooze)"></div>
+</section>
+
+</body>
+</html>

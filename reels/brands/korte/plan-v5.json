@@ -1,0 +1,96 @@
+{
+ "audio": "../../music/ref-belle.mp4",
+ "start": 0,
+ "end": 6.88,
+ "frames": "frames",
+ "out": "out/korte-reel-v5.mp4",
+ "shots": [
+  {
+   "bg": "p5-board",
+   "beats": 2,
+   "fx": "drift"
+  },
+  {
+   "bg": "p5-board",
+   "view": [
+    0.32,
+    0.21,
+    2.0
+   ],
+   "beats": 2,
+   "fx": "drift"
+  },
+  {
+   "bg": "p5-board",
+   "view": [
+    0.3,
+    0.45,
+    2.0
+   ],
+   "beats": 2,
+   "fx": "drift"
+  },
+  {
+   "bg": "p5-board",
+   "view": [
+    0.29,
+    0.71,
+    2.0
+   ],
+   "beats": 2,
+   "fx": "drift"
+  },
+  {
+   "bg": "p5-board",
+   "view": [
+    0.72,
+    0.63,
+    2.0
+   ],
+   "beats": 2,
+   "fx": "drift"
+  },
+  {
+   "bg": "p5-cans-floating",
+   "beats": 1.5,
+   "fx": "punch",
+   "flash": true
+  },
+  {
+   "bg": "p5-can-cap",
+   "beats": 1.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "p5-cooler",
+   "beats": 1.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "p5-can-glass",
+   "beats": 1.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "p5-fourpack",
+   "beats": 1.5,
+   "fx": "punch"
+  },
+  {
+   "bg": "p5-cafe",
+   "fx": "punch",
+   "beats": 1.5
+  },
+  {
+   "bg": "end23",
+   "fx": "none",
+   "at": 6.68
+  }
+ ],
+ "end23": {
+  "bg": "#3E0F1E",
+  "logo": "#F5EEDF"
+ },
+ "tail": 0.5,
+ "fade_from": 6.68
+}

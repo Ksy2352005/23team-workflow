@@ -1,0 +1,24 @@
+{
+  "audio": "../../music/sample-01.mp4",
+  "start": 3.45,
+  "end": 12.86,
+  "frames": "frames",
+  "out": "out/korte-reel-v2.mp4",
+  "shots": [
+    {"bg": "bg-intro",         "logo": null,         "beats": 1, "fx": "drift"},
+    {"bg": "bg-intro",         "logo": "logo-cream", "beats": 2, "fx": "punch", "flash": true, "pop": true},
+    {"bg": "photo-can-hand",   "logo": "logo-cream", "beats": 1},
+    {"bg": "bg-pattern",       "logo": "logo-bur",   "beats": 1},
+    {"bg": "photo-pears",      "logo": "logo-cream", "beats": 1},
+    {"bg": "photo-glass",      "logo": "logo-bur",   "beats": 1},
+    {"bg": "photo-tote",       "logo": "logo-bur",   "beats": 1},
+    {"bg": "photo-cup",        "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-sticker",       "logo": "logo-bur",   "beats": 1},
+    {"bg": "photo-four-pack",  "logo": "logo-bur",   "beats": 1},
+    {"bg": "photo-storefront", "logo": "logo-bur",   "beats": 1},
+    {"bg": "bg-poster",        "logo": "logo-cream", "beats": 1},
+    {"bg": "photo-can-cream",  "logo": "logo-cream", "beats": 1},
+    {"bg": "bg-spec",          "logo": "logo-bur",   "beats": 1, "fx": "drift"},
+    {"bg": "end",              "logo": null,         "fx": "punch", "flash": true}
+  ]
+}

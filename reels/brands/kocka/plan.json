@@ -1,0 +1,140 @@
+{
+ "audio": "../../music/ref-luwak.mp4",
+ "start": 0,
+ "end": 6.33,
+ "fade_from": 6.24,
+ "tail": 0.3,
+ "frames": "frames",
+ "out": "out/kocka-reel.mp4",
+ "end23": {
+  "bg": "#24140D",
+  "logo": "#F3EBDD"
+ },
+ "shots": [
+  {
+   "type": "screen",
+   "photo": "p-monitor3",
+   "quad": [
+    [
+     48,
+     441
+    ],
+    [
+     1027,
+     441
+    ],
+    [
+     1027,
+     1040
+    ],
+    [
+     48,
+     1040
+    ]
+   ],
+   "screen_size": [
+    1600,
+    979
+   ],
+   "color": "#1F100B",
+   "logo_png": "logo-gold",
+   "logo_width": 0.5,
+   "slide": 0.7,
+   "delay": 0.35,
+   "beats": 1,
+   "fx": "none",
+   "end_scale": 0.82,
+   "cursor_scale": 0.65
+  },
+  {
+   "bg": "p-box-coffee",
+   "at": 3.42,
+   "beats": 1,
+   "fx": "punch",
+   "flash": true
+  },
+  {
+   "bg": "p-drip-dark",
+   "at": 3.64,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-lid",
+   "at": 3.84,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-break",
+   "at": 4.04,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-shelf",
+   "at": 4.24,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-fork",
+   "at": 4.44,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-wrap",
+   "at": 4.67,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "g-monos",
+   "at": 4.87,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-box-of-4",
+   "at": 5.07,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-poster",
+   "at": 5.24,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-flatlay",
+   "at": 5.47,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-gift-hands",
+   "at": 5.67,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-wordmark",
+   "at": 5.87,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "p-hand-brownie-box",
+   "at": 6.07,
+   "beats": 1,
+   "fx": "punch"
+  },
+  {
+   "bg": "end23",
+   "at": 6.24,
+   "fx": "none"
+  }
+ ]
+}

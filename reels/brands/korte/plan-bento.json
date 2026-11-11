@@ -1,0 +1,186 @@
+{
+ "audio": "../../music/ref-belle.mp4",
+ "start": 0,
+ "end": 7.28,
+ "frames": "frames",
+ "out": "out/korte-bento-draft.mp4",
+ "shots": [
+  {
+   "type": "bento",
+   "color": "#F5EEDF",
+   "tiles": [
+    {
+     "src": "t-loyalty",
+     "rect": [
+      40,
+      140,
+      640,
+      360
+     ],
+     "focus": [
+      0.5,
+      0.55
+     ],
+     "at": 0
+    },
+    {
+     "src": "zo-tote",
+     "rect": [
+      700,
+      140,
+      340,
+      360
+     ],
+     "focus": [
+      0.5,
+      0.4
+     ],
+     "at": 1
+    },
+    {
+     "src": "t-logo",
+     "rect": [
+      40,
+      520,
+      640,
+      460
+     ],
+     "at": 2
+    },
+    {
+     "fill": "#5B1A2E",
+     "rect": [
+      700,
+      520,
+      160,
+      220
+     ],
+     "at": 3
+    },
+    {
+     "fill": "#C9CF5A",
+     "rect": [
+      880,
+      520,
+      160,
+      220
+     ],
+     "at": 3.5
+    },
+    {
+     "fill": "#F3D35B",
+     "rect": [
+      700,
+      760,
+      160,
+      220
+     ],
+     "at": 4
+    },
+    {
+     "fill": "#3E0F1E",
+     "rect": [
+      880,
+      760,
+      160,
+      220
+     ],
+     "at": 4.5
+    },
+    {
+     "src": "t-copy",
+     "rect": [
+      40,
+      1000,
+      320,
+      450
+     ],
+     "at": 5
+    },
+    {
+     "src": "t-stickers",
+     "rect": [
+      380,
+      1000,
+      300,
+      450
+     ],
+     "focus": [
+      0.5,
+      0.3
+     ],
+     "at": 6
+    },
+    {
+     "src": "zo-can-hand",
+     "rect": [
+      700,
+      1000,
+      340,
+      450
+     ],
+     "focus": [
+      0.5,
+      0.45
+     ],
+     "at": 7
+    },
+    {
+     "src": "g-pattern",
+     "rect": [
+      40,
+      1470,
+      500,
+      330
+     ],
+     "focus": [
+      0,
+      0
+     ],
+     "at": 8
+    },
+    {
+     "src": "t-menu",
+     "rect": [
+      560,
+      1470,
+      480,
+      330
+     ],
+     "focus": [
+      0.5,
+      0.3
+     ],
+     "at": 9
+    }
+   ],
+   "beats": 10,
+   "fx": "none"
+  },
+  {
+   "bg": "zo-can-hand",
+   "beats": 2,
+   "fx": "punch"
+  },
+  {
+   "bg": "t-loyalty",
+   "beats": 2,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-tote",
+   "beats": 2,
+   "fx": "punch"
+  },
+  {
+   "bg": "zo-pears",
+   "beats": 2,
+   "fx": "punch"
+  },
+  {
+   "bg": "end",
+   "fx": "punch",
+   "flash": true
+  }
+ ]
+}

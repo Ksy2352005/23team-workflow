@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KOCKA brand kit v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter+Tight:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* KOCKA v3: premium brownies. Chocolate + gold foil + cream. */
+  :root{--choc:#3A2218;--deep:#24140D;--milk:#6B4430;--gold:#C9A45C;--cream:#F3EBDD;--white:#FFFFFF}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#222;width:1600px}
+  section{position:relative;overflow:hidden}
+  .abs{position:absolute}
+  .center{display:flex;align-items:center;justify-content:center}
+  .caps{font-family:'Cormorant Garamond',serif;font-weight:600;text-transform:uppercase;letter-spacing:.22em}
+  .it{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500}
+  .sans{font-family:'Inter Tight',sans-serif;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+  .label{font-family:'Inter Tight';font-weight:600;font-size:18px;letter-spacing:.16em;color:var(--choc);text-transform:uppercase}
+  .foil{background:linear-gradient(120deg,#9C7A3C 0%,#E7CF8E 28%,#B8904A 50%,#F1DCA0 70%,#A9843F 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  svg{overflow:visible}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9C7A3C"/><stop offset=".3" stop-color="#E7CF8E"/><stop offset=".5" stop-color="#B8904A"/><stop offset=".72" stop-color="#F1DCA0"/><stop offset="1" stop-color="#A9843F"/></linearGradient>
+  <g id="mono">
+    <rect x="-46" y="-46" width="92" height="92" fill="none" stroke="url(#gold)" stroke-width="2.5"/>
+    <rect x="-38" y="-38" width="76" height="76" fill="none" stroke="url(#gold)" stroke-width="1.2"/>
+    <g fill="url(#gold)"><circle cx="-46" cy="-46" r="3.5"/><circle cx="46" cy="-46" r="3.5"/><circle cx="46" cy="46" r="3.5"/><circle cx="-46" cy="46" r="3.5"/></g>
+    <text x="0" y="17" text-anchor="middle" font-family="Cormorant Garamond" font-weight="700" font-size="54" fill="url(#gold)">K</text>
+  </g>
+  <linearGradient id="bside" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2A1C"/><stop offset="1" stop-color="#26130B"/></linearGradient>
+  <radialGradient id="btop" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#7A4B34"/><stop offset=".6" stop-color="#55301F"/><stop offset="1" stop-color="#3B2116"/></radialGradient>
+  <g id="brownie"><path d="M-48 -26L-47 42Q-46 48 -40 48H40Q46 48 47 42L48 -26Z" fill="url(#bside)"/>
+    <path d="M-48 -26L-37 -46H37L48 -26Z" fill="url(#btop)"/>
+    <path d="M-34 -38Q-22 -42 -10 -37T12 -38T32 -36M-40 -30Q-24 -34 -8 -29T22 -30T42 -29" fill="none" stroke="#A3735A" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+    <g fill="#1C0E08" opacity=".55"><circle cx="-30" cy="-6" r="2.4"/><circle cx="-12" cy="14" r="2"/><circle cx="8" cy="-2" r="2.6"/><circle cx="26" cy="20" r="2.2"/><circle cx="-26" cy="30" r="2"/><circle cx="2" cy="34" r="2.3"/></g></g>
+</defs></svg>
+
+<section data-out="brand-kit" style="width:1600px;height:2600px;background:var(--cream)">
+  <div class="abs caps" style="top:60px;left:80px;font-size:38px;color:var(--choc)">Kocka — brand kit</div>
+  <div class="abs label" style="top:76px;right:80px">Use exactly as shown</div>
+
+  <div class="abs label" style="top:160px;left:80px">1 · Logo</div>
+  <div class="abs" style="top:200px;left:80px;width:700px;height:360px;background:var(--choc)" data-logo="dark"></div>
+  <div class="abs" style="top:200px;left:820px;width:700px;height:360px;background:var(--cream);outline:2px solid var(--choc);outline-offset:-2px" data-logo="light"></div>
+
+  <div class="abs label" style="top:610px;left:80px">2 · Colours</div>
+  <div class="abs" style="top:650px;left:80px;width:1440px;height:150px;display:flex">
+    <div style="flex:3;background:#3A2218"></div><div style="flex:2;background:#24140D"></div><div style="flex:2;background:linear-gradient(120deg,#9C7A3C,#E7CF8E,#B8904A,#F1DCA0,#A9843F)"></div><div style="flex:2;background:#F3EBDD;outline:2px solid #3A2218;outline-offset:-2px"></div><div style="flex:1;background:#6B4430"></div></div>
+  <div class="abs sans" style="top:815px;left:80px;width:1440px;display:flex;font-size:14px;color:var(--choc)">
+    <div style="flex:3">Chocolate #3A2218</div><div style="flex:2">Dark cocoa #24140D</div><div style="flex:2">Gold foil #C9A45C</div><div style="flex:2">Cream #F3EBDD</div><div style="flex:1">Milk #6B4430</div></div>
+
+  <div class="abs label" style="top:890px;left:80px">3 · Typography</div>
+  <div class="abs" style="top:930px;left:80px;width:1440px;height:230px;background:var(--white);color:var(--choc)">
+    <div class="abs caps" style="left:40px;top:40px;font-size:96px;letter-spacing:.14em">KOCKA</div><div class="abs label" style="left:44px;top:170px">Cormorant Garamond — caps, wide spacing</div>
+    <div class="abs it" style="left:760px;top:40px;font-size:76px">Fudgy, dense, golden.</div><div class="abs label" style="left:764px;top:170px">Cormorant Italic — taglines · Inter Tight — labels</div></div>
+
+  <div class="abs label" style="top:1210px;left:80px">4 · Signature gift box (12 brownies): lid and open tray</div>
+  <div class="abs" style="top:1250px;left:80px;width:700px;height:700px" data-lid></div>
+  <div class="abs" style="top:1250px;left:820px;width:700px;height:700px" data-tray></div>
+
+  <div class="abs label" style="top:2000px;left:80px">5 · Box of 4 · single brownie wrap · seal sticker</div>
+  <div class="abs" style="top:2040px;left:80px;width:640px;height:260px" data-slim></div>
+  <div class="abs" style="top:2040px;left:770px;width:300px;height:300px" data-wrap></div>
+  <svg class="abs" width="300" height="300" style="top:2040px;left:1120px" viewBox="-60 -60 120 120"><circle r="56" fill="#3A2218"/><circle r="50" fill="none" stroke="url(#gold)" stroke-width="1.5"/><use href="#mono" transform="scale(.62)"/></svg>
+  <div class="abs it" style="top:2440px;left:80px;font-size:30px;color:var(--choc)">Toppings in the box: walnut · dark chocolate chips · pistachio · salted caramel · hazelnut · cocoa crumble</div>
+</section>
+
+<!-- ================= SCENE SKETCHES (1024x1536) ================= -->
+<style>.sk{width:1024px;height:1536px} .persp{perspective:1600px} .sh{box-shadow:20px 30px 50px rgba(20,10,5,.45)}</style>
+
+<section data-out="sk-01-monitor" class="sk" style="background:#D9D0C5">
+  <div class="abs" style="left:0;right:0;top:1060px;bottom:0;background:linear-gradient(#8A5E3E,#6E4A30)"></div>
+  <div class="abs" style="left:60px;right:60px;top:170px;height:760px;background:#151515;border-radius:22px"></div>
+  <div class="abs" style="left:92px;right:92px;top:200px;height:690px;background:#3A2218"></div>
+  <div class="abs" style="left:452px;top:930px;width:120px;height:120px;background:#2A2A2A"></div>
+  <div class="abs" style="left:372px;top:1046px;width:280px;height:24px;border-radius:12px;background:#2A2A2A"></div>
+  <div class="abs" style="left:110px;top:1190px;width:520px;height:140px;border-radius:12px;background:#E9E5DE"></div>
+  <div class="abs sh" style="left:690px;top:1120px;width:260px;height:260px;transform:rotate(6deg)" data-lid></div>
+  <svg class="abs" width="1024" height="1536"><ellipse cx="560" cy="1420" rx="130" ry="34" fill="#F4F1EC"/><use href="#brownie" transform="translate(560 1380) scale(1.2) rotate(-4)"/></svg>
+</section>
+
+<section data-out="sk-02-box-open" class="sk persp" style="background:radial-gradient(circle at 50% 30%,#3B271C,#140B07 75%)">
+  <div class="abs" style="left:132px;top:180px;width:760px;height:620px;transform:rotateX(-12deg);transform-origin:bottom" data-lid></div>
+  <div class="abs sh" style="left:112px;top:790px;width:800px;height:640px;transform:rotateX(48deg);transform-origin:top" data-tray></div>
+</section>
+
+<section data-out="sk-03-lid-closed" class="sk persp" style="background:linear-gradient(160deg,#F5EEE3,#E3D6C3)">
+  <div class="abs sh" style="left:142px;top:420px;width:740px;height:740px;transform:rotateX(35deg) rotateZ(-8deg)" data-lid></div>
+</section>
+
+<section data-out="sk-04-fork" class="sk" style="background:linear-gradient(#EDEDEC,#DCDCDA)">
+  <svg class="abs" width="1024" height="1536">
+    <rect x="482" y="900" width="60" height="660" rx="26" fill="#2B2B2B"/>
+    <path d="M440 760H584V900Q584 940 540 940H484Q440 940 440 900Z" fill="#2B2B2B"/>
+    <rect x="444" y="700" width="18" height="120" rx="8" fill="#2B2B2B"/><rect x="480" y="700" width="18" height="120" rx="8" fill="#2B2B2B"/><rect x="516" y="700" width="18" height="120" rx="8" fill="#2B2B2B"/><rect x="552" y="700" width="18" height="120" rx="8" fill="#2B2B2B"/>
+    <use href="#brownie" transform="translate(512 640) scale(4.2) rotate(0)"/><use href="#brownie" transform="translate(512 350) scale(4.2) rotate(3)"/>
+    <path d="M330 175Q420 150 512 160T690 180Q700 230 680 290Q672 330 664 360Q656 400 650 380Q644 330 630 300Q610 380 600 470Q596 500 586 470Q580 380 560 330Q540 300 520 260Q500 300 470 330Q450 420 440 380Q436 330 420 300Q400 260 380 250Q360 300 352 330Q344 350 338 320Q330 260 330 175Z" fill="#2A140C"/>
+  </svg>
+</section>
+
+<section data-out="sk-05-stack-milk" class="sk" style="background:radial-gradient(circle at 40% 40%,#3A2A22,#17100C 80%)">
+  <svg class="abs" width="1024" height="1536">
+    <ellipse cx="430" cy="1240" rx="380" ry="110" fill="#1E1A18"/><ellipse cx="430" cy="1225" rx="340" ry="90" fill="#2A2522"/>
+    <use href="#brownie" transform="translate(430 1080) scale(3.6) rotate(-3)"/><use href="#brownie" transform="translate(430 860) scale(3.6) rotate(4)"/><use href="#brownie" transform="translate(430 640) scale(3.6) rotate(-2)"/><use href="#brownie" transform="translate(430 420) scale(3.6) rotate(3)"/>
+    <circle cx="180" cy="1180" r="3" fill="#6B4430" opacity=".8"/><circle cx="253" cy="1217" r="4" fill="#6B4430" opacity=".8"/><circle cx="326" cy="1254" r="5" fill="#6B4430" opacity=".8"/><circle cx="399" cy="1201" r="3" fill="#6B4430" opacity=".8"/><circle cx="472" cy="1238" r="4" fill="#6B4430" opacity=".8"/><circle cx="545" cy="1185" r="5" fill="#6B4430" opacity=".8"/><circle cx="618" cy="1222" r="3" fill="#6B4430" opacity=".8"/><circle cx="691" cy="1259" r="4" fill="#6B4430" opacity=".8"/><circle cx="244" cy="1206" r="5" fill="#6B4430" opacity=".8"/><circle cx="317" cy="1243" r="3" fill="#6B4430" opacity=".8"/><circle cx="390" cy="1190" r="4" fill="#6B4430" opacity=".8"/><circle cx="463" cy="1227" r="5" fill="#6B4430" opacity=".8"/><circle cx="536" cy="1264" r="3" fill="#6B4430" opacity=".8"/><circle cx="609" cy="1211" r="4" fill="#6B4430" opacity=".8"/><circle cx="682" cy="1248" r="5" fill="#6B4430" opacity=".8"/><circle cx="235" cy="1195" r="3" fill="#6B4430" opacity=".8"/><circle cx="308" cy="1232" r="4" fill="#6B4430" opacity=".8"/><circle cx="381" cy="1269" r="5" fill="#6B4430" opacity=".8"/><circle cx="454" cy="1216" r="3" fill="#6B4430" opacity=".8"/><circle cx="527" cy="1253" r="4" fill="#6B4430" opacity=".8"/><circle cx="600" cy="1200" r="5" fill="#6B4430" opacity=".8"/><circle cx="673" cy="1237" r="3" fill="#6B4430" opacity=".8"/><circle cx="226" cy="1184" r="4" fill="#6B4430" opacity=".8"/><circle cx="299" cy="1221" r="5" fill="#6B4430" opacity=".8"/><circle cx="372" cy="1258" r="3" fill="#6B4430" opacity=".8"/><circle cx="445" cy="1205" r="4" fill="#6B4430" opacity=".8"/><circle cx="518" cy="1242" r="5" fill="#6B4430" opacity=".8"/><circle cx="591" cy="1189" r="3" fill="#6B4430" opacity=".8"/><circle cx="664" cy="1226" r="4" fill="#6B4430" opacity=".8"/><circle cx="217" cy="1263" r="5" fill="#6B4430" opacity=".8"/><circle cx="290" cy="1210" r="3" fill="#6B4430" opacity=".8"/><circle cx="363" cy="1247" r="4" fill="#6B4430" opacity=".8"/><circle cx="436" cy="1194" r="5" fill="#6B4430" opacity=".8"/><circle cx="509" cy="1231" r="3" fill="#6B4430" opacity=".8"/><circle cx="582" cy="1268" r="4" fill="#6B4430" opacity=".8"/><circle cx="655" cy="1215" r="5" fill="#6B4430" opacity=".8"/><circle cx="208" cy="1252" r="3" fill="#6B4430" opacity=".8"/><circle cx="281" cy="1199" r="4" fill="#6B4430" opacity=".8"/><circle cx="354" cy="1236" r="5" fill="#6B4430" opacity=".8"/><circle cx="427" cy="1183" r="3" fill="#6B4430" opacity=".8"/>
+    <rect x="770" y="560" width="210" height="620" rx="16" fill="#F2F0EC" opacity=".92"/><rect x="770" y="560" width="210" height="80" rx="16" fill="#FFFFFF"/>
+    <rect x="785" y="600" width="18" height="560" fill="#FFFFFF" opacity=".7"/>
+  </svg>
+</section>
+
+<section data-out="sk-06-drip" class="sk" style="background:#F6F3EE">
+  <svg class="abs" width="1024" height="1536">
+    <ellipse cx="512" cy="1200" rx="420" ry="120" fill="#FFFFFF" stroke="#E6E1D9" stroke-width="4"/>
+    <use href="#brownie" transform="translate(512 1040) scale(3.8) rotate(-4)"/><use href="#brownie" transform="translate(512 800) scale(3.8) rotate(3)"/>
+    <path d="M512 60Q520 120 516 300Q514 500 518 640" stroke="#2A140C" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M300 0Q512 -40 700 0V40Q620 30 560 60Q530 80 512 70Q480 60 420 40Q340 20 300 30Z" fill="#B9B9B9"/>
+    <path d="M370 640Q450 600 512 630T660 640Q668 700 650 760Q644 800 636 780Q630 730 616 700Q600 760 592 820Q586 850 578 818Q574 760 560 720Q500 700 470 730Q456 800 446 770Q442 720 430 700Q400 690 380 710Q372 740 366 712Z" fill="#2A140C"/>
+    <rect x="240" y="1140" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="331" y="1169" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="422" y="1198" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="513" y="1147" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="604" y="1176" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="695" y="1205" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="246" y="1154" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="337" y="1183" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="428" y="1212" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="519" y="1161" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="610" y="1190" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="701" y="1219" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="252" y="1168" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="343" y="1197" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="434" y="1146" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="525" y="1175" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="616" y="1204" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="707" y="1153" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="258" y="1182" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="349" y="1211" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="440" y="1160" width="10" height="7" rx="2" fill="#7A4E34"/><rect x="531" y="1189" width="10" height="7" rx="2" fill="#7A4E34"/>
+  </svg>
+</section>
+
+<section data-out="sk-07-hands-box" class="sk persp" style="background:linear-gradient(#E8E2D9,#D7CDBF)">
+  <div class="abs sh" style="left:142px;top:470px;width:740px;height:740px;transform:rotateX(28deg) rotateZ(3deg)" data-tray></div>
+</section>
+
+<section data-out="sk-08-box-of-4" class="sk" style="background:#F3EBDD">
+  <div class="abs" style="left:0;right:0;top:1000px;bottom:0;background:#E7DCC9"></div>
+  <div class="abs sh" style="left:110px;top:560px;width:800px;height:325px;transform:rotate(-4deg)" data-slim></div>
+  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(250 1080) scale(1.9) rotate(-6)"/><use href="#brownie" transform="translate(430 1100) scale(1.9) rotate(4)"/><use href="#brownie" transform="translate(610 1090) scale(1.9) rotate(-3)"/><use href="#brownie" transform="translate(790 1080) scale(1.9) rotate(7)"/></svg>
+</section>
+
+<section data-out="sk-09-single-wrap" class="sk" style="background:#3A2218">
+  <div class="abs sh" style="left:150px;top:400px;width:440px;height:440px;transform:rotate(-12deg)" data-wrap></div>
+  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(680 1060) scale(3.2) rotate(6)"/></svg>
+</section>
+
+<section data-out="sk-10-tray-top" class="sk" style="background:linear-gradient(135deg,#ECE7E1,#D9D2CA)">
+  <div class="abs sh" style="left:72px;top:318px;width:880px;height:880px" data-tray></div>
+</section>
+
+<section data-out="sk-11-gift" class="sk persp" style="background:linear-gradient(#F1E8DA,#E1D2BD)">
+  <div class="abs sh" style="left:162px;top:470px;width:700px;height:700px;transform:rotateX(25deg) rotateZ(-5deg)" data-lid></div>
+  <svg class="abs" width="1024" height="1536" style="transform:rotate(-5deg)"><rect x="282" y="430" width="40" height="760" fill="url(#gold)" opacity=".95"/><rect x="150" y="1040" width="720" height="40" fill="url(#gold)" opacity=".95"/>
+    <path d="M302 1060C230 970 180 980 190 1040C200 1090 260 1080 302 1060C344 1080 404 1090 414 1040C424 980 374 970 302 1060Z" fill="url(#gold)"/></svg>
+</section>
+
+<section data-out="sk-12-shelf" class="sk" style="background:#EFE9E1">
+  <div class="abs" style="left:0;right:0;top:590px;height:36px;background:#7A5235;box-shadow:0 10px 14px rgba(0,0,0,.25)"></div><div class="abs" style="left:0;right:0;top:1040px;height:36px;background:#7A5235;box-shadow:0 10px 14px rgba(0,0,0,.25)"></div><div class="abs" style="left:0;right:0;top:1490px;height:36px;background:#7A5235;box-shadow:0 10px 14px rgba(0,0,0,.25)"></div>
+  <div class="abs" style="left:30px;top:330px;width:230px;height:260px" data-lid></div><div class="abs" style="left:280px;top:330px;width:230px;height:260px" data-lid></div><div class="abs" style="left:530px;top:330px;width:230px;height:260px" data-lid></div><div class="abs" style="left:780px;top:330px;width:230px;height:260px" data-lid></div>
+  <div class="abs" style="left:30px;top:930px;width:300px;height:110px" data-slim></div><div class="abs" style="left:360px;top:930px;width:300px;height:110px" data-slim></div><div class="abs" style="left:690px;top:930px;width:300px;height:110px" data-slim></div>
+  <div class="abs" style="left:30px;top:1230px;width:230px;height:260px" data-lid></div><div class="abs" style="left:280px;top:1230px;width:230px;height:260px" data-lid></div><div class="abs" style="left:530px;top:1230px;width:230px;height:260px" data-lid></div><div class="abs" style="left:780px;top:1230px;width:230px;height:260px" data-lid></div>
+</section>
+
+<section data-out="logo-gold" data-transparent style="width:1200px;height:700px;background:transparent">
+  <div class="abs" style="inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+    <svg width="170" height="170" viewBox="-50 -50 100 100"><use href="#mono"/></svg>
+    <div class="caps foil" style="font-size:150px;letter-spacing:.24em;padding-left:.24em;margin-top:30px;line-height:1">KOCKA</div>
+    <div class="it foil" style="font-size:64px;margin-top:20px">Signature brownies</div></div>
+</section>
+
+<section data-out="sk-13-break" class="sk" style="background:linear-gradient(#EFE8DF,#DCD0C2)">
+  <svg class="abs" width="1024" height="1536">
+    <g transform="translate(330 760) rotate(-14)"><use href="#brownie" transform="translate(0 0) scale(3.4) rotate(0)"/></g>
+    <g transform="translate(700 720) rotate(16)"><use href="#brownie" transform="translate(0 0) scale(3.4) rotate(0)"/></g>
+    <path d="M470 640Q500 700 480 760Q505 820 485 880" stroke="#2A140C" stroke-width="26" fill="none" stroke-linecap="round"/>
+    <path d="M560 630Q540 700 565 760Q545 820 565 880" stroke="#2A140C" stroke-width="22" fill="none" stroke-linecap="round"/>
+  </svg>
+</section>
+
+<section data-out="sk-14-poster" class="sk" style="background:#EDE6DC">
+  <div class="abs" style="left:0;right:0;top:1180px;bottom:0;background:#A57A55"></div>
+  <div class="abs" style="left:170px;top:250px;width:684px;height:960px;background:#1C110C;padding:22px;box-shadow:20px 30px 40px rgba(0,0,0,.35);transform:rotate(-2deg)">
+    <div style="position:relative;width:100%;height:100%;background:#3A2218;overflow:hidden">
+      <svg class="abs" width="640" height="916" viewBox="0 0 640 916"><use href="#mono" transform="translate(320 110) scale(.7)"/><use href="#brownie" transform="translate(320 450) scale(3.6) rotate(0)"/></svg>
+      <div class="abs caps foil" style="left:0;right:0;top:640px;text-align:center;font-size:56px;letter-spacing:.22em;padding-left:.22em">KOCKA</div>
+      <div class="abs it foil" style="left:0;right:0;top:720px;text-align:center;font-size:58px">Fudgy, dense, golden.</div>
+      <div class="abs sans" style="left:0;right:0;top:830px;text-align:center;font-size:16px;color:#C9A45C">Signature brownies · Budapest</div></div></div>
+</section>
+
+<section data-out="sk-15-flatlay" class="sk" style="background:#F3EBDD">
+  <div class="abs sh" style="left:90px;top:170px;width:520px;height:520px;transform:rotate(-6deg)" data-lid></div>
+  <div class="abs sh" style="left:560px;top:640px;width:400px;height:165px;transform:rotate(8deg)" data-slim></div>
+  <div class="abs sh" style="left:130px;top:860px;width:230px;height:230px;transform:rotate(12deg)" data-wrap></div>
+  <div class="abs sh" style="left:420px;top:1050px;width:230px;height:230px;transform:rotate(-10deg)" data-wrap></div>
+  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(800 330) scale(1.6) rotate(8)"/><use href="#brownie" transform="translate(760 1120) scale(1.7) rotate(-6)"/><use href="#brownie" transform="translate(250 1290) scale(1.5) rotate(12)"/>
+    <circle cx="840" cy="1350" r="60" fill="#3A2218"/><circle cx="840" cy="1350" r="52" fill="none" stroke="url(#gold)" stroke-width="2"/><use href="#mono" transform="translate(840 1350) scale(.55)"/></svg>
+</section>
+
+<!-- design frames for the reel (1080x1920) -->
+<section data-out="g-monos" style="width:1080px;height:1920px;background:#24140D">
+  <svg class="abs" width="1080" height="1920"><use href="#mono" transform="translate(90 80) scale(.9)"/><use href="#mono" transform="translate(270 80) scale(.9)"/><use href="#mono" transform="translate(450 80) scale(.9)"/><use href="#mono" transform="translate(630 80) scale(.9)"/><use href="#mono" transform="translate(810 80) scale(.9)"/><use href="#mono" transform="translate(990 80) scale(.9)"/><use href="#mono" transform="translate(180 255) scale(.9)"/><use href="#mono" transform="translate(360 255) scale(.9)"/><use href="#mono" transform="translate(540 255) scale(.9)"/><use href="#mono" transform="translate(720 255) scale(.9)"/><use href="#mono" transform="translate(900 255) scale(.9)"/><use href="#mono" transform="translate(1080 255) scale(.9)"/><use href="#mono" transform="translate(90 430) scale(.9)"/><use href="#mono" transform="translate(270 430) scale(.9)"/><use href="#mono" transform="translate(450 430) scale(.9)"/><use href="#mono" transform="translate(630 430) scale(.9)"/><use href="#mono" transform="translate(810 430) scale(.9)"/><use href="#mono" transform="translate(990 430) scale(.9)"/><use href="#mono" transform="translate(180 605) scale(.9)"/><use href="#mono" transform="translate(360 605) scale(.9)"/><use href="#mono" transform="translate(540 605) scale(.9)"/><use href="#mono" transform="translate(720 605) scale(.9)"/><use href="#mono" transform="translate(900 605) scale(.9)"/><use href="#mono" transform="translate(1080 605) scale(.9)"/><use href="#mono" transform="translate(90 780) scale(.9)"/><use href="#mono" transform="translate(270 780) scale(.9)"/><use href="#mono" transform="translate(450 780) scale(.9)"/><use href="#mono" transform="translate(630 780) scale(.9)"/><use href="#mono" transform="translate(810 780) scale(.9)"/><use href="#mono" transform="translate(990 780) scale(.9)"/><use href="#mono" transform="translate(180 955) scale(.9)"/><use href="#mono" transform="translate(360 955) scale(.9)"/><use href="#mono" transform="translate(540 955) scale(.9)"/><use href="#mono" transform="translate(720 955) scale(.9)"/><use href="#mono" transform="translate(900 955) scale(.9)"/><use href="#mono" transform="translate(1080 955) scale(.9)"/><use href="#mono" transform="translate(90 1130) scale(.9)"/><use href="#mono" transform="translate(270 1130) scale(.9)"/><use href="#mono" transform="translate(450 1130) scale(.9)"/><use href="#mono" transform="translate(630 1130) scale(.9)"/><use href="#mono" transform="translate(810 1130) scale(.9)"/><use href="#mono" transform="translate(990 1130) scale(.9)"/><use href="#mono" transform="translate(180 1305) scale(.9)"/><use href="#mono" transform="translate(360 1305) scale(.9)"/><use href="#mono" transform="translate(540 1305) scale(.9)"/><use href="#mono" transform="translate(720 1305) scale(.9)"/><use href="#mono" transform="translate(900 1305) scale(.9)"/><use href="#mono" transform="translate(1080 1305) scale(.9)"/><use href="#mono" transform="translate(90 1480) scale(.9)"/><use href="#mono" transform="translate(270 1480) scale(.9)"/><use href="#mono" transform="translate(450 1480) scale(.9)"/><use href="#mono" transform="translate(630 1480) scale(.9)"/><use href="#mono" transform="translate(810 1480) scale(.9)"/><use href="#mono" transform="translate(990 1480) scale(.9)"/><use href="#mono" transform="translate(180 1655) scale(.9)"/><use href="#mono" transform="translate(360 1655) scale(.9)"/><use href="#mono" transform="translate(540 1655) scale(.9)"/><use href="#mono" transform="translate(720 1655) scale(.9)"/><use href="#mono" transform="translate(900 1655) scale(.9)"/><use href="#mono" transform="translate(1080 1655) scale(.9)"/><use href="#mono" transform="translate(90 1830) scale(.9)"/><use href="#mono" transform="translate(270 1830) scale(.9)"/><use href="#mono" transform="translate(450 1830) scale(.9)"/><use href="#mono" transform="translate(630 1830) scale(.9)"/><use href="#mono" transform="translate(810 1830) scale(.9)"/><use href="#mono" transform="translate(990 1830) scale(.9)"/></svg>
+</section>
+<section data-out="g-wordmark" style="width:1080px;height:1920px;background:#3A2218">
+  <div class="abs caps foil" style="left:-40px;right:-40px;top:40px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:212px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:384px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:556px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:728px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:900px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1072px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1244px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1416px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1588px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1760px;text-align:center;font-size:150px;letter-spacing:.2em;line-height:1">KOCKA</div>
+  <svg class="abs" width="1080" height="1920"><use href="#brownie" transform="translate(540 960) scale(5.2) rotate(-6)"/></svg>
+</section>
+
+<section data-out="sk-16-wordmark" class="sk" style="background:#3A2218">
+  <div class="abs caps foil" style="left:-40px;right:-40px;top:20px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:170px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:320px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:470px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:620px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:770px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:920px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1070px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1220px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1370px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div><div class="abs caps foil" style="left:-40px;right:-40px;top:1520px;text-align:center;font-size:132px;letter-spacing:.2em;line-height:1">KOCKA</div>
+  <svg class="abs" width="1024" height="1536"><use href="#brownie" transform="translate(330 760) scale(2.6) rotate(-6)"/></svg>
+  <div class="abs sh" style="left:560px;top:760px;width:360px;height:360px;transform:rotate(8deg)" data-lid></div>
+</section>
+
+<script>
+const fill=(sel,fn)=>document.querySelectorAll(sel).forEach(el=>{if(!el.style.position)el.style.position='absolute';el.innerHTML=fn(el.offsetWidth,el.offsetHeight,el);});
+const MONO=s=>`<svg width="${s}" height="${s}" viewBox="-50 -50 100 100"><use href="#mono"/></svg>`;
+fill('[data-logo]',(w,h,el)=>{const dark=el.dataset.logo==='dark';return `<div style="display:flex;flex-direction:column;align-items:center;height:100%;justify-content:center">
+  ${MONO(110)}<div class="caps ${dark?'foil':''}" style="font-size:96px;letter-spacing:.24em;margin:22px 0 0 .24em;${dark?'':'color:#3A2218'}">KOCKA</div>
+  <div class="sans" style="font-size:15px;margin-top:10px;color:${dark?'#C9A45C':'#6B4430'}">Budapest · brownies</div></div>`;});
+fill('[data-lid]',(w,h)=>`<div style="position:absolute;inset:0;background:radial-gradient(circle at 40% 35%,#4A2C1F,#3A2218 60%,#2C1912)"></div>
+  <svg style="position:absolute;inset:0" width="${w}" height="${h}" viewBox="0 0 700 700">
+   ${[[0,0,0],[700,0,90],[700,700,180],[0,700,270]].map(([x,y,r])=>`<g transform="translate(${x} ${y}) rotate(${r})"><path d="M0 0L230 0L0 230Z" fill="url(#gold)" opacity=".16"/>
+     ${Array.from({length:7},(_,i)=>`<path d="M${20+i*26} 0Q${40+i*26} ${30+i*4} 10 ${20+i*26}" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity=".9"/>`).join('')}
+     <path d="M0 230L230 0" stroke="url(#gold)" stroke-width="2.5"/><circle cx="40" cy="40" r="6" fill="url(#gold)"/></g>`).join('')}
+   <rect x="190" y="170" width="320" height="360" fill="none" stroke="url(#gold)" stroke-width="2.5"/><rect x="204" y="184" width="292" height="332" fill="none" stroke="url(#gold)" stroke-width="1"/>
+   <use href="#mono" transform="translate(350 255) scale(.62)"/></svg>
+  <div class="caps foil" style="position:absolute;left:0;right:0;top:${h*.47}px;text-align:center;font-size:${w*.075}px;letter-spacing:.24em;padding-left:.24em">KOCKA</div>
+  <div class="it foil" style="position:absolute;left:0;right:0;top:${h*.585}px;text-align:center;font-size:${w*.045}px">Signature brownies</div>
+  <div class="sans" style="position:absolute;left:0;right:0;top:${h*.68}px;text-align:center;font-size:${w*.018}px;color:#C9A45C">12 pieces · Budapest</div>`);
+fill('[data-tray]',(w,h)=>{const tops=[['walnut','#B98A4E',9],['chips','#24120A',10],['pistachio','#A9B26A',12],['caramel','#D9A050',8],['hazelnut','#C69A63',9],['cocoa','#6B4430',14]];
+  let g='';for(let i=0;i<12;i++){const c=i%4,r=Math.floor(i/4),x=103+c*165,y=150+r*220,t=tops[(i*5)%6];
+   g+=`<use href="#brownie" transform="translate(${x} ${y}) scale(1.45)"/>`;
+   for(let k=0;k<t[2];k++){const a=(k*137.5)*Math.PI/180,rr=8+((k*29)%26),px=x+Math.cos(a)*rr*1.3,py=y-52+Math.sin(a)*rr*.35;g+=`<rect x="${px-5}" y="${py-4}" width="${t[0]==='chips'?9:11}" height="${t[0]==='cocoa'?5:8}" rx="3" fill="${t[1]}" transform="rotate(${k*40} ${px} ${py})"/>`;}}
+  return `<svg width="${w}" height="${h}" viewBox="0 0 700 700"><rect width="700" height="700" fill="#2C1912"/><rect x="20" y="20" width="660" height="660" fill="#3A2218" stroke="url(#gold)" stroke-width="2"/>
+  ${[1,2,3].map(i=>`<path d="M${20+i*165} 30V670" stroke="#24140D" stroke-width="6"/>`).join('')}${[1,2].map(i=>`<path d="M30 ${20+i*220}H670" stroke="#24140D" stroke-width="6"/>`).join('')}${g}</svg>`;});
+fill('[data-slim]',(w,h)=>`<div style="position:absolute;inset:0;background:#3A2218;box-shadow:inset 0 0 0 3px #C9A45C">
+  <div style="position:absolute;left:${w*.05}px;top:50%;transform:translateY(-50%)">${MONO(h*.45)}</div>
+  <div class="caps foil" style="position:absolute;left:${w*.26}px;top:${h*.28}px;font-size:${h*.2}px;letter-spacing:.22em">KOCKA</div>
+  <div class="it" style="position:absolute;left:${w*.26}px;top:${h*.56}px;font-size:${h*.12}px;color:#F3EBDD">Four fudgy brownies</div>
+  <div class="sans" style="position:absolute;right:${w*.05}px;bottom:${h*.12}px;font-size:${h*.055}px;color:#C9A45C">4 pieces · 240 g</div></div>`);
+fill('[data-wrap]',(w,h)=>`<div style="position:absolute;inset:0;background:linear-gradient(135deg,#FBF7EF,#EDE3D2);box-shadow:inset 0 0 0 2px #E2D6C2"></div>
+  <svg style="position:absolute;inset:0" width="${w}" height="${h}" viewBox="-60 -60 120 120"><path d="M-60 -60L0 -6L60 -60" fill="none" stroke="#D8CBB5" stroke-width="1"/>
+  <circle r="22" fill="#3A2218"/><circle r="19" fill="none" stroke="url(#gold)" stroke-width="1"/><use href="#mono" transform="scale(.26)"/></svg>
+  <div class="caps" style="position:absolute;left:0;right:0;bottom:${h*.12}px;text-align:center;font-size:${w*.07}px;color:#3A2218;letter-spacing:.24em;padding-left:.24em">KOCKA</div>`);
+</script>
+</body>
+</html>
