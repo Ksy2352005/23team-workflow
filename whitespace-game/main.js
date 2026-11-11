@@ -201,7 +201,7 @@ const CAPF = '500 42px "JBMono"', meas = document.createElement('canvas').getCon
 const PAGES = (() => { const pages = []; let cur = []; WORDS.forEach(([w, t0], i) => { cur.push(i); const nxt = WORDS[i + 1]; if (/[.?!:]$/.test(w) || cur.length >= 5 || (/,$/.test(w) && cur.length >= 3) || (nxt && nxt[1] - t0 > 1.2)) { pages.push(cur); cur = []; } }); if (cur.length) pages.push(cur); return pages.map((p, k) => ({ p, t0: WORDS[p[0]][1] - .05, t1: pages[k + 1] ? WORDS[pages[k + 1][0]][1] - .05 : STORY - .4 })); })();
 function caption(c, t) { const pg = PAGES.find(q => t >= q.t0 && t < q.t1); if (!pg) return; const shown = pg.p.filter(i => t >= WORDS[i][1] - .03);
   const full = pg.p.map(i => WORDS[i][0]).join(' '), fw = meas.measureText(full).width; let x = 540 - fw / 2; c.save(); c.font = CAPF; c.textBaseline = 'middle'; c.fillStyle = 'rgba(244,247,255,.95)'; c.shadowColor = 'rgba(190,210,255,.55)'; c.shadowBlur = 10 * K;
-  pg.p.forEach(i => { const w = WORDS[i][0]; if (shown.includes(i)) { const k = clamp((t - WORDS[i][1] + .03) / .12), n = Math.ceil(w.length * k); c.fillText(w.slice(0, n), x, 600); } x += meas.measureText(w + ' ').width; }); c.restore(); }
+  pg.p.forEach(i => { const w = WORDS[i][0]; if (shown.includes(i)) { const k = clamp((t - WORDS[i][1] + .03) / .12), n = Math.ceil(w.length * k); c.fillText(w.slice(0, n), x, 470); } x += meas.measureText(w + ' ').width; }); c.restore(); }
 
 // —— transitions: each new visual comes in with a short blur-zoom; the screen never cuts hard ——
 function sceneAt(t) { let i = 0; while (i + 1 < scenes.length && t >= scenes[i + 1][0]) i++; return i; }
