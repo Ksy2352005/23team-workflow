@@ -63,7 +63,7 @@ voice = np.zeros((N, 2)); voice[:len(vo), 0] = vo[:N]; voice[:len(vo), 1] = vo[:
 # the reference's balance: its soundtrack sits 4.5 dB (RMS) under its voice; the same here
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); mr = np.sqrt(np.mean(music[:int(STORY * SR)] ** 2))
 mix = voice + music * (vr * 0.599 / max(mr, 1e-9))
-mix = place_logo(mix, STORY + .2, SR, vr, 0.9)   # the locked 23 logo sound on the end card
+mix = place_logo(mix, STORY + .2, SR, vr, -1.3)   # the locked 23 logo sound on the end card
 mix = mix[:int(DUR * SR)]; mix[-int(.5 * SR):] *= np.linspace(1, 0, int(.5 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)
 mix = np.concatenate([mix, np.zeros((int(max(3.2, 58.5 - DUR) * SR), 2))])
