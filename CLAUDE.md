@@ -45,8 +45,10 @@ anything one chat makes or decides is written here, so the other chats know it.
 - Pexels API keys are paused (2026-11); OpenArt Plus (MCP connector, $34/mo, commercial rights) or the OpenAI image API are the paid upgrades if more quality or AI video is needed.
 
 ## Motion-design reels (reference remakes, e.g. `whitespace-game/`)
-- Captions always at the **top**, in the locked story-film style (Montserrat Bold 56 px, x 130, y 540, two lines, gold key words), never at the bottom (Instagram's red zone). The visuals sit below them (stage transform: scale .87, centred at y 1205).
-- Music: a calm, monotone bed (one soft sustained chord, no beat), never the pulsing kick/drone. Sound effects on top are fine.
+- Captions always at the **top**, never at the bottom (Instagram's red zone). The visuals sit below them (stage transform: scale .87, centred at y 1205).
+- Captions: the reference's own caption style (e.g. the typewriter monospace line), but placed at the top above the visual — not the story-film caption style.
+- Sound: our own soundtrack built around our animation: dark/cinematic music under the voice (not happy, not a monotone drone, not a pulsing kick), dramatic pauses (the music drops to silence just before each big moment and returns on the hit), and sound effects synced to the on-screen events. The voice always dominates. Never reuse the reference's audio. See `whitespace-game/mix.py`.
+- Render at **60 fps**: `FPS=60 sh tools/master.sh <film> <film>`.
 
 ## Transcribing
 Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
