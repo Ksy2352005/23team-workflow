@@ -6,7 +6,7 @@ await Promise.all([document.fonts.load('800 80px "Unbounded"', 'WHITESPACE ÁÉ�
 const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const MID = '#00113F', GLOWB = '#163A8C', WHITE = '#F4F7FF', GOLD = '#ECBD4A';
-const STORY = 56.9, DUR = 59.4;
+const STORY = 56.9, DUR = 59.4, TS = 1.18 / 1.1;   // the timeline is on the 1.18x voice clock; the voice now runs at 1.1x, so real time = timeline × TS
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), lerp = (a, b, u) => a + (b - a) * u, ss = u => { u = clamp(u); return u * u * (3 - 2 * u); }, seg = (t, a, b) => clamp((t - a) / (b - a));
 function sp(tau, d = .4, b = .25) { if (tau <= 0) return 0; const z = Math.max(.05, 1 - b), wd = Math.PI / d, w0 = wd / Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w0 * tau) * (Math.cos(wd * tau) + z * w0 / wd * Math.sin(wd * tau)); }
 const E = (t, at, d = .4, b = .3) => t < at ? 0 : sp(t - at, d, b);
@@ -93,10 +93,10 @@ sc(1.5, (c, t) => { const q1 = 'MELYIK MÁRKA', q2 = 'TŰNIK DRÁGÁBBNAK?'; txt
 function versus(c, t, kinds, pick, tPick, tA, tB, tIn) {
   const k = E(t, tIn, .45, .35), hiA = ss(seg(t, tA - .1, tA + .2)) * (1 - ss(seg(t, tB - .1, tB + .1))), hiB = ss(seg(t, tB - .1, tB + .2)) * (1 - ss(seg(t, tPick - .5, tPick - .3))), pk = ss(seg(t, tPick - .3, tPick)), blur = Math.sin(clamp((t - tPick + .3) / 1.0) * Math.PI) * (t < tPick + .7 ? 1 : 0);
   c.save(); const s = Math.min(1, k); c.globalAlpha = s; c.filter = blur > .02 ? `blur(${blur * 8 * K}px)` : 'none';
-  txt(c, 'MÁRKA 1', 540, 420, 44, { ls: 8, alpha: s * (pick === 1 || pk < .5 ? 1 : .45) }); txt(c, 'MÁRKA 2', 540, 985, 44, { ls: 8, alpha: s * (pick === 2 || pk < .5 ? 1 : .45) });
-  neon(c, () => page(c, kinds[0], 540, 690, 760 * (1 + .03 * hiA), 450 * (1 + .03 * hiA), t), { alpha: s * (pick === 2 ? 1 - .55 * pk : 1), w: 3.5 + 2 * hiA }); neon(c, () => P(c, [[180, 940], [900, 940]]), { w: 3, alpha: s * .7 });
-  neon(c, () => page(c, kinds[1], 540, 1245, 760 * (1 + .03 * hiB), 450 * (1 + .03 * hiB), t), { alpha: s * (pick === 1 ? 1 - .55 * pk : 1), w: 3.5 + 2 * hiB }); c.restore();
-  const ck = seg(t, tPick, tPick + .45); if (ck > 0) neon(c, () => check(c, 540, pick === 1 ? 690 : 1245, 1.6, ck), { w: 16, glow: 30, alpha: 1 - ss(seg(t, tPick + 1.1, tPick + 1.4)) });
+  txt(c, 'MÁRKA 1', 540, 346, 44, { ls: 8, alpha: s * (pick === 1 || pk < .5 ? 1 : .45) }); txt(c, 'MÁRKA 2', 540, 946, 44, { ls: 8, alpha: s * (pick === 2 || pk < .5 ? 1 : .45) });
+  neon(c, () => page(c, kinds[0], 540, 596, 615 * (1 + .03 * hiA), 362 * (1 + .03 * hiA), t), { alpha: s * (pick === 2 ? 1 - .55 * pk : 1), w: 3.5 + 2 * hiA }); neon(c, () => P(c, [[110, 872], [970, 872]]), { w: 3, alpha: s * .7 });
+  neon(c, () => page(c, kinds[1], 540, 1208, 615 * (1 + .03 * hiB), 362 * (1 + .03 * hiB), t), { alpha: s * (pick === 1 ? 1 - .55 * pk : 1), w: 3.5 + 2 * hiB }); c.restore();
+  const ck = seg(t, tPick, tPick + .45); if (ck > 0) neon(c, () => check(c, 540, pick === 1 ? 596 : 1208, 1.4, ck), { w: 16, glow: 30, alpha: 1 - ss(seg(t, tPick + 1.1, tPick + 1.4)) });
 }
 sc(3.35, (c, t) => versus(c, t, ['sneakerClean', 'gridClutter'], 1, T(19), T(11), T(14), 3.4));
 sc(9.1, (c, t) => versus(c, t, ['phonesClutter', 'phonesClean'], 2, T(34), T(25), T(28), 9.15));
@@ -224,4 +224,4 @@ function endCard(c, t) {   // the locked 23 end card: the logo fades in, settlin
   const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = 1080 * .30, h = w * LOGO.height / LOGO.width, s = 1.04 - .04 * u;
   c.save(); c.globalAlpha = u * .75; if (u < 1) c.filter = `blur(${(1 - u) * 6 * K}px)`; c.translate(540, 960); c.scale(s, s); c.drawImage(LOGO_C, -w / 2, -h / 2, w, h); c.restore();
 }
-window.DUR = DUR; window.EV = []; window.render = t => draw(ctx, t); window.render(0); window.READY = true;
+window.DUR = +(DUR * TS).toFixed(2); window.EV = []; window.render = t => draw(ctx, t / TS); window.render(0); window.READY = true;

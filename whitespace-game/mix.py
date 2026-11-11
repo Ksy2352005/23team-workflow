@@ -7,7 +7,8 @@ import soundfile as sf
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.environ.get('LIB', '/root/lemo-opuscar'), 'core', 'audio'))
 from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, thump, compress, limit, add
-DUR, STORY = 59.4, 56.9
+TS = 1.18 / 1.1   # the voice at 1.1x: every time below is on the 1.18x clock and is stretched by TS
+DUR, STORY = 59.4 * TS, 56.9 * TS
 N = int(DUR * SR) + SR; rng = np.random.default_rng(23)
 buf = lambda: np.zeros((N, 2))
 def verb(x, t60=1.2, wet=.3):
@@ -45,6 +46,8 @@ def scramble(d, v):   # data chatter while a headline decodes
 def ding(v, f=1568): tt = t_(1.2); return verb(np.sin(2 * np.pi * f * tt) * np.exp(-tt * 3) + .4 * np.sin(2 * np.pi * f * 2 * tt) * np.exp(-tt * 5), 1.0, .35) * v
 def glitch(d, v): tt = t_(d); return norm(bp(noise(d), 800, 6000) * (np.sin(2 * np.pi * 37 * tt) > .2)) * v
 fx = buf()
+_add = add
+def add(buf_, x, t, *a): return _add(buf_, x, t * TS, *a)
 # —— the music: dark and cinematic, never happy: D minor (Dm – B♭ – Gm – A), low piano and pad chords, a deep sliding sub, a quiet D–C♯ tension motif, a soft ticking pulse ——
 BPM = 100; BEAT = 60 / BPM; BAR = 4 * BEAT
 mtof = lambda m: 440 * 2 ** ((m - 69) / 12)
@@ -79,7 +82,7 @@ music = song(STORY + 1.0)
 PAUSES = [(7.75, 8.42), (13.85, 14.54), (16.75, 17.46), (36.05, 36.74), (40.05, 40.66), (46.0, 46.64), (54.15, 54.86)]
 g = np.ones(len(music))
 for a, b in PAUSES:
-    ia, ib = int(a * SR), int(b * SR); fd = int(.15 * SR); g[ia:ia + fd] = np.minimum(g[ia:ia + fd], np.linspace(1, 0, fd)); g[ia + fd:ib] = 0
+    ia, ib = int(a * TS * SR), int(b * TS * SR); fd = int(.15 * SR); g[ia:ia + fd] = np.minimum(g[ia:ia + fd], np.linspace(1, 0, fd)); g[ia + fd:ib] = 0
 music *= g; fi, fo = int(1.0 * SR), int(1.2 * SR); music[:fi] *= np.linspace(0, 1, fi); music[-fo:] *= np.linspace(1, 0, fo)
 
 # —— sound effects, each on its own moment of the animation ——
@@ -113,7 +116,7 @@ add(fx, impact(.4), 51.26, 1, 0); add(fx, ding(.3, 2093), 53.1, 1, .3); add(fx, 
 n0, n1 = int((STORY - .6) * SR), int((STORY + .1) * SR); fx[n0:n1] *= np.linspace(1, 0, n1 - n0)[:, None]; fx[n1:] = 0
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import place_logo
 # voice
-raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(HERE, 'refs/voiceover-hu-x1.18.mp3'), '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(HERE, 'refs/voiceover-hu-x1.10.mp3'), '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = compress(norm(np.frombuffer(raw, np.float32).astype(np.float64), .9), thr=.3, ratio=3); voice = buf(); add(voice, vo, 0, 1, 0)
 # duck the effects a little under the voice
 env = np.convolve(np.abs(voice[:, 0]), np.ones(2400) / 2400, 'same'); duck = 1 - .45 * np.clip(env / (env.max() * .25), 0, 1)
