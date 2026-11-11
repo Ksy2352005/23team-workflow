@@ -1,9 +1,53 @@
 # 23 Team
 
-This repo belongs to 23 Team, a Budapest branding, web and marketing studio.
+This repo belongs to 23 Team, a Budapest branding, web and marketing studio. It is the shared memory of every 23 Team chat:
+anything one chat makes or decides is written here, so the other chats know it.
 
 - Brand profile (colours, fonts, voice, handles, services): `brand/23team.md`. Read it before any 23 Team content, reel, graphic or copy work.
-- Website security/launch skill: `skills/23page/`.
+- Website security/launch skills: `skills/23page/` and `skills/security-workflow/` (same skill; the second name is what the environment's setup script installs).
+
+## The two pages (two chats, one repo)
+| Chat | Instagram page | Status |
+|---|---|---|
+| **23HungarianPage** | the Hungarian page | active: 4 posts a day |
+| **23ArabicPage** | the Arabic page (new) | starts later; first job: Arabic versions of the 18 marketing stories |
+
+- Both chats work on the **`main` branch** of this repo. At the start of every chat: `git checkout main && git pull`. Commit and push to `main` after each finished piece, so the other chat sees it.
+- Shared between both pages: this file, `ANIMATION-STYLE.md`, `brand/`, the story films, `tools/`, `reels/`, the post library `posts/`, and the ElevenLabs key (saved on the cloud environment).
+- Each page has its own rules section below. A rule the user gives in one chat that applies to both goes into the shared part.
+- Arabic film folders get the `-ar` ending next to the Hungarian one (e.g. `supermarket-route-ar/`).
+
+## Post library (`posts/`)
+- `posts/INDEX.md` lists every post: number, page (HU/AR), type, title, date made, posted or not, and its files.
+- Each post has a folder `posts/<page>/<NNN>-<slug>/` with the final video(s) or slides and `caption.txt` (the Instagram caption, ready to paste).
+- Final masters are committed here (the containers are temporary; without this, "send me post 7" fails in a later chat). Keep each file under 90 MB.
+- "Send me post N" (or "send me day N"): send the files with SendUserFile and put the caption text in the reply, ready to copy.
+- The user posts by hand and makes the covers (for now). No Facebook Page, no publishing by Claude.
+
+## Content plan (Hungarian page, 10 days from 2026-11-11): 4 posts a day
+1. **Marketing story**: a mascot-world reel from the user's script (the 18 films so far; workflow below).
+2. **Branding secret**: a short tip reel that follows the format of a reference video the user sends (format and pacing only; own wording and visuals).
+3. **Branding identity**: graphic-design showcase of a fictional brand (made together with the user; see "Branding reels" below).
+4. **Carousel**: typography slides (text, background, small effects), very sharp, 1080×1350, replicating the user's examples with the user's texts.
+
+## Marketing story films (the 23motion films)
+- House style: `ANIMATION-STYLE.md` (locked end card, captions, sound). Every film folder: `story.js` (timing), `main.js` (picture), `mix.py` (sound), `captions.js`, `refs/script-hu.txt`.
+- The blue mascot world (navy `#111a52` top / blue gradient), big clear centred visuals, elegant soft transitions, icons that match the words, nothing in front of faces, nothing half off the edges, no thought bubbles, no brand names, animations finish before cuts, characters' heads joined to their bodies.
+- Voice at **1.18×** (pitch kept) unless the user says otherwise. Captions: Montserrat Bold 56 px, x 130, y 540, two lines, gold key words.
+- Voiceovers: the user's mp3, or ElevenLabs (`api.elevenlabs.io`, key injected by the environment): Hungarian voice **"David"** (`M336tBVZHWWiWb4R54ui`), model `eleven_multilingual_v2`.
+- Master: `sh tools/master.sh <film> <film>` (CRF 12, −14 LUFS). Check the logo sound level (max ≈ −11.3 dB) after mastering.
+- Final scripts of the first 18 stories: `scripts-pdf/23-Team-Marketing-Stories-Scripts.pdf`.
+
+## Transcribing
+Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
+
+## Hungarian page rules
+- (add the caption style, hashtags and translation notes here when the user gives them)
+
+## Arabic page rules
+- The 18 existing stories are already posted in Hungarian: the Arabic page needs only their Arabic versions (posts AR 1–18), then new stories in both languages.
+- Arabic captions on screen: right to left, an Arabic font (e.g. Cairo or Tajawal; Montserrat has no Arabic letters); swap Hungarian words drawn in the pictures (e.g. "ÚJ", "Ft").
+- (add the translation rule, dialect, Arabic voice and caption style here when the user gives them)
 
 ## Branding reels (`reels/`)
 - Every fictional brand starts with a short concept in `brand.md`: what the name means, the product, the audience, and why each design choice (logo, colours, font, taglines) fits.
