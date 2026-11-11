@@ -21,6 +21,19 @@ function shadowed(c, blur, oy, alpha, f) { c.save(); c.shadowColor = `rgba(0,10,
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
 const tint = (img, col) => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const x = c.getContext('2d'); x.drawImage(img, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = col; x.fillRect(0, 0, c.width, c.height); return c; };
 const LOGO_C = tint(LOGO, '#C9D3F2');
+const loadImg = async src => { const i = new Image(); i.src = src; await i.decode(); return i; };
+const [PH_PHONE, PH_FEED, PH_SCROLL, PH_ATT] = await Promise.all(['refs/ph-phone.jpg', 'refs/ph-feed.jpg', 'refs/ph-scroll.jpg', 'refs/ph-attention.jpg'].map(loadImg));
+const PHONE_CUT = (() => {   // the phone photo with its grey studio background lifted to white and the edges feathered, so it melts into the page
+  const c = document.createElement('canvas'); c.width = PH_PHONE.width; c.height = PH_PHONE.height; const x = c.getContext('2d'); x.drawImage(PH_PHONE, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height), p = d.data; for (let i = 0; i < p.length; i += 4) { const l = (p[i] + p[i + 1] + p[i + 2]) / 3, u = Math.min(1, Math.max(0, (l - 190) / 40)); for (let k = 0; k < 3; k++) p[i + k] = p[i + k] + (255 - p[i + k]) * u; } x.putImageData(d, 0, 0);
+  x.globalCompositeOperation = 'destination-in'; const g = x.createRadialGradient(c.width / 2, c.height / 2, c.width * .3, c.width / 2, c.height / 2, c.width * .5); g.addColorStop(0, '#000'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, c.width, c.height); return c; })();
+function photoCard(c, img, x, y, w, h, t, o = {}) {   // a photo in a floating card (like the reference): rounded corners, soft shadow, a slow push-in inside
+  const zoom = 1.06 + .05 * (o.push ?? 0), a = o.alpha ?? 1; if (a <= 0) return; c.save(); c.globalAlpha = a;
+  shadowed(c, 70, 40, .35, () => rr(c, x - w / 2, y - h / 2, w, h, 26, '#ffffff'));
+  c.beginPath(); c.roundRect(x - w / 2, y - h / 2, w, h, 26); c.clip();
+  const s = Math.max(w / img.width, h / img.height) * zoom, iw = img.width * s, ih = img.height * s, fx = o.fx ?? .5, fy = o.fy ?? .5;
+  if (o.grey) c.filter = 'grayscale(1) contrast(1.08)'; c.drawImage(img, x - iw * fx, y - ih * fy, iw, ih); c.restore();
+}
 
 // —— the pages ——
 function paper(c, t) {   // the light editorial page: soft white with a faint grid and tiny crosses, darker towards the edges, curled midnight corners
@@ -153,10 +166,12 @@ const L8s = layout(53, 57, SMALL, 940, 64), L8b = layout(58, 61, BIG, 980, 120);
 const L9s = layout(62, 69, '500 46px "Inter"', 800, 62);
 const S = [
   [0, 'paper', (c, t) => { paper(c, t); words(c, t, L1s, 540, 330); words(c, t, L1b, 540, 440, { col: MID });
-    const k = E(t, .05, .5, .35); c.save(); c.globalAlpha = Math.min(1, k * 1.5); rotaryPhone(c, 540, 1180 + 10 * Math.sin(t * 1.6), .95 * (.85 + .15 * Math.min(1, k)), t); c.restore(); }],
+    const k = E(t, .05, .5, .35), rt = WORDS[7][1], ring = t > rt - .1 && t < rt + 1.2 ? Math.sin((t - rt) * 46) * Math.exp(-(t - rt) * 2.4) : 0, s1 = 1.0 * (.85 + .15 * Math.min(1, k));
+    c.save(); c.globalAlpha = Math.min(1, k * 1.5); c.globalCompositeOperation = 'multiply'; c.translate(540, 1200 + 10 * Math.sin(t * 1.6)); c.rotate(ring * .035); c.scale(s1, s1); c.drawImage(PHONE_CUT, -540, -540, 1080, 1080); c.restore();
+    if (ring !== 0) { c.save(); c.strokeStyle = `rgba(201,150,42,${.9 * Math.exp(-(t - rt) * 1.8)})`; c.lineWidth = 12; c.lineCap = 'round'; for (const d of [-1, 1]) for (let q = 0; q < 2; q++) { c.beginPath(); c.arc(540 + d * 400, 1000, 40 + q * 36, d > 0 ? -1.1 : Math.PI - .5, d > 0 ? .5 : Math.PI + 1.1); c.stroke(); } c.restore(); } }],
   [3.3, 'paper', (c, t) => { paper(c, t);
     c.save(); c.globalAlpha = .9; for (const [y0, rot] of [[1000, -.5], [1400, -.5]]) { c.save(); c.translate(540, y0); c.rotate(rot); c.fillStyle = MID; c.fillRect(-900, -55, 1800, 110); c.restore(); } c.restore();
-    const sc = (t - 3.3) * (260 + 420 * seg(t, T(15), T(17) + .3)); feedPhone(c, 540, 1230, .92, sc, { grid: true });
+    const k2 = E(t, 3.35, .5, .3); c.save(); c.translate(540, 1230); c.scale(.9 + .1 * Math.min(1, k2), .9 + .1 * Math.min(1, k2)); c.translate(-540, -1230); photoCard(c, PH_FEED, 540, 1230 + 8 * Math.sin(t * 1.4), 700, 840, t, { push: seg(t, 3.3, 7.2), fy: .52 }); c.restore();
     words(c, t, L2s, 540, 330); words(c, t, L2b, 540, 440, { col: MID, key: [16] }); }],
   [7.2, 'night', (c, t) => { night(c, t, 7.2); words(c, t, L3s, 540, 860, { col: 'rgba(246,239,220,.8)' }); words(c, t, L3b, 540, 975, { col: CREAM, key: [21], keyCol: GOLD }); }],
   [9.95, 'paper', (c, t) => { paper(c, t); words(c, t, L4s, 540, 330, { col: INK }); const k = E(t, 10.0, .5, .3);
@@ -165,11 +180,10 @@ const S = [
     words(c, t, L4b, 540, 1560, { col: MID, key: [31] }); }],
   [13.05, 'paper', (c, t) => { paper(c, t); const k = E(t, 13.1, .45, .4); c.save(); c.translate(540, 1080); c.rotate(-.08 + .03 * Math.sin(t * 1.2)); c.scale(Math.min(1.1, k), Math.min(1.1, k)); c.font = '800 860px "Bricolage"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = 'rgba(236,189,74,.92)'; c.fillText('?', 0, 40); c.restore();
     words(c, t, L5s, 540, 1000, { col: INK }); words(c, t, L5b, 540, 1110, { col: MID }); }],
-  [15.25, 'paper', (c, t) => { paper(c, t); const stopT = T(46) + .1, sc0 = 1316, v = 900, u = clamp((t - stopT) / 1.0);
-    // the feed flies by, then slows and stops on the clear post
-    const travel = t < stopT ? sc0 - v * (stopT - t) - 0 : sc0 + (1 - Math.pow(1 - u, 3)) * 260; const focus = ss(seg(t, stopT + .7, stopT + 1.1));
-    feedPhone(c, 540, 1240, .92, travel, { stopAt: 3, focus });
-    for (let k = 0; k < 4; k++) { const st = 15.45 + k * .5; if (st > stopT - .3) break; const u2 = seg(t, st, st + .4); if (u2 > 0 && u2 < 1) { const ty = lerp(1500, 1050, ss(u2)), a = Math.sin(u2 * Math.PI); c.fillStyle = `rgba(255,255,255,${.75 * a})`; c.beginPath(); c.arc(640, ty, 40, 0, 7); c.fill(); c.strokeStyle = `rgba(0,17,63,${.25 * a})`; c.lineWidth = 4; c.stroke(); } }   // a thumb flicking the feed
+  [15.25, 'paper', (c, t) => { paper(c, t); const sw = T(46) - .1, x6 = ss(seg(t, sw, sw + .45));
+    photoCard(c, PH_SCROLL, 540 - 60 * x6, 1240, 700, 840, t, { push: seg(t, 15.25, sw), alpha: 1 - x6 });
+    if (x6 > 0) photoCard(c, PH_ATT, 540 + 60 * (1 - x6), 1240, 700, 840, t, { push: seg(t, sw, 18.85), alpha: x6, fy: .45 });
+    const fz = ss(seg(t, T(48), T(48) + .4)); if (fz > 0) { c.save(); c.strokeStyle = GOLD; c.lineWidth = 10; c.globalAlpha = fz; c.beginPath(); c.roundRect(540 - 350 - 14, 1240 - 420 - 14, 728, 868, 34); c.stroke(); c.restore(); }
     words(c, t, L6s, 540, 330); words(c, t, L6b, 540, 440, { col: MID, key: [48] }); }],
   [18.85, 'night', (c, t) => { night(c, t, 18.85); words(c, t, L7s, 540, 880, { col: 'rgba(246,239,220,.8)' }); words(c, t, L7b, 540, 1000, { col: CREAM, key: [52], keyCol: GOLD });
     const p = E(t, T(52), .4, .4); if (p > 0) { c.save(); c.globalCompositeOperation = 'lighter'; const g = c.createRadialGradient(540, 960, 0, 540, 960, 420); g.addColorStop(0, `rgba(236,189,74,${.18 * Math.min(1, p)})`); g.addColorStop(1, 'rgba(236,189,74,0)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); c.restore(); } }],

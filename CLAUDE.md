@@ -39,6 +39,11 @@ anything one chat makes or decides is written here, so the other chats know it.
 - Master: `sh tools/master.sh <film> <film>` (CRF 12, −14 LUFS). Check the logo sound level (max ≈ −11.3 dB) after mastering.
 - Final scripts of the first 18 stories: `scripts-pdf/23-Team-Marketing-Stories-Scripts.pdf`.
 
+## Pictures (free, automatic)
+- `python3 tools/genimage.py "<prompt>" out.jpg --n 3`: FLUX.1 schnell on the user's Cloudflare Workers AI (free daily allowance; Apache-2.0 model, commercial use OK; the Cloudflare credential is injected by the environment). 1024×1024, about 3 s each; make 3 and pick the best.
+- Prompt style that works: "black and white editorial photograph, … plain light grey seamless background / natural light, premium minimal magazine style, sharp focus"; for objects on the page: "studio product photograph … isolated on a plain pure white seamless background". Avoid visible logos and text in pictures.
+- Pexels API keys are paused (2026-11); OpenArt Plus (MCP connector, $34/mo, commercial rights) or the OpenAI image API are the paid upgrades if more quality or AI video is needed.
+
 ## Transcribing
 Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
 
