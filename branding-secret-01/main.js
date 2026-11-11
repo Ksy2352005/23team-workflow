@@ -37,13 +37,24 @@ function curl(c, x, y, dx, dy, s) {   // a page corner peeling back in midnight:
   c.beginPath(); c.moveTo(0, 0); c.lineTo(s, 0); c.quadraticCurveTo(s * .38, s * .3, s * .55, s * .55); c.quadraticCurveTo(s * .3, s * .38, 0, s); c.closePath(); c.fill();
   c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = 3; c.beginPath(); c.moveTo(s, 0); c.quadraticCurveTo(s * .38, s * .3, s * .55, s * .55); c.stroke(); c.restore();
 }
-function night(c, t) {   // the midnight page: deep blue, a soft glow in the middle, gold light streaks from two corners
+function night(c, t, t0 = 0) {   // the midnight page: deep blue, a soft glow in the middle, gold light blades sweeping in from two corners
   c.fillStyle = MID; c.fillRect(0, 0, 1080, 1920); const g = c.createRadialGradient(540, 980, 50, 540, 980, 900); g.addColorStop(0, 'rgba(22,58,140,.55)'); g.addColorStop(1, 'rgba(22,58,140,0)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
-  streak(c, 1080, 0, -1, 1, t); streak(c, 0, 1920, 1, -1, t + 2);
+  blade(c, 1080, 0, -1, 1, t, t0); blade(c, 0, 1920, 1, -1, t + 1.3, t0 + .08);
 }
-function streak(c, x, y, dx, dy, t) {
-  c.save(); c.translate(x, y); c.scale(dx, dy); c.globalCompositeOperation = 'lighter'; const w = 1 + .06 * Math.sin(t * 1.7);
-  for (const [len, wid, a, off] of [[620, 120, .16, 0], [520, 46, .35, 20], [420, 16, .8, 34]]) { c.save(); c.rotate(.78 + .03 * Math.sin(t)); const g = c.createLinearGradient(0, 0, len * w, 0); g.addColorStop(0, `rgba(236,189,74,${a})`); g.addColorStop(.6, `rgba(236,189,74,${a * .5})`); g.addColorStop(1, 'rgba(236,189,74,0)'); c.fillStyle = g; c.filter = `blur(${wid * .25 * K}px)`; c.beginPath(); c.ellipse(len * .35 * w, off - 30, len * .55 * w, wid / 2, 0, 0, 7); c.fill(); c.restore(); }
+function blade(c, x, y, dx, dy, t, t0) {   // a crisp, glossy blade of gold light from a corner (after the reference's red light): it sweeps in, then drifts and breathes
+  const k = ss(clamp((t - t0) / .55)), e = 1 - Math.pow(1 - k, 3), dr = .04 * Math.sin(t * 1.3), br = 1 + .05 * Math.sin(t * 2.1);
+  const L = 560 * e * br, Wd = 150, ang = .62 + (1 - e) * .5 + dr;   // length, width at the corner, angle from the edge
+  c.save(); c.translate(x, y); c.scale(dx, dy); c.rotate(ang);
+  const path = () => { c.beginPath(); c.moveTo(-60, -Wd * .2); c.quadraticCurveTo(L * .45, -Wd * .55, L, 0); c.quadraticCurveTo(L * .5, Wd * .35, -60, Wd); c.closePath(); };
+  // the glow around it
+  c.save(); c.globalCompositeOperation = 'lighter'; c.shadowColor = 'rgba(236,189,74,.9)'; c.shadowBlur = 60 * K; c.fillStyle = 'rgba(236,170,40,.22)'; path(); c.fill(); c.restore();
+  // the blade itself: a hard leading edge, bright core fading to deep amber
+  const g = c.createLinearGradient(0, -Wd * .4, 0, Wd); g.addColorStop(0, '#FFE39A'); g.addColorStop(.12, '#F5C84E'); g.addColorStop(.45, '#E0A92E'); g.addColorStop(.8, 'rgba(160,104,20,.6)'); g.addColorStop(1, 'rgba(160,104,20,0)');
+  c.save(); c.fillStyle = g; path(); c.fill();
+  // a fade towards the tip, and a glint travelling along the edge
+  const fadeG = c.createLinearGradient(0, 0, L, 0); fadeG.addColorStop(0, 'rgba(0,17,63,0)'); fadeG.addColorStop(.7, 'rgba(0,17,63,0)'); fadeG.addColorStop(1, 'rgba(0,17,63,.85)'); c.globalCompositeOperation = 'source-over'; c.fillStyle = fadeG; path(); c.fill();
+  c.globalCompositeOperation = 'lighter'; const gx = ((t * .35) % 1) * L; const gl = c.createRadialGradient(gx, -Wd * .3, 0, gx, -Wd * .3, 90); gl.addColorStop(0, 'rgba(255,240,190,.55)'); gl.addColorStop(1, 'rgba(255,250,225,0)'); c.fillStyle = gl; path(); c.fill();
+  c.strokeStyle = 'rgba(255,245,210,.9)'; c.lineWidth = 3; c.beginPath(); c.moveTo(-60, -Wd * .2); c.quadraticCurveTo(L * .45, -Wd * .55, L, 0); c.stroke(); c.restore();
   c.restore();
 }
 
@@ -147,7 +158,7 @@ const S = [
     c.save(); c.globalAlpha = .9; for (const [y0, rot] of [[1000, -.5], [1400, -.5]]) { c.save(); c.translate(540, y0); c.rotate(rot); c.fillStyle = MID; c.fillRect(-900, -55, 1800, 110); c.restore(); } c.restore();
     const sc = (t - 3.3) * (260 + 420 * seg(t, T(15), T(17) + .3)); feedPhone(c, 540, 1230, .92, sc, { grid: true });
     words(c, t, L2s, 540, 330); words(c, t, L2b, 540, 440, { col: MID, key: [16] }); }],
-  [7.2, 'night', (c, t) => { night(c, t); words(c, t, L3s, 540, 860, { col: 'rgba(246,239,220,.8)' }); words(c, t, L3b, 540, 975, { col: CREAM, key: [21], keyCol: GOLD }); }],
+  [7.2, 'night', (c, t) => { night(c, t, 7.2); words(c, t, L3s, 540, 860, { col: 'rgba(246,239,220,.8)' }); words(c, t, L3b, 540, 975, { col: CREAM, key: [21], keyCol: GOLD }); }],
   [9.95, 'paper', (c, t) => { paper(c, t); words(c, t, L4s, 540, 330, { col: INK }); const k = E(t, 10.0, .5, .3);
     c.save(); c.globalAlpha = Math.min(1, k * 1.4); shadowed(c, 70, 40, .35, () => poster(c, 540, 1070 + 12 * Math.sin(t * 1.4), .98 * (.9 + .1 * Math.min(1, k)))); c.restore();
     const hl = ss(seg(t, T(31), T(31) + .5)); if (hl > 0) { c.fillStyle = GOLD; c.fillRect(540 - 180, 1070 + 343 * .98 - 80 + 28, 360 * hl, 6); }
@@ -160,11 +171,11 @@ const S = [
     feedPhone(c, 540, 1240, .92, travel, { stopAt: 3, focus });
     for (let k = 0; k < 4; k++) { const st = 15.45 + k * .5; if (st > stopT - .3) break; const u2 = seg(t, st, st + .4); if (u2 > 0 && u2 < 1) { const ty = lerp(1500, 1050, ss(u2)), a = Math.sin(u2 * Math.PI); c.fillStyle = `rgba(255,255,255,${.75 * a})`; c.beginPath(); c.arc(640, ty, 40, 0, 7); c.fill(); c.strokeStyle = `rgba(0,17,63,${.25 * a})`; c.lineWidth = 4; c.stroke(); } }   // a thumb flicking the feed
     words(c, t, L6s, 540, 330); words(c, t, L6b, 540, 440, { col: MID, key: [48] }); }],
-  [18.85, 'night', (c, t) => { night(c, t); words(c, t, L7s, 540, 880, { col: 'rgba(246,239,220,.8)' }); words(c, t, L7b, 540, 1000, { col: CREAM, key: [52], keyCol: GOLD });
+  [18.85, 'night', (c, t) => { night(c, t, 18.85); words(c, t, L7s, 540, 880, { col: 'rgba(246,239,220,.8)' }); words(c, t, L7b, 540, 1000, { col: CREAM, key: [52], keyCol: GOLD });
     const p = E(t, T(52), .4, .4); if (p > 0) { c.save(); c.globalCompositeOperation = 'lighter'; const g = c.createRadialGradient(540, 960, 0, 540, 960, 420); g.addColorStop(0, `rgba(236,189,74,${.18 * Math.min(1, p)})`); g.addColorStop(1, 'rgba(236,189,74,0)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); c.restore(); } }],
   [21.2, 'paper', (c, t) => { paper(c, t); const u = seg(t, T(58) - .15, T(58) + .55); messyCard(c, 540, 1160, .95, u); cleanCard(c, 540, 1160, .95, E(t, T(58) + .05, .45, .35));
     words(c, t, L8s, 540, 330); words(c, t, L8b, 540, 440, { col: MID, key: [60] }); }],
-  [25.4, 'night', (c, t) => { night(c, t); const u = ss(seg(t, 25.55, 26.4)), w = 1080 * .30, h = w * LOGO.height / LOGO.width, s = 1.04 - .04 * u;
+  [25.4, 'night', (c, t) => { night(c, t, 25.4); const u = ss(seg(t, 25.55, 26.4)), w = 1080 * .30, h = w * LOGO.height / LOGO.width, s = 1.04 - .04 * u;
     c.save(); c.globalAlpha = u * .75; if (u < 1) c.filter = `blur(${(1 - u) * 6 * K}px)`; c.translate(540, 900); c.scale(s, s); c.drawImage(LOGO_C, -w / 2, -h / 2, w, h); c.restore();
     words(c, t, L9s, 540, 1110, { col: 'rgba(246,239,220,.85)', key: [67, 68], keyCol: GOLD }); }],
 ];
