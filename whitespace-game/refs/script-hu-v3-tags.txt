@@ -1,0 +1,24 @@
+[excited] Játsszunk egy játékot!
+[curious] Melyik márka tűnik drágábbnak?
+Nézd meg ezt. [pause]
+Az egyes, vagy a kettes? [pause]
+Ha az egyest választottad, igazad van.
+Jöjjön a következő.
+Az első, vagy a második? [pause]
+Ha a kettest választottad, megint igazad van.
+[serious] Ez egy design elv miatt van.
+A neve: [pause] whitespace.
+Ezt úgy éred el, hogy a weboldalad elemei között hagysz elég helyet.
+Így mindegyik elem tud lélegezni.
+[curious] De vajon miért tűnik így drágábbnak?
+Mert úgy érezzük, hogy a márka elég magabiztos ahhoz, hogy önmagáért beszéljen.
+Nem kell rád zúdítania minden információt.
+És azért is, mert ezt az érzést a valódi boltokból ismerjük.
+Gondolj egy bolhapiaci standra.
+Minden tele van pakolva termékekkel.
+Egy prémium óraüzletben viszont csak néhány termék van kint.
+És mindegyik külön figyelmet kap.
+[confident] A whitespace pont ennek a digitális változata.
+A hely az elemek és a termékek között.
+Használd a webshopodban, hogy a márkád értékesebbnek tűnjön.
+[warmly] És hogy többet adj el.

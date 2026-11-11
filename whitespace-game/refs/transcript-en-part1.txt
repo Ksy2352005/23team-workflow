@@ -1,0 +1,12 @@
+does it look more premium?
+Let's play a game.
+Which brand looks more luxury?
+Look at this.
+Is it brand one or brand two?
+If you chose brand one, you are right.
+Now next one.
+Is it the first one or the second one?
+If you chose brand two, you are once again correct.
+This is because of a design principle named white space.
+You achieve this by positioning elements of your website in such way that the elements have enough space to breathe on their own.
+Now,
