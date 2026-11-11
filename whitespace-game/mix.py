@@ -51,7 +51,15 @@ def scramble(d, v):   # data chatter while a headline decodes
 def ding(v, f=1568): tt = t_(1.2); return verb(np.sin(2 * np.pi * f * tt) * np.exp(-tt * 3) + .4 * np.sin(2 * np.pi * f * 2 * tt) * np.exp(-tt * 5), 1.0, .35) * v
 def glitch(d, v): tt = t_(d); return norm(bp(noise(d), 800, 6000) * (np.sin(2 * np.pi * 37 * tt) > .2)) * v
 fx = buf()
-bed = pulse(STORY + .5, 100); bed[:int(.8 * SR)] *= np.linspace(0, 1, int(.8 * SR)); bed[-int(1.5 * SR):] *= np.linspace(1, 0, int(1.5 * SR)); add(fx, bed * .16, 0, 1, 0)
+def pad(d):   # monotone music: one soft sustained chord (A minor add9), slowly breathing, no beat
+    tt = t_(d); out = np.zeros(len(tt))
+    for f, a in [(55, .55), (110, .5), (164.81, .35), (220, .3), (246.94, .18), (329.63, .14)]:
+        for det in (-.15, .15):
+            ph = rng.random() * 6.28; out += a * (np.sin(2 * np.pi * (f + det) * tt + ph) + .25 * np.sin(4 * np.pi * (f + det) * tt + ph) + .08 * np.sin(6 * np.pi * (f + det) * tt + ph))
+    out *= .82 + .18 * np.sin(2 * np.pi * .06 * tt)
+    air = bp(noise(d), 2500, 7000) * .03 * (.6 + .4 * np.sin(2 * np.pi * .045 * tt + 1))
+    return norm(lp(out, 1400) + air)
+bed = pad(STORY + .5); n_in, n_out = int(1.5 * SR), int(2.0 * SR); bed[:n_in] *= np.linspace(0, 1, n_in); bed[-n_out:] *= np.linspace(1, 0, n_out); add(fx, bed * .14, 0, 1, 0)
 for t in [1.5, 3.35, 9.1, 15.3, 18.9, 24.45, 32.9, 40.78, 46.3, 51.16]: add(fx, whoosh(.45, .18), t - .1, 1, 0)
 # the game: click on play; the question decodes
 add(fx, click(.5), 0.62, 1, 0); add(fx, impact(.35), 0.67, 1, 0); add(fx, scramble(.6, .12), 1.55, 1, 0); add(fx, scramble(.6, .12), 2.26, 1, 0)

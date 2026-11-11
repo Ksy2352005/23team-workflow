@@ -44,6 +44,10 @@ anything one chat makes or decides is written here, so the other chats know it.
 - Prompt style that works: "black and white editorial photograph, … plain light grey seamless background / natural light, premium minimal magazine style, sharp focus"; for objects on the page: "studio product photograph … isolated on a plain pure white seamless background". Avoid visible logos and text in pictures.
 - Pexels API keys are paused (2026-11); OpenArt Plus (MCP connector, $34/mo, commercial rights) or the OpenAI image API are the paid upgrades if more quality or AI video is needed.
 
+## Motion-design reels (reference remakes, e.g. `whitespace-game/`)
+- Captions always at the **top**, in the locked story-film style (Montserrat Bold 56 px, x 130, y 540, two lines, gold key words), never at the bottom (Instagram's red zone). The visuals sit below them (stage transform: scale .87, centred at y 1205).
+- Music: a calm, monotone bed (one soft sustained chord, no beat), never the pulsing kick/drone. Sound effects on top are fine.
+
 ## Transcribing
 Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
 
