@@ -55,6 +55,7 @@ Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/tr
   - watch for ambiguity (e.g. „a jó emberek" can mean "good people" → use „a megfelelő emberek")
   - well-known marketing terms may stay in English (branding, Decoy Effect); prices in forint
 - **Every final Hungarian text comes with a Persian back-translation** (a literal translation of the Hungarian into Persian) so the user can check the meaning. The user may also check it with ChatGPT; weigh its notes against this rule.
+- **Voice: always ElevenLabs "David"** (`M336tBVZHWWiWb4R54ui`, model `eleven_multilingual_v2`) for every Hungarian voiceover, sped to 1.18× (pitch kept), unless the user says otherwise.
 - (add the caption style and hashtags here when the user gives them)
 
 ## Arabic page rules
