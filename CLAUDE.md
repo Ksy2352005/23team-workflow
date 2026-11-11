@@ -44,10 +44,14 @@ Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/tr
 
 ## Hungarian page rules
 - **Translation rule (into Hungarian): "Instagram tone".** It must sound like someone talking to the viewer, not an article read aloud. The tone reference is the user's own 18 scripts (`scripts-pdf/` and each film's `refs/script-hu.txt`); match them:
-  - storytelling, friendly and professional, never formal or corporate; always **te**, never "Ön"
+  - storytelling or conversation, social media tone, friendly and professional; no article, company or corporate language at all
+  - always **te**, singular, never "Ön" or plural "ti": talk directly to the one viewer, like a friend telling them something
   - short spoken lines (about 10 words), plain everyday words; translate the meaning, not the words
   - spoken connectors and hooks like the scripts use: „De…", „És…", „Pedig…", „Mert…", „Hirtelen…", „Elmondom, miért.", „És itt jön az érdekes rész!", „De vajon…?", „De tudod, miért…?"; takeaways in the „Néha nem kell…, elég, ha…" pattern
   - avoid written constructions („ki kell derülnie", „érdemes megnézni", „tartalmat gyárt"); prefer what people say („rögtön érthetőnek kell lennie", „miért érdemes megállni", „többet posztolsz")
+  - keep „hogy" before spoken question clauses („látszania kell, hogy kinek szól"); split a long sentence into two short lines, the second often starting with „És…"
+  - no doubled meaning („miért… miatta"); say „megállni rajta" (stopping on a post)
+  - the user has no native checker: the 18 scripts are the proven reference, so stay close to their wording and rhythm
   - watch for ambiguity (e.g. „a jó emberek" can mean "good people" → use „a megfelelő emberek")
   - well-known marketing terms may stay in English (branding, Decoy Effect); prices in forint
 - **Every final Hungarian text comes with a Persian back-translation** (a literal translation of the Hungarian into Persian) so the user can check the meaning. The user may also check it with ChatGPT; weigh its notes against this rule.
