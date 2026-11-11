@@ -51,15 +51,36 @@ def scramble(d, v):   # data chatter while a headline decodes
 def ding(v, f=1568): tt = t_(1.2); return verb(np.sin(2 * np.pi * f * tt) * np.exp(-tt * 3) + .4 * np.sin(2 * np.pi * f * 2 * tt) * np.exp(-tt * 5), 1.0, .35) * v
 def glitch(d, v): tt = t_(d); return norm(bp(noise(d), 800, 6000) * (np.sin(2 * np.pi * 37 * tt) > .2)) * v
 fx = buf()
-def pad(d):   # monotone music: one soft sustained chord (A minor add9), slowly breathing, no beat
-    tt = t_(d); out = np.zeros(len(tt))
-    for f, a in [(55, .55), (110, .5), (164.81, .35), (220, .3), (246.94, .18), (329.63, .14)]:
-        for det in (-.15, .15):
-            ph = rng.random() * 6.28; out += a * (np.sin(2 * np.pi * (f + det) * tt + ph) + .25 * np.sin(4 * np.pi * (f + det) * tt + ph) + .08 * np.sin(6 * np.pi * (f + det) * tt + ph))
-    out *= .82 + .18 * np.sin(2 * np.pi * .06 * tt)
-    air = bp(noise(d), 2500, 7000) * .03 * (.6 + .4 * np.sin(2 * np.pi * .045 * tt + 1))
-    return norm(lp(out, 1400) + air)
-bed = pad(STORY + .5); n_in, n_out = int(1.5 * SR), int(2.0 * SR); bed[:n_in] *= np.linspace(0, 1, n_in); bed[-n_out:] *= np.linspace(1, 0, n_out); add(fx, bed * .14, 0, 1, 0)
+# —— the music: a soft lo-fi groove at 90 BPM in A minor (Am9 – Fmaj7 – Cmaj7 – G6): electric piano, round bass, light drums, a quiet arpeggio ——
+BPM = 90; BEAT = 60 / BPM; BAR = 4 * BEAT
+mtof = lambda m: 440 * 2 ** ((m - 69) / 12)
+CHORDS = [[57, 60, 64, 67, 71], [53, 57, 60, 64, 69], [48, 55, 59, 64, 67], [55, 59, 62, 64, 67]]   # Am9, Fmaj7, Cmaj7, G6
+ROOTS = [45, 41, 48, 43]
+def epiano(f, d, v):   # a warm FM electric piano note
+    tt = t_(d); I = 1.6 * np.exp(-tt * 6); y = np.sin(2 * np.pi * f * tt + I * np.sin(2 * np.pi * f * tt)) + .2 * np.sin(2 * np.pi * 2 * f * tt) * np.exp(-tt * 3)
+    env = np.minimum(1, tt / .006) * np.exp(-tt * 1.6) * np.minimum(1, (d - tt) / .08); return y * env * v
+def bassn(f, d, v): tt = t_(d); y = np.tanh(1.6 * np.sin(2 * np.pi * f * tt)) + .3 * np.sin(2 * np.pi * 2 * f * tt); return lp(y, 400) * np.minimum(1, tt / .01) * np.exp(-tt * 1.4) * np.minimum(1, (d - tt) / .05) * v
+def kick(v): d = .45; tt = t_(d); return np.sin(2 * np.pi * np.cumsum(120 * np.exp(-tt * 22) + 46) / SR) * np.exp(-tt * 7) * v
+def snare(v): d = .3; tt = t_(d); return verb(lp(bp(noise(d), 1200, 7000) * np.exp(-tt * 16) * .8 + np.sin(2 * np.pi * 190 * tt) * np.exp(-tt * 22) * .5, 6000), .6, .25) * v
+def hat(v): d = .06; return hp(noise(d), 7000) * env_exp(d, .015) * v
+def pluck(f, v): d = .5; tt = t_(d); return (np.sin(2 * np.pi * f * tt) + .3 * np.sin(4 * np.pi * f * tt)) * np.exp(-tt * 9) * np.minimum(1, tt / .003) * v
+def song(d):
+    out = np.zeros(int(d * SR) + SR); put = lambda x, t: (lambda a: out.__setitem__(slice(a, a + len(x)), out[a:a + len(x)] + x[:len(out) - a]))(int(t * SR))
+    nbars = int(d / BAR) + 1
+    for b in range(nbars):
+        t0 = b * BAR; ch = CHORDS[b % 4]; rt = ROOTS[b % 4]; groove = b >= 2
+        for m in ch: put(epiano(mtof(m), BAR * .62, .16), t0); 
+        for m in ch[1:4]: put(epiano(mtof(m + 12), BEAT * 1.2, .06), t0 + BEAT * 2.5)
+        if groove:
+            put(bassn(mtof(rt), BEAT * 1.6, .55), t0); put(bassn(mtof(rt), BEAT * .7, .4), t0 + BEAT * 2); put(bassn(mtof(rt + 7), BEAT * .6, .35), t0 + BEAT * 3.5)
+            for k in (0, 2.5): put(kick(.75), t0 + k * BEAT)
+            for k in (1, 3): put(snare(.32), t0 + k * BEAT)
+            for k in range(8): put(hat(.10 if k % 2 == 0 else .06), t0 + k * BEAT / 2 + (0.03 if k % 2 else 0))
+            if b % 4 in (2, 3):
+                for k in range(8): put(pluck(mtof([69, 72, 76, 79, 81, 79, 76, 72][k] + (0 if b % 4 == 2 else -2)), .05), t0 + k * BEAT / 2)
+    return out[:int(d * SR)]
+music = song(STORY + 1.0); fi, fo = int(1.0 * SR), int(2.2 * SR); music[:fi] *= np.linspace(0, 1, fi); music[-fo:] *= np.linspace(1, 0, fo)
+music = lp(music, 9000)
 for t in [1.5, 3.35, 9.1, 15.3, 18.9, 24.45, 32.9, 40.78, 46.3, 51.16]: add(fx, whoosh(.45, .18), t - .1, 1, 0)
 # the game: click on play; the question decodes
 add(fx, click(.5), 0.62, 1, 0); add(fx, impact(.35), 0.67, 1, 0); add(fx, scramble(.6, .12), 1.55, 1, 0); add(fx, scramble(.6, .12), 2.26, 1, 0)
@@ -92,7 +113,8 @@ vo = compress(norm(np.frombuffer(raw, np.float32).astype(np.float64), .9), thr=.
 env = np.convolve(np.abs(voice[:, 0]), np.ones(2400) / 2400, 'same'); duck = 1 - .45 * np.clip(env / (env.max() * .25), 0, 1)
 fxc = np.stack([compress(fx[:, c] * 2.0, thr=.15, ratio=2.5, att=.002, rel=.08) for c in range(2)], 1) * duck[:, None]
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
-mix = voice + fxc * (vr * 2.4 / max(fr, 1e-6)); mix = place_logo(mix, STORY + .2, SR, vr, 0.9); mix = mix[:int(DUR * SR)]
+mus = np.zeros(N); mus[:len(music)] = music[:N]; mr = np.sqrt(np.mean(mus[int(4 * SR):int(STORY * SR)] ** 2)); mus *= (vr * .22 / max(mr, 1e-9)) * (1 - .35 * np.clip(env / (env.max() * .25), 0, 1))
+mix = voice + fxc * (vr * 2.0 / max(fr, 1e-6)) + np.stack([mus, mus], 1); mix = place_logo(mix, STORY + .2, SR, vr, 0.9); mix = mix[:int(DUR * SR)]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)
 mix = np.concatenate([mix, np.zeros((int(max(3.2, 58.5 - DUR) * SR), 2))])
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True); sf.write(os.path.join(HERE, 'out', 'mix.wav'), mix.astype(np.float32), SR); print('mix', mix.shape[0] / SR, np.abs(mix).max())

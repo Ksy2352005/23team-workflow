@@ -196,23 +196,12 @@ sc(T(135) - .1, (c, t) => { const k = E(t, T(135), .45, .35), out = ss(seg(t, T(
   const st = E(t, T(141), .35, .45) * (1 - out); if (st > 0) neon(c, () => { c.save(); c.translate(540 + 150, 960 - 230); c.scale(Math.min(1.15, st), Math.min(1.15, st)); c.beginPath(); for (let q = 0; q < 10; q++) { const a = -Math.PI / 2 + q * Math.PI / 5, r = q % 2 ? 22 : 54; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.fill(); c.restore(); }, { col: GOLD, glowCol: 'rgba(236,189,74,.9)', glow: 30 });
   const bars = ss(seg(t, T(144), T(146) + .3)); if (out > 0) neon(c, () => { P(c, [[300, 1160], [800, 1160]]); for (let q = 0; q < 5; q++) { const hh = lerp(30, 90 + q * 85, clamp(bars * 1.4 - q * .1)); c.save(); const g = c.createLinearGradient(0, 1160 - hh, 0, 1160); g.addColorStop(0, 'rgba(244,247,255,.95)'); g.addColorStop(1, 'rgba(244,247,255,.15)'); c.fillStyle = g; c.fillRect(330 + q * 92, 1160 - hh, 62, hh); c.restore(); } }, { w: 4, alpha: out }); });
 
-// —— the captions: the locked style of the story films, at the top above the visual (Montserrat Bold 56 px, x 130, y 540, two lines, gold on the spoken and key words) ——
-await document.fonts.load('700 56px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű');
-const CREAM = '#f6efdc', CGOLD = '#ecbd4a';
-const KEY = new Set(['drágábbnak', 'igazad', 'whitespace', 'lélegezni', 'magabiztos', 'önmagáért', 'bolhapiaci', 'tele', 'prémium', 'néhány', 'figyelmet', 'digitális', 'értékesebbnek', 'többet']);
-const bare = w => w.replace(/[.,:;!?…„”"]/g, '');
-const CAP = { x: 130, y: 540, size: 56, lh: 72, maxW: 790, maxLines: 2 }, CAPFONT = '700 56px "Montserrat"';
-const PAGES = (() => { const m = document.createElement('canvas').getContext('2d'); m.font = CAPFONT; const space = m.measureText(' ').width; const pages = []; let cur = [], x = 0, line = 0;
-  const flush = () => { if (cur.length) pages.push(cur); cur = []; x = 0; line = 0; };
-  WORDS.forEach(([w, t0], i) => { const wd = m.measureText(w).width; if (x > 0 && x + space + wd > CAP.maxW) { line++; x = 0; if (line >= CAP.maxLines) flush(); }
-    cur.push({ w, t: t0, x: x ? x + space : 0, line, wd, key: KEY.has(bare(w)) }); x = (x ? x + space : 0) + wd;
-    const nx = WORDS[i + 1]; if (/[.?!:…]$/.test(w) || (/,$/.test(w) && cur.length >= 4) || cur.length >= 7 || (nx && nx[1] - t0 > 1.1)) flush(); });
-  flush(); return pages.map((p, i) => ({ words: p, t0: p[0].t - .05, t1: pages[i + 1] ? pages[i + 1][0].t - .05 : STORY - .5 })); })();
-function caption(c, t) { const p = PAGES.find(p => t >= p.t0 && t < p.t1); if (!p) return; const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
-  c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-  p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc2 = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
-    c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc2, sc2); c.translate(-cx, -y); c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10 * K; c.shadowOffsetY = 3 * K; c.fillStyle = (w === now || w.key) ? CGOLD : CREAM; c.fillText(w.w, CAP.x + w.x, y); c.restore(); });
-  c.restore(); }
+// —— the caption: the reference's typewriter line (monospace, centred), placed at the top above the visual, words typing in as spoken ——
+const CAPF = '500 42px "JBMono"', meas = document.createElement('canvas').getContext('2d'); meas.font = CAPF;
+const PAGES = (() => { const pages = []; let cur = []; WORDS.forEach(([w, t0], i) => { cur.push(i); const nxt = WORDS[i + 1]; if (/[.?!:]$/.test(w) || cur.length >= 5 || (/,$/.test(w) && cur.length >= 3) || (nxt && nxt[1] - t0 > 1.2)) { pages.push(cur); cur = []; } }); if (cur.length) pages.push(cur); return pages.map((p, k) => ({ p, t0: WORDS[p[0]][1] - .05, t1: pages[k + 1] ? WORDS[pages[k + 1][0]][1] - .05 : STORY - .4 })); })();
+function caption(c, t) { const pg = PAGES.find(q => t >= q.t0 && t < q.t1); if (!pg) return; const shown = pg.p.filter(i => t >= WORDS[i][1] - .03);
+  const full = pg.p.map(i => WORDS[i][0]).join(' '), fw = meas.measureText(full).width; let x = 540 - fw / 2; c.save(); c.font = CAPF; c.textBaseline = 'middle'; c.fillStyle = 'rgba(244,247,255,.95)'; c.shadowColor = 'rgba(190,210,255,.55)'; c.shadowBlur = 10 * K;
+  pg.p.forEach(i => { const w = WORDS[i][0]; if (shown.includes(i)) { const k = clamp((t - WORDS[i][1] + .03) / .12), n = Math.ceil(w.length * k); c.fillText(w.slice(0, n), x, 600); } x += meas.measureText(w + ' ').width; }); c.restore(); }
 
 // —— transitions: each new visual comes in with a short blur-zoom; the screen never cuts hard ——
 function sceneAt(t) { let i = 0; while (i + 1 < scenes.length && t >= scenes[i + 1][0]) i++; return i; }
