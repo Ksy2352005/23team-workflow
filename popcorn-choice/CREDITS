@@ -1,0 +1,10 @@
+The Popcorn Choice — 23 Team
+
+Voiceover (Hungarian): supplied by 23 Team (refs/voiceover-hu.mp3).
+Characters: after 23 Team's character sheets (refs/). Picture drawn in code (HTML canvas), rendered with the Lemo-Opuscar tools.
+
+Sound effects, recorded, all CC0 (public domain), files in sfx/:
+- Kenney "Impact Sounds", "RPG Audio", "Casino Audio" — www.kenney.nl — CC0 1.0 (sfx/LICENSE-kenney-CC0.txt): footsteps, soft impacts, coins, book/paper, door.
+Synthesized in code: popping corn, the register bell, the lobby hum, pops, clicks, whooshes, the logo swell.
+Character exclamations and background chatter: Kokoro text-to-speech (offline, Apache-2.0 model).
+No music.
