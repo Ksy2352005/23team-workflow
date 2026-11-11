@@ -83,7 +83,7 @@ function page(c, kind, x, y, w, h, t, o = {}) {
 
 // —— scenes (each [start, draw]) ——
 const scenes = [];
-const sc = (t0, f) => scenes.push([t0, f]);
+const sc = (t0, f, o = {}) => scenes.push([t0, f, o]);
 // A: let's play a game: the play button, the cursor comes and clicks it
 sc(0, (c, t) => { const k = E(t, .05, .45, .4), click = E(t, T(2), .25, .5); neon(c, () => { c.save(); c.translate(540, 900); const s = Math.min(1.08, k) * (1 - .1 * Math.sin(Math.min(1, click) * Math.PI)); c.scale(s, s); c.translate(-540, -900); playIcon(c, 540, 900, 110); c.restore(); });
   const cu = ss(seg(t, .2, T(2))); cursor(c, lerp(760, 575, cu), lerp(1160, 925, cu), 1.2); if (t > T(2)) neon(c, () => { const r = seg(t, T(2), T(2) + .5); if (r < 1) { c.globalAlpha = 1 - r; c.beginPath(); c.arc(540, 900, 110 + r * 120, 0, 7); c.stroke(); } }); });
@@ -119,25 +119,72 @@ sc(24.45, (c, t) => { const X = 540, Y = 960, w = 940, h = 560; neon(c, () => pa
   if (t > T(64) - .2) { let i = 0; while (i + 1 < pts.length && t > pts[i + 1][2]) i++; const nx = pts[Math.min(i + 1, pts.length - 1)], u = i + 1 < pts.length ? ss(seg(t, nx[2] - .5, nx[2])) : 0, cx = lerp(pts[i][0], nx[0], u), cy = lerp(pts[i][1], nx[1], u), a = ss(seg(t, T(64) - .2, T(64) + .2));
     neon(c, () => { c.beginPath(); c.arc(cx, cy, 82, 0, 7); c.stroke(); }, { w: 6, glow: 40, alpha: a });
     if (u > 0 && u < 1) { c.save(); c.setLineDash([6, 14]); neon(c, () => { c.beginPath(); c.moveTo(pts[i][0], pts[i][1] - 90); c.quadraticCurveTo((pts[i][0] + nx[0]) / 2, Math.min(pts[i][1], nx[1]) - 220, nx[0], nx[1] - 90); c.stroke(); }, { w: 3, alpha: .7 * Math.sin(u * Math.PI) }); c.restore(); } }
-  // "no need to pour all the information on you": a crowd of text lines tries to rush in, and falls away
-  const fl = seg(t, T(83) - .2, T(85) + .6); if (fl > 0 && fl < 1) neon(c, () => { for (let k = 0; k < 14; k++) { const a = hash(k) * Math.PI * 2, d = lerp(700, 380, ss(Math.min(1, fl * 2))) + (fl > .5 ? (fl - .5) * 1200 : 0); P(c, [[X + Math.cos(a) * d, Y + Math.sin(a) * d], [X + Math.cos(a) * d + 90, Y + Math.sin(a) * d]]); } }, { w: 4, alpha: Math.sin(fl * Math.PI) * .8 }); });
-// K: and because we know this feeling from real shops: a card turns in 3D, a head with ideas in it; then the card becomes a tunnel
-sc(32.9, (c, t) => { const k = E(t, 32.95, .5, .3), ry = Math.sin((t - 32.9) * 1.2) * .55, rz = -.18 + .1 * Math.sin((t - 32.9) * .8), zoom = ss(seg(t, 35.9, T(97)));
-  c.save(); c.translate(540, 960); c.rotate(rz * (1 - zoom)); c.scale(Math.cos(ry) * (1 - zoom) + zoom, 1); const s = Math.min(1, k) * (1 + zoom * 2.4); c.scale(s, s);
-  neon(c, () => { c.beginPath(); c.roundRect(-230, -330, 460, 660, 26); c.stroke(); for (let q = 1; q < 6; q++) { c.globalAlpha = (1 - q / 6) * .6; const f = 1 - q * .09; c.beginPath(); c.roundRect(-230 * f, -330 * f, 460 * f, 660 * f, 26 * f); c.stroke(); } c.globalAlpha = 1; }, { w: 4, alpha: 1 - zoom * .5 });
-  const g = c.createRadialGradient(0, 40, 10, 0, 40, 200); g.addColorStop(0, 'rgba(230,236,255,.9)'); g.addColorStop(1, 'rgba(230,236,255,0)'); c.fillStyle = g; c.globalAlpha = 1 - zoom; c.beginPath(); c.arc(0, -10, 62, 0, 7); c.fill(); c.beginPath(); c.moveTo(-120, 230); c.quadraticCurveTo(-120, 70, 0, 60); c.quadraticCurveTo(120, 70, 120, 230); c.closePath(); c.fill();
-  neon(c, () => { const ic = (x, y, f) => { c.save(); c.translate(x, y); f(); c.restore(); }; ic(-90, -150, () => { c.beginPath(); c.arc(0, 0, 22, 0, 7); c.stroke(); for (let q = 0; q < 8; q++) { const a = q * Math.PI / 4; P(c, [[Math.cos(a) * 22, Math.sin(a) * 22], [Math.cos(a) * 32, Math.sin(a) * 32]]); } }); ic(0, -190, () => { c.beginPath(); c.arc(0, -6, 24, Math.PI * .8, Math.PI * 2.2); c.stroke(); c.strokeRect(-12, 16, 24, 14); }); ic(90, -150, () => { c.beginPath(); for (let q = 0; q < 10; q++) { const a = -Math.PI / 2 + q * Math.PI / 5, r = q % 2 ? 11 : 26; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.stroke(); }); }, { w: 3, alpha: 1 - zoom });
-  c.restore(); });
-// L: think of a flea-market stall: out of the tunnel the stall appears, and fills up with products
-sc(T(97), (c, t) => { const t0 = T(97), tun = 1 - ss(seg(t, t0, t0 + .7)); if (tun > 0) neon(c, () => { for (let q = 0; q < 9; q++) { const z = ((q / 9) + (t - t0) * 1.4) % 1, f = .15 + z * 2.2; c.globalAlpha = tun * (1 - z) * .8; c.beginPath(); c.roundRect(540 - 230 * f, 960 - 330 * f, 460 * f, 660 * f, 26 * f); c.stroke(); } }, { w: 3 });
-  const k = E(t, t0 + .2, .5, .3), out = ss(seg(t, T(106) - .2, T(106) + .45)); c.save(); c.filter = k < .8 ? `blur(${(1 - Math.min(1, k)) * 10 * K}px)` : 'none'; neon(c, () => tent(c, 540 - out * 900, 980, 1.75 * Math.min(1.04, k), ss(seg(t, T(101), T(105) + .3))), { w: 3.5, alpha: Math.min(1, k) }); c.restore(); });
-// M: in a premium watch shop, only a few pieces are out, each one in its own light
-sc(T(106) + .1, (c, t) => { const t0 = T(106); const one = E(t, t0 + .3, .5, .3), three = ss(seg(t, T(111) - .2, T(111) + .5)), turn = (t - T(111)) * .35;
-  const label = ss(seg(t, t0 + .1, t0 + .5)) * (1 - ss(seg(t, T(111) - .3, T(111)))); txt(c, scramble('PRÉMIUM ÓRAÜZLET', t, t0 + .1, .5), 540, 640, 40, { ls: 8, alpha: label });
-  const items = three > 0 ? [0, 1, 2].map(i => { const a = turn + i * Math.PI * 2 / 3; return { x: 540 + Math.sin(a) * 330 * three, z: Math.cos(a), i }; }).sort((p, q) => p.z - q.z) : [{ x: 540, z: 1, i: 0 }];
-  items.forEach(({ x, z, i }) => { const sc2 = (.62 + .38 * (z + 1) / 2) * Math.min(1.05, one), spot = t > T(116) ? (Math.floor((t - T(116)) / .7) % 3 === i ? 1 : 0) : (i === 0 ? 1 : 0), a = (.45 + .55 * (z + 1) / 2);
-    if (spot) { const g = c.createRadialGradient(x, 900, 0, x, 900, 260); g.addColorStop(0, 'rgba(200,215,255,.22)'); g.addColorStop(1, 'rgba(200,215,255,0)'); c.fillStyle = g; c.fillRect(x - 300, 600, 600, 600); }
-    neon(c, () => watch(c, x, 960, 1.6 * sc2), { w: 3.5, alpha: a, glow: spot ? 34 : 16 }); }); });
+  // "no need to pour all the information on you": the ring grows big over the information, then the whole page starts to tilt away in 3D (scene K takes it from here)
+  });
+// —— 3D: a flat rectangle turned in space and projected; content can be mapped onto it ——
+function quad3(w, h, ry, rx, rz, cx, cy, s = 1) { const f = 1500; return [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]].map(([x, y]) => { x *= s; y *= s; const x1 = x * Math.cos(rz) - y * Math.sin(rz), y1 = x * Math.sin(rz) + y * Math.cos(rz); const x2 = x1 * Math.cos(ry), z2 = x1 * Math.sin(ry); const y3 = y1 * Math.cos(rx) - z2 * Math.sin(rx), z3 = y1 * Math.sin(rx) + z2 * Math.cos(rx); return [cx + x2 * f / (f + z3), cy + y3 * f / (f + z3)]; }); }
+function onQuad(c, q, w, h, f) { const [p0, p1, , p3] = q; c.save(); c.transform((p1[0] - p0[0]) / w, (p1[1] - p0[1]) / w, (p3[0] - p0[0]) / h, (p3[1] - p0[1]) / h, p0[0], p0[1]); f(); c.restore(); }
+function cardIcons(c, x, y, p) {   // a head (soft light) with dashed lines up to a cog, a bulb and a star: how we perceive
+  const g = c.createRadialGradient(x, y + 40, 10, x, y + 40, 210); g.addColorStop(0, 'rgba(230,236,255,.95)'); g.addColorStop(1, 'rgba(230,236,255,0)'); c.save(); c.fillStyle = g; c.beginPath(); c.arc(x, y - 10, 60, 0, 7); c.fill(); c.beginPath(); c.moveTo(x - 125, y + 220); c.quadraticCurveTo(x - 125, y + 70, x, y + 60); c.quadraticCurveTo(x + 125, y + 70, x + 125, y + 220); c.closePath(); c.fill(); c.restore();
+  const icons = [[x - 105, y - 205, 'cog'], [x, y - 245, 'bulb'], [x + 105, y - 205, 'star']];
+  icons.forEach(([ix, iy, kind], i) => { const k = clamp((p - i * .22) / .4); if (k <= 0) return; c.save(); c.setLineDash([6, 10]); neon(c, () => P(c, [[x + (ix - x) * .25, y - 85], [lerp(x + (ix - x) * .25, ix, k), lerp(y - 85, iy + 34, k)]]), { w: 3 }); c.restore();
+    if (k >= 1) neon(c, () => { c.save(); c.translate(ix, iy); if (kind === 'cog') { c.beginPath(); c.arc(0, 0, 18, 0, 7); c.stroke(); for (let q = 0; q < 8; q++) { const a = q * Math.PI / 4; P(c, [[Math.cos(a) * 18, Math.sin(a) * 18], [Math.cos(a) * 28, Math.sin(a) * 28]]); } } if (kind === 'bulb') { c.beginPath(); c.arc(0, -4, 22, Math.PI * .78, Math.PI * 2.22); c.stroke(); c.strokeRect(-10, 16, 20, 12); for (let q = -2; q <= 2; q++) { const a = -Math.PI / 2 + q * .55; P(c, [[Math.cos(a) * 32, Math.sin(a) * 32 - 4], [Math.cos(a) * 42, Math.sin(a) * 42 - 4]]); } } if (kind === 'star') { c.beginPath(); for (let q = 0; q < 10; q++) { const a = -Math.PI / 2 + q * Math.PI / 5, r = q % 2 ? 10 : 25; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.closePath(); c.stroke(); } c.restore(); }, { w: 3.5 }); });
+}
+// K: and because we know this feeling from real shops: the page tilts away in 3D and flips into a card (with a ghost trail), the card settles with a head and its ideas; then its frame multiplies into a tunnel
+const K0 = T(84) + .2;   // the page starts to tilt
+sc(K0, (c, t) => { const PW = 940, PH = 560, CW = 620, CH = 900, flip = K0 + .7, settle = K0 + 1.9, tun = ss(seg(t, 36.0, T(97)));
+  const pose = tt => { if (tt < flip) { const u = ss(seg(tt, K0, flip)); return { w: PW, h: PH, ry: u * Math.PI / 2, rx: .25 * u, rz: -.12 * u, s: 1 - .25 * u, page: true }; }
+    const u = clamp((tt - flip) / (settle - flip)), e = 1 - Math.pow(1 - u, 3); return { w: CW, h: CH, ry: -Math.PI / 2 * (1 - e) + Math.sin(e * Math.PI) * .35 + .06 * Math.sin(tt * 1.3) * e, rx: .22 * (1 - e) + .04 * Math.sin(tt) * e, rz: -.25 * (1 - e) - .03 * e, s: .8 + .2 * e, page: false }; };
+  // the ghost trail while it spins
+  if (t > flip && t < settle + .2) for (let g = 6; g >= 1; g--) { const p = pose(t - g * .035); if (p.page) continue; const q = quad3(p.w, p.h, p.ry, p.rx, p.rz, 540, 960, p.s); neon(c, () => P(c, q, true), { w: 2.5, alpha: (1 - g / 7) * .45, glow: 10 }); }
+  const p = pose(t); const q = quad3(p.w, p.h, p.ry, p.rx, p.rz, 540, 960, p.s * (1 + tun * 2.2));
+  if (p.page) { neon(c, () => onQuad(c, q, PW, PH, () => page(c, 'phonesClean', PW / 2, PH / 2, PW, PH, t)), { w: 4, alpha: 1 - ss(seg(t, flip - .35, flip)) }); neon(c, () => P(c, q, true), { w: 4 }); return; }
+  neon(c, () => P(c, q, true), { w: 7, glow: 30 });
+  // the card's frame multiplies into a tunnel, the stall waiting blurred at its end
+  if (tun > 0) { neon(c, () => { for (let k = 1; k < 10; k++) { const f = 1 - k * .09; c.globalAlpha = (1 - k / 10) * tun; P(c, quad3(CW * f, CH * f, 0, 0, 0, 540, 960, 1 + tun * 2.2 * f - k * .02), true); } }, { w: 3 }); c.save(); c.filter = `blur(${(1 - tun) * 14 * K + 4 * K}px)`; neon(c, () => tent2(c, 540, 1000, .55 + .4 * tun, 0), { w: 3, alpha: tun }); c.restore(); }
+  const content = ss(seg(t, settle - .5, settle)) * (1 - ss(seg(t, 35.95, 36.3))); if (content > 0) { c.save(); c.globalAlpha = content; onQuad(c, q, CW, CH, () => { c.translate(CW / 2, CH / 2 + 70); c.scale(1.3, 1.3); cardIcons(c, 0, 0, seg(t, settle, T(96))); }); c.restore(); } });
+// a detailed market stall: striped canopy, posts, a table on the left, shelves on the right; fill 0..1: products crowd in, piece by piece
+function tent2(c, x, y, s, fill) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  const top = -320, eave = -150; P(c, [[-270, eave], [0, top], [270, eave]]); for (let k = -4; k <= 4; k++) P(c, [[0, top], [k * 67.5, eave]]);
+  c.beginPath(); for (let k = 0; k < 8; k++) { const x0 = -270 + k * 67.5; c.moveTo(x0, eave); c.quadraticCurveTo(x0 + 34, eave + 34, x0 + 67.5, eave); } c.stroke();
+  P(c, [[-262, eave + 6], [-282, 260]]); P(c, [[262, eave + 6], [282, 260]]);
+  c.strokeRect(-240, 100, 210, 18); P(c, [[-228, 118], [-228, 240]]); P(c, [[-42, 118], [-42, 240]]);   // the table
+  c.strokeRect(20, -90, 220, 330); for (const yy of [-10, 70, 150]) P(c, [[20, yy], [240, yy]]);   // the shelves
+  P(c, [[-240, -80], [-40, -80]]);   // the clothes rail
+  const items = [];
+  for (let k = 0; k < 6; k++) items.push(() => { const hx = -225 + k * 34; P(c, [[hx + 12, -80], [hx + 12, -70]]); P(c, [[hx, -64], [hx + 6, -70], [hx + 18, -70], [hx + 24, -64], [hx + 22, -56], [hx + 20, -56], [hx + 20, -20], [hx + 4, -20], [hx + 4, -56], [hx + 2, -56]], true); });   // shirts on the rail
+  for (let k = 0; k < 7; k++) items.push(() => { const bx = -232 + k * 28; if (k % 2) { c.strokeRect(bx, 72, 16, 28); P(c, [[bx + 5, 72], [bx + 5, 62], [bx + 11, 62], [bx + 11, 72]]); } else { c.beginPath(); c.roundRect(bx, 80, 20, 20, 4); c.stroke(); } });   // bottles and jars on the table
+  for (let k = 0; k < 4; k++) items.push(() => { const hx = 50 + k * 50; c.beginPath(); c.arc(hx, -20, 16, Math.PI, 0); c.stroke(); P(c, [[hx - 24, -20], [hx + 24, -20]]); });   // hats on the top shelf
+  for (let k = 0; k < 4; k++) items.push(() => { const bx = 34 + k * 50; P(c, [[bx, 66], [bx + 36, 66], [bx + 32, 30], [bx + 4, 30]], true); c.beginPath(); c.arc(bx + 18, 30, 9, Math.PI, 0); c.stroke(); });   // bags
+  for (let k = 0; k < 5; k++) items.push(() => { c.strokeRect(34 + k * 40, 110, 30, 38); });   // boxes
+  for (let k = 0; k < 5; k++) items.push(() => sneaker(c, -210 + k * 46, 238, .14));   // shoes on the ground
+  const n = Math.floor(fill * items.length); items.slice(0, n).forEach((f, i) => f());
+  c.restore();
+}
+// L: think of a flea-market stall: out of the tunnel the stall comes sharp, and fills up with products
+sc(T(97), (c, t) => { const t0 = T(97), k = ss(seg(t, t0, t0 + .45)); c.save(); if (k < 1) c.filter = `blur(${(1 - k) * 8 * K}px)`; neon(c, () => tent2(c, 540, 1000, lerp(.95, 1.55, k), ss(seg(t, T(101) - .1, T(105) + .2))), { w: 3.5 }); c.restore();
+  if (k < 1) neon(c, () => { for (let q = 1; q < 7; q++) { const f = (1 + q * .35) * (1 + k * 1.5); c.globalAlpha = (1 - k) * (1 - q / 7); c.beginPath(); c.roundRect(540 - 235 * f, 960 - 340 * f, 470 * f, 680 * f, 26 * f); c.stroke(); } }, { w: 3 }); });
+// M: a premium watch shop: the brand's crown and name; the camera dives into the logo; out of the blur, one watch; then a few, sliding past one by one, each getting the light
+function crown(c, x, y, s) { c.save(); c.translate(x, y); c.scale(s, s); c.beginPath(); c.roundRect(-70, 20, 140, 22, 6); c.fill();
+  [[-62, -22], [-32, -48], [0, -58], [32, -48], [62, -22]].forEach(([px, py]) => { c.beginPath(); c.moveTo(px * .55 - 7, 20); c.lineTo(px - 4, py + 10); c.lineTo(px + 4, py + 10); c.lineTo(px * .55 + 7, 20); c.closePath(); c.fill(); c.beginPath(); c.arc(px, py, 10, 0, 7); c.fill(); }); c.restore(); }
+function watch2(c, x, y, s) {   // a chronograph: bezel ticks, three small dials, a link bracelet
+  c.save(); c.translate(x, y); c.scale(s, s);
+  for (const d of [-1, 1]) for (let k = 0; k < 4; k++) { const y0 = d * (86 + k * 24), wv = 50 - k * 2; c.beginPath(); c.roundRect(-wv, d > 0 ? y0 : y0 - 22, wv * 2, 22, 5); c.stroke(); P(c, [[-wv / 3, d > 0 ? y0 : y0 - 22], [-wv / 3, d > 0 ? y0 + 22 : y0]]); P(c, [[wv / 3, d > 0 ? y0 : y0 - 22], [wv / 3, d > 0 ? y0 + 22 : y0]]); }
+  c.beginPath(); c.arc(0, 0, 92, 0, 7); c.stroke(); c.beginPath(); c.arc(0, 0, 76, 0, 7); c.stroke(); for (let k = 0; k < 60; k += 5) { const a = k / 60 * Math.PI * 2; P(c, [[Math.cos(a) * 80, Math.sin(a) * 80], [Math.cos(a) * 88, Math.sin(a) * 88]]); }
+  for (const [dx, dy] of [[-30, 4], [30, 4], [0, 34]]) { c.beginPath(); c.arc(dx, dy, 15, 0, 7); c.stroke(); P(c, [[dx, dy], [dx + 6, dy - 9]]); }
+  P(c, [[0, 0], [0, -58]]); P(c, [[0, 0], [40, -12]]); c.beginPath(); c.arc(0, 0, 4, 0, 7); c.fill(); c.beginPath(); c.roundRect(92, -12, 14, 24, 4); c.stroke(); P(c, [[86, -46], [96, -54]]); P(c, [[86, 46], [96, 54]]); c.restore(); }
+function glowWatch(c, x, y, s, a, sharp) { if (a <= 0) return; c.save(); if (!sharp) c.filter = `blur(${3.5 * K}px)`; const g = c.createRadialGradient(x, y, 0, x, y, 240 * s); g.addColorStop(0, `rgba(200,215,255,${.22 * a})`); g.addColorStop(1, 'rgba(200,215,255,0)'); c.fillStyle = g; c.fillRect(x - 260 * s, y - 260 * s, 520 * s, 520 * s); neon(c, () => watch2(c, x, y, s), { w: 3.2, alpha: a, glow: sharp ? 30 : 14 }); c.restore(); }
+sc(T(106) - .05, (c, t) => { const t0 = T(106), dive = ss(seg(t, T(109) - .25, T(109) + .2)), logo = E(t, t0, .45, .35);
+  if (dive < 1) { c.save(); c.translate(540, 900); const s = Math.min(1.04, logo) * (1 + dive * 7); c.scale(s, s); c.translate(-540, -900); if (dive > 0) c.filter = `blur(${dive * 18 * K}px)`;
+    c.globalAlpha = (1 - dive) * Math.min(1, logo * 1.4); c.fillStyle = WHITE; c.shadowColor = 'rgba(200,215,255,.9)'; c.shadowBlur = 18 * K; crown(c, 540, 800, 1.45); c.shadowBlur = 0; crown(c, 540, 800, 1.45);
+    txt(c, 'ROLEX', 540, 965, 150, { font: 'Cormorant', weight: 700, ls: 10, glow: 14 }); c.restore(); }
+  // one watch, then the row: watches slide left, the one in the middle sharp and lit
+  const one = ss(seg(t, T(109) - .05, T(109) + .45)); if (one <= 0) return;
+  const row = ss(seg(t, T(112) - .1, T(112) + .5)), pan = t > T(115) ? (t - T(115)) * 1.45 : 0, gap = 440;
+  for (let i = -2; i <= 6; i++) { const pos = i - pan, x = 540 + pos * gap, d = Math.abs(pos); if (x < -300 || x > 1380) continue; if (i !== 0 && row <= 0) continue;
+    const focus = Math.max(0, 1 - d), a = i === 0 ? one * (1 - .55 * row * (1 - focus)) : row * (.35 + .65 * focus), s = (1.0 + .55 * focus) * (i === 0 ? lerp(1.15, 1, row) : 1);
+    glowWatch(c, x, 960, s, a, focus > .5); } });
 // N: whitespace is the digital version of that: WHITESPACE glitches in, dotted lines run down to PHYSICAL SPACE; then the room between elements: cubes on an orbit with space between them
 sc(T(120) - .1, (c, t) => { const t0 = T(120); const sw = 1 - ss(seg(t, T(127) - .2, T(127) + .3));
   if (sw > 0) { const gl = t - T(121) < .5 && t > T(121) ? 1 : 0; for (let k = 0; k < (gl ? 3 : 1); k++) { const off = gl ? (hash(Math.floor(t * 30) + k) - .5) * 30 : 0; c.save(); if (gl) { c.globalCompositeOperation = 'lighter'; } txt(c, 'WHITESPACE', 540 + off, 720, 70, { ls: 8, alpha: sw * ss(seg(t, T(121) - .1, T(121) + .2)) * (gl ? .6 : 1), col: gl ? ['#9fc3ff', '#ffffff', '#ffd27a'][k] : WHITE }); c.restore(); }
@@ -165,7 +212,7 @@ function draw(c, t) {
   c.setTransform(K, 0, 0, K, 0, 0); bg(c);
   if (t >= STORY) return endCard(c, t);
   const i = sceneAt(t), t0 = scenes[i][0], dt = t - t0, TR = .35;
-  if (i > 0 && dt < TR) { const e = ss(dt / TR); paint(actx, i - 1, t0 - 1 / 48); paint(bctx, i, t); c.setTransform(1, 0, 0, 1, 0, 0);
+  if (i > 0 && dt < TR && t0 !== K0 && t0 !== T(97)) { const e = ss(dt / TR); paint(actx, i - 1, t0 - 1 / 48); paint(bctx, i, t); c.setTransform(1, 0, 0, 1, 0, 0);
     c.save(); c.globalAlpha = 1 - e; c.filter = `blur(${e * 12 * K}px)`; c.translate(W / 2, H / 2); c.scale(1 + .12 * e, 1 + .12 * e); c.translate(-W / 2, -H / 2); c.drawImage(bufA, 0, 0); c.restore();
     c.save(); c.globalAlpha = e; c.filter = `blur(${(1 - e) * 12 * K}px)`; c.translate(W / 2, H / 2); c.scale(.9 + .1 * e, .9 + .1 * e); c.translate(-W / 2, -H / 2); c.drawImage(bufB, 0, 0); c.restore(); }
   else { c.save(); scenes[i][1](c, t); c.restore(); }
