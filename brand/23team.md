@@ -22,6 +22,14 @@ Direct, short, friendly, second person, benefit-led, little jargon.
 Process: Talk → Plan → Create → Grow.
 Lines in use: "Your business. Your goals. Your package." · "Stay visible, stay relevant and stay in people's minds."
 
+## Main blue (locked 2026-11-11)
+**Midnight `#00113F`** is 23 Team's main blue from now on: backgrounds of reels and films, carousels, end cards and graphics, on both pages.
+- Pure deep blue (hue 224°), no violet, no teal. Chosen for trust, competence and a premium feel, and so the mascots, gold and cream text stand out.
+- Depth: never a flat fill on a whole video; add a soft centre glow in **`#163A8C`** (a lighter blue of the same hue) fading back to `#00113F`.
+- The mascots keep their own blues (`#2448bb`, `#2a52c9`, `#1f3fa6`). Accents stay gold `#ecbd4a` and cream `#f6efdc`.
+- The caption area must be exactly the scene's top colour, which is now `#00113F`.
+- Already-posted content is not changed. The website navy `#002C66` stays on the site for now (same colour family).
+
 ## Visual system (taken from the 23team.hu CSS)
 | Token | Hex |
 |---|---|

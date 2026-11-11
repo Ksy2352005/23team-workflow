@@ -2,6 +2,9 @@
 
 Locked choices for every animation reel. Follow these unless the brief for a film says otherwise.
 
+## Main blue (locked 2026-11-11)
+New films use **`#00113F`** (midnight) as the background and caption-area colour (`TOP`), with a centre glow in `#163A8C`; the end card background is also `#00113F`. Mascot blues are unchanged. Films made before this date keep their old blues (`#111a52`, end card `#0b1438`). Details: `brand/23team.md`.
+
 ## End card: the 23 logo (locked)
 
 | Setting | Value |
@@ -10,8 +13,8 @@ Locked choices for every animation reel. Follow these unless the brief for a fil
 | Size | **30% of the frame width**: 324 × 177 px on a 1080 × 1920 frame, scaled with the frame on other sizes |
 | Position | Centred, horizontally and vertically |
 | Colour | Soft pale blue `#aeb9e2` at **75% opacity**: subtle, never black on blue |
-| Background | The film's dark blue `#0b1438` |
-| Into it | The last shot fades into `#0b1438` over 0.7 s |
+| Background | `#00113F` (films before 2026-11-11: `#0b1438`) |
+| Into it | The last shot fades into the end-card blue over 0.7 s |
 | Logo in | Starts 0.15 s after the fade ends. It fades in over 0.9 s, settling from 104% to 100% scale while a 6 px blur clears, then holds about 1.2 s to the end. |
 | Sound | **Locked:** a short reverse swell into a deep, soft cinematic boom, kept low, with a long smooth fade-out. It is `tools/logo_sting.py`, the same file in every film, and the boom lands as the logo starts to appear. Every other sound fades out with the picture before it. |
 | No title cards | No text cards before the logo. |

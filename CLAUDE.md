@@ -3,6 +3,7 @@
 This repo belongs to 23 Team, a Budapest branding, web and marketing studio. It is the shared memory of every 23 Team chat:
 anything one chat makes or decides is written here, so the other chats know it.
 
+- **Main blue (locked): midnight `#00113F`** for every background, carousel, end card and graphic on both pages, with a soft `#163A8C` centre glow for depth; mascots keep their own blues. See `brand/23team.md`.
 - Brand profile (colours, fonts, voice, handles, services): `brand/23team.md`. Read it before any 23 Team content, reel, graphic or copy work.
 - Website security/launch skills: `skills/23page/` and `skills/security-workflow/` (same skill; the second name is what the environment's setup script installs).
 
@@ -32,7 +33,7 @@ anything one chat makes or decides is written here, so the other chats know it.
 
 ## Marketing story films (the 23motion films)
 - House style: `ANIMATION-STYLE.md` (locked end card, captions, sound). Every film folder: `story.js` (timing), `main.js` (picture), `mix.py` (sound), `captions.js`, `refs/script-hu.txt`.
-- The blue mascot world (navy `#111a52` top / blue gradient), big clear centred visuals, elegant soft transitions, icons that match the words, nothing in front of faces, nothing half off the edges, no thought bubbles, no brand names, animations finish before cuts, characters' heads joined to their bodies.
+- The blue mascot world (background and caption area `#00113F` with a `#163A8C` centre glow; the first 18 films used `#111a52`), big clear centred visuals, elegant soft transitions, icons that match the words, nothing in front of faces, nothing half off the edges, no thought bubbles, no brand names, animations finish before cuts, characters' heads joined to their bodies.
 - Voice at **1.18×** (pitch kept) unless the user says otherwise. Captions: Montserrat Bold 56 px, x 130, y 540, two lines, gold key words.
 - Voiceovers: the user's mp3, or ElevenLabs (`api.elevenlabs.io`, key injected by the environment): Hungarian voice **"David"** (`M336tBVZHWWiWb4R54ui`), model `eleven_multilingual_v2`.
 - Master: `sh tools/master.sh <film> <film>` (CRF 12, −14 LUFS). Check the logo sound level (max ≈ −11.3 dB) after mastering.
