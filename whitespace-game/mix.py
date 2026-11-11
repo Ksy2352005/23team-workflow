@@ -84,7 +84,7 @@ vo = compress(norm(np.frombuffer(raw, np.float32).astype(np.float64), .9), thr=.
 env = np.convolve(np.abs(voice[:, 0]), np.ones(2400) / 2400, 'same'); duck = 1 - .45 * np.clip(env / (env.max() * .25), 0, 1)
 fxc = np.stack([compress(fx[:, c] * 2.0, thr=.15, ratio=2.5, att=.002, rel=.08) for c in range(2)], 1) * duck[:, None]
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
-mix = voice + fxc * (vr * 2.4 / max(fr, 1e-6)); mix = place_logo(mix, STORY + .2, SR, vr, 1.4); mix = mix[:int(DUR * SR)]
+mix = voice + fxc * (vr * 2.4 / max(fr, 1e-6)); mix = place_logo(mix, STORY + .2, SR, vr, 0.9); mix = mix[:int(DUR * SR)]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)
 mix = np.concatenate([mix, np.zeros((int(max(3.2, 58.5 - DUR) * SR), 2))])
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True); sf.write(os.path.join(HERE, 'out', 'mix.wav'), mix.astype(np.float32), SR); print('mix', mix.shape[0] / SR, np.abs(mix).max())
