@@ -1,0 +1,9 @@
+[warmly] Egy online könyvesbolt észrevette, hogy sok látogató órákig nézelődik a könyvek között, de végül egyet sem vesz. [pause]
+[curious] A tulajdonos arra gondolt, hogy talán a túl sok lehetőség miatt nehéz dönteni.
+[confident] Ezért elindított egy új szolgáltatást. [pause]
+[warmly] A vásárlónak csak néhány kérdésre kellett válaszolnia: milyen műfajt szeret, mi volt az utolsó kedvenc könyve, és milyen olvasási élményre vágyik.
+Utána a bolt minden hónapban kiválasztott neki egy könyvet, és elküldte a címére. [pause]
+A vásárlóknak már nem kellett minden alkalommal több száz könyvet átnézniük.
+[excited] És ami még érdekesebb: néhányan olyan könyvet kaptak, amit maguktól valószínűleg soha nem választottak volna, mégis az egyik kedvencük lett. [pause]
+[serious] A tulajdonos rájött, hogy a vásárlóknak néha nem több választásra van szükségük.
+[confident] Hanem valakire, aki egyszerűbbé teszi nekik a döntést.
