@@ -21,5 +21,6 @@
 | HU 014 | HU | Marketing story 23 | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-12 | — | `posts/HU/014-story23-borond/` (source: `suitcase-tracker/`) |
 | HU 015 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/015-story24-havi-konyv/` (source: `book-subscription/`) |
 | HU 016 | HU | Motion reel M08 | „Az utána érzés” (sell the after) | 2026-11-12 | — | `posts/HU/016-m08-utana-erzes/` (source: `m08-sell-the-after/`) |
+| HU 017 | HU | Motion reel M11 | „Veszteségkerülés” (loss aversion) | 2026-11-12 | — | `posts/HU/017-m11-vesztesegkerules/` (source: `m11-loss-aversion/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
