@@ -38,6 +38,7 @@ anything one chat makes or decides is written here, so the other chats know it.
 - Voiceovers: the user's mp3, or ElevenLabs (`api.elevenlabs.io`, key injected by the environment): Hungarian voice **"David"** (`M336tBVZHWWiWb4R54ui`), model `eleven_multilingual_v2`.
 - Master: `sh tools/master.sh <film> <film>` (CRF 12, −14 LUFS). Check the logo sound level (max ≈ −11.3 dB) after mastering.
 - Final scripts of the first 18 stories: `scripts-pdf/23-Team-Marketing-Stories-Scripts.pdf`.
+- **Stories 19–27: Hungarian scripts LOCKED (approved by the user 2026-11-12).** Use `scripts-pdf/new-19-27/story-NN-hu.txt` word for word as the voiceover and caption script; never re-translate or edit them. Titles, concepts and the Persian back-translations: `scripts-pdf/new-19-27/stories.json` and the PDF next to it. (The user's own numbering skipped; these are numbered 19–27 in order.)
 
 ## Pictures (free, automatic)
 - `python3 tools/genimage.py "<prompt>" out.jpg --n 3`: FLUX.1 schnell on the user's Cloudflare Workers AI (free daily allowance; Apache-2.0 model, commercial use OK; the Cloudflare credential is injected by the environment). 1024×1024, about 3 s each; make 3 and pick the best.

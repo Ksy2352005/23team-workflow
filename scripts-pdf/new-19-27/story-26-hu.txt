@@ -1,0 +1,10 @@
+Egy turisták által kedvelt városban egy hotel észrevette, hogy a hét bizonyos napjain sok szobája üresen marad.
+A hotel vezetője mégsem akarta csökkenteni a hivatalos árakat, mert attól tartott, hogy a törzsvendégek utána már nem fizetnék ki a korábbi árat.
+Ezért elindított egy új rendszert.
+A vendégek néhány üres szobára saját árajánlatot tehettek.
+Ha az ajánlatuk megfelelt a hotel feltételeinek, a foglalást elfogadták.
+Aki például egy éjszakára egy bizonyos összeget hajlandó volt kifizetni, akár a szokásos árnál olcsóbban is foglalhatott szobát.
+De ez csak bizonyos dátumokra és szobákra volt elérhető.
+A hotel így el tudta adni azoknak a szobáknak egy részét, amelyek valószínűleg üresen maradtak volna, és közben nem kellett minden szoba árát csökkentenie.
+A vezető rájött, hogy a különböző vásárlók nem ugyanannyira értékelik ugyanazt a terméket.
+És ha a megfelelő ajánlatot adod a megfelelő vásárlónak, általános kedvezmények nélkül is több szobát adhatsz ki.
