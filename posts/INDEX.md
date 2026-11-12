@@ -7,20 +7,11 @@
 | HU 001 | HU | Branding secret | „Ezt senki nem mondja el" (clear message beats more content) | 2026-11-11 | — | `posts/HU/001-branding-secret-01/` (source: `branding-secret-01/`) |
 
 | HU 002 | HU | Branding secret (motion design) | „Játsszunk egy játékot!" (whitespace) | 2026-11-11 | — | `posts/HU/002-whitespace-game/` (source: `whitespace-game/`) |
-| HU 003 | HU | Motion reel M01 | „Tükrözés” (mirroring) | 2026-11-12 | — | `posts/HU/003-m01-tukrozes/` (source: `m01-mirroring/`) |
-| HU 004 | HU | Motion reel M02 | „Megerősítés” (confirmation) | 2026-11-12 | — | `posts/HU/004-m02-megerosites/` (source: `m02-confirmation/`) |
-| HU 005 | HU | Motion reel M03 | „Halo-hatás” | 2026-11-12 | — | `posts/HU/005-m03-halo-hatas/` (source: `m03-halo/`) |
-| HU 006 | HU | Motion reel M04 | „Marketing mix” | 2026-11-12 | — | `posts/HU/006-m04-marketing-mix/` (source: `m04-marketing-mix/`) |
-| HU 007 | HU | Motion reel M05 | „Kölcsönösség” (reciprocity) | 2026-11-12 | — | `posts/HU/007-m05-kolcsonosseg/` (source: `m05-reciprocity/`) |
-| HU 008 | HU | Motion reel M06 | „FOMO” | 2026-11-12 | — | `posts/HU/008-m06-fomo/` (source: `m06-fomo/`) |
-| HU 009 | HU | Motion reel M07 | „Egy üzenet” (one message) | 2026-11-12 | — | `posts/HU/009-m07-egy-uzenet/` (source: `m07-one-message/`) |
-| HU 010 | HU | Marketing story 19 | „A bolt, ami otthont épített” (The Store That Built a Home) | 2026-11-12 | — | `posts/HU/010-story19-butorbolt/` (source: `furniture-home/`) |
-| HU 011 | HU | Marketing story 20 | „A két porszívó” (The Product Comparison) | 2026-11-12 | — | `posts/HU/011-story20-porszivo/` (source: `vacuum-test/`) |
-| HU 012 | HU | Marketing story 21 | „A bicajbolt, ami javított” (The Bike Shop That Fixed Instead of Selling) | 2026-11-12 | — | `posts/HU/012-story21-bicajbolt/` (source: `bike-repair/`) |
-| HU 013 | HU | Marketing story 22 | „A kész csomagok” (The Store That Sold Products in Unexpected Bundles) | 2026-11-12 | — | `posts/HU/013-story22-kesz-csomagok/` (source: `kitchen-bundles/`) |
-| HU 014 | HU | Marketing story 23 | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-12 | — | `posts/HU/014-story23-borond/` (source: `suitcase-tracker/`) |
-| HU 015 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/015-story24-havi-konyv/` (source: `book-subscription/`) |
-| HU 016 | HU | Motion reel M08 | „Az utána érzés” (sell the after) | 2026-11-12 | — | `posts/HU/016-m08-utana-erzes/` (source: `m08-sell-the-after/`) |
-| HU 017 | HU | Motion reel M11 | „Veszteségkerülés” (loss aversion) | 2026-11-12 | — | `posts/HU/017-m11-vesztesegkerules/` (source: `m11-loss-aversion/`) |
+| HU 003 | HU | Marketing story 19 | „A bolt, ami otthont épített” (The Store That Built a Home) | 2026-11-12 | — | `posts/HU/003-story19-butorbolt/` (source: `furniture-home/`) |
+| HU 004 | HU | Marketing story 20 | „A két porszívó” (The Product Comparison) | 2026-11-12 | — | `posts/HU/004-story20-porszivo/` (source: `vacuum-test/`) |
+| HU 005 | HU | Marketing story 21 | „A bicajbolt, ami javított” (The Bike Shop That Fixed Instead of Selling) | 2026-11-12 | — | `posts/HU/005-story21-bicajbolt/` (source: `bike-repair/`) |
+| HU 006 | HU | Marketing story 22 | „A kész csomagok” (The Store That Sold Products in Unexpected Bundles) | 2026-11-12 | — | `posts/HU/006-story22-kesz-csomagok/` (source: `kitchen-bundles/`) |
+| HU 007 | HU | Marketing story 23 | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-12 | — | `posts/HU/007-story23-borond/` (source: `suitcase-tracker/`) |
+| HU 008 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/008-story24-havi-konyv/` (source: `book-subscription/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.

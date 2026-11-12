@@ -50,6 +50,10 @@ anything one chat makes or decides is written here, so the other chats know it.
 - Captions: the reference's own caption style (e.g. the typewriter monospace line), but placed at the top above the visual — not the story-film caption style.
 - Sound: our own soundtrack built around our animation: dark/cinematic music under the voice (not happy, not a monotone drone, not a pulsing kick), dramatic pauses (the music drops to silence just before each big moment and returns on the hit), and sound effects synced to the on-screen events. The voice always dominates. Never reuse the reference's audio. See `whitespace-game/mix.py`.
 - Render at **60 fps**: `FPS=60 sh tools/master.sh <film> <film>`.
+- **User feedback 2026-11-12 (the first M01–M14 batch was rejected and removed):** always make ONE test video and get the user's OK before building the rest of a batch. Follow the reference video closely, shot by shot:
+  - visuals **big and bold**, filling the frame like the original (thick glowing lines, large shapes), never small icons in empty space
+  - **continuous motion**: each shape morphs, moves or grows into the next one with smooth camera moves; no things popping in and out, no blur-cuts between unrelated icons
+  - **sound design smooth and continuous**: a flowing music bed and soft swells/whooshes that carry the transitions; no clicky pops, dings or tick sounds dropped on every icon
 
 - **Motion reels M01–M16: Hungarian scripts LOCKED (user-approved 2026-11-12).** Use `scripts-pdf/motion-01-16/MNN-hu.txt` word for word (voice David at 1.1×); never re-translate or edit them. Reference videos: M01–M15 are one creator's black neon line-art style (like `whitespace-game/`); M16 (Luxury Green palettes) is a bright colour-palette style. English transcripts and Persian back-translations are in the same folder. Terminology: „halo-hatás” (not „glóriahatás”).
 
