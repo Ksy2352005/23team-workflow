@@ -10,8 +10,8 @@ fx = buf(DUR)
 def over(k, f, *a, lead=.15, pan=0): add(fx, f(D(k) + 2 * lead, *a), A(k) - lead, pan=pan)   # stretched over a motion, peaking mid-way
 over('fill', glide, .08, 220, 440); add(fx, shimmer(1.4, .05), A('fill') + .3)               # the coins fill in
 over('drag', swoosh, .2, pan=.4); add(fx, thud(.16, 120), B('drag') - .1, pan=.4)           # the corner is dragged; the grid settles
-over('vortex', spin, .32, lead=.12); add(fx, glide(D('vortex') + .3, .1, 520, 260), A('vortex'))   # the grid swirls into a vortex...
-for k in range(3): add(fx, thud(.22, 95 + 10 * k), A('gears') + k * .08 + .32, pan=(k - 1) * .4)   # ...and each gear springs up
+over('vortex', spin, .55, lead=.12); add(fx, glide(D('vortex') + .3, .16, 520, 260), A('vortex'))   # the grid swirls into a vortex...
+for k in range(3): add(fx, thud(.32, 95 + 10 * k), A('gears') + k * .08 + .32, pan=(k - 1) * .4)   # ...and each gear springs up
 over('arcs', swoosh, .18, lead=.05)
 add(fx, swell(D('squeeze') + .2, .2), A('squeeze') - .2)                                    # the gears squeeze into a line of light...
 over('scan', scan, .3, lead=.05); add(fx, bloom(.5, 55), A('scan') + .05)                     # ...which opens out and reveals the word
