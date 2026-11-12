@@ -34,7 +34,7 @@ anything one chat makes or decides is written here, so the other chats know it.
 ## Marketing story films (the 23motion films)
 - House style: `ANIMATION-STYLE.md` (locked end card, captions, sound). Every film folder: `story.js` (timing), `main.js` (picture), `mix.py` (sound), `captions.js`, `refs/script-hu.txt`.
 - The blue mascot world (background and caption area `#00113F` with a `#163A8C` centre glow; the first 18 films used `#111a52`), big clear centred visuals, elegant soft transitions, icons that match the words, nothing in front of faces, nothing half off the edges, no thought bubbles, no brand names, animations finish before cuts, characters' heads joined to their bodies.
-- Voice at **1.18×** (pitch kept) unless the user says otherwise. Captions: Montserrat Bold 56 px, x 130, y 540, two lines, gold key words.
+- Voice speed (pitch kept): **marketing story films 1.15×** (from stories 19 on; the first 18 used 1.18×); **motion-design reels 1.1×**. Captions: Montserrat Bold 56 px, x 130, y 540, two lines, gold key words.
 - Voiceovers: the user's mp3, or ElevenLabs (`api.elevenlabs.io`, key injected by the environment): Hungarian voice **"David"** (`M336tBVZHWWiWb4R54ui`), model `eleven_multilingual_v2`.
 - Master: `sh tools/master.sh <film> <film>` (CRF 12, −14 LUFS). Check the logo sound level (max ≈ −11.3 dB) after mastering.
 - Final scripts of the first 18 stories: `scripts-pdf/23-Team-Marketing-Stories-Scripts.pdf`.
@@ -67,7 +67,7 @@ Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/tr
   - watch for ambiguity (e.g. „a jó emberek" can mean "good people" → use „a megfelelő emberek")
   - well-known marketing terms may stay in English (branding, Decoy Effect); prices in forint
 - **Every final Hungarian text comes with a Persian back-translation** (a literal translation of the Hungarian into Persian) so the user can check the meaning. The user may also check it with ChatGPT; weigh its notes against this rule.
-- **Voice: always ElevenLabs "David"** (`M336tBVZHWWiWb4R54ui`, model `eleven_multilingual_v2`) for every Hungarian voiceover, sped to 1.18× (pitch kept), unless the user says otherwise.
+- **Voice: always ElevenLabs "David"** (`M336tBVZHWWiWb4R54ui`, model `eleven_multilingual_v2`) for every Hungarian voiceover; speed 1.15× for marketing stories, 1.1× for motion-design reels (pitch kept), unless the user says otherwise.
 - (add the caption style and hashtags here when the user gives them)
 
 ## Arabic page rules
