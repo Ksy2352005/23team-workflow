@@ -40,4 +40,4 @@ for k, f_ in enumerate(['f1', 'f2', 'f3']): over(f_, swoosh, .2, lead=.03, pan=(
 for k, f_ in enumerate(['c1', 'c2', 'c3']): over(f_, swoosh, .2, lead=.03, pan=(k - 1) * .5); add(fx, chime(.16 + .03 * k, 1568 * 2 ** (k * 2 / 12)), A(f_) + .2, pan=(k - 1) * .5)
 add(fx, bloom(.45, 55), A('c3') + .4)
 DIPS = [(A('squeeze') - .2, A('scan')), (A('swell') - .8, A('swell') + .2), (A('shatter') - .7, A('shatter'))]
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, dips=DIPS, seed=0)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, dips=DIPS, seed=0, logo_trim=1.2)
