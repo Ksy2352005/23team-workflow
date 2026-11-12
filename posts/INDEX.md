@@ -7,5 +7,6 @@
 | HU 001 | HU | Branding secret | „Ezt senki nem mondja el" (clear message beats more content) | 2026-11-11 | — | `posts/HU/001-branding-secret-01/` (source: `branding-secret-01/`) |
 
 | HU 002 | HU | Branding secret (motion design) | „Játsszunk egy játékot!" (whitespace) | 2026-11-11 | — | `posts/HU/002-whitespace-game/` (source: `whitespace-game/`) |
+| HU 003 | HU | Motion reel M01 | „Tükrözés” (mirroring) | 2026-11-12 | — | `posts/HU/003-m01-tukrozes/` (source: `m01-mirroring/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.

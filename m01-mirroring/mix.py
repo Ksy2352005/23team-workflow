@@ -23,4 +23,4 @@ add(fx, shatter(.45), 29.85); add(fx, whoosh(1.2, .1), 31.26); add(fx, pop(.2, 3
 for k in range(5): add(fx, tick(.12), 33.90 + k * .32)
 add(fx, ding(.25, 2093), 36.32); [add(fx, coin(.3), t) for t in [38.54, 38.68, 39.14]]
 PAUSES = [(7.52, 8.14), (24.18, 25.26), (29.50, 29.90), (35.82, 36.32)]
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=1)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=1, logo_trim=-0.8)
