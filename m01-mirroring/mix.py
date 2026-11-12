@@ -44,5 +44,4 @@ over('touch', glide, .1, 330, 494); add(fx, swell(.6, .16), B('touch') - .55)   
 add(fx, bloom(.6, 55), A('flash') + .03); add(fx, shimmer(1.8, .12), A('flash') + .1)            # ...and meet in a flash
 for k, f_ in enumerate(['c1', 'c2', 'c3']): over(f_, swoosh, .2, lead=.03, pan=(k - 1) * .5); add(fx, chime(.16 + .03 * k, 1568 * 2 ** (k * 2 / 12)), A(f_) + .25, pan=(k - 1) * .5)
 add(fx, glide(.8, .08, 330, 660), A('c1') - .1)
-add(fx, bloom(.45, 55), A('c3') + .45)
 write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, logo_trim=1.2)

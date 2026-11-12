@@ -13,5 +13,6 @@
 | HU 006 | HU | Marketing story 22 | „A kész csomagok” (The Store That Sold Products in Unexpected Bundles) | 2026-11-12 | — | `posts/HU/006-story22-kesz-csomagok/` (source: `kitchen-bundles/`) |
 | HU 007 | HU | Marketing story 23 | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-12 | — | `posts/HU/007-story23-borond/` (source: `suitcase-tracker/`) |
 | HU 008 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/008-story24-havi-konyv/` (source: `book-subscription/`) |
+| HU 009 | HU | Motion reel M01 (redone, approved) | „Tükrözés” (mirroring) | 2026-11-12 | — | `posts/HU/009-m01-tukrozes/` (source: `m01-mirroring/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
