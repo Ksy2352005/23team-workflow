@@ -14,4 +14,4 @@ add(fx, riser(2.6, .18), 25.84); [add(fx, click(.12), 25.84 + k * .45) for k in 
 add(fx, whoosh(.7, .12), 30.1); add(fx, pop(.2), 31.56); add(fx, riser(.8, .2), 33.42-.8); add(fx, impact(.6), 33.42); add(fx, shimmer(.14, 1.3), 35.26)
 [add(fx, coin(.16), 36.34 + k * .15) for k in range(3)]; add(fx, whoosh(.8, .1, False), 38.2); add(fx, pop(.16, 700, 1300), 38.78); add(fx, impact(.7), 38.9+.5)
 PAUSES = [(3.64-.6, 3.64), (15.06-.7, 15.06), (22.92-.6, 22.92), (33.42-.8, 33.42), (38.9, 38.9+.5)]
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=4)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=4, logo_trim=-1.7)
