@@ -96,7 +96,7 @@ def steps(t0, n, gap=.27, v=.09, pan=0, kind='footstep_wood_00'):
 # the shop: the owner; the calendar pages fly; each piece lands on its plinth with a tag; he tidies them
 add(fx, pop(.12), H1('owner'), 1, -.4)
 for t in HIT['months']: add(fx, mx(S(pick('bookFlip', 3, int(t * 10) + 1).replace('bookFlip0', 'bookFlip3'), .1), swish(.25, .04)), t, 1, -.5)
-for k, t in enumerate(HIT['items']): add(fx, mx(S(pick('impactWood_light_00', 5, k), .1), pop(.06), chime(1319 * 2 ** (k * 2 / 12), .03, .4)), t, 1, -.3 + .25 * k)
+for k, t in enumerate(HIT['items']): add(fx, mx(click(.06, .8), chime(1319 * 2 ** (k * 2 / 12), .035, .5)), t - .05, 1, -.3 + .25 * k)   # each piece's light switches on
 for k, t in enumerate(HIT['tidy']): add(fx, mx(S(pick('cloth', 4, k).replace('cloth0', 'cloth4'), .07), shimmer(.04, .5)), t, 1, -.3 + .25 * k)
 # browse: the door; two customers in; "how much?"; the answer; out without buying; the owner's x
 add(fx, mx(S('doorOpen_1', .12), shopbell(.06)), H1('enter') - .8, 1, .6); steps(H1('enter') - .5, 6, .25, .08, .5)

@@ -132,19 +132,29 @@ function livingRoom(c, t, k = {}) {   // the living room set; k: how far each pi
 }
 
 const SHOT = {
-  shop(c, t) {   // the furniture shop: the owner; the months go by; a sofa, a table, a chair and a lamp each on its own plinth with a price tag; he tidies each one
+  shop(c, t) {   // the furniture shop: for months nothing sells; the furniture stands dim and dusty while a big calendar tears off month after month; the owner is sad. Then he lights each piece and tidies it
     const H = HIT; bg(c, '#163A8C'); const push = 1 + .03 * ss(seg(t, 0, 8)); c.save(); c.translate(540, 1500); c.scale(push, push); c.translate(-540, -1500); floor(c);
-    // the calendar on the wall: three pages fly off
-    pop(c, 170, 1060, E(t, .1, .35, .4), () => { rrect(c, 110, 990, 120, 140, 12, CREAM); rrect(c, 110, 990, 120, 36, 12, '#c4566a'); c.fillStyle = '#c4566a'; c.fillRect(110, 1012, 120, 14); const n = H.months.filter(m => t > m).length; text(c, String(3 + n), 170, 1080, 58, NAVY);
-      H.months.forEach(m => { const u = seg(t, m, m + .6); if (u > 0 && u < 1) { c.save(); c.globalAlpha = 1 - u; c.translate(170 + 120 * u, 1080 - 40 * u + 160 * u * u); c.rotate(u * 1.8); rrect(c, -60, -50, 120, 104, 8, CREAM); c.restore(); } }); });
-    const P = [{ x: 350, w: 300, k: E(t, H.items[0] - .1, .35, .45), draw: (c, x, y) => sofa(c, x, y, .72), tag: E(t, H.items[0] + .1, .3, .5), ty: 1310 },
-      { x: 575, w: 200, k: E(t, H.items[1] - .1, .35, .45), draw: (c, x, y) => table(c, x, y, .8), tag: E(t, H.items[1] + .1, .3, .5), ty: 1440 },
-      { x: 750, w: 160, k: E(t, H.items[2] - .1, .35, .45), draw: (c, x, y) => chair(c, x, y, .9), tag: E(t, H.items[2] + .1, .3, .5), ty: 1330 },
-      { x: 920, w: 150, k: E(t, H.items[3] - .1, .35, .45), draw: (c, x, y) => lamp(c, x, y, .85), tag: E(t, H.items[3] + .1, .3, .5), ty: 1230 }];
-    P.forEach((p, i) => { p.k += wob(t, H.tidy[i], .4, 22, .5) ; }); showroom(c, t, P);
+    const MON = ['JAN', 'FEB', 'MÁRC', 'ÁPR', 'MÁJ', 'JÚN', 'JÚL'], n = H.months.filter(m => t > m).length, dust = ss(seg(t, H.months[0], H.months[H.months.length - 1] + .3)) * (1 - ss(seg(t, H.tidy[0] - .2, H.tidy[3] + .4)));
+    // the big wall calendar: a page tears off and falls for every month that passes; it moves up to the corner when he starts arranging
+    const away = ss(seg(t, H.items[0] - .4, H.items[0] + .2)), cx = lerp(540, 150, away), cy = lerp(1070, 1010, away), cs = lerp(1, .5, away);
+    pop(c, cx, cy, E(t, .05, .35, .4), () => { c.save(); c.translate(cx, cy); c.scale(cs, cs);
+      c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(-105, -115, 220, 240, 16); c.fill(); rrect(c, -110, -120, 220, 240, 16, CREAM); rrect(c, -110, -120, 220, 64, 16, '#c4566a'); c.fillStyle = '#c4566a'; c.fillRect(-110, -80, 220, 24);
+      for (const d of [-60, 60]) { rrect(c, d - 8, -138, 16, 34, 8, '#8a95b8'); }
+      text(c, MON[Math.min(n, MON.length - 1)], 0, -84, 40, CREAM); text(c, String(1 + n * 3 % 28), 0, 26, 104, NAVY);
+      H.months.forEach((m, i) => { const u = seg(t, m, m + .7); if (u > 0 && u < 1) { c.save(); c.globalAlpha = 1 - u * u; c.translate(60 * u + (i % 2 ? -1 : 1) * 40 * u, -40 + 300 * u * u); c.rotate((i % 2 ? -1 : 1) * u * 1.6); rrect(c, -110, -60, 220, 180, 10, CREAM); text(c, MON[i], 0, -20, 34, '#c4566a'); c.restore(); } });
+      c.restore(); });
+    // the furniture: there all along, dim and dusty; each piece's light switches on as it is named, then he tidies it and the dust clears
+    const lit = H.items.map(a => ss(seg(t, a - .1, a + .25))), G = (i, f) => { const g = (1 - lit[i]) * .8 + .2 * dust * (1 - lit[i]); c.save(); if (g > .01) c.filter = `saturate(${1 - g}) brightness(${1 - .45 * g})`; f(); c.restore(); };
+    const P = [{ x: 350, w: 300, k: 1, lit: .15 + .85 * lit[0], draw: (c, x, y) => G(0, () => sofa(c, x, y, .72)), tag: 1, ty: 1310 },
+      { x: 575, w: 200, k: 1, lit: .15 + .85 * lit[1], draw: (c, x, y) => G(1, () => table(c, x, y, .8)), tag: 1, ty: 1440 },
+      { x: 750, w: 160, k: 1, lit: .15 + .85 * lit[2], draw: (c, x, y) => G(2, () => chair(c, x, y, .9)), tag: 1, ty: 1330 },
+      { x: 920, w: 150, k: 1, lit: .15 + .85 * lit[3], draw: (c, x, y) => G(3, () => lamp(c, x, y, .85)), tag: 1, ty: 1230 }];
+    P.forEach((p, i) => { p.k += wob(t, H.tidy[i], .4, 22, .5); }); showroom(c, t, P);
+    P.forEach((p, i) => { if (dust > 0) { c.save(); c.globalAlpha = .6 * dust; c.strokeStyle = 'rgba(220,226,240,.8)'; c.lineWidth = 2; const x0 = p.x - p.w / 2 + 6, y0 = 1180 + (i % 2) * 60; c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo(x0 + 30, y0 + 20, x0 + 60, y0); c.moveTo(x0, y0); c.quadraticCurveTo(x0 + 18, y0 + 34, x0, y0 + 64); c.moveTo(x0, y0); c.lineTo(x0 + 46, y0 + 46); c.moveTo(x0 + 22, y0 + 10); c.quadraticCurveTo(x0 + 22, y0 + 26, x0 + 8, y0 + 30); c.stroke(); for (let k = 0; k < 6; k++) ell(c, p.x - p.w / 2 + hash(k + i * 7) * p.w, F - 20 - hash(k + i) * 120, 2.5, 2.5, 'rgba(220,226,240,.7)'); c.restore(); } });
     H.tidy.forEach((at, i) => spark(c, P[i].x, 1520, t, at, 5, 90, 12));
-    // the owner, proud, then a little puzzled as the months go by
-    const ok = E(t, H.owner - .2, .35, .45); if (ok > 0) scaled(c, 170, F, Math.min(1, ok), () => owner(c, t, 170, F, 1.55, { f: .35, look: .3, smile: .95 }));
+    // the owner: sad and slumped while the months pass; a faint hope as he lights and tidies the pieces
+    const hope = ss(seg(t, H.items[0], H.tidy[3] + .4)), ok = E(t, H.owner - .2, .35, .45);
+    if (ok > 0) scaled(c, 170, F, Math.min(1, ok), () => owner(c, t, 170, F, 1.55, { f: .35, look: lerp(-.5, .3, hope), smile: lerp(.05, .45, hope), sad: lerp(.95, .35, hope) }));
     c.restore();
   },
   browse(c, t) {   // two customers come in, look at the sofa, ask the price, and walk out without buying; the owner's smile drops
