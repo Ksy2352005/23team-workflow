@@ -76,6 +76,13 @@ def ambient_bed(d, seed=0, seg=6.0):
 def load_mono(path):
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
     return np.frombuffer(raw, np.float32).astype(np.float64)
+def end_clean(vo):   # ElevenLabs files can end on a cut-off burst (sounds like a hand bumping the mic): find where the last word has died away and fade out before the burst
+    w = int(.02 * SR); env = np.array([np.abs(vo[i:i + w]).max() for i in range(0, len(vo) - w, w)]); peak = env.max(); n = len(env)
+    k = n - 1
+    while k > 0 and env[k] > peak * .12: k -= 1           # step back over a loud tail at the very end
+    if k == n - 1: return vo                                 # ends quietly: nothing to clean
+    cut = min(len(vo), (k + 1) * w); f = int(.05 * SR); out = vo[:cut].copy(); out[-f:] *= np.linspace(1, 0, f) ** 2   # end at the start of the burst, faded
+    return out
 def smooth(x, sec): k = max(1, int(sec * SR)); return np.convolve(x, np.ones(k) / k, 'same')
 def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0, logo_trim=0.0, seed=0, out='out/mix.wav'):
     N = int(dur * SR) + SR
@@ -84,7 +91,8 @@ def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0,
     for a, c in dips: ia, ic = int(a * SR), int(c * SR); g[ia:ic] = .45   # soft dips (never silence) just before a big moment
     g = smooth(g, .45); fi, fo = int(1.2 * SR), int(1.4 * SR); g[:fi] *= np.linspace(0, 1, fi); e0 = int((story + .1) * SR); g[e0 - fo:e0] *= np.linspace(1, 0, fo); g[e0:] = 0
     fx = fx[:N].copy(); n0, n1 = int((story - .6) * SR), int((story + .1) * SR); fx[n0:n1] *= np.linspace(1, 0, n1 - n0)[:, None]; fx[n1:] = 0
-    vo = compress(norm(load_mono(os.path.join(here, voice)), .9), thr=.3, ratio=3); vb = np.zeros((N, 2)); n = min(len(vo), N); vb[:n, 0] = vo[:n]; vb[:n, 1] = vo[:n]
+    vo = load_mono(os.path.join(here, voice)); vo = end_clean(vo)
+    vo = compress(norm(vo, .9), thr=.3, ratio=3); vb = np.zeros((N, 2)); n = min(len(vo), N); vb[:n, 0] = vo[:n]; vb[:n, 1] = vo[:n]
     env = smooth(np.abs(vb[:, 0]), .25); duck = np.clip(env / (env.max() * .3), 0, 1); duck = smooth(duck, .3)
     vr = np.sqrt(np.mean(vb[np.abs(vb[:, 0]) > .02] ** 2))
     br = np.sqrt(np.mean(bed[int(3 * SR):int(story * SR)] ** 2)); bed *= (vr * bed_level / max(br, 1e-9)) * g * (1 - .4 * duck)
