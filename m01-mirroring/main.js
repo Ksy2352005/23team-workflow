@@ -28,30 +28,31 @@ function brain(c, x, y, s) { c.beginPath(); c.moveTo(x - 70 * s, y + 20 * s); c.
   for (const [a, b, d] of [[-50, -40, 1], [0, -55, -1], [30, -10, 1], [-30, 5, -1]]) { c.beginPath(); c.arc(x + a * s, y + b * s, 18 * s, d > 0 ? 0 : Math.PI, d > 0 ? Math.PI : Math.PI * 2); c.stroke(); } P(c, [[x - 4 * s, y + 40 * s], [x - 10 * s, y + 80 * s]]); }
 function face(c, x, y, r, mood) { circle(c, x, y, r); c.beginPath(); const m = clamp(mood, -1, 1); c.moveTo(x - r * .45, y + r * .25 - m * r * .05); c.quadraticCurveTo(x, y + r * .25 + m * r * .45, x + r * .45, y + r * .25 - m * r * .05); c.stroke(); circle(c, x - r * .32, y - r * .2, r * .08, true); circle(c, x + r * .32, y - r * .2, r * .08, true); }
 // —— timing of every motion (also written out as sound cues, so each sound lands on its frame) ——
-const back = x => { const c1 = 1.70158, c3 = c1 + 1; x = clamp(x); return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const back = x => { const c1 = 1.70158, c3 = c1 + 1; x = clamp(x); if (x <= 0) return 0; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
 const bounce = x => { x = clamp(x); const n = 7.5625, d = 2.75; if (x < 1 / d) return n * x * x; if (x < 2 / d) return n * (x -= 1.5 / d) * x + .75; if (x < 2.5 / d) return n * (x -= 2.25 / d) * x + .9375; return n * (x -= 2.625 / d) * x + .984375; };
 const M = {
-  fill: [.3, 1.2], drag: [T(3) - .5, T(4) + .5], sweep: [T(5) - .35, T(5) + .55], gears: [T(5), T(6) + .8],
+  fill: [.3, 1.2], drag: [T(3) - .5, T(4) + .5], vortex: [T(5) - .3, T(5) + .45], gears: [T(5) - .05, T(5) + .55], arcs: [T(5) + .3, T(6) + .3],
   squeeze: [T(11) - .45, T(12) - .05], scan: [T(12) - .05, T(13) + .25], melt: [T(14) - .35, T(14) + .3], drop: [T(14) - .15, T(14) + .85],
   slideIn: [T(21) - .35, T(21) + .1], flip1: [T(23) - .25, T(23) + .15], flip2: [T(25) - .25, T(25) + .15], slideOut: [T(25) + .55, T(25) + .95], shrink: [T(25) + .7, T(26) + .1],
   grow: [T(27) - .2, T(27) + .6], ring: [T(30) - .2, T(31) + 1.0], star: [T(33) - .3, T(33) + .4], person: [T(34), T(37) + .2],
   zoomIn: [T(38) - .3, T(39) + .4], zoomOut: [T(43) - .45, T(43) + .3], split: [T(43) - .3, T(46) + .2], swell: [T(48) - .2, T(50) + .4],
-  morph: [T(51) - .25, T(52) + .45], shatter: [T(55), T(56) + .4], iris: [T(55) + .15, T(56) + .35], pull: [T(60) - .4, T(63) + .4], merge: [T(63) - .2, T(64) + .3], irisOut: [T(64) + .1, T(65) + .05],
-  faces: [T(65) - .25, T(66) + .2], f1: [T(67) - .25, T(67) + .25], f2: [T(69) - .25, T(69) + .25], f3: [T(73) - .25, T(73) + .25], c1: [T(75) - .2, T(75) + .2], c2: [T(77) - .2, T(77) + .2], c3: [T(79) - .2, T(79) + .2] };
+  qmark: [T(51) - .3, T(53) + .2], neuron: [T(54) - .15, T(55) + .9], retract: [T(56) - .5, T(56) + .05], shapes: [T(56) - .1, T(58) + .2], pull: [T(60) - .35, T(63) - .05], lock: [T(63) - .05, T(64) + .25],
+  mirror: [T(65) - .45, T(66) + .05], figL: [T(66) - .15, T(66) + .45], figR: [T(67) - .35, T(67) + .3], handL: [T(68) - .1, T(69) + .25], handR: [T(68) + .15, T(69) + .5], touch: [T(71) - .3, T(73) - .05], flash: [T(73) - .05, T(73) + .7],
+  c1: [T(75) - .3, T(75) + .25], c2: [T(77) - .3, T(77) + .25], c3: [T(79) - .3, T(79) + .25] };
 const m = (t, k) => seg(t, M[k][0], M[k][1]);
 // —— the one continuous take ——
 function scene(c, t) {
-  // 1. more sales: a tile fills into a grid of coins; the cursor drags the corner, the grid grows big; a bright arc sweeps round and wipes it away
-  const sw = ease3(m(t, 'sweep')), swA = -Math.PI / 2 + sw * Math.PI * 2;
-  if (sw < 1) { const grow = ease3(m(t, 'drag')), n = t < .5 ? 1 : t < T(3) ? 3 : 5, cell = 128, size = lerp(360, 680, grow), sc = size / (n * cell), fill = ease3(m(t, 'fill'));
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const k = clamp(fill * 2.2 - (i + j) * .12), x = X + (j - (n - 1) / 2) * cell * sc, y = Y + (i - (n - 1) / 2) * cell * sc; let ang = Math.atan2(y - Y, x - X) + Math.PI / 2; if (ang < 0) ang += Math.PI * 2; const gone = sw > 0 ? clamp((sw * Math.PI * 2 - ang) / .6) : 0; if (k <= 0 || gone >= 1) continue; c.save(); c.globalAlpha = 1 - gone; coin(c, x, y, 48 * sc * Math.min(1.05, k) * (1 + .3 * gone)); c.restore(); }
-    selBox(c, X, Y, size + 50, size + 50, 1 - sw); const dr = m(t, 'drag'); if (dr > 0 && dr < 1) cursor(c, X + (size + 50) / 2 + 6, Y + (size + 50) / 2 + 6, 1 - ss(seg(dr, .85, 1))); }
-  // 2. an instant connection, a strong technique: the sweeping arcs keep circling; three linked gears grow out where the arc passed and turn together
+  // 1. more sales: a tile fills into a grid of coins; the cursor drags the corner and the grid grows big; then it swirls into a quick vortex
+  const vx = m(t, 'vortex'), ve = ss(vx), GC = [[X, Y - 115], [X - 120, Y + 90], [X + 120, Y + 90]];
+  if (vx < 1) { const grow = ease3(m(t, 'drag')), n = t < .5 ? 1 : t < T(3) ? 3 : 5, cell = 128, size = lerp(360, 680, grow), sc = size / (n * cell), fill = ease3(m(t, 'fill'));
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const k = clamp(fill * 2.2 - (i + j) * .12); if (k <= 0) continue; const dx = (j - (n - 1) / 2) * cell * sc, dy = (i - (n - 1) / 2) * cell * sc, rot = ve * 2.4, rx = (dx * Math.cos(rot) - dy * Math.sin(rot)) * (1 - ve), ry = (dx * Math.sin(rot) + dy * Math.cos(rot)) * (1 - ve);
+      const g = GC[(i * n + j) % 3], e = ease3(vx), x = lerp(X + rx, g[0], e * e), y = lerp(Y + ry, g[1], e * e); c.save(); c.globalAlpha = 1 - ss(seg(vx, .55, .95)); coin(c, x, y, 48 * sc * Math.min(1.05, k) * (1 - .6 * ve)); c.restore(); }
+    c.save(); c.globalAlpha = 1 - ss(clamp(vx * 3)); c.translate(X, Y); c.rotate(ve * 1.2); c.scale(1 - ve * .4, 1 - ve * .4); c.translate(-X, -Y); selBox(c, X, Y, size + 50, size + 50, 1); c.restore(); const dr = m(t, 'drag'); if (dr > 0 && dr < 1) cursor(c, X + (size + 50) / 2 + 6, Y + (size + 50) / 2 + 6, 1 - ss(seg(dr, .85, 1))); }
+  // 2. an instant connection, a strong technique: out of the vortex three linked gears spring up and turn together; two arcs draw round them and keep circling
   const sq = ease3(m(t, 'squeeze'));
-  if (sw > 0 && sq < 1) { const R = 330, sp = swA + Math.max(0, t - M.sweep[1]) * 1.1; c.save(); c.translate(X, Y); c.scale(1 - sq, 1); c.translate(-X, -Y);
-    neon(c, () => { c.beginPath(); c.arc(X, Y, R, sp - Math.PI * .7, sp); c.stroke(); if (sw >= 1) { c.beginPath(); c.arc(X, Y, R, sp + Math.PI * .3, sp + Math.PI); c.stroke(); } }, { w: 8, glow: 44 });
-    if (sw < 1) glowDot(c, X + Math.cos(swA) * R, Y + Math.sin(swA) * R, 18, 1);
-    [[X, Y - 115], [X - 120, Y + 90], [X + 120, Y + 90]].forEach(([gx, gy], k) => { const a = back(seg(t, M.gears[0] + k * .22, M.gears[0] + k * .22 + .6)); if (a > 0) neon(c, () => gear(c, gx, gy, 96 * a, (k % 2 ? -1 : 1) * (t * .8 + sq * 8)), { w: 6, glow: 30 }); }); c.restore(); }
+  if (vx > 0 && sq < 1) { const R = 330, ar = ease3(m(t, 'arcs')), sp = (t - T(5)) * 1.1; c.save(); c.translate(X, Y); c.scale(1 - sq, 1); c.translate(-X, -Y);
+    if (ar > 0) neon(c, () => { c.beginPath(); c.arc(X, Y, R, sp, sp + Math.PI * .7 * ar); c.stroke(); c.beginPath(); c.arc(X, Y, R, sp + Math.PI, sp + Math.PI + Math.PI * .7 * ar); c.stroke(); }, { w: 8, glow: 44 });
+    GC.forEach(([gx, gy], k) => { const a = back(seg(t, M.gears[0] + k * .08, M.gears[1] + k * .08)); if (a > 0) neon(c, () => gear(c, gx, gy, 96 * a, (k % 2 ? -1 : 1) * (t * .8 + (1 - ve) * 3 + sq * 8)), { w: 6, glow: 30 }); }); c.restore(); }
   // 3. its name: mirroring: the gears squeeze into a line of light; it splits and two light bars run outward, revealing the word; it is mirrored on the floor
   const sc3 = m(t, 'scan'), melt = m(t, 'melt');
   if (sq > .9 && melt < 1) { const half = 440 * ease3(sc3), wy = Y - 60;
@@ -80,24 +81,35 @@ function scene(c, t) {
     if (zo < 1) neon(c, () => { for (let k = 0; k < 6; k++) { const r = (90 + k * 120) * zi * (1 + .12 * Math.sin(t * .7)) * (1 + zo * 2.5), rot = (t - 20) * (.15 + k * .03) * (k % 2 ? -1 : 1); c.save(); c.translate(X, Y); c.rotate(rot); c.beginPath(); c.roundRect(-r, -r, 2 * r, 2 * r, 18); c.stroke(); c.restore(); } }, { w: 6, glow: 36, alpha: 1 - zo });
     for (const d of [-1, 1]) if (sp > 0) neon(c, () => circle(c, X + d * 230 * back(m(t, 'split')), Y, 58 * sp), { w: 6, glow: 30 }); }
   // 8. trust grows at once: the middle core swells big and bright, pushing its two companions out
-  const swl = back(m(t, 'swell')), mo = ease3(m(t, 'morph'));
+  const swl = back(m(t, 'swell')), mo = ease3(seg(t, M.qmark[0], M.qmark[0] + .5));
   if (m(t, 'swell') > 0 && mo < 1) { glowDot(c, X, Y, lerp(64, 150, swl) * (1 - mo * .6), 1 - mo); for (const d of [-1, 1]) neon(c, () => circle(c, X + d * (lerp(230, 310, swl) + mo * 500), Y, 58), { w: 6, glow: 30, alpha: 1 - mo }); }
-  // 9. why does it work? simple psychology: the core dims into a brain drawn in light, sparks inside; dotted waves flow in from the edges; it shatters into light
-  const sh = m(t, 'shatter'), ir = m(t, 'iris');
-  if (mo > 0 && ir < 1) {
-    for (const d of [-1, 1]) { c.save(); c.setLineDash([3, 12]); neon(c, () => { c.beginPath(); const n = Math.floor(50 * mo); for (let k = 0; k <= n; k++) { const x = d < 0 ? -60 + k * 24 : 1140 - k * 24, ph = (t - 26.5) * 1.3; c.lineTo(x, Y + d * 400 + Math.sin(k * .25 + ph + d) * 110); } c.stroke(); }, { w: 6, glow: 30, alpha: 1 - sh }); c.restore(); }
-    if (sh <= 0) { c.save(); c.setLineDash([2200 * mo, 2200]); neon(c, () => brain(c, X, Y, 3.3), { w: 7, glow: 36 }); c.restore(); if (mo >= 1) for (let k = 0; k < 4; k++) glowDot(c, X - 90 + hash(k + Math.floor(t * 2)) * 180, Y - 150 + hash(k + 7 + Math.floor(t * 2)) * 180, 13, 1); }
-    else for (let k = 0; k < 46; k++) { const a = hash(k) * 7, d = ease3(sh) * (100 + hash(k + 3) * 760); c.save(); c.translate(X + Math.cos(a) * d, Y + Math.sin(a) * d); c.rotate(sh * 6 * hash(k + 5)); c.globalAlpha *= 1 - sh; c.fillStyle = 'rgba(230,236,255,.95)'; c.beginPath(); c.moveTo(0, -20); c.lineTo(16, 12); c.lineTo(-14, 14); c.closePath(); c.fill(); c.restore(); } }
-  // 10. people are drawn to what feels familiar: the light opens out from the centre like an iris; two soft discs drift, find each other and overlap; the iris closes again
-  const io = ease3(m(t, 'irisOut'));
-  if (ir > 0 && io < 1) { const R = lerp(0, 1500, ease3(ir)) * (1 - io); c.save(); c.beginPath(); c.rect(0, 720, 1080, 1300); c.clip(); c.beginPath(); c.arc(X, Y, R, 0, 7); c.clip(); c.fillStyle = '#dfe6f6'; c.fillRect(0, 0, 1080, 1920);
-    const pull = ease3(m(t, 'pull')), big = ease3(m(t, 'merge')); [[-1, -60], [1, 60]].forEach(([d, oy], k) => { const x = X + d * lerp(230, 70, pull) + 30 * Math.sin(t * .9 + k), y = Y + oy * (1 - pull) + 20 * Math.cos(t * .8 + k), r = lerp(150, 420, big); c.fillStyle = k ? 'rgba(120,134,170,.45)' : 'rgba(150,164,198,.55)'; c.beginPath(); c.ellipse(x, y, r * (k ? 1 : .9), r * 1.1, 0, 0, 7); c.fill(); });
-    const g = c.createLinearGradient(0, 720, 0, 840); g.addColorStop(0, 'rgba(0,17,63,1)'); g.addColorStop(1, 'rgba(0,17,63,0)'); c.fillStyle = g; c.fillRect(0, 720, 1080, 120); c.restore(); }
-  // 11. mirror your audience gently and they feel understood: three faces appear as the iris closes; the middle one smiles, the others flip like reflections to match; all smile
-  const fa = m(t, 'faces');
-  if (fa > 0 && m(t, 'c3') < 1) { for (let k = 0; k < 3; k++) { const a = back(seg(t, M.faces[0] + k * .12, M.faces[0] + k * .12 + .5)), x = X + (k - 1) * 250, fk = ['f2', 'f1', 'f3'][k], fp = m(t, fk), sy = Math.cos(fp * Math.PI), mood = fp < .5 ? (k === 1 ? .2 : -.8) : 1, ck = m(t, ['c1', 'c2', 'c3'][k]), sx = Math.cos(ck * Math.PI);
-      c.save(); c.translate(x, Y); c.scale(Math.max(.05, Math.abs(sx)), Math.max(.05, Math.abs(sy))); c.translate(-x, -Y); if (ck < .5) neon(c, () => face(c, x, Y, 92 * a, mood), { w: 6, glow: 30 }); else { glowDot(c, x, Y, 60, .4); coin(c, x, Y, 92); } c.restore(); }
-    reflect(c, Y + 130, .25 * clamp(fa * 2), (c) => { for (let k = 0; k < 3; k++) neon(c, () => face(c, X + (k - 1) * 250, Y, 92, 1), { w: 5, glow: 20 }); }); }
+  // 9. why does it work? the bright core draws a question mark out of itself; simple psychology: its dot sends out a neuron, branch after branch lighting up, pulses running along
+  const qm = m(t, 'qmark'), nr = m(t, 'neuron'), rt = ease3(m(t, 'retract'));
+  if (mo > 0 && rt < 1) { const dotY = Y + 170; c.save(); c.globalAlpha = 1 - rt;
+    if (nr < .35) { c.save(); c.setLineDash([1300 * ease3(qm), 1300]); c.globalAlpha *= 1 - ss(seg(nr, 0, .35)); neon(c, () => { c.beginPath(); c.arc(X, Y - 150, 120, Math.PI * 1.05, Math.PI * 2.25); c.quadraticCurveTo(X + 30, Y - 10, X, Y + 50); c.lineTo(X, Y + 80); c.stroke(); }, { w: 14, glow: 44 }); c.restore(); }
+    glowDot(c, X, dotY * (1 - rt) + Y * rt, 26 + 10 * Math.sin(t * 4) * (nr > 0 ? 1 : 0), 1);
+    if (nr > 0) { const br = (x, y, a, len, d, k) => { const u = clamp(nr * 3.2 - d * .45 - rt * 3); if (u <= 0 || d > 4) return; const L = len * ease3(u) * (1 - rt), x2 = x + Math.cos(a) * L, y2 = y + Math.sin(a) * L; c.lineWidth = Math.max(2, 9 - d * 1.8); c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo((x + x2) / 2 + Math.sin(k * 3) * 30, (y + y2) / 2 + Math.cos(k * 2) * 30, x2, y2); c.stroke(); if (u >= 1) { br(x2, y2, a - .5 - hash(k) * .3, len * .66, d + 1, k * 2 + 1); br(x2, y2, a + .45 + hash(k + 9) * .3, len * .66, d + 1, k * 2 + 2); } };
+      neon(c, () => { for (let k = 0; k < 6; k++) br(X, dotY, -Math.PI / 2 + (k - 2.5) * .62 + (k > 2 ? 0 : 0) + (k % 2 ? .1 : -.1) + (k >= 3 ? Math.PI : 0) * 0, 220, 0, k + 1); }, { w: 8, glow: 34 });
+      for (let k = 0; k < 8; k++) { const q = ((t * .8 + k / 8) % 1), a = -Math.PI / 2 + (k - 3.5) * .4; if (nr > .5) glowDot(c, X + Math.cos(a) * q * 520, dotY + Math.sin(a) * q * 520, 9, Math.sin(q * Math.PI) * (1 - rt)); } }
+    c.restore(); }
+  // 10. people are drawn to what feels familiar: the neuron pulls back into one ring; shapes drift around it; only the circles feel the pull, glide in and lock into an orbit; the rest drift away
+  const sh = m(t, 'shapes'), pl = ease3(m(t, 'pull')), lk = back(m(t, 'lock')), mi = ease3(m(t, 'mirror'));
+  if (rt > 0 && mi < 1) { c.save(); c.globalAlpha = 1 - mi; neon(c, () => circle(c, X, Y, 70 * Math.min(1, rt * 1.3)), { w: 7, glow: 40 });
+    for (let k = 0; k < 12; k++) { const isC = k % 2 === 0, a0 = k / 12 * Math.PI * 2 + .3, r0 = 330 + hash(k) * 120, drift = t * .25 + k, bx = X + Math.cos(a0) * r0 + Math.sin(drift) * 30, by = Y + Math.sin(a0) * r0 * 1.05 + Math.cos(drift * 1.2) * 30, ap = back(seg(t, M.shapes[0] + k * .06, M.shapes[0] + k * .06 + .5)); if (ap <= 0) continue;
+      let x = bx, y = by, al = 1; if (isC) { const oa = (k / 12) * Math.PI * 2 + (t - T(63)) * .6 * lk, tx = X + Math.cos(oa) * 220, ty = Y + Math.sin(oa) * 220; x = lerp(bx, tx, pl); y = lerp(by, ty, pl); } else { x = bx + (bx - X) * pl * .8; y = by + (by - Y) * pl * .8; al = 1 - pl; }
+      const cx = lerp(x, X, mi * (isC ? 1 : 0)), cy = lerp(y, Y, mi);
+      neon(c, () => { c.save(); c.translate(cx, cy); c.rotate(isC ? 0 : t * .6 + k); const s = 46 * ap; if (isC) circle(c, 0, 0, s * (1 + .15 * lk * (isC ? 1 : 0))); else if (k % 4 === 1) c.strokeRect(-s, -s, 2 * s, 2 * s); else P(c, [[0, -s * 1.1], [s, s * .8], [-s, s * .8]], true); c.restore(); }, { w: 6, glow: isC ? 26 + 24 * lk : 22, alpha: al });
+    } if (lk > 0) neon(c, () => circle(c, X, Y, 220), { w: 2, glow: 30, alpha: .5 * lk * (1 - mi) }); c.restore(); }
+  // 11. mirror your audience gently and they feel understood: the orbit closes into a mirror of light; a figure steps up on each side; one raises a hand and the other copies it; their hands meet on the mirror in a flash
+  const fL = back(m(t, 'figL')), fR = back(m(t, 'figR')), hL = ease3(m(t, 'handL')), hR = ease3(m(t, 'handR')), tc = ease3(m(t, 'touch')), fl = m(t, 'flash'), c1 = m(t, 'c1');
+  if (mi > 0) { const ly = Y - 330 + 660 * (1 - mi) * 0, lh = 700 * mi, mfade = 1 - ss(seg(fl, 0, .5)); c.save(); c.fillStyle = WHITE; c.shadowColor = 'rgba(220,230,255,1)'; c.shadowBlur = 40; c.globalAlpha = mfade; c.fillRect(X - 3, Y - lh / 2, 6, lh); c.restore();
+    const fig = (x, d, s, hand, reach) => { if (s <= .01) return; const hy = Y - 210, sx = x, shY = Y - 120; neon(c, () => { circle(c, sx, hy, 54 * s); P(c, [[sx, hy + 54 * s], [sx, Y + 120 * s]]); P(c, [[sx, Y + 120 * s], [sx - 60 * s, Y + 300 * s]]); P(c, [[sx, Y + 120 * s], [sx + 60 * s, Y + 300 * s]]); P(c, [[sx, shY], [sx - d * 90 * s, shY + 150 * s]]);
+      const ex = lerp(sx + d * 90 * s, sx + d * 110 * s, hand), ey = lerp(shY + 150 * s, shY - 140 * s, hand), tx = lerp(ex, X - d * 8, reach), ty = lerp(ey, Y - 150, reach); P(c, [[sx, shY], [tx, ty]]); circle(c, tx, ty, 14 * s, true); }, { w: 8, glow: 34, alpha: c1 > 0 ? 1 - ss(c1 * 2) : 1 }); };
+    const gap = lerp(330, 190, tc); fig(X - gap, 1, fL, hL, tc); fig(X + gap, -1, fR, hR, tc);
+    if (fl > 0) { const b = Math.sin(clamp(fl) * Math.PI); glowDot(c, X, Y - 150, 30 + 60 * b, 1 - ss(seg(fl, .7, 1)) + (c1 > 0 ? 0 : 0)); c.save(); c.globalAlpha = .5 * b; const g = c.createRadialGradient(X, Y - 150, 0, X, Y - 150, 600); g.addColorStop(0, 'rgba(235,242,255,.8)'); g.addColorStop(1, 'rgba(235,242,255,0)'); c.fillStyle = g; c.fillRect(0, 700, 1080, 1220); c.restore(); } }
+  // 12. use it, and watch what happens: from the meeting point three forint coins rise and spread into a row, turning bright one by one
+  if (c1 > 0) for (let k = 0; k < 3; k++) { const q = m(t, ['c1', 'c2', 'c3'][k]), up = ease3(seg(t, M.c1[0], M.c1[0] + .6)), x = X + (k - 1) * 250 * up, y = lerp(Y - 150, Y, up), turn = Math.cos(q * Math.PI);
+    c.save(); c.translate(x, y); c.scale(Math.max(.05, Math.abs(turn)), 1); c.translate(-x, -y); if (q < .5) neon(c, () => circle(c, x, y, 92 * up), { w: 6, glow: 30 }); else { glowDot(c, x, y, 60, .4); coin(c, x, y, 92); } c.restore(); }
 }
 // the bloom: the take is drawn off-screen, then laid down twice: a wide soft glow and the crisp picture
 function take(c, t) { oc.setTransform(1, 0, 0, 1, 0, 0); oc.clearRect(0, 0, off.width, off.height); oc.setTransform(K, 0, 0, K, 0, 0); scene(oc, t);
