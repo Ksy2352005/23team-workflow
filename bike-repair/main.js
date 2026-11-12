@@ -160,8 +160,8 @@ const SHOT = {
   },
   later(c, t) {   // a few months later something interesting happened: the calendar flies through months; a "!"
     bg(c, '#163A8C'); floor(c); const H = HIT;
-    const n = Math.floor(clamp(seg(t, H.months, H.months + 1.0)) * 4); calendarBadge(c, 540, 1360, E(t, 36.3, .35, .45) * 1.6, 3 + n);
-    for (let k = 0; k < 4; k++) { const at = H.months + k * .25, u = seg(t, at, at + .6); if (u > 0 && u < 1) { c.save(); c.globalAlpha = 1 - u; c.translate(540 + 300 * u, 1380 - 100 * u + 300 * u * u); c.rotate(u * 2); rrect(c, -96, -80, 192, 166, 12, CREAM); c.restore(); } }
+    const n = Math.floor(clamp(seg(t, H.months, H.months + 1.0)) * 4); scaled(c, 540, 1360, 1.8, () => calendarBadge(c, 540, 1360, E(t, 36.3, .35, .45), 3 + n));
+    for (let k = 0; k < 4; k++) { const at = H.months + k * .25, u = seg(t, at, at + .6); if (u > 0 && u < 1) { c.save(); c.globalAlpha = 1 - u; c.translate(540 + 300 * u, 1380 - 100 * u + 300 * u * u); c.rotate(u * 2); rrect(c, -108, -126, 216, 252, 14, CREAM); c.restore(); } }
     badge(c, 'ex', 760, 1160, 60, E(t, H.interesting, .3, .5)); if (t > H.interesting) spark(c, 540, 1360, t, H.interesting, 7, 260, 16);
   },
   back(c, t) {   // those who came for repairs came back: for accessories, gear, even a new bike; and they brought their friends
