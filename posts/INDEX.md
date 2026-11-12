@@ -18,5 +18,6 @@
 | HU 011 | HU | Marketing story 20 | „A két porszívó” (The Product Comparison) | 2026-11-12 | — | `posts/HU/011-story20-porszivo/` (source: `vacuum-test/`) |
 | HU 012 | HU | Marketing story 21 | „A bicajbolt, ami javított” (The Bike Shop That Fixed Instead of Selling) | 2026-11-12 | — | `posts/HU/012-story21-bicajbolt/` (source: `bike-repair/`) |
 | HU 013 | HU | Marketing story 22 | „A kész csomagok” (The Store That Sold Products in Unexpected Bundles) | 2026-11-12 | — | `posts/HU/013-story22-kesz-csomagok/` (source: `kitchen-bundles/`) |
+| HU 014 | HU | Marketing story 23 | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-12 | — | `posts/HU/014-story23-borond/` (source: `suitcase-tracker/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
