@@ -45,6 +45,21 @@ def glide(d=1.0, v=.08, f0=330, f1=660):   # a smooth tonal glide under a growin
     return verb(lp(y, 2500) * soft_env(d, .3, .5), 1.6, .4) * v
 def air(d=2.0, v=.05):   # a breath of air / crackle-free texture for shatter or dissolve moments
     tt = t_(d); return verb(norm(bp(noise(d), 2500, 9000) * (.6 + .4 * np.sin(2 * np.pi * 3 * tt))) * soft_env(d, .3, .8), 1.8, .4) * v
+def thud(v=.4, f=70):   # a soft landing: a round low body with a short airy touch, no click (6 ms attack)
+    d = 1.4; tt = t_(d); body = np.sin(2 * np.pi * (f + 40 * np.exp(-tt * 18)) * tt) * np.minimum(1, tt / .006) * np.exp(-tt * 5.5)
+    touch = lp(noise(d), 1800) * np.minimum(1, tt / .004) * np.exp(-tt * 30) * .35
+    return verb(norm(body + touch), 1.2, .3) * v
+def spin(d=1.5, v=.15):   # a turning whoosh with a gentle flutter, for things spinning or rotating
+    tt = t_(d); return swoosh(d, 1) * (1 + .35 * np.sin(2 * np.pi * 7 * tt)) * v
+def scan(d=1.0, v=.14):   # a bright sweep of light opening outward
+    tt = t_(d); x = norm(sweep_noise(d, 1500, 9000) * .6 + np.sin(2 * np.pi * np.cumsum(np.geomspace(880, 1760, len(tt))) / SR) * .4)
+    return verb(x * soft_env(d, .08, .35), 1.8, .45) * v
+def melt(d=.8, v=.12):   # something melting / pouring down: a falling tone and air
+    tt = t_(d); y = np.sin(2 * np.pi * np.cumsum(np.geomspace(880, 180, len(tt))) / SR) * .5 + sweep_noise(d, 4000, 400) * .5
+    return verb(lp(norm(y), 6000) * soft_env(d, .05, .4), 1.6, .4) * v
+def chime(v=.12, f=1568):   # a soft rounded bell (slow 15 ms attack, long tail) for a coin turning bright
+    d = 2.2; tt = t_(d); y = sum(a * np.sin(2 * np.pi * f * k * tt) * np.exp(-tt / tau) for k, a, tau in [(1, 1, .9), (2.01, .4, .5), (3.0, .15, .3)])
+    return verb(y * np.minimum(1, tt / .015), 2.0, .45) * v
 # —— the bed ——
 CH = [(50, 57, 62, 65, 69), (46, 53, 58, 62, 69), (41, 48, 57, 60, 64), (48, 55, 60, 64, 67)]   # Dm(add9), Bbmaj7-ish, F, C — warm, not happy, not dark
 def ambient_bed(d, seed=0, seg=6.0):
@@ -62,7 +77,7 @@ def load_mono(path):
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
     return np.frombuffer(raw, np.float32).astype(np.float64)
 def smooth(x, sec): k = max(1, int(sec * SR)); return np.convolve(x, np.ones(k) / k, 'same')
-def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=1.0, logo_trim=0.0, seed=0, out='out/mix.wav'):
+def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0, logo_trim=0.0, seed=0, out='out/mix.wav'):
     N = int(dur * SR) + SR
     bed = np.zeros(N); b = ambient_bed(story + 1.0, seed); bed[:min(N, len(b))] = b[:N]
     g = np.ones(N)
@@ -73,7 +88,7 @@ def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=1.0,
     env = smooth(np.abs(vb[:, 0]), .25); duck = np.clip(env / (env.max() * .3), 0, 1); duck = smooth(duck, .3)
     vr = np.sqrt(np.mean(vb[np.abs(vb[:, 0]) > .02] ** 2))
     br = np.sqrt(np.mean(bed[int(3 * SR):int(story * SR)] ** 2)); bed *= (vr * bed_level / max(br, 1e-9)) * g * (1 - .4 * duck)
-    fr = np.percentile(np.abs(fx[:, 0]), 99.5); fxs = fx * (vr * 1.1 * fx_level / max(fr, 1e-6)) * (1 - .3 * duck)[:, None]
+    fr = np.percentile(np.abs(fx[:, 0]), 99.5); fxs = fx * (vr * 1.1 * fx_level / max(fr, 1e-6)) * (1 - .18 * duck)[:, None]
     mix = vb + fxs + np.stack([bed, bed], 1); mix = place_logo(mix, story + .2, SR, vr, logo_trim); mix = mix[:int(dur * SR)]
     mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
     mix = np.stack([limit(compress(mix[:, c], thr=.18, ratio=2.5, att=.005, rel=.15), .7) for c in range(2)], 1)
