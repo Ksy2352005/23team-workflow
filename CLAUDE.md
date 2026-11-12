@@ -70,6 +70,7 @@ Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/tr
   - well-known marketing terms may stay in English (branding, Decoy Effect); prices in forint
 - **Every final Hungarian text comes with a Persian back-translation** (a literal translation of the Hungarian into Persian) so the user can check the meaning. The user may also check it with ChatGPT; weigh its notes against this rule.
 - **Voice: always ElevenLabs "David"** (`M336tBVZHWWiWb4R54ui`, model `eleven_multilingual_v2`) for every Hungarian voiceover; speed 1.15× for marketing stories, 1.1× for motion-design reels (pitch kept), unless the user says otherwise.
+- **For now: send only the videos, no Instagram post captions** (user 2026-11-12). With each delivery say how many are done and which come next.
 - (add the caption style and hashtags here when the user gives them)
 
 ## Arabic page rules
