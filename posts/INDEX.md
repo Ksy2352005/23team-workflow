@@ -14,5 +14,6 @@
 | HU 007 | HU | Motion reel M05 | „Kölcsönösség” (reciprocity) | 2026-11-12 | — | `posts/HU/007-m05-kolcsonosseg/` (source: `m05-reciprocity/`) |
 | HU 008 | HU | Motion reel M06 | „FOMO” | 2026-11-12 | — | `posts/HU/008-m06-fomo/` (source: `m06-fomo/`) |
 | HU 009 | HU | Motion reel M07 | „Egy üzenet” (one message) | 2026-11-12 | — | `posts/HU/009-m07-egy-uzenet/` (source: `m07-one-message/`) |
+| HU 010 | HU | Marketing story 19 | „A bolt, ami otthont épített” (The Store That Built a Home) | 2026-11-12 | — | `posts/HU/010-story19-butorbolt/` (source: `furniture-home/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
