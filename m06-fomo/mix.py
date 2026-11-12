@@ -15,4 +15,4 @@ add(fx, whoosh(.5, .12), 30.6); add(fx, impact(.4), 31.24); [add(fx, ding(.1, 20
 add(fx, pop(.2), 34.28); add(fx, pop(.15, 700, 1300), 35.3)
 add(fx, riser(.7, .3), 35.839999999999996); add(fx, impact(.8), 36.54); add(fx, glitch(.3, .15), 37.36)
 PAUSES = [(5.26, 5.66), (16.14, 16.64), (21.38, 21.98), (35.839999999999996, 36.54)]
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=2)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=2, logo_trim=-0.4)
