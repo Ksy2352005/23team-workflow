@@ -54,6 +54,7 @@ Code: `captions()`, `CAP`, `PAGES` and `stage()` in `car-dealer/main.js`; `car-d
 
 - No music. Use the supplied voiceover unchanged, with real recorded CC0 sound effects (credited in `CREDITS`) and synthesized effects only where no recording fits.
 - Effects are punchy and natural, close to the voice level. They drop lower once a scene gets busy, so the voice always leads.
+- Bell/chime sounds ("dings") stay soft and quiet (user 2026-11-12: they were too loud and annoying): `chime()` in every `mix.py` is softened: 60% quieter, a slow 30 ms attack, dull overtones.
 - The main character's footsteps are clear and synced to his feet. Other people's are softer.
 - Character vocal sounds only for strong emotions.
 - Loudness: −14 LUFS, true peak at or below −1.2 dB.

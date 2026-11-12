@@ -55,7 +55,7 @@ def popping(d, rate, v):   # a machine full of corn popping away
 def rustle(d, v): tt = t_(d); return norm(bp(noise(d), 1200, 6000) * (.6 + .4 * np.abs(np.sin(2 * np.pi * 7 * tt)))) * np.sin(np.pi * tt / d) ** .5 * v
 def sniff(v=1.0): d = .55; tt = t_(d); return norm(bp(noise(d), 900, 5000) * np.sin(np.pi * tt / d) ** 2 * (1 + .5 * np.sin(2 * np.pi * 5 * tt))) * v
 def chime(f=1760, v=1.0, d=1.2):   # a small bright bell (the register, the "best" star)
-    tt = t_(d); return sum(a * np.sin(2 * np.pi * f * m * tt) * np.exp(-tt / tau) for m, a, tau in [(1, 1, .5), (2.01, .35, .25), (3.02, .12, .12)]) * np.minimum(1, tt / .003) * v
+    tt = t_(d); return lp(sum(a * np.sin(2 * np.pi * f * m * tt) * np.exp(-tt / tau) for m, a, tau in [(1, 1, .5), (2.01, .12, .25), (3.02, .03, .12)]), 3000) * np.minimum(1, tt / .03) ** 2 * v * .4   # softened (user 2026-11-12: dings were too loud): 60% quieter, slow 30 ms attack, dull overtones
 
 fx = buf()
 def boing(v=1.0, f0=220, f1=520, d=.35): tt = t_(d); return np.sin(2 * np.pi * np.cumsum(f0 + (f1 - f0) * (1 - np.exp(-tt * 9))) / SR) * np.exp(-tt * 6) * np.minimum(1, tt / .005) * v
@@ -144,7 +144,7 @@ voice = buf(); add(voice, vo, 0, 1)
 fxc = np.stack([compress(fx[:, c] * 2.2, thr=.12, ratio=2.5, att=.002, rel=.06) for c in range(2)], 1)
 vr = np.sqrt(np.mean(voice[np.abs(voice[:, 0]) > .02] ** 2)); fr = np.percentile(np.abs(fxc[:, 0]), 99.7)
 mix = voice + fxc * (vr * 2.1 / max(fr, 1e-6))   # effects a touch under the voice, so the voice leads
-mix = place_logo(mix, STORY + .2, SR, vr, 0.5)   # the locked logo sound, after the effects bus so it is the same level in every film
+mix = place_logo(mix, STORY + .2, SR, vr, -0.5)   # the locked logo sound, after the effects bus so it is the same level in every film
 print('voice rms', round(float(vr), 3), 'fx 99.7%', round(float(fr), 3))
 end = int(DUR * SR); mix = mix[:end]; mix[-int(.6 * SR):] *= np.linspace(1, 0, int(.6 * SR))[:, None]
 mix = np.stack([limit(compress(mix[:, c], thr=.16, ratio=3, att=.002, rel=.1), .7) for c in range(2)], 1)   # a gentle bus squeeze, so the loudness target leaves headroom for the peaks
