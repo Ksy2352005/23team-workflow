@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the furniture: every piece stands on y (the floor), centred on x, at scale s ——
 const T = i => WORDS[i][1];
@@ -101,7 +101,7 @@ function room(c, x0, x1, k = 1, o = {}) {   // a room set: a back wall with a sk
   const g = c.createLinearGradient(0, top, 0, F); g.addColorStop(0, o.warm ? '#3b4f9e' : '#2b3f8e'); g.addColorStop(1, o.warm ? '#2f4290' : '#22357f'); c.fillStyle = g; c.fillRect(x0, top, x1 - x0, F - top);
   c.fillStyle = 'rgba(255,255,255,.04)'; for (let xx = x0 + 40; xx < x1; xx += 80) c.fillRect(xx, top, 2, F - top); c.fillStyle = SAND2; c.fillRect(x0, F - 28, x1 - x0, 28); c.restore(); }
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(0, F, 1080, 220); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(0, F, 1080, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 function plinth(c, x, w, k = 1) { c.save(); c.globalAlpha = k; ell(c, x, F + 10, w / 2, 20, '#1b2a70'); c.restore(); }
 function spotCone(c, x, w, a) { if (a <= 0) return; c.save(); c.globalAlpha = a; const g = c.createLinearGradient(0, 900, 0, F); g.addColorStop(0, 'rgba(255,236,190,.0)'); g.addColorStop(1, 'rgba(255,236,190,.22)'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 30, 900); c.lineTo(x + 30, 900); c.lineTo(x + w / 2, F + 10); c.lineTo(x - w / 2, F + 10); c.closePath(); c.fill(); c.restore(); ell(c, x, F + 10, w / 2, 22, `rgba(255,236,190,${.18 * a})`); }
 function bulbIcon(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { glow(c, x, y, r * 3, .7); ell(c, x, y, r, r, '#ffd889'); rrect(c, x - r * .45, y + r * .8, r * .9, r * .5, r * .15, SAND2); c.strokeStyle = GOLD2; c.lineWidth = r * .12; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - r * .3, y + r * .2); c.lineTo(x, y - r * .25); c.lineTo(x + r * .3, y + r * .2); c.stroke(); for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .5; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.35, y + Math.sin(a) * r * 1.35); c.lineTo(x + Math.cos(a) * r * 1.75, y + Math.sin(a) * r * 1.75); c.stroke(); } }); }
@@ -198,7 +198,7 @@ const SHOT = {
       { x: xs[0], w: 190, draw: (c, x, y) => table(c, x, y + 30 * g, lerp(.75, 1.05, g)), lit: lit(0) }];
     if (g < 1) for (const p of P) { plinth(c, p.x, p.w, 1 - g); spotCone(c, p.x, p.w * 1.1, .8 * p.lit * (1 - g)); }
     for (const p of P) { c.save(); if (g < .5) c.globalAlpha = lerp(1, p.lit, 1 - wall); p.draw(c, p.x, F); c.restore(); }
-    owner(c, t, 945, F, 1.45, { f: -.4, look: -.3, smile: 1 }); check(c, 945, 1190, 44, E(t, H.decide, .45, .2) * (1 - ss(seg(t, H.shuffle + .6, H.shuffle + 1))));
+    owner(c, t, 900, F, 1.45, { f: -.4, look: -.3, smile: 1 }); check(c, 900, 1190, 44, E(t, H.decide, .45, .2) * (1 - ss(seg(t, H.shuffle + .6, H.shuffle + 1))));
     house(c, 540, 1000, 200, E(t, H.home, .35, .5), { lit: true, inner: () => heart(c, 540, 1010, 36, 1, '#c4566a') });
   },
   living(c, t) {   // a living room: a sofa, a table, a rug and a lamp pop into place
@@ -250,7 +250,7 @@ const SHOT = {
       H.receipt.forEach((r, i) => { if (t < r - .05) return; const y = 1380 - L + 28 + (n - 1 - i) * 70 + 42; icons[i](656, y); c.fillStyle = SAND3; c.fillRect(708, y - 30, 34, 6); c.fillRect(708, y - 16, 24, 6); }); c.restore();
       H.receipt.forEach((r, i) => spark(c, 685, 1380 - L + 40, t, r, 4, 80, 10)); }
     // a happy customer with her arms full
-    cust(c, t, 2, 300, F, 1.45, { f: .4, look: .3, smile: 1 }); cust(c, t, 1, 140, F, 1.4, { f: .4, look: .2, smile: 1 });
+    cust(c, t, 2, 300, F, 1.45, { f: .4, look: .3, smile: 1 }); cust(c, t, 1, 175, F, 1.4, { f: .4, look: .2, smile: 1 });
   },
   lesson(c, t) {   // the lesson: a product alone is hard to value; a lone sofa, dull, under one light, and a question over it
     const H = HIT; bg(c, '#163A8C'); floor(c); const g = ss(seg(t, H.lone, H.alone + .3));
@@ -270,7 +270,7 @@ function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = NAVY; c.beginPa
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.18, 1.18); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.06, 1.06); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['bútorbolt','elképzelni','átrendezi','otthonra','nappalit','hálószobát','valódibbnak','otthona','egyszerre','értékét','valódi','magukat']);
@@ -319,7 +319,7 @@ function draw(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   if (kind === 'soft' && dt < SOFT && i > 0) {
     const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
-    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.18, 1.18); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.06, 1.06); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
     const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
     at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);

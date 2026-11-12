@@ -14,6 +14,7 @@ anything one chat makes or decides is written here, so the other chats know it.
 | **23ArabicPage** | the Arabic page (new) | starts later; first job: Arabic versions of the 18 marketing stories |
 
 - Both chats work on the **`main` branch** of this repo. At the start of every chat: `git checkout main && git pull`. Commit and push to `main` after each finished piece, so the other chat sees it.
+- **Instagram safe zone (user 2026-11-12, every video, both pages, story films and motion reels):** Instagram trims the sides of 9:16 reels on tall phones (about 5% each side). Keep every visual and every caption inside x **70–1010** of the 1080 frame (a small margin, not small visuals): story films frame the world at scale **1.06** (not 1.18) and characters stand between world x 165 and 915; motion reels scale the take to **0.92** around the centre. Backgrounds and floors may run to the edges.
 - Shared between both pages: this file, `ANIMATION-STYLE.md`, `brand/`, the story films, `tools/`, `reels/`, the post library `posts/`, and the ElevenLabs key (saved on the cloud environment).
 - Each page has its own rules section below. A rule the user gives in one chat that applies to both goes into the shared part.
 - Arabic film folders get the `-ar` ending next to the Hungarian one (e.g. `supermarket-route-ar/`).

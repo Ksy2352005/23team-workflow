@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: bikes, a repair stand, parts, the shop ——
 const T = i => WORDS[i][1];
@@ -67,7 +67,7 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', WOOD2 = '#a6744a',
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(0, F, 1080, 220); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(0, F, 1080, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 function line(c, pts, col, w) { c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke(); }
 // a bike standing on y, centred on x, facing right; o.old = tired and grey, o.col = the frame colour, o.spin = wheel turn, o.gear = the chain ring colour
 function bike(c, x, y, s = 1, o = {}) { const R = 78 * s, bx = x - 120 * s, fx = x + 120 * s, wy = y - R, col = o.col || (o.old ? RUST : GOLD), spin = o.spin || 0;
@@ -120,7 +120,7 @@ const SHOT = {
     if (t > H.newest) spark(c, 600, 1480, t, H.newest + .2, 7, 300, 14);
     pop(c, 600, 1290, E(t, H.newest, .3, .5) * (1 - cut), () => { rrect(c, 530, 1260, 140, 64, 14, GOLD); text(c, 'ÚJ', 600, 1294, 46, NAVY); });
     cross(c, 600, 1440, 120, seg(t, H.first - .2, H.first + .3) * (1 - ss(seg(t, H.ask - .1, H.ask + .2))));
-    cust(c, t, 3, 140, F, 1.5, { f: .4, look: .3, smile: .9, handR: t < H.first ? [260, 1500] : undefined });
+    cust(c, t, 3, 175, F, 1.5, { f: .4, look: .3, smile: .9, handR: t < H.first ? [260, 1500] : undefined });
     const q = E(t, H.ask, .3, .5); if (q > 0) bubble(c, 300, 1180, 120, 110, Math.min(1.1, q), 200, 1290, () => text(c, '?', 300, 1184, 70, NAVY));
   },
   ask(c, t) {   // "what's wrong with your bike?": a customer with her old bike; the salesman asks
@@ -143,13 +143,13 @@ const SHOT = {
     const wk = E(t, H.service - .3, .3, .45) * (1 - ss(seg(t, H.again - .6, H.again - .3))); if (wk > 0) pop(c, 660, 1440, wk, () => wrench(c, 660, 1440, 1, -.8 + .5 * Math.sin(t * 9)));
     const drop = seg(t, H.service + .2, H.service + .7); if (drop > 0 && drop < 1) { c.fillStyle = GOLD; c.beginPath(); c.arc(420, 1430 + 140 * drop * drop, 10, 0, 7); c.fill(); }
     if (t > H.service + .9) spark(c, 520, 1480, t, H.service + .9, 7, 240, 14);
-    owner(c, t, 150, F, 1.45, { f: .4, look: .3, smile: 1, handR: wk > .5 ? [620, 1460] : undefined });
+    owner(c, t, 175, F, 1.45, { f: .4, look: .3, smile: 1, handR: wk > .5 ? [620, 1460] : undefined });
   },
   service(c, t) {   // the shop starts offering repairs and servicing, even when nobody buys anything new: two signs light up; a customer leaves with her own bike, smiling, no bag
     bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
     sign(c, 330, 1190, 330, 'JAVÍTÁS', E(t, H.repair - .2, .35, .45), ss(seg(t, H.repair, H.repair + .3))); sign(c, 750, 1190, 330, 'SZERVIZ', E(t, H.maint - .2, .35, .45), ss(seg(t, H.maint, H.maint + .3)));
     const w = walkU(t, H.nothing - .4, H.nothing + 1.6), x = lerp(420, 1250, ss(w.u)); bike(c, x + 160, F, 1.0, { spin: -x / 60 }); cust(c, t, 0, x, F, 1.5, { f: .45, walk: w.walk, look: .3, smile: 1, handR: [x + 90, F - 250] });
-    owner(c, t, 160, F, 1.5, { f: .4, look: .3, smile: 1, handR: t > H.nothing ? [220, 1340 + 20 * Math.sin(t * 12)] : undefined });
+    owner(c, t, 175, F, 1.5, { f: .4, look: .3, smile: 1, handR: t > H.nothing ? [220, 1340 + 20 * Math.sin(t * 12)] : undefined });
     pop(c, x + 20, 1330, E(t, H.nothing + .2, .3, .5) * (1 - ss(seg(t, 31.3, 31.7))), () => heart(c, x + 20, 1330, 36, 1, GOLD));
   },
   doubt(c, t) {   // at first some staff thought it would hurt new bike sales: two worried colleagues; a falling chart over the new bikes
@@ -194,7 +194,7 @@ function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = NAVY; c.beginPa
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.18, 1.18); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.06, 1.06); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['kerékpárbolt','árakat','mást','megkérdezték','alkatrészt','szervizzel','javítást','karbantartást','érdekes','visszatértek','barátaiknak','első','segítesz','bízzon']);
@@ -243,7 +243,7 @@ function draw(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   if (kind === 'soft' && dt < SOFT && i > 0) {
     const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
-    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.18, 1.18); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.06, 1.06); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
     const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
     at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);

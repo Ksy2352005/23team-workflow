@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: two upright vacuums, a rug with crumbs, billboards, a phone ——
 const T = i => WORDS[i][1];
@@ -67,7 +67,7 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', WOOD2 = '#a6744a',
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(0, F, 1080, 220); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(0, F, 1080, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 // an upright vacuum standing on (x, y): o.ours = the small company's gold one, else the well-known rose one; o.run 0..1 hums it
 function vacuum(c, x, y, s = 1, o = {}) { const body = o.ours ? GOLD : ROSE, dark = o.ours ? GOLD2 : ROSE2, run = o.run || 0, jig = run * 1.5 * Math.sin(NOW * 60);
   c.save(); c.translate(x, y + jig * .3); c.scale(s, s); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.ellipse(0, 4, 95, 12, 0, 0, 7); c.fill();
@@ -119,8 +119,8 @@ const SHOT = {
   rivals(c, t) {   // the big rivals: piles of money; three huge billboards, each with a rose vacuum and a big claim; our little gold one looks up
     bg(c, '#163A8C'); floor(c); const H = HIT;
     for (let i = 0; i < 9; i++) rrect(c, 40 + i * 120, 1300 - hash(i + 4) * 260, 100, 400 + hash(i + 4) * 260, 6, '#16286b');   // a city behind
-    const B = [[200, 1170, H.claims[0], 'LEGERŐSEBB'], [540, 1110, H.claims[1], 'LEGGYORSABB'], [880, 1170, H.claims[2], 'LEGJOBB']];
-    B.forEach(([x, y, at, s], i) => billboard(c, x, y, 320, 210, E(t, H.boards + i * .25, .35, .45), () => { vacuum(c, x, y + 88, .27); const k = E(t, at, .3, .55); if (k > 0) scaled(c, x, y - 52, Math.min(1.15, k), () => text(c, s, x, y - 50, s.length > 8 ? 34 : 46, GOLD)); }));
+    const B = [[235, 1170, H.claims[0], 'LEGERŐSEBB'], [540, 1110, H.claims[1], 'LEGGYORSABB'], [845, 1170, H.claims[2], 'LEGJOBB']];
+    B.forEach(([x, y, at, s], i) => billboard(c, x, y, 270, 190, E(t, H.boards + i * .25, .35, .45), () => { vacuum(c, x, y + 88, .27); const k = E(t, at, .3, .55); if (k > 0) scaled(c, x, y - 52, Math.min(1.15, k), () => text(c, s, x, y - 46, s.length > 8 ? 30 : 42, GOLD)); }));
     // the money: bags and coin stacks
     moneyBag(c, 170, F, 1.1, E(t, H.money, .35, .5)); coins(c, 300, F - 14, 9, seg(t, H.money + .1, H.money + 1.0)); coins(c, 400, F - 14, 6, seg(t, H.money + .3, H.money + 1.1)); moneyBag(c, 900, F, 1.2, E(t, H.money + .3, .35, .5)); coins(c, 780, F - 14, 8, seg(t, H.money + .4, H.money + 1.2));
     vacuum(c, 600, F, .55, { ours: true });
@@ -138,7 +138,7 @@ const SHOT = {
     bg(c, '#163A8C'); floor(c); const H = HIT; const fade = ss(seg(t, H.noone - .3, H.noone + .6));
     [[300, 1150, 'LEGJOBB'], [800, 1150, 'LEGGYORSABB']].forEach(([x, y, s]) => billboard(c, x, y, 340, 210, 1, () => { vacuum(c, x, y + 88, .27); word(c, s, x, y - 50, s.length > 8 ? 36 : 48, GOLD, 1 - .75 * fade); }));
     for (let k = 0; k < 3; k++) { const x = ((t - 16.8) * 120 + k * 380) % 1300 - 110; const ph = phoneInHand(c, x, F, 1.4, .45); cust(c, t, k, x, F, 1.4, { f: .45, walk: 1, look: .5, smile: .6, handR: ph }); phoneInHand(c, x, F, 1.4, .45); }
-    boss(c, t, 140, F, 1.5, { f: .4, look: .4, smile: .4 }); badge(c, 'ex', 140, 1180, 44, E(t, H.notice, .3, .5));
+    boss(c, t, 175, F, 1.5, { f: .4, look: .4, smile: .4 }); badge(c, 'ex', 175, 1180, 44, E(t, H.notice, .3, .5));
     eyeB(c, 540, 1300, 60, E(t, H.noone, .3, .5)); cross(c, 540, 1300, 40, seg(t, H.noone + .2, H.noone + .6));
   },
   idea(c, t) {   // so he came up with a strange idea: a close-up, the bulb
@@ -161,7 +161,7 @@ const SHOT = {
     const run = ss(seg(t, H.run, H.run + 1.8)), running = run > 0 && run < 1 ? 1 : 0;
     testRig(c, t, { dirt: seg(t, H.rug - .1, H.rug + .6), run, running, clean: ss(seg(t, H.result, H.result + .4)), cleanAt: H.result });
     // the watchers, behind the rug
-    for (let k = 0; k < 2; k++) { const a = E(t, H.eyes - .5 + k * .15, .35, .45), x = [118, 962][k]; if (a > 0) scaled(c, x, F, Math.min(1, a), () => cust(c, t, k, x, F, 1.15, { f: k ? -.4 : .4, look: (k ? -1 : 1) * (.2 + .25 * Math.sin(t * 3 + k)), smile: .9 })); }
+    for (let k = 0; k < 2; k++) { const a = E(t, H.eyes - .5 + k * .15, .35, .45), x = [170, 910][k]; if (a > 0) scaled(c, x, F, Math.min(1, a), () => cust(c, t, k, x, F, 1.15, { f: k ? -.4 : .4, look: (k ? -1 : 1) * (.2 + .25 * Math.sin(t * 3 + k)), smile: .9 })); }
     eyeB(c, 540, 1080, 58, E(t, H.eyes, .3, .5) * (1 - ss(seg(t, 40.7, 41.0))));
     if (t > H.result) { pop(c, 330, 1260, E(t, H.result, .3, .5), () => check(c, 330, 1260, 44, 1)); pop(c, 750, 1260, E(t, H.result + .2, .3, .5), () => badge(c, 'x', 750, 1260, 44, 1)); }
   },
@@ -181,7 +181,7 @@ const SHOT = {
       const n = Math.floor(lerp(0, 980, ease(seg(t, H.views - .3, H.views + 2.4)))); rrect(c, 380, 1480, 320, 60, 30, 'rgba(0,0,20,.35)'); text(c, (n >= 1000 ? '1M' : n + 'K') + '  ♥', 540, 1512, 40, CREAM); });
     for (let k = 0; k < 12; k++) { const at = H.views + k * .3, u = seg(t, at, at + 1.6); if (u <= 0 || u >= 1) continue; const x = 540 + (hash(k) - .5) * 520 + Math.sin(u * 6 + k) * 30, y = 1500 - u * 520; heart(c, x, y, 18 + hash(k + 3) * 16, Math.sin(u * Math.PI) * 1.2, k % 3 ? ROSE : GOLD); }
     earB(c, 220, 1120, 62, E(t, H.heard - .1, .3, .5), seg(t, H.heard + .2, H.heard + .6)); eyeB(c, 860, 1120, 62, E(t, H.saw - .1, .3, .5)); check(c, 860, 1230, 30, E(t, H.saw + .2, .45, .2));
-    cust(c, t, 0, 150, F, 1.3, { f: .4, look: .3, smile: 1 }); cust(c, t, 2, 930, F, 1.3, { f: -.4, look: -.3, smile: 1 });
+    cust(c, t, 0, 175, F, 1.3, { f: .4, look: .3, smile: 1 }); cust(c, t, 2, 905, F, 1.3, { f: -.4, look: -.3, smile: 1 });
   },
   lesson(c, t) {   // the lesson: you don't have to tell them why it's better; set it up so they see the difference themselves
     bg(c, '#163A8C'); floor(c); const H = HIT; const show = ss(seg(t, H.enough - .2, H.enough + .5));
@@ -196,7 +196,7 @@ function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = NAVY; c.beginPa
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.18, 1.18); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.06, 1.06); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['porszívógyártó','legerősebb','leggyorsabb','legjobb','furcsa','két','szőnyegen','szemükkel','egyszerű','összehasonlítás','látták','különbséget']);
@@ -245,7 +245,7 @@ function draw(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   if (kind === 'soft' && dt < SOFT && i > 0) {
     const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
-    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.18, 1.18); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.06, 1.06); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
     const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
     at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);

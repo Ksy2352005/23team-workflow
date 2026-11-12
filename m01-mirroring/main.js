@@ -89,13 +89,13 @@ function scene(c, t) {
     if (nr < .35) { c.save(); c.setLineDash([1300 * ease3(qm), 1300]); c.globalAlpha *= 1 - ss(seg(nr, 0, .35)); neon(c, () => { c.beginPath(); c.arc(X, Y - 150, 120, Math.PI * 1.05, Math.PI * 2.25); c.quadraticCurveTo(X + 30, Y - 10, X, Y + 50); c.lineTo(X, Y + 80); c.stroke(); }, { w: 14, glow: 44 }); c.restore(); }
     glowDot(c, X, dotY * (1 - rt) + Y * rt, 26 + 10 * Math.sin(t * 4) * (nr > 0 ? 1 : 0), 1);
     if (nr > 0) { const br = (x, y, a, len, d, k) => { const u = clamp(nr * 3.2 - d * .45 - rt * 3); if (u <= 0 || d > 4) return; const L = len * ease3(u) * (1 - rt), x2 = x + Math.cos(a) * L, y2 = y + Math.sin(a) * L; c.lineWidth = Math.max(2, 9 - d * 1.8); c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo((x + x2) / 2 + Math.sin(k * 3) * 30, (y + y2) / 2 + Math.cos(k * 2) * 30, x2, y2); c.stroke(); if (u >= 1) { br(x2, y2, a - .5 - hash(k) * .3, len * .66, d + 1, k * 2 + 1); br(x2, y2, a + .45 + hash(k + 9) * .3, len * .66, d + 1, k * 2 + 2); } };
-      neon(c, () => { for (let k = 0; k < 6; k++) br(X, dotY, -Math.PI / 2 + (k - 2.5) * .62 + (k > 2 ? 0 : 0) + (k % 2 ? .1 : -.1) + (k >= 3 ? Math.PI : 0) * 0, 220, 0, k + 1); }, { w: 8, glow: 34 });
-      for (let k = 0; k < 8; k++) { const q = ((t * .8 + k / 8) % 1), a = -Math.PI / 2 + (k - 3.5) * .4; if (nr > .5) glowDot(c, X + Math.cos(a) * q * 520, dotY + Math.sin(a) * q * 520, 9, Math.sin(q * Math.PI) * (1 - rt)); } }
+      neon(c, () => { for (let k = 0; k < 6; k++) br(X, dotY, -Math.PI / 2 + (k - 2.5) * .55 + (k % 2 ? .1 : -.1), 190, 0, k + 1); }, { w: 8, glow: 34 });
+      for (let k = 0; k < 8; k++) { const q = ((t * .8 + k / 8) % 1), a = -Math.PI / 2 + (k - 3.5) * .4; if (nr > .5) glowDot(c, X + Math.cos(a) * q * 440, dotY + Math.sin(a) * q * 440, 9, Math.sin(q * Math.PI) * (1 - rt)); } }
     c.restore(); }
   // 10. people are drawn to what feels familiar: the neuron pulls back into one ring; shapes drift around it; only the circles feel the pull, glide in and lock into an orbit; the rest drift away
   const sh = m(t, 'shapes'), pl = ease3(m(t, 'pull')), lk = back(m(t, 'lock')), mi = ease3(m(t, 'mirror'));
   if (rt > 0 && mi < 1) { c.save(); c.globalAlpha = 1 - mi; neon(c, () => circle(c, X, Y, 70 * Math.min(1, rt * 1.3)), { w: 7, glow: 40 });
-    for (let k = 0; k < 12; k++) { const isC = k % 2 === 0, a0 = k / 12 * Math.PI * 2 + .3, r0 = 330 + hash(k) * 120, drift = t * .25 + k, bx = X + Math.cos(a0) * r0 + Math.sin(drift) * 30, by = Y + Math.sin(a0) * r0 * 1.05 + Math.cos(drift * 1.2) * 30, ap = back(seg(t, M.shapes[0] + k * .06, M.shapes[0] + k * .06 + .5)); if (ap <= 0) continue;
+    for (let k = 0; k < 12; k++) { const isC = k % 2 === 0, a0 = k / 12 * Math.PI * 2 + .3, r0 = 290 + hash(k) * 80, drift = t * .25 + k, bx = X + Math.cos(a0) * r0 + Math.sin(drift) * 30, by = Y + Math.sin(a0) * r0 * 1.05 + Math.cos(drift * 1.2) * 30, ap = back(seg(t, M.shapes[0] + k * .06, M.shapes[0] + k * .06 + .5)); if (ap <= 0) continue;
       let x = bx, y = by, al = 1; if (isC) { const oa = (k / 12) * Math.PI * 2 + (t - T(63)) * .6 * lk, tx = X + Math.cos(oa) * 220, ty = Y + Math.sin(oa) * 220; x = lerp(bx, tx, pl); y = lerp(by, ty, pl); } else { x = bx + (bx - X) * pl * .8; y = by + (by - Y) * pl * .8; al = 1 - pl; }
       const cx = lerp(x, X, mi * (isC ? 1 : 0)), cy = lerp(y, Y, mi);
       neon(c, () => { c.save(); c.translate(cx, cy); c.rotate(isC ? 0 : t * .6 + k); const s = 46 * ap; if (isC) circle(c, 0, 0, s * (1 + .15 * lk * (isC ? 1 : 0))); else if (k % 4 === 1) c.strokeRect(-s, -s, 2 * s, 2 * s); else P(c, [[0, -s * 1.1], [s, s * .8], [-s, s * .8]], true); c.restore(); }, { w: 6, glow: isC ? 26 + 24 * lk : 22, alpha: al });
@@ -112,7 +112,7 @@ function scene(c, t) {
     c.save(); c.translate(x, y); c.scale(Math.max(.05, Math.abs(turn)), 1); c.translate(-x, -y); if (q < .5) neon(c, () => circle(c, x, y, 92 * up), { w: 6, glow: 30 }); else { glowDot(c, x, y, 60, .4); coin(c, x, y, 92); } c.restore(); }
 }
 // the bloom: the take is drawn off-screen, then laid down twice: a wide soft glow and the crisp picture
-function take(c, t) { oc.setTransform(1, 0, 0, 1, 0, 0); oc.clearRect(0, 0, off.width, off.height); oc.setTransform(K, 0, 0, K, 0, 0); scene(oc, t);
+function take(c, t) { oc.setTransform(1, 0, 0, 1, 0, 0); oc.clearRect(0, 0, off.width, off.height); oc.setTransform(K, 0, 0, K, 0, 0); oc.translate(540, 1160); oc.scale(.92, .92); oc.translate(-540, -1160); scene(oc, t);   // 8% smaller, centred: Instagram trims the sides on tall phones
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .55; c.filter = `blur(${26 * K}px)`; c.drawImage(off, 0, 0); c.filter = 'none'; c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.drawImage(off, 0, 0); c.restore(); }
 await start({ scenes: [[0, take]], words: WORDS, story: STORY, dur: DUR, stage: false, caption: { font: '600 46px "Inter"', mode: 'fade', y: 470 } });
 // the sound cues: every motion's start and end, so mix.py lands each sound on its frame

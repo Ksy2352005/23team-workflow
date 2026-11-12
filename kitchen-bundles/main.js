@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: kitchen tools, shelves, kit boxes ——
 const T = i => WORDS[i][1];
@@ -67,7 +67,7 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', WOOD2 = '#a6744a',
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(0, F, 1080, 220); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(0, F, 1080, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 function grey(c, g, f) { if (g > 0) { c.save(); c.filter = `saturate(${1 - g}) brightness(${1 - .4 * g})`; f(); c.restore(); } else f(); }
 // the tools: each stands on y (its bottom), centred on x, at scale s
 function pan(c, x, y, s) { rrect(c, x + 60 * s, y - 34 * s, 110 * s, 16 * s, 8 * s, '#1a1f3a'); c.fillStyle = '#2b2f48'; c.beginPath(); c.ellipse(x, y - 26 * s, 76 * s, 18 * s, 0, 0, 7); c.fill(); rrect(c, x - 76 * s, y - 28 * s, 152 * s, 28 * s, 10 * s, '#2b2f48'); c.fillStyle = '#41466a'; c.beginPath(); c.ellipse(x, y - 28 * s, 68 * s, 13 * s, 0, 0, 7); c.fill(); }
@@ -138,7 +138,7 @@ const SHOT = {
     cust(c, t, 0, x, F, 1.45, { f: out.u > 0 ? -.45 : .45, walk: inn.walk || out.walk, look: out.u > 0 ? -.3 : .3, smile: .9, handR: out.u > 0 ? undefined : hand, handL: out.u > 0 ? hand : undefined });
     if (take) pan(c, hand[0], hand[1] + 40, .6);
     pop(c, 640, 1340, E(t, H.specific, .3, .5) * (1 - ss(seg(t, H.specific + .4, H.specific + .7))), () => { ell(c, 640, 1340, 40, 40, CREAM); check(c, 640, 1340, 30, 1); });
-    owner(c, t, 160, F, 1.45, { f: .4, look: .3, smile: .6 }); badge(c, 'ex', 160, 1200, 40, E(t, H.notice, .3, .5) * (1 - ss(seg(t, 13, 13.3))));
+    owner(c, t, 175, F, 1.45, { f: .4, look: .3, smile: .6 }); badge(c, 'ex', 160, 1200, 40, E(t, H.notice, .3, .5) * (1 - ss(seg(t, 13, 13.3))));
     eyeB(c, 670, 1150, 54, E(t, H.rarely, .3, .5)); cross(c, 670, 1150, 36, seg(t, H.rarely + .2, H.rarely + .6));
   },
   decide(c, t) {   // so he decides: not one by one, but ready-made kits: the tools fly off the shelf into an open box, which closes with a bow
@@ -166,7 +166,7 @@ const SHOT = {
     if (join > 0 && make < 1) { c.save(); c.globalAlpha = 1 - make; c.setLineDash([10, 12]); c.strokeStyle = GOLD; c.lineWidth = 6; c.beginPath(); c.moveTo(340, 1290); c.lineTo(lerp(340, 520, join), lerp(1290, 1180, join)); c.moveTo(560, 1180); c.lineTo(lerp(560, 740, join), lerp(1180, 1290, join)); c.stroke(); c.restore(); }
     if (join > .9) for (const x of [430, 650]) pop(c, x, 1235, E(t, H.fit + .5, .3, .5) * (1 - make), () => { ell(c, x, 1235, 22, 22, GOLD); });
     pop(c, 540, 1400, make * 1.2, () => cake(c, 540, 1400, 1.1)); if (t > H.start + .2) spark(c, 540, 1300, t, H.start + .2, 8, 240, 16);
-    cust(c, t, 2, 920, F, 1.4, { f: -.4, look: -.3, smile: lerp(.8, 1, make) });
+    cust(c, t, 2, 905, F, 1.4, { f: -.4, look: -.3, smile: lerp(.8, 1, make) });
   },
   easy(c, t) {   // no more hunting for each tool one by one: on the left, a shopper with a list searches shelf after shelf; on the right, she just takes one box
     bg(c, '#163A8C'); floor(c); const H = HIT; const sw = ss(seg(t, H.simply - .3, H.simply + .2));
@@ -177,7 +177,7 @@ const SHOT = {
     cross(c, 280, 1160, 80, seg(t, H.simply - .3, H.simply + .1)); c.restore();
     // right: one box
     const bk = E(t, H.simply - .2, .35, .45); pop(c, 780, F - 40, bk, () => box(c, 780, F - 40, .85, { col: KITS[0].col, label: KITS[0].label, bow: true }));
-    if (t > H.bought) { const u = ease(seg(t, H.bought, H.bought + .4)); cust(c, t, 0, 940, F, 1.4, { f: -.4, look: -.3, smile: 1, handL: [lerp(900, 880, u), lerp(1500, 1560, u)] }); check(c, 780, 1300, 40, E(t, H.bought + .2, .45, .2)); } else cust(c, t, 0, 960, F, 1.4, { f: -.4, look: -.3, smile: .9 });
+    if (t > H.bought) { const u = ease(seg(t, H.bought, H.bought + .4)); cust(c, t, 0, 905, F, 1.4, { f: -.4, look: -.3, smile: 1, handL: [lerp(900, 880, u), lerp(1500, 1560, u)] }); check(c, 780, 1300, 40, E(t, H.bought + .2, .45, .2)); } else cust(c, t, 0, 905, F, 1.4, { f: -.4, look: -.3, smile: .9 });
   },
   sold(c, t) {   // and the shop sold the things almost nobody had noticed before: the dusty top shelf empties, boxes go out the door, the sales climb
     bg(c, '#163A8C'); floor(c); const H = HIT;
@@ -194,14 +194,14 @@ const SHOT = {
     pop(c, 620, 1640, turn * 1.05, () => cake(c, 620, 1640, 1.25)); if (t > H.use + .2) spark(c, 620, 1400, t, H.use + .2, 8, 260, 18);
     pop(c, 620, 1240, E(t, H.notwant - .2, .3, .5) * (1 - ss(seg(t, H.butknow - .2, H.butknow))), () => { ell(c, 620, 1240, 52, 52, CREAM); heart(c, 620, 1244, 26, 1, ROSE); cross(c, 620, 1240, 34, seg(t, H.notwant + .1, H.notwant + .5)); });
     badge(c, 'q', 620, 1240, 52, E(t, H.butknow, .3, .5) * (1 - turn));
-    cust(c, t, 0, 930, F, 1.45, { f: -.4, look: -.3, smile: lerp(.6, 1, turn) });
+    cust(c, t, 0, 905, F, 1.45, { f: -.4, look: -.3, smile: lerp(.6, 1, turn) });
   },
 };
 function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = NAVY; c.beginPath(); c.moveTo(x - 90 * s, y); c.quadraticCurveTo(x, y - 80 * s * open, x + 90 * s, y); c.quadraticCurveTo(x, y + 80 * s * open, x - 90 * s, y); c.fill(); ell(c, x, y, 34 * s, 34 * s, CREAM); c.restore(); }
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.18, 1.18); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.06, 1.06); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['rosszul','hónapokig','konkrét','csomagokat','kezdenek','születésnapi','desszerteket','összeillő','egyenként','csomagot','senki','tudja,','használhatná']);
@@ -250,7 +250,7 @@ function draw(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   if (kind === 'soft' && dt < SOFT && i > 0) {
     const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
-    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.18, 1.18); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.06, 1.06); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
     const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
     at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);

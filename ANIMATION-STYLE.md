@@ -59,6 +59,10 @@ Code: `captions()`, `CAP`, `PAGES` and `stage()` in `car-dealer/main.js`; `car-d
 - Character vocal sounds only for strong emotions.
 - Loudness: −14 LUFS, true peak at or below −1.2 dB.
 
+## Instagram safe zone
+
+Instagram trims the sides of a 9:16 reel on tall phones (about 5% each side). Every visual and caption stays inside x 70–1010 of the 1080 frame: the world is framed at scale 1.06 around (540, 1790) in `paintShot` (was 1.18), characters stand between world x 165 and 915, and the background and floor are drawn wider than the frame so no edge shows. Only backgrounds may touch the frame edges.
+
 ## Format
 
 - 9:16 Instagram Reel, 1080 × 1920, 24 fps. Preview at 540 × 960 first, then the final render.

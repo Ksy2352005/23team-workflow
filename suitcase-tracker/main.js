@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: suitcases, the plane's hold, the baggage belt, a phone with a map ——
 const T = i => WORDS[i][1];
@@ -67,7 +67,7 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', INKC = '#151018', 
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c, col) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, col || '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(0, F, 1080, 220); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(0, F, 1080, 4); }
+function floor(c, col) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, col || '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 // a hard-shell suitcase standing on y, centred on x; o.col; o.ours = the new one, gold, with the little tracker light; o.rot; o.handle 0..1 pulls the handle up
 function suitcase(c, x, y, s = 1, o = {}) { const col = o.col || (o.ours ? GOLD : '#3d5cc8'), dk = o.dk || (o.ours ? GOLD2 : '#2b3f8e'); c.save(); c.translate(x, y); c.rotate(o.rot || 0); c.scale(s, s);
   if (!o.noShadow) { c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.ellipse(0, 2, 80, 10, 0, 0, 7); c.fill(); }
@@ -175,7 +175,7 @@ function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = NAVY; c.beginPa
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.18, 1.18); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.06, 1.06); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['bőröndgyártó','újra','csomagterében,','épségben','mást','telefonján','ismerős','csomagszalag','megnézi,','kisebb','aggodalma.','funkciót','többet','aggodalomtól.']);
@@ -224,7 +224,7 @@ function draw(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   if (kind === 'soft' && dt < SOFT && i > 0) {
     const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
-    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.18, 1.18); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.06, 1.06); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
     const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
     at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);

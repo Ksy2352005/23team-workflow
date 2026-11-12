@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: books, an online shop on a big screen, a quiz on a phone, a parcel ——
 const T = i => WORDS[i][1];
@@ -68,7 +68,7 @@ const BCOL = [ROSE, MINT, GOLD, SKY, PLUM, '#e08a4a', '#3d5cc8', SAND2];
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(0, F, 1080, 220); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(0, F, 1080, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 // a book seen from the front, centred on (x, y): a coloured cover with a spine edge, a title bar and a small mark
 function book(c, x, y, w, h, col, mark = 0) { c.fillStyle = 'rgba(0,0,20,.25)'; c.beginPath(); c.roundRect(x - w / 2 + 4, y - h / 2 + 6, w, h, 5); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 5, col); c.fillStyle = 'rgba(0,0,20,.18)'; c.fillRect(x - w / 2, y - h / 2, w * .12, h); rrect(c, x - w * .3, y - h * .32, w * .66, h * .12, 3, 'rgba(255,255,255,.75)'); rrect(c, x - w * .3, y - h * .14, w * .45, h * .06, 3, 'rgba(255,255,255,.45)');
   const r = Math.min(w, h) * .16, my = y + h * .2; c.fillStyle = 'rgba(255,255,255,.85)';
@@ -99,8 +99,8 @@ const SHOT = {
   },
   toomany(c, t) {   // the owner thinks: too many choices make it hard to decide: books swirl round the reader; she is dizzy; a question
     bg(c, '#163A8C'); floor(c); const H = HIT; const n = ease(seg(t, H.many - .3, H.many + 1.2));
-    owner(c, t, 120, F, 1.5, { f: .4, look: .3, smile: .7 }); bulbIcon(c, 120, 1150, 36, E(t, H.think, .3, .5) * (1 - ss(seg(t, H.many - .3, H.many))));
-    const cx = 660, cy = 1440; for (let k = 0; k < 26; k++) { const a = k / 26 * Math.PI * 2 + t * (.6 + .3 * (k % 3)), r = (235 + (k % 4) * 55) * n; if (n <= 0) continue; c.save(); c.translate(cx + Math.cos(a) * r, cy + Math.sin(a) * r * .62); c.rotate(a * .5); book(c, 0, 0, 64, 92, BCOL[k % 8], k % 4); c.restore(); }
+    owner(c, t, 175, F, 1.5, { f: .4, look: .3, smile: .7 }); bulbIcon(c, 175, 1150, 36, E(t, H.think, .3, .5) * (1 - ss(seg(t, H.many - .3, H.many))));
+    const cx = 610, cy = 1440; for (let k = 0; k < 26; k++) { const a = k / 26 * Math.PI * 2 + t * (.6 + .3 * (k % 3)), r = (215 + (k % 4) * 42) * n; if (n <= 0) continue; c.save(); c.translate(cx + Math.cos(a) * r, cy + Math.sin(a) * r * .62); c.rotate(a * .5); book(c, 0, 0, 64, 92, BCOL[k % 8], k % 4); c.restore(); }
     cust(c, t, 0, cx, F, 1.5, { f: 0, look: Math.sin(t * 5) * .6, smile: .3, sad: .6 * ss(seg(t, H.hard - .3, H.hard)), rot: .05 * Math.sin(t * 4) * ss(seg(t, H.hard - .3, H.hard)) });
     badge(c, 'q', cx, 1090, 48, E(t, H.hard, .3, .5));
   },
@@ -160,7 +160,7 @@ function eyeIcon(c, x, y, s, open = 1) { c.save(); c.fillStyle = NAVY; c.beginPa
 
 function dreamHaze(c) { const g = c.createRadialGradient(540, 1250, 420, 540, 1150, 1150); g.addColorStop(0, 'rgba(255,236,190,0)'); g.addColorStop(1, 'rgba(255,236,190,.2)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 function shotAt(t) { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++; return i; }
-function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.18, 1.18); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
+function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.translate(540, 1790); c.scale(1.06, 1.06); c.translate(-540, -1790); SHOT[SHOTS[i][1]](c, t); c.setTransform(K, 0, 0, K, 0, 0); captions(c, t); }   // the words belong to the page: a transition moves them with the picture
 
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['könyvesbolt','órákig','egyet','túl','dönteni.','szolgáltatást.','kérdésre','műfajt','kedvenc','élményre','hónapban','száz','érdekesebb:','soha','kedvencük','egyszerűbbé']);
@@ -209,7 +209,7 @@ function draw(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   if (kind === 'soft' && dt < SOFT && i > 0) {
     const e = ss(dt / SOFT), b = Math.sin(e * Math.PI);
-    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.18, 1.18); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
+    const pic = (cx, j, tt) => { NOW = tt; cx.setTransform(K, 0, 0, K, 0, 0); cx.translate(540, 1790); cx.scale(1.06, 1.06); cx.translate(-540, -1790); SHOT[SHOTS[j][1]](cx, tt); };
     pic(actx, i - 1, t0 - 1 / 48); pic(bctx, i, t);
     const at = (buf, s, a, bl) => { c.save(); c.globalAlpha = a; if (bl > .3) c.filter = `blur(${bl * K}px)`; c.translate(W / 2, H * .68); c.scale(s, s); c.translate(-W / 2, -H * .68); c.drawImage(buf, 0, 0); c.restore(); };
     at(bufA, 1 + .06 * e, 1, 7 * b); at(bufB, .95 + .05 * e, e, 7 * b);
