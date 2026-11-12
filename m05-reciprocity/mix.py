@@ -12,4 +12,4 @@ add(fx, click(.4), 18.64); add(fx, whoosh(.5, .12), 19.24); add(fx, impact(.5), 
 add(fx, riser(.7, .3), 22.68); add(fx, impact(.75), 23.38); add(fx, whoosh(1.0, .14), 23.68)
 add(fx, whoosh(1.2, .12), 25.94); add(fx, shimmer(.16, 1.0), 27.24); add(fx, ding(.25, 2349), 28.9)
 PAUSES = [(1.1, 1.6), (11.48, 11.88), (22.78, 23.38)]
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=1)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, pauses=PAUSES, seed=1, logo_trim=-1.6)
