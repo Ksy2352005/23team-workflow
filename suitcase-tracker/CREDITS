@@ -1,0 +1,7 @@
+A nyugalom bőröndje (story 23) — 23 Team
+
+Voiceover (Hungarian): ElevenLabs, voice "David", model eleven_v3 (refs/voiceover-hu.mp3); used at 1.15× speed, pitch kept (refs/voiceover-hu-x1.15.mp3). Script locked by 23 Team (scripts-pdf/new-19-27/).
+Captions: the script (refs/script-hu.txt), timed word by word from Whisper's word timings (align.py), in the locked caption style. Caption font: Montserrat Bold (SIL Open Font License, fonts/OFL-Montserrat.txt).
+Picture drawn in code (HTML canvas), rendered with the Lemo-Opuscar tools.
+Sound effects, recorded, CC0 (public domain), files in sfx/: Kenney "Impact Sounds", "RPG Audio", "Casino Audio" — www.kenney.nl (sfx/LICENSE-kenney-CC0.txt).
+Synthesized in code: whooshes, chimes, pops, rising tones, the locked logo sound (tools/logo_sting.py). No music, no character voices.
