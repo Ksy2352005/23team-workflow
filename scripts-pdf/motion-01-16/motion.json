@@ -120,7 +120,7 @@
    "Ha több eladást szeretnél, újra kell gondolnod a mostani stratégiádat.",
    "Először te adj valamit a vásárlóidnak.",
    "Egy ingyenes mintát, egy hasznos útmutatót vagy exkluzív tippeket.",
-   "Ha előre értéket adsz, az emberekben kialakul a vágy, hogy viszonozzák.",
+   "Ha előre értéket adsz, az emberek szeretnék viszonozni.",
    "Például úgy, hogy megveszik a termékedet.",
    "Ez az emberi természet. Úgy érezzük, vissza kell adnunk valamit.",
    "A neve: a kölcsönösség elve.",
@@ -130,7 +130,7 @@
    "اگر فروش بیشتری می‌خواهی، باید استراتژی فعلی‌ات را دوباره فکر کنی.",
    "اول تو چیزی به مشتری‌هایت بده.",
    "یک نمونهٔ رایگان، یک راهنمای مفید یا نکته‌های اختصاصی.",
-   "وقتی از قبل ارزش می‌دهی، در آدم‌ها این میل شکل می‌گیرد که جبران کنند.",
+   "وقتی از قبل ارزش می‌دهی، آدم‌ها دوست دارند جبران کنند.",
    "مثلاً با خریدن محصولت.",
    "این طبیعت انسان است. حس می‌کنیم باید چیزی برگردانیم.",
    "اسمش: اصل معامله به مثل.",
@@ -151,8 +151,8 @@
    "Miért akarnak olyan sokan azonnal hozzájutni az új iPhone-hoz?",
    "A FOMO miatt. Vagyis a kimaradástól való félelem miatt.",
    "Abban a pillanatban, ahogy valami korlátozottnak tűnik, az emberek még jobban akarják.",
-   "Ha a terméked exkluzívnak, keresettnek vagy korlátozottnak tűnik, a vásárlók nemcsak akarni fogják.",
-   "Még jobban vágyni fognak rá."
+   "Ha a terméked exkluzívnak, keresettnek vagy korlátozottnak tűnik, a vásárlók már nemcsak akarni fogják.",
+   "Szükségük lesz rá."
   ],
   "fa": [
    "اگر می‌خواهی به هرچه بیشتر آدم بفروشی، این را باید بدانی.",
@@ -164,8 +164,8 @@
    "چرا این‌همه آدم می‌خواهند فوراً آیفون جدید را به دست بیاورند؟",
    "به خاطر فومو. یعنی ترس از جا ماندن.",
    "همان لحظه‌ای که چیزی محدود به نظر برسد، آدم‌ها بیشتر می‌خواهندش.",
-   "اگر محصولت انحصاری، پرطرفدار یا محدود به نظر برسد، مشتری‌ها فقط آن را نمی‌خواهند.",
-   "حتی بیشتر آرزویش را خواهند داشت."
+   "اگر محصولت انحصاری، پرطرفدار یا محدود به نظر برسد، مشتری‌ها دیگر فقط آن را نمی‌خواهند.",
+   "به آن نیاز پیدا می‌کنند."
   ],
   "locked": true
  },
@@ -297,7 +297,7 @@
   "hu": [
    "Vállalkozóként meg kell értened: az emberek nem nyerni akarnak valamit.",
    "Hanem elkerülni a veszteséget.",
-   "Harmincezer forint elvesztése sokkal jobban fáj, mint amennyire ugyanekkora nyereségnek örülünk.",
+   "Harmincezer forint elvesztése kétszer annyira fáj, mint amennyire ugyanekkora nyereségnek örülünk.",
    "Ez nem elmélet.",
    "Egyszerűen így működik az agyunk.",
    "Ha a vállalkozásod csak azt mutatja meg, mit kaphatnak az emberek, az egyenlet felét kihagyod.",
@@ -307,7 +307,7 @@
   "fa": [
    "به‌عنوان صاحب کسب‌وکار باید بفهمی: آدم‌ها نمی‌خواهند چیزی به دست بیاورند.",
    "بلکه می‌خواهند از ضرر کردن دوری کنند.",
-   "از دست دادن سی هزار فورینت خیلی بیشتر درد دارد تا اینکه از همین مقدار سود خوشحال شویم.",
+   "از دست دادن سی هزار فورینت دو برابر بیشتر درد دارد تا اینکه از همین مقدار سود خوشحال شویم.",
    "این یک نظریه نیست.",
    "مغز ما همین‌طور کار می‌کند.",
    "اگر کسب‌وکارت فقط نشان دهد آدم‌ها چه به دست می‌آورند، نصف معادله را جا انداخته‌ای.",
@@ -321,7 +321,7 @@
   "title": "Clarity Wins",
   "hu": [
    "A marketingben ezt az egy dolgot kell megértened.",
-   "Minél több energiát kell fordítaniuk az embereknek arra, hogy megértsenek valamit, annál kevésbé bíznak benned.",
+   "Minél nehezebb megérteni, amit mondasz, annál kevésbé bíznak benned.",
    "Nem azért, mert lusták, hanem mert az agy a zavart a kockázattal köti össze.",
    "Ha az üzeneted megértése erőfeszítést igényel, az ajánlatod kockázatosnak tűnik.",
    "Az emberek pedig nem kockázatot akarnak vállalni.",
@@ -334,7 +334,7 @@
   ],
   "fa": [
    "در بازاریابی باید این یک چیز را بفهمی.",
-   "هرچه آدم‌ها انرژی بیشتری بگذارند تا چیزی را بفهمند، کمتر به تو اعتماد می‌کنند.",
+   "هرچه فهمیدن حرفت سخت‌تر باشد، کمتر به تو اعتماد می‌کنند.",
    "نه چون تنبل‌اند، بلکه چون مغز سردرگمی را به ریسک ربط می‌دهد.",
    "اگر فهمیدن پیامت تلاش بخواهد، پیشنهادت پرریسک به نظر می‌رسد.",
    "و آدم‌ها نمی‌خواهند ریسک کنند.",
