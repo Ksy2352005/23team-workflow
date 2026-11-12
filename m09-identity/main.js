@@ -20,7 +20,7 @@ sc(0, (c, t) => { const con = ease3(seg(t, .2, T(2) + .6)), ap = seg(t, T(4) - .
   if (gl > 0 && gl < 1) { c.save(); c.globalAlpha = Math.sin(gl * Math.PI); const g = c.createRadialGradient(X - 140 + 280 * gl, Y, 0, X - 140 + 280 * gl, Y, 160); g.addColorStop(0, 'rgba(235,242,255,.9)'); g.addColorStop(1, 'rgba(235,242,255,0)'); c.fillStyle = g; c.fillRect(X - 340, Y - 220, 680, 440); c.restore(); } });
 // B: Apple doesn't just sell technology: the apple grows big; then a gear with circuit lines branching out
 sc(T(8) - .2, (c, t) => { const big = E(t, T(9) - .1, .45, .35), g = ss(seg(t, T(12) - .2, T(12) + .2)), tr = seg(t, T(12), T(13) + .6);
-  if (g < 1) neon(c, () => apple(c, X, Y, 2.6 * Math.min(1.05, big)), { w: 5, alpha: 1 - g });
+  if (g < 1) neon(c, () => apple(c, X, Y, lerp(1.9, 2.6, Math.min(1.05, big))), { w: 5, alpha: 1 - g });
   if (g > 0) { neon(c, () => gear(c, X, Y, 90 * g, t * .5), { w: 5, alpha: g }); if (tr > 0) neon(c, () => { [[1, -1], [1, 1], [-1, 1]].forEach(([dx, dy], k) => { const u = clamp(tr * 1.4 - k * .2); if (u <= 0) return; const p = [[X + dx * 110, Y + dy * 30], [X + dx * 170, Y + dy * 30], [X + dx * 210, Y + dy * 120], [X + dx * 260, Y + dy * 120]]; const n = Math.max(2, Math.ceil(u * 4)); P(c, p.slice(0, n)); if (u >= 1) circle(c, p[3][0] + dx * 12, p[3][1], 10); }); P(c, [[X, Y - 110], [X, Y - lerp(110, 220, ease3(tr))]]); }, { w: 3.5 }); } });
 // C: it sells identity: a person in a ring; a notched outer ring turns
 sc(T(14) - .2, (c, t) => { const a = E(t, T(14) - .1, .45, .4), rg = ss(seg(t, T(14) + .2, T(15)));
