@@ -47,7 +47,7 @@ sc(T(50) - .2, (c, t) => { const lst = E(t, T(52) - .1, .4, .4) * (1 - ss(seg(t,
     if (lens > 0 && lens < 1) { const ly = Y - 170 + 330 * ease3(lens), lx = X - 120 + 90 * Math.sin(lens * 5); neon(c, () => circle(c, lx, ly, 100), { w: 3, glow: 30 }); } }
   const pts = []; for (let k = 0; k <= 60; k++) { const u = k / 60; pts.push([X - 40 + 160 * Math.sin(u * 5.5) * u + 120 * u, Y - 300 + u * 640]); }
   glowDot(c, pts[0][0], pts[0][1], 20, 1);
-  if (road > 0) { const n = Math.floor(road * 60); neon(c, () => { c.lineWidth = 16; for (let k = 1; k <= n; k += 2) P(c, [pts[k - 1], pts[k]]); }, { w: 16, glow: 24 }); } });
+  if (road > 0) { const n = Math.max(1, Math.floor(road * 60)); c.save(); c.setLineDash([34, 30]); neon(c, () => P(c, pts.slice(0, n + 1)), { w: 15, glow: 24 }); c.restore(); } });
 // G: the strongest marketing isn't about your brand, but the change your customer longs for: a dot; an arc sweeps; a small box; three people rise over it, glowing
 sc(T(66) - .2, (c, t) => { const arc = seg(t, T(67), T(69) + .3), bx = E(t, T(71) - .1, .4, .4), pp = E(t, T(76) - .1, .4, .45), gl = ss(seg(t, T(80) - .2, T(80) + .3));
   if (bx <= 0) { glowDot(c, X + 30, Y - 60, 16, 1); if (arc > 0) neon(c, () => { c.beginPath(); c.arc(X, Y, 180, Math.PI * .2, Math.PI * .2 + Math.PI * .9 * ease3(arc)); c.stroke(); }, { w: 5 }); }
@@ -55,7 +55,7 @@ sc(T(66) - .2, (c, t) => { const arc = seg(t, T(67), T(69) + .3), bx = E(t, T(71
   if (pp > 0) neon(c, () => people(c, X, Y - 120, 1.7 * Math.min(1.08, pp)), { w: 4.5, glow: 22 + 22 * gl }); });
 // H: sell the "after", not the product itself: coins spin in beside the box; then the box dissolves into question marks
 sc(T(81) - .2, (c, t) => { const cn = E(t, T(82), .4, .45), gone = ss(seg(t, T(86), T(88) + .3));
-  for (let k = 0; k < 3; k++) { const a = E(t, T(82) + k * .15, .4, .45); if (a > 0) neon(c, () => coin(c, X - 170 + [0, 50, 20][k], Y - 120 + [0, 20, 100][k] * 1, 52 * Math.min(1.05, a), t * 3 + k), { w: 4 }); }
+  for (let k = 0; k < 3; k++) { const a = E(t, T(82) + k * .15, .4, .45); if (a > 0) neon(c, () => coin(c, X - 230 + [0, 140, 60][k], Y - 140 + [0, 40, 160][k], 60 * Math.min(1.05, a), .35 * Math.sin(t * 2.5 + k)), { w: 4 }); }
   neon(c, () => cube(c, X + 160, Y + 60, 1.3 * (1 - gone)), { w: 4.5, alpha: 1 - gone });
   if (gone > 0) for (let k = 0; k < 3; k++) txt(c, '?', X + 130 + k * 40, Y + 40 - 40 * gone - (k % 2) * 30, 70 * gone, { font: 'Inter', weight: 400, glow: 14 }); });
 start({ scenes, words: WORDS, story: STORY, dur: DUR, caption: { font: '600 42px "Inter"', mode: 'fade', y: 470 } });
