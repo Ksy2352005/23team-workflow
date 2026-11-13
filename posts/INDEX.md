@@ -14,6 +14,6 @@
 | HU 007 | HU | Marketing story 23 | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-12 | — | `posts/HU/007-story23-borond/` (source: `suitcase-tracker/`) |
 | HU 008 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/008-story24-havi-konyv/` (source: `book-subscription/`) |
 | HU 009 | HU | Motion reel M01 (redone, approved) | „Tükrözés” (mirroring) | 2026-11-12 | — | `posts/HU/009-m01-tukrozes/` (source: `m01-mirroring/`) |
-| HU 010 | HU | Motion reel M02 (v3: Lucide icons, studio SFX, CTA 1) | „Megerősítés” (confirmation) | 2026-11-13 | — | `posts/HU/010-m02-megerosites/` (source: `m02-confirmation/`) |
+| HU 010 | HU | Motion reel M02 (v4: thin-line reference style, guiding orb, CTA 1) | „Megerősítés” (confirmation) | 2026-11-13 | — | `posts/HU/010-m02-megerosites/` (source: `m02-confirmation/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
