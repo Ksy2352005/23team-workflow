@@ -36,4 +36,4 @@ over('drop', swoosh, .16, False, lead=.05); add(fx, thud(.28, 70), B('drop') - .
 over('pull', glide, .09, 300, 450); over('pull', swoosh, .14, lead=.05); add(fx, shimmer(D('pull') + .6, .07), A('pull') + .2)   # coloured dots are drawn in
 add(fx, swell(.6, .14), A('tunnel') - .5); over('tunnel', spin, .3, lead=.1)                      # the tunnel of frames
 add(fx, bloom(.5, 55), A('settle') + .1); add(fx, shimmer(1.8, .09), A('settle') + .2)            # it settles into one warm glow
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, logo_trim=0.9)
