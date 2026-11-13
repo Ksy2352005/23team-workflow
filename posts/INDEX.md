@@ -16,5 +16,6 @@
 | HU 009 | HU | Motion reel M01 (redone, approved) | „Tükrözés” (mirroring) | 2026-11-12 | — | `posts/HU/009-m01-tukrozes/` (source: `m01-mirroring/`) |
 | HU 010 | HU | Motion reel M02 (v4: thin-line reference style, guiding orb, CTA 1) | „Megerősítés” (confirmation) | 2026-11-13 | — | `posts/HU/010-m02-megerosites/` (source: `m02-confirmation/`) |
 | HU 011 | HU | Simulation reel (v7: frame-for-frame remake, red evil boss, swelling pocket, hit + kick out of scene, reference audio + louder hits, no end card) | „Ugyanaz a csapat. Más főnök.” (same team, different boss) | 2026-11-13 | — | `posts/HU/011-mas-fonok/` (source: `boss-difference/`) |
+| HU 012 | HU | Motion reel M03 (orb style, visual hook, CTA 2) | „Halo-hatás” (the halo effect) | 2026-11-13 | — | `posts/HU/012-m03-halo/` (source: `m03-halo/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
