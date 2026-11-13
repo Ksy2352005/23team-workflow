@@ -28,17 +28,17 @@ const fmt = v => Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') 
 const KF = (t, keys) => { if (t <= keys[0][0]) return keys[0].slice(1); for (let i = 1; i < keys.length; i++) if (t < keys[i][0]) { const u = ss(seg(t, keys[i - 1][0], keys[i][0])); return keys[i].slice(1).map((v, k) => lerp(keys[i - 1][k + 1], v, u)); } return keys[keys.length - 1].slice(1); };
 // —— the story's clock ——
 // every time below is the reference's own (its frame time minus 0.433 s, where its counters start from zero)
-const ZOOM_IN = 1.9, TAKES = 2.25, FASTER = 2.75, GLIDE = 3.35, SHARES = 3.55, ZOOM_OUT = 4.4, M1 = 4.95;
+const ZOOM_IN = 1.9, TAKES = 2.25, FASTER = 2.75, GLIDE = 3.65, SHARES = 3.85, ZOOM_OUT = 4.85, M1 = 4.95;   // the two close-ups held longer (user)
 const MONTHS = [[M1, 1], [7.0, 3], [8.75, 6]];   // the reference shows months 1, 3 and 6
-const QUIT = [9.2, 8.0, 6.25], BUB = [8.75, 7.25, 5.75], BUBEND = [9.7, 8.6, 7.1];   // the workers stop and walk out (index = bike): the third, then the second, then the first; their „I quit” bubbles
-const STAND = 4.45, WALK = [4.62, 4.92], HITS = [5.0, 5.34], HIT = 5.0, BACK = [5.85, 6.15], SIT = 6.2;   // two hits (user: more dramatic)   // the bad boss gets up, walks to the third worker, hits him, walks back and sits down
+const QUIT = [9.2, 8.0, 6.6], BUB = [8.75, 7.25, 6.15], BUBEND = [9.7, 8.6, 7.4];   // the workers stop and walk out (index = bike): the third, then the second, then the first; their „I quit” bubbles
+const STAND = 4.9, WALK = [4.95, 5.2], HITS = [5.28, 5.8], HIT = 5.28, BACK = [6.15, 6.45], SIT = 6.5;   // a punch, a pause, then the kick (user)   // two hits (user: more dramatic)   // the bad boss gets up, walks to the third worker, hits him, walks back and sits down
 const ANGRY = [STAND, SIT];
 const HIRE = 6.85, UPGRADE = 9.0, SIGN = 9.75, GREY = 9.7;
-const BADFACES = [[0, 'gobble'], [.95, 'side'], [1.9, 'gobble'], [SIT, 'smirk'], [7.2, 'gobble'], [8.25, 'side'], [9.0, 'pout']];   // user: the bad boss never smiles, a run of funny evil faces
+const BADFACES = [[0, 'glare'], [1.0, 'smirk'], [SIT, 'glare'], [7.2, 'smirk'], [8.25, 'pout'], [9.0, 'glare']];   // dark, angry, evil; never a smile (user)   // user: the bad boss never smiles, a run of funny evil faces
 const badFace = t => BADFACES.filter(f => t >= f[0]).pop()[1];
 const badActive = t => [0, 1, 2].filter(i => t < (i === 2 ? HITS[1] : QUIT[i])).length, goodActive = t => t < HIRE + .4 ? 3 : 4;
 // the camera: both rooms → zoom on the bad boss → glide down to the good boss → back to both rooms
-const CAM = [[0, 540, 960, 1], [ZOOM_IN, 540, 960, 1], [ZOOM_IN + .3, 780, 610 + DY, 2.6], [FASTER - .05, 790, 600 + DY, 2.75], [GLIDE, 800, 590 + DY, 2.9], [GLIDE + .2, 760, 1310 + DY, 1.75], [ZOOM_OUT, 760, 1310 + DY, 1.75], [ZOOM_OUT + .2, 540, 960, 1], [4.85, 540, 960, 1], [4.98, 540, 860, 1.5], [5.85, 520, 860, 1.5], [6.1, 540, 960, 1]];   // a punch-in on the hit and the kick   // close on the bad boss's face, then on the good boss
+const CAM = [[0, 540, 960, 1], [ZOOM_IN, 540, 960, 1], [ZOOM_IN + .3, 780, 610 + DY, 2.6], [FASTER - .05, 790, 600 + DY, 2.75], [GLIDE, 800, 590 + DY, 2.9], [GLIDE + .2, 760, 1310 + DY, 1.75], [ZOOM_OUT, 760, 1310 + DY, 1.75], [ZOOM_OUT + .2, 540, 960, 1], [5.1, 540, 960, 1], [5.24, 540, 860 + DY * .5, 1.5], [6.15, 520, 860 + DY * .5, 1.5], [6.4, 540, 960, 1]];   // a punch-in on the hit and the kick   // close on the bad boss's face, then on the good boss
 // money (forint): the bad boss races ahead early, peaks when his team starts to leave, then falls and freezes; the good boss climbs and keeps climbing
 const LIN = (t, K) => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) return lerp(K[i - 1][1], K[i][1], (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0])); return K[K.length - 1][1]; };
 const BADM = t => LIN(t, [[0, 11018], [2.0, 181146], [4.5, 471137], [5.0, 502587], [6.75, 612661], [7.0, 612666], [9.25, 499000], [13.0, 180000], [15.1, 180000]]);   // the reference's numbers (read off its frames)
@@ -54,7 +54,7 @@ const BILLS = [...[0, 1, 2].map(i => ({ te: GLIDE - .1 + i * .18, w: i })), ...[
 const MX_B = 610, BOSS_B = 852, MX_G = 730, BOSS_G = 905;
 function polyAt(pts, u) { const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); const d = clamp(u) * L[L.length - 1];
   for (let i = 1; i < pts.length; i++) if (d <= L[i]) { const s = (d - L[i - 1]) / (L[i] - L[i - 1] || 1); return [lerp(pts[i - 1][0], pts[i][0], s), lerp(pts[i - 1][1], pts[i][1], s)]; } return pts[pts.length - 1]; }
-const pipeB = Y => [[MX_B, Y + 330], [MX_B, Y + 190], [772, Y + 190], [772, Y + 292]];
+const pipeB = Y => [[MX_B, Y + 330], [MX_B, Y + 190], [722, Y + 190], [722, Y + 370]];
 const pipeG = (Y, i) => [[MX_G, Y + 330], [MX_G, Y + 175], [BIKES[i], Y + 175], [BIKES[i], Y + 205]];
 // —— the set ——
 function roomSet(c, R, t) { const { Y0, FL, kind } = R, bad = kind === 'bad';
@@ -110,9 +110,10 @@ function headBall(c, x, y, R, grey) { const g = c.createRadialGradient(x - R * .
   if (grey) { g.addColorStop(0, '#b9bcc4'); g.addColorStop(.5, '#8d9099'); g.addColorStop(1, '#5d606b'); } else { g.addColorStop(0, '#ffffff'); g.addColorStop(.5, '#eeeeea'); g.addColorStop(1, '#aeb4c8'); }
   c.fillStyle = g; c.beginPath(); c.arc(x, y, R, 0, 7); c.fill(); }
 function face(c, x, y, R, f, kind, o = {}) { const fx = x + f * R * .35, INK = '#151018'; c.save(); c.lineCap = 'round'; c.lineJoin = 'round';
+  if (o.dark && kind !== 'grim') { c.save(); c.beginPath(); c.arc(x, y, R, 0, 7); c.clip(); const g = c.createLinearGradient(0, y - R, 0, y + .15 * R); g.addColorStop(0, 'rgba(40,0,10,.55)'); g.addColorStop(.7, 'rgba(40,0,10,.35)'); g.addColorStop(1, 'rgba(40,0,10,0)'); c.fillStyle = g; c.fillRect(x - R, y - R, 2 * R, 1.15 * R); c.restore(); }
   const blush = () => { for (const sd of [-1, 1]) ell(c, fx + sd * .56 * R, y + .2 * R, .14 * R, .08 * R, 'rgba(232,120,140,.45)'); };
   const happyEyes = (w = .075) => { c.strokeStyle = INK; c.lineWidth = w * R; for (const sd of [-1, 1]) { c.beginPath(); c.arc(fx + sd * .3 * R, y - .05 * R, .13 * R, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); } };
-  const angryBrows = () => { c.strokeStyle = INK; c.lineWidth = .1 * R; for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(fx + sd * .52 * R, y - .4 * R); c.lineTo(fx + sd * .1 * R, y - .2 * R); c.stroke(); } };
+  const angryBrows = () => { c.strokeStyle = INK; c.lineWidth = .13 * R; for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(fx + sd * .52 * R, y - .4 * R); c.lineTo(fx + sd * .1 * R, y - .2 * R); c.stroke(); } };
   const angryEyes = (look = 0) => { for (const sd of [-1, 1]) { ell(c, fx + sd * .3 * R, y - .07 * R, .14 * R, .1 * R, '#ffffff'); ell(c, fx + sd * .3 * R + f * .05 * R, y - .06 * R + look * .04 * R, .06 * R, .06 * R, INK); } };
   if (kind === 'greedy') {   // laughing with a mouth full of coins
     happyEyes(.09); blush(); const op = o.open ?? 1, top = y + .1 * R, bot = y + (.32 + .3 * op) * R, w = .44 * R;
@@ -125,12 +126,16 @@ function face(c, x, y, R, f, kind, o = {}) { const fx = x + f * R * .35, INK = '
     angryBrows(); const sp = Math.abs(Math.cos((o.t || 0) * 9)); for (const sd of [-1, 1]) { const ex = fx + sd * .3 * R, ey = y - .07 * R; c.save(); c.translate(ex, ey); c.scale(.35 + .65 * sp, 1); coin(c, 0, 0, .15 * R); c.restore(); }
     const op = o.open ?? 1, rx = .24 * R, ry = .2 * R * (.6 + .4 * op), my = y + .42 * R; ell(c, fx, my, rx, ry, '#3b1220'); c.save(); c.beginPath(); c.ellipse(fx, my, rx, ry, 0, 0, 7); c.clip(); for (const k of [-1, 0, 1]) coin(c, fx + k * .13 * R, my + .07 * R - (k ? 0 : .05 * R), .1 * R); c.restore();
     ell(c, fx + .12 * R, my + ry + .04 * R, .07 * R, .05 * R, '#d9566a'); const dl = ((o.t || 0) * .9) % 1; ell(c, fx + .18 * R, my + ry + (.05 + .35 * dl) * R, .035 * R, (.05 + .05 * dl) * R, 'rgba(170,215,255,.85)'); }
+  if (kind === 'glare') {   // a dark, furious glare: low heavy brows, red pupils, a clenched frown
+    angryBrows(); for (const sd of [-1, 1]) { ell(c, fx + sd * .3 * R, y - .06 * R, .14 * R, .06 * R, '#ffffff'); ell(c, fx + sd * .3 * R + f * .04 * R, y - .055 * R, .05 * R, .05 * R, '#d81e2a'); }
+    c.strokeStyle = INK; c.lineWidth = .06 * R; c.beginPath(); c.moveTo(fx - .26 * R, y + .44 * R); c.quadraticCurveTo(fx, y + .26 * R, fx + .26 * R, y + .44 * R); c.stroke();
+    c.lineWidth = .03 * R; for (const sd of [-1, 1]) { c.beginPath(); c.moveTo(fx + sd * .3 * R, y + .38 * R); c.lineTo(fx + sd * .36 * R, y + .5 * R); c.stroke(); } }
   if (kind === 'side') {     // a suspicious side-eye: one brow up, one down, a wobbly flat mouth
     const tw = Math.sin((o.t || 0) * 22) * .03 * R; c.strokeStyle = INK; c.lineWidth = .09 * R; c.beginPath(); c.moveTo(fx - .5 * R, y - .3 * R + tw); c.lineTo(fx - .12 * R, y - .38 * R + tw); c.stroke(); c.beginPath(); c.moveTo(fx + .1 * R, y - .22 * R); c.lineTo(fx + .5 * R, y - .26 * R); c.stroke();
     for (const sd of [-1, 1]) { ell(c, fx + sd * .3 * R, y - .07 * R, .14 * R, sd < 0 ? .12 * R : .07 * R, '#ffffff'); ell(c, fx + sd * .3 * R - .07 * R, y - .06 * R, .055 * R, .055 * R, INK); }
     c.lineWidth = .05 * R; c.beginPath(); c.moveTo(fx - .2 * R, y + .34 * R); for (let k = 1; k <= 4; k++) c.lineTo(fx - .2 * R + k * .1 * R, y + .34 * R + (k % 2 ? .04 : -.02) * R); c.stroke(); }
-  if (kind === 'smirk') {    // an evil lopsided sneer with sharp little teeth and narrow eyes (scheming)
-    angryBrows(); for (const sd of [-1, 1]) { ell(c, fx + sd * .3 * R, y - .07 * R, .13 * R, .045 * R, '#ffffff'); ell(c, fx + sd * .3 * R - .03 * R, y - .065 * R, .04 * R, .04 * R, INK); }
+  if (kind === 'smirk') {    // an evil lopsided sneer with sharp little teeth and narrow red-eyed slits (scheming)
+    angryBrows(); for (const sd of [-1, 1]) { ell(c, fx + sd * .3 * R, y - .07 * R, .13 * R, .045 * R, '#ffffff'); ell(c, fx + sd * .3 * R - .03 * R, y - .065 * R, .04 * R, .04 * R, '#d81e2a'); }
     c.fillStyle = '#3b1220'; c.beginPath(); c.moveTo(fx - .3 * R, y + .36 * R); c.quadraticCurveTo(fx, y + .42 * R, fx + .34 * R, y + .2 * R); c.quadraticCurveTo(fx + .05 * R, y + .32 * R, fx - .3 * R, y + .36 * R); c.fill();
     c.fillStyle = '#ffffff'; for (const k of [0, 1, 2]) { const bx = fx - .14 * R + k * .13 * R, by = y + .36 * R - k * .045 * R; c.beginPath(); c.moveTo(bx - .04 * R, by - .03 * R); c.lineTo(bx + .04 * R, by - .045 * R); c.lineTo(bx, by + .03 * R); c.fill(); } }
   if (kind === 'pout') {     // a red, furious pout
@@ -174,7 +179,7 @@ function boss(c, o) { const { x, FL, u, fat } = o, sit = o.sit || 0, lift = (1 -
   hand(-1, o.handL, restL); if (!back) hand(1, o.handR, restR);
   if (fat) { c.save(); c.fillStyle = o.grey > .5 ? '#80838c' : '#d6d8de'; c.beginPath(); c.ellipse(hx + (o.f ?? -.3) * R * .2, hy + R * .78, R * .62, R * .3, 0, 0, Math.PI); c.fill(); c.restore(); }   // double chin
   headBall(c, hx, hy, R, o.grey > .5); if (o.grey > 0 && o.grey < 1) { c.save(); c.globalAlpha = o.grey; headBall(c, hx, hy, R, true); c.restore(); }
-  if (o.flush > 0) { c.save(); c.globalAlpha = o.flush * .55; const g = c.createRadialGradient(hx, hy + R * .2, R * .1, hx, hy, R); g.addColorStop(0, 'rgba(240,60,60,1)'); g.addColorStop(1, 'rgba(240,60,60,.3)'); c.fillStyle = g; c.beginPath(); c.arc(hx, hy, R, 0, 7); c.fill(); c.restore(); }
+  if (o.flush > 0) { c.save(); c.globalAlpha = o.flush * .78; const g = c.createRadialGradient(hx, hy + R * .2, R * .1, hx, hy, R); g.addColorStop(0, 'rgba(235,40,40,1)'); g.addColorStop(1, 'rgba(200,30,40,.55)'); c.fillStyle = g; c.beginPath(); c.arc(hx, hy, R, 0, 7); c.fill(); c.restore(); }
   face(c, hx, hy, R, o.f ?? -.3, o.face, o); if (o.stache) villainStache(c, hx + (o.f ?? -.3) * R * .35, hy + R * .2, R, o.t, o.grey > .5); return { mouth: [hx + (o.f ?? -.3) * R * .35, hy + .38 * R], head: [hx, hy], R }; }
 // the bad boss's curly villain moustache (it twitches)
 function villainStache(c, x, y, R, t = 0, grey) { const tw = Math.sin(t * 9) * .04 * R; c.save(); c.fillStyle = grey ? '#2a2a30' : '#1d1418';
@@ -188,7 +193,7 @@ function rider(c, i, x, FL, t, phi, o = {}) { const s = 1.05, H = 210 * s * 1.08
     footL: [cx + Math.cos(phi) * r, cy + Math.sin(phi) * r], footR: [cx + Math.cos(phi + Math.PI) * r, cy + Math.sin(phi + Math.PI) * r], handL: [x + 66, FL - 150], handR: [x + 72, FL - 152], shadow: false });
   if (o.sweat) { const hx = x + 6, hy = FL - 98 + .26 * H - .76 * H; for (let k = 0; k < 3; k++) { const u = ((t * 1.6 + k / 3 + i * .37) % 1); c.save(); c.globalAlpha = Math.sin(u * Math.PI); c.fillStyle = '#9fd3ff';
     const dx = hx - 50 - 40 * u - k * 6, dy = hy - 40 + 60 * u * u - k * 10; c.beginPath(); c.moveTo(dx, dy - 12); c.quadraticCurveTo(dx + 8, dy, dx, dy + 6); c.quadraticCurveTo(dx - 8, dy, dx, dy - 12); c.fill(); c.restore(); } } }
-const KNOCK = (t, FL) => { const k = HITS[1], u = seg(t, k, k + .36), up = ss(seg(t, 5.98, 6.22)); return { x: lerp(BIKES[2], BIKES[2] - 120, ease3(u)), y: lerp(FL - 60, FL, u) - 150 * Math.sin(u * Math.PI) - 34 * (1 - up) * (u >= 1 ? 1 : 0), rot: lerp(0, -1.5, ss(u)) * (1 - up) - 2 * Math.PI * ss(u) * (u < 1 ? 1 : 0) }; };
+const KNOCK = (t, FL) => { const k = HITS[1], u = seg(t, k, k + .36), up = ss(seg(t, 6.3, 6.55)); return { x: lerp(BIKES[2], BIKES[2] - 120, ease3(u)), y: lerp(FL - 60, FL, u) - 150 * Math.sin(u * Math.PI) - 34 * (1 - up) * (u >= 1 ? 1 : 0), rot: lerp(0, -1.5, ss(u)) * (1 - up) - 2 * Math.PI * ss(u) * (u < 1 ? 1 : 0) }; };
 function knocked(c, t, FL) { const K2 = KNOCK(t, FL); drawMascot(c, { id: 'k2', skin: SKINS[2], s: 1.05, x: K2.x, y: K2.y, f: -.3, rot: K2.rot, smile: 0, sad: .95, o: .8, ...ACC_B[2] }); }
 function walker(c, i, x, FL, t, dir, o = {}) { drawMascot(c, { id: 'q' + i + o.room, skin: SKINS[i], s: 1.05, x, y: FL, f: .7 * dir, walk: 1, phi: t * 13, ...(o.acc || {}), smile: o.smile ?? .1, sad: o.sad ?? .6, look: 0, cap: o.cap }); }
 // the bad room: three riders feeding the pipe into the boss's mouth
@@ -207,17 +212,19 @@ function badRoom(c, t) { const R = TOP, { Y0, FL } = R; roomSet(c, R, t); const 
   const up = ss(seg(t, STAND - .1, STAND + .1)) * (1 - ss(seg(t, SIT - .08, SIT + .05))), faster = t > FASTER && t < GLIDE, shout = faster || (up > .3 && t < BACK[0] + .2), grey = ss(seg(t, GREY, GREY + .5));
   const wk = ss(seg(t, WALK[0], WALK[1])) * (1 - ss(seg(t, BACK[0], BACK[1]))), walking = (t > WALK[0] && t < WALK[1]) || (t > BACK[0] && t < BACK[1]), swing = t > HITS[0] - .12 && t < HITS[0] + .16 ? Math.sin(clamp((t - HITS[0] + .12) / .28) * Math.PI) : 0;   // a punch, then a kick
   const bx = lerp(BOSS_B - up * 60, BIKES[2] + 205, wk), last = BAD_COINS.filter(te => te + 1.06 <= t).pop() ?? -9, chomp = 1 - .3 * Math.max(0, 1 - (t - last - 1.06) / .15);
-  const B = boss(c, { t, x: bx, FL, u: 1, fat: true, sit: 1 - up, f: -.3, lean: up * -.3, face: grey > .4 ? 'grim' : (shout ? 'yell' : (t > ZOOM_IN + .1 && t < FASTER ? 'coins' : badFace(t))), stache: true, flush: faster ? Math.min(1, (t - FASTER) * 4) : (up > .3 && t < BACK[0] ? .6 : 0), kick: Math.sin(clamp((t - HITS[1] + .1) / .32) * Math.PI) * (t > HITS[1] - .1 && t < HITS[1] + .22 ? 1 : 0), open: chomp, grey, shake: shout && !walking, walk: walking ? t * 14 : 0,
-    handL: swing > 0 ? [bx - 150, FL - 250 - 70 * (1 - swing)] : (shout || (t > TAKES && t < GLIDE) ? [bx - 200, FL - 280 + (shout ? 10 * Math.sin(t * 20) : 0)] : (badFace(t) === 'smirk' && up < .5 ? [bx - 18 + 10 * Math.sin(t * 16), FL - 200] : undefined)),
+  const B = boss(c, { t, x: bx, FL, u: 1, fat: true, sit: 1 - up, f: -.3, lean: up * -.3, face: grey > .4 ? 'grim' : (shout ? 'yell' : (t > ZOOM_IN + .1 && t < FASTER ? 'smirk' : badFace(t))), stache: false, dark: true, flush: grey > .4 ? 0 : (faster || (t > ZOOM_IN && t < GLIDE) || (up > .3 && t < BACK[0]) ? 1 : .5), kick: Math.sin(clamp((t - HITS[1] + .1) / .32) * Math.PI) * (t > HITS[1] - .1 && t < HITS[1] + .22 ? 1 : 0), open: chomp, grey, shake: shout && !walking, walk: walking ? t * 14 : 0,
+    handL: swing > 0 ? [bx - 150, FL - 250 - 70 * (1 - swing)] : (t > ZOOM_IN && t < FASTER ? [bx - 68, FL - 150 + 10 * Math.sin(t * 14)] : shout ? [bx - 200, FL - 280 + 10 * Math.sin(t * 20)] : (badFace(t) === 'smirk' && up < .5 ? [bx - 18 + 10 * Math.sin(t * 16), FL - 200] : undefined)),
     handR: badFace(t) === 'smirk' && up < .5 && grey < .4 && !shout ? [bx + 18 - 10 * Math.sin(t * 16), FL - 196] : undefined });
   if ((badFace(t) === 'pout' && !shout) || grey > .4) for (let k = 0; k < 4; k++) { const u = ((t * 1.3 + k / 4) % 1), sd = k % 2 ? 1 : -1; c.save(); c.globalAlpha = .55 * Math.sin(u * Math.PI); ell(c, B.head[0] + sd * (B.R * .95 + 18 * u), B.head[1] - B.R * .2 - 70 * u, 12 + 16 * u, 10 + 12 * u, '#f3f0ea'); c.restore(); }   // steam from his ears
   for (const [n, h] of HITS.entries()) if (t > h && t < h + .45) { const u = seg(t, h, h + .45), sx = BIKES[2] + 30, sy = FL - 262, big = n ? 1.5 : 1;   // a comic burst on each hit
     c.save(); c.globalAlpha = 1 - u; c.translate(sx, sy); c.rotate(n * .4); c.scale(big * (.6 + .6 * ease3(u)), big * (.6 + .6 * ease3(u))); c.fillStyle = '#ffd36a'; c.beginPath(); for (let k = 0; k < 20; k++) { const a = k / 20 * Math.PI * 2, r = k % 2 ? 26 : 58; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.fill();
     c.fillStyle = '#ffffff'; c.beginPath(); for (let k = 0; k < 20; k++) { const a = k / 20 * Math.PI * 2, r = k % 2 ? 12 : 30; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.fill(); c.restore(); }
-  if (t > HITS[1] + .3 && t < QUIT[2] + .7) { const kk = KNOCK(t, FL), hx = t < QUIT[2] ? kk.x + (t < 6.0 ? -60 : 0) : lerp(BIKES[2] - 120, -140, seg(t, QUIT[2], QUIT[2] + .7)), hy = t < 6.0 ? FL - 120 : FL - 300; for (let k = 0; k < 3; k++) { const a = t * 7 + k * 2.1; star(c, hx + Math.cos(a) * 44, hy + Math.sin(a) * 12, 13); } }   // dizzy stars
+  if (t > HITS[1] + .3 && t < QUIT[2] + .7) { const kk = KNOCK(t, FL), hx = t < QUIT[2] ? kk.x + (t < 6.3 ? -60 : 0) : lerp(BIKES[2] - 120, -140, seg(t, QUIT[2], QUIT[2] + .7)), hy = t < 6.3 ? FL - 120 : FL - 300; for (let k = 0; k < 3; k++) { const a = t * 7 + k * 2.1; star(c, hx + Math.cos(a) * 44, hy + Math.sin(a) * 12, 13); } }   // dizzy stars
   // coins along the pipe into his mouth
-  const mouth = B.mouth;
-  for (const te of BAD_COINS) { const a = t - te; if (a < 0 || a > 1.06) continue; if (a < .8) { const [x, y] = polyAt(pipeB(Y0), a / .8); coin(c, x, y - 14); } else { const u = (a - .8) / .26, p0 = pipeB(Y0)[3]; coin(c, lerp(p0[0], mouth[0], u), lerp(p0[1] + 6, mouth[1], u) - 12 * Math.sin(u * Math.PI), 12 * (1 - .55 * u)); } }
+  const nIn = BAD_COINS.filter(te => te + 1.06 <= t).length, bulge = Math.min(1.8, 1 + nIn * .012), pk = [bx - 70, FL - 128 - (up > .5 ? 34 : 0)];   // his bulging jacket pocket
+  c.save(); c.translate(pk[0], pk[1]); c.scale(bulge, bulge); ell(c, 0, 6, 34, 22, '#22337a'); rr(c, -30, -4, 60, 10, 4, '#101a48'); coin(c, -8, -6, 9); coin(c, 9, -8, 9); c.restore();
+  const mouth = pk;
+  for (const te of BAD_COINS) { const a = t - te; if (a < 0 || a > 1.06) continue; if (a < .8) { const [x, y] = polyAt(pipeB(Y0), a / .8); coin(c, x, y - 14); } else { const u = (a - .8) / .26, p0 = pipeB(Y0)[3]; coin(c, lerp(p0[0], mouth[0], u), lerp(p0[1] + 6, mouth[1], u) - 30 * Math.sin(u * Math.PI), 12 * (1 - .4 * u)); } }
   if (up < .5) armchair(c, BOSS_B, FL, 'front');
   // the money
   const v = BADM(STEP(t)), falling = t > 7.0; if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(v), 990, Y0 + 100, 58, falling ? REDT : GOLD, 'right', { stroke: 'rgba(30,5,12,.55)', sw: 8 }); c.restore(); } }
@@ -258,7 +265,7 @@ function take(c, t) { const [cx, cy, z] = KF(t, CAM); CNT = clamp(1 - (z - 1) / 
   const mi = MONTHS.filter(m => t >= m[0]).length; if (mi) { const [mt, mn] = MONTHS[mi - 1], k = pop(t, mt, .3); scaled(c, 300, BOT.Y0 - 10, Math.min(1.1, .8 + .2 * k), () => { rr(c, 300 - 82, BOT.Y0 - 30, 164, 40, 12, GOLD); text(c, `${mn}. HÓNAP`, 300, BOT.Y0 - 9, 26, NAVY); }); }
   c.restore();
   // the title (fixed on screen) and the zoomed scenes' big words
-  text(c, 'UGYANAZ A CSAPAT.', 540, 196 + DY, 62, CREAM); text(c, 'MÁS FŐNÖK.', 540, 266 + DY, 62, GOLD);
+  const ta = 1 - ss(seg(t, 5.1, 5.24)) * (1 - ss(seg(t, 6.15, 6.35))); if (ta > 0) { c.save(); c.globalAlpha = ta; text(c, 'UGYANAZ A CSAPAT.', 540, 196 + DY, 62, CREAM); text(c, 'MÁS FŐNÖK.', 540, 266 + DY, 62, GOLD); c.restore(); }
   const fk = pop(t, FASTER, .28) * (1 - ss(seg(t, GLIDE - .05, GLIDE + .15))); if (fk > 0) scaled(c, 440, 540, fk, () => text(c, 'GYORSABBAN!', 440, 540, 80, REDT, 'center', { stroke: '#3a0a14', sw: 14 }));
   const tk = pop(t, ZOOM_IN + .15, .28) * (1 - ss(seg(t, GLIDE - .05, GLIDE + .15))); if (tk > 0) scaled(c, 540, 1640, tk, () => text(c, 'MINDENT ELVESZ.', 540, 1640, 70, REDT, 'center', { stroke: '#3a0a14', sw: 12 }));
   const sk = pop(t, GLIDE + .12, .28) * (1 - ss(seg(t, ZOOM_OUT - .05, ZOOM_OUT + .15))); if (sk > 0) scaled(c, 540, 1480, sk, () => text(c, 'MEGOSZTJA VELÜK.', 540, 1480, 68, BLUET, 'center', { stroke: '#06103d', sw: 12 })); }
