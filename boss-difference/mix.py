@@ -34,4 +34,4 @@ for k, e in enumerate(EV):
     if ty == 'upgrade': add(fx, lib('upgrade-shine', .22), t)
     if ty == 'sign': add(fx, lib('sign-slap', .3), t + .02)
     if ty == 'grey': add(fx, lib('sad-deflate', .2), t)
-write_mix(HERE, voice='refs/silence.wav', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, cta=2)
+write_mix(HERE, voice='refs/silence.wav', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, cta=2, logo_trim=-5.2)
