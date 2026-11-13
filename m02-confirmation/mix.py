@@ -12,4 +12,4 @@ for e in EV:
     if e['type'] == 'burst': add(fx, lib('impact-soft-a', .5), e['t'] - .05); add(fx, lib('reveal-shimmer', .14), e['t'])   # the lock springs open, light pours out
     if e['type'] == 'fill': add(fx, lib('swell-glow', .22), e['t'] - .25); add(fx, lib('sparkle-soft', .08), e['t'] + .15)    # a soft fill of colour
     if e['type'] == 'glow': add(fx, lib('reveal-shimmer', .13), e['t'] - .1); add(fx, lib('impact-soft-b', .22), e['t'])    # a warm glow on the key word
-write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, cta=1)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10.mp3', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, cta=1, logo_trim=1.4)
