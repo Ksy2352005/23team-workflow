@@ -7,7 +7,7 @@ await loadIcons('icons.json');
 const T = i => WORDS[i][1];
 const STORY = 38.8, DUR = 43.1, X = 540, Y = 1180;   // DUR: the end card holds the call to action (line 1) and then 1 s of the logo alone
 const GOLD = '#ECBD4A', ROSE = '#E8778F', GREEN = '#7FD6A8';
-const IN = .65, OUT = .45;   // draw in / draw out times
+const IN = .65, OUT = .45, LEAD = .3;   // draw in / draw out times; each icon starts drawing LEAD s early so it overlaps the one leaving (no empty moment between pictures)
 // the storyboard: one beat per idea. x/y/size optional; tint colours the stroke glow; fill = a soft fill on the accent word
 const BEATS = [
   { icon: 'brain', at: .05, end: 1.95 },
@@ -30,7 +30,7 @@ const BEATS = [
   { icon: 'flag', at: T(70) - .3, end: T(76) - .3 },
   { icon: 'link', at: T(76) - .4, end: T(79) - .2, glowAt: T(76) + .3 },
   { icon: 'heart', at: T(79) - .25, end: STORY, tint: ROSE, fillAt: T(82) - .2, glowAt: T(82) - .2 } ];
-function beat(c, b, t) { const pin = ease3(seg(t, b.at, b.at + IN)), pout = ss(seg(t, b.end - OUT, b.end)); if (pin <= 0 || pout >= 1) return;
+function beat(c, b, t) { const pin = ease3(seg(t, b.at - LEAD, b.at - LEAD + IN)), pout = ss(seg(t, b.end - OUT, b.end)); if (pin <= 0 || pout >= 1) return;
   const size = b.size || 620, x = b.x ?? X, y = (b.y ?? Y) - 10 * Math.sin((t - b.at) * 1.3), sc = lerp(1.08, 1, pin) * lerp(1, .9, pout) * (1 + .015 * Math.sin((t - b.at) * 2.2)), a = 1 - pout * .3;
   const gl = b.glowAt ? Math.max(0, Math.sin(clamp((t - b.glowAt) / 1.2) * Math.PI)) : 0, fl = b.fillAt ? ss(seg(t, b.fillAt, b.fillAt + .5)) * (1 - pout) : 0;
   if (gl > 0 || fl > 0) { c.save(); c.globalAlpha = .5 * Math.max(gl, fl * .6); const g = c.createRadialGradient(x, y, 0, x, y, size * .75); g.addColorStop(0, b.tint ? b.tint + 'aa' : 'rgba(230,238,255,.65)'); g.addColorStop(1, 'rgba(230,238,255,0)'); c.fillStyle = g; c.fillRect(x - size, y - size, size * 2, size * 2); c.restore(); }
@@ -42,4 +42,4 @@ function take(c, t) { oc.setTransform(1, 0, 0, 1, 0, 0); oc.clearRect(0, 0, off.
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .5; c.filter = `blur(${22 * K}px)`; c.drawImage(off, 0, 0); c.filter = 'none'; c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.drawImage(off, 0, 0); c.restore(); }
 await start({ scenes: [[0, take]], words: WORDS, story: STORY, dur: DUR, stage: false, caption: { font: '600 46px "Inter"', mode: 'fade', y: 470 } });
 // the sound cues: each icon's draw-in, draw-out and accent, so mix.py lands every sound on its frame
-window.EV = BEATS.flatMap((b, i) => [{ t: +b.at.toFixed(3), type: 'in', i, icon: b.icon, x: b.x ?? X }, { t: +(b.end - OUT).toFixed(3), type: 'out', i }, ...(b.burst ? [{ t: b.burst, type: 'burst', i }] : []), ...(b.fillAt ? [{ t: b.fillAt, type: 'fill', i }] : []), ...(b.glowAt ? [{ t: b.glowAt, type: 'glow', i }] : [])]).sort((p, q) => p.t - q.t);
+window.EV = BEATS.flatMap((b, i) => [{ t: +Math.max(0, b.at - LEAD).toFixed(3), type: 'in', i, icon: b.icon, x: b.x ?? X }, { t: +(b.end - OUT).toFixed(3), type: 'out', i }, ...(b.burst ? [{ t: b.burst, type: 'burst', i }] : []), ...(b.fillAt ? [{ t: b.fillAt, type: 'fill', i }] : []), ...(b.glowAt ? [{ t: b.glowAt, type: 'glow', i }] : [])]).sort((p, q) => p.t - q.t);
