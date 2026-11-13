@@ -1,10 +1,10 @@
 """Sound for M02 Megerősítés (v4, thin-line style): no music; quiet studio effects (tools/sfx-lib, ElevenLabs) placed on the picture's cues:
 a soft light-stroke sound as each drawing draws itself on, a gentle airy whoosh while the orb glides to the next scene, a soft shimmer on
 the rays of light, a slow swell on each ripple and on the heart filling with light, a low soft hit when the light turns into a secret (keyhole).
-Ends with the spoken call to action, line 1, as loud as the voice, then 1 s of the logo alone."""
+Ends with the spoken call to action, line 1, a little below the voice, then 1.5 s of the logo alone."""
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from motion_sound2 import *
-STORY, DUR = 38.8, 43.1
+STORY, DUR = 38.8, 43.6
 EV = json.load(open(os.path.join(HERE, 'events.json')))['ev']
 fx = buf(DUR); k = 0
 for e in EV:

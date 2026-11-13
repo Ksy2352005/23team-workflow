@@ -5,7 +5,7 @@
 import { WORDS } from './captions.js';
 import { start, ss, seg, clamp, lerp, ease3, WHITE, MID, K } from './kit.js';
 const T = i => WORDS[i][1];
-const STORY = 38.8, DUR = 43.1;
+const STORY = 38.8, DUR = 43.6;   // DUR = STORY + 1.3 + call to action + 1.5 s of the logo alone
 const LW = 3.2;   // hairline (the reference's 1 px line at 576 px wide, scaled to 1080 and the 0.92 safe zone)
 // —— line geometry: every drawing is a list of strokes, every stroke a list of points, so it can draw itself on and off by length ——
 const arc = (cx, cy, rx, ry, a0, a1, n = 64) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]; });
