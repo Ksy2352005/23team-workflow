@@ -6,8 +6,8 @@ wall, an upgrade sparkle, a deflating wobble as the bad boss turns grey. Then th
 import json, os, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from motion_sound2 import *
-STORY, DUR = 15.8, 20.6
-QUIT, HIRE, FASTER, GLIDE, UPGRADE = [11.0, 9.95, 8.85], 9.75, 3.6, 5.6, 10.7
+STORY, DUR = 15.0, 19.8
+QUIT, HIRE, FASTER, GLIDE, UPGRADE = [10.4, 9.35, 8.25], 9.1, 3.6, 5.0, 10.05
 EV = json.load(open(os.path.join(HERE, 'events.json')))['ev']
 fx = buf(DUR); N = fx.shape[0]; tt = np.arange(N) / SR
 def loop(name, gain, pan=0, v=1.0):   # a library loop tiled across the film with soft crossfades, shaped by a gain curve over time
