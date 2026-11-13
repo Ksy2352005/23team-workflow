@@ -201,7 +201,7 @@ function take(c, t) { const [cx, cy, z] = KF(t, CAM);
   c.restore();
   // the title (fixed on screen) and the zoomed scenes' big words
   text(c, 'UGYANAZ A CSAPAT.', 540, 196, 62, CREAM); text(c, 'MÁS FŐNÖK.', 540, 266, 62, GOLD);
-  const fk = pop(t, FASTER, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (fk > 0) scaled(c, 330, 470, fk, () => text(c, 'GYORSABBAN!', 330, 470, 92, REDT, 'center', { stroke: '#3a0a14', sw: 14 }));
+  const fk = pop(t, FASTER, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (fk > 0) scaled(c, 330, 690, fk, () => text(c, 'GYORSABBAN!', 330, 690, 92, REDT, 'center', { stroke: '#3a0a14', sw: 14 }));
   const tk = pop(t, TAKES, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (tk > 0) scaled(c, 540, 1520, tk, () => text(c, 'MINDENT ELVESZ.', 540, 1520, 76, REDT, 'center', { stroke: '#3a0a14', sw: 12 }));
   const sk = pop(t, SHARES, .28) * (1 - ss(seg(t, ZOOM_OUT - .2, ZOOM_OUT + .15))); if (sk > 0) scaled(c, 540, 1480, sk, () => text(c, 'MEGOSZTJA VELÜK.', 540, 1480, 76, BLUET, 'center', { stroke: '#06103d', sw: 12 })); }
 await start({ scenes: [[0, take]], words: [], story: STORY, dur: DUR, stage: false });
