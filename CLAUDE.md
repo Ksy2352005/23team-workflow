@@ -68,6 +68,12 @@ anything one chat makes or decides is written here, so the other chats know it.
 
 - **Motion reels M01–M16: Hungarian scripts LOCKED (user-approved 2026-11-12).** Use `scripts-pdf/motion-01-16/MNN-hu.txt` word for word (voice David at 1.1×); never re-translate or edit them. Reference videos: M01–M15 are one creator's black neon line-art style (like `whitespace-game/`); M16 (Luxury Green palettes) is a bright colour-palette style. English transcripts and Persian back-translations are in the same folder. Terminology: „halo-hatás” (not „glóriahatás”).
 
+## Exact reference remakes (e.g. `boss-difference/`, HU 011)
+- When the user asks to "recreate this exactly" (user 2026-11-13, the boss-difference simulation): copy the reference **frame for frame**: the same shots, camera moves, timing (read the reference's frame times and use them), counter values and story beats (e.g. the boss walks over and hits a worker). Only the characters (our mascot world) and the language (Hungarian) change.
+- Sound: use **the reference's own audio** (music and effects), cut from where its video starts to its loop point. This overrides "never reuse the reference's audio" for these remakes only, because the user asked for it.
+- No 23 end card and no call to action: the video ends where the reference ends (`start({..., ending: false})` in the film's `kit.js`).
+- On-screen text in **Montserrat Bold** (our font, has ő and ű); never Lilita One (it drew Ő/Ű wrong).
+
 ## Transcribing
 Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
 

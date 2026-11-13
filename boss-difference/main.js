@@ -6,7 +6,8 @@
 // and his money keeps climbing. No voice (like the reference); the spoken call to action plays over the end card.
 import { start, ss, seg, clamp, lerp, ease3, hash, K } from './kit.js';
 import { drawMascot } from './char2d.js';
-const STORY = 15.0, DUR = 19.8;   // DUR = STORY + 1.3 + call to action (line 2) + 1.5 s of the logo alone
+await document.fonts.load('700 40px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű');
+const STORY = 15.1, DUR = 15.1;   // exactly the reference's length (it loops there): no end card, no call to action (user 2026-11-13)
 const CREAM = '#f6efdc', GOLD = '#ffd36a', GOLD2 = '#e3a92f', NAVY = '#14205a', REDT = '#ff6060', GREENT = '#8ee6a6', BLUET = '#8cc4ff';
 const TOP = { Y0: 330, kind: 'bad' }, BOT = { Y0: 990, kind: 'good' };
 for (const R of [TOP, BOT]) R.FL = R.Y0 + 560;   // the floor line (feet) of each room; each room is 640 tall (wall 560 + floor 80)
@@ -16,30 +17,33 @@ const spring = (t, at, d = .35, b = .45) => { if (t < at) return 0; const u = (t
 const pop = (t, at, d = .3) => t < at ? 0 : Math.min(1.12, spring(t, at, d));
 const rr = (c, x, y, w, h, r, col) => { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); };
 const ell = (c, x, y, rx, ry, col) => { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, Math.max(.1, rx), Math.max(.1, ry), 0, 0, 7); c.fill(); };
-function text(c, s, x, y, size, col, align = 'center', o = {}) { c.save(); c.font = `${size}px "Lilita One"`; c.textAlign = align; c.textBaseline = 'middle'; if (o.ls) c.letterSpacing = o.ls + 'px';
+function text(c, s, x, y, size, col, align = 'center', o = {}) { c.save(); c.font = `700 ${size}px "Montserrat"`; c.textAlign = align; c.textBaseline = 'middle'; if (o.ls) c.letterSpacing = o.ls + 'px';
   if (o.stroke) { c.lineJoin = 'round'; c.strokeStyle = o.stroke; c.lineWidth = o.sw || size * .16; c.strokeText(s, x, y); } c.fillStyle = 'rgba(5,6,25,.35)'; c.fillText(s, x + 2, y + 4); c.fillStyle = col; c.fillText(s, x, y); c.restore(); }
 function scaled(c, x, y, k, f) { if (k <= 0) return; c.save(); c.translate(x, y); c.scale(k, k); c.translate(-x, -y); f(); c.restore(); }
-const fmt = v => (Math.round(v / 1000) * 1000).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ft';
+const fmt = v => Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ft';
 const KF = (t, keys) => { if (t <= keys[0][0]) return keys[0].slice(1); for (let i = 1; i < keys.length; i++) if (t < keys[i][0]) { const u = ss(seg(t, keys[i - 1][0], keys[i][0])); return keys[i].slice(1).map((v, k) => lerp(keys[i - 1][k + 1], v, u)); } return keys[keys.length - 1].slice(1); };
 // —— the story's clock ——
-const ZOOM_IN = 2.5, TAKES = 2.95, FASTER = 3.6, GLIDE = 5.0, SHARES = 5.55, ZOOM_OUT = 6.6, M1 = 7.3;   // the reference's order: zoom on the bad boss, „he takes it all”, then „faster!”
-const MONTHS = [M1, 8.2, 9.1, 10.0, 10.9, 11.8];
-const QUIT = [10.4, 9.35, 8.25];             // the bad boss's workers quit (index = bike): the third first, then the second, then the first
-const ANGRY = [7.55, 8.2];                   // the bad boss jumps up and shouts at the third worker; then he sits back down
-const HIRE = 9.1, UPGRADE = 10.05, SIGN = 11.45, GREY = 11.2;
-const badActive = t => [0, 1, 2].filter(i => t < QUIT[i]).length, goodActive = t => t < HIRE + .75 ? 3 : 4;
+// every time below is the reference's own (its frame time minus 0.433 s, where its counters start from zero)
+const ZOOM_IN = 1.9, TAKES = 2.25, FASTER = 2.75, GLIDE = 3.35, SHARES = 3.55, ZOOM_OUT = 4.25, M1 = 4.95;
+const MONTHS = [[M1, 1], [7.0, 3], [8.75, 6]];   // the reference shows months 1, 3 and 6
+const QUIT = [9.2, 8.0, 6.2], BUB = [8.75, 7.25, 5.75], BUBEND = [9.7, 8.6, 7.1];   // the workers stop and walk out (index = bike): the third, then the second, then the first; their „I quit” bubbles
+const STAND = 4.3, WALK = [4.7, 5.1], HIT = 5.22, BACK = [5.85, 6.15], SIT = 6.2;   // the bad boss gets up, walks to the third worker, hits him, walks back and sits down
+const ANGRY = [STAND, SIT];
+const HIRE = 6.85, UPGRADE = 9.0, SIGN = 9.75, GREY = 9.7;
+const badActive = t => [0, 1, 2].filter(i => t < QUIT[i]).length, goodActive = t => t < HIRE + .4 ? 3 : 4;
 // the camera: both rooms → zoom on the bad boss → glide down to the good boss → back to both rooms
-const CAM = [[0, 540, 960, 1], [ZOOM_IN, 540, 960, 1], [ZOOM_IN + .55, 735, 650, 2.0], [GLIDE, 735, 650, 2.0], [GLIDE + .6, 760, 1310, 1.75], [ZOOM_OUT, 760, 1310, 1.75], [ZOOM_OUT + .55, 540, 960, 1]];   // close on the bad boss's face, then on the good boss
+const CAM = [[0, 540, 960, 1], [ZOOM_IN, 540, 960, 1], [ZOOM_IN + .3, 735, 650, 2.2], [GLIDE, 735, 650, 2.2], [GLIDE + .2, 760, 1310, 1.75], [ZOOM_OUT, 760, 1310, 1.75], [ZOOM_OUT + .2, 540, 960, 1]];   // close on the bad boss's face, then on the good boss
 // money (forint): the bad boss races ahead early, peaks when his team starts to leave, then falls and freezes; the good boss climbs and keeps climbing
-const BADM = t => t < 8.25 ? 6080000 * Math.pow(t / 8.25, 1.3) : lerp(6080000, 1800000, ss(seg(t, 8.25, 12.6)));
-const GOODM = t => 16530310 * Math.pow(Math.min(t, 14.4) / 14.4, 2.1);
-const STEP = t => Math.floor(t * 5) / 5;   // the counters move in readable steps (6 a second), like the reference's
+const LIN = (t, K) => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) return lerp(K[i - 1][1], K[i][1], (t - K[i - 1][0]) / (K[i][0] - K[i - 1][0])); return K[K.length - 1][1]; };
+const BADM = t => LIN(t, [[0, 11018], [2.0, 181146], [4.5, 471137], [5.0, 502587], [6.75, 612661], [7.0, 612666], [9.25, 499000], [13.0, 180000], [15.1, 180000]]);   // the reference's numbers (read off its frames)
+const GOODM = t => LIN(t, [[0, 5333], [1.75, 75333], [4.5, 189083], [5.0, 222266], [6.75, 338407], [7.0, 365995], [7.25, 403206], [8.75, 626471], [9.25, 710345], [14.75, 1664597], [15.1, 1725300]]);
+const STEP = t => Math.floor(t * 10) / 10;
 const pedal = (t, bad) => 9 * t + (bad ? 7 * (clamp(t, FASTER, GLIDE) - FASTER) : 0);
 // —— the coins: emitted from each machine at a rate set by the working team (simulated once), then animated along the pipe ——
 function emit(rate) { const out = []; let acc = 0; for (let t = 0; t < STORY; t += 1 / 240) { acc += rate(t) / 240; if (acc >= 1) { acc -= 1; out.push(+t.toFixed(4)); } } return out; }
 const BAD_COINS = emit(t => badActive(t) * (t > FASTER && t < GLIDE ? 3.3 : 2.1));
 const GOOD_COINS = emit(t => goodActive(t) * (t > UPGRADE ? 2.6 : 1.55)).map((te, k) => ({ te, w: k % goodActive(te) }));
-const BILLS = [...[0, 1, 2].map(i => ({ te: SHARES - .15 + i * .22, w: i })), ...[0, 1, 2].map(i => ({ te: M1 - .1 + i * .2, w: i }))];
+const BILLS = [...[0, 1, 2].map(i => ({ te: GLIDE - .1 + i * .18, w: i })), ...[0, 1, 2].map(i => ({ te: 3.95 + i * .15, w: i }))];
 // bad room pipe: from the machine up, along, and down to a nozzle at the boss's mouth
 const MX_B = 640, BOSS_B = 862, MX_G = 730, BOSS_G = 905;
 function polyAt(pts, u) { const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); const d = clamp(u) * L[L.length - 1];
@@ -61,7 +65,7 @@ function roomSet(c, R, t) { const { Y0, FL, kind } = R, bad = kind === 'bad';
   const f = c.createLinearGradient(0, FL, 0, FL + 80); if (bad) { f.addColorStop(0, '#2e0b18'); f.addColorStop(1, '#1f0710'); } else { f.addColorStop(0, '#0b1d5c'); f.addColorStop(1, '#061344'); }
   c.fillStyle = f; c.fillRect(-300, FL, 1680, 80); c.fillStyle = bad ? '#8a3046' : '#2e58c8'; c.fillRect(-300, FL - 2, 1680, 6);
   // the room's name
-  c.save(); c.font = '46px "Lilita One"'; const w1 = c.measureText(bad ? 'ROSSZ ' : 'JÓ ').width; c.restore();
+  c.save(); c.font = '700 46px "Montserrat"'; const w1 = c.measureText(bad ? 'ROSSZ ' : 'JÓ ').width; c.restore();
   text(c, bad ? 'ROSSZ ' : 'JÓ ', 92, Y0 + 62, 46, bad ? REDT : BLUET, 'left'); text(c, 'FŐNÖK', 92 + w1, Y0 + 62, 46, CREAM, 'left'); }
 function bike(c, x, FL, phi, k = 1) { if (k <= 0) return; scaled(c, x, FL, Math.min(1, k), () => {
   const FR = '#aeb8d6', FR2 = '#7c87ab'; c.lineCap = 'round'; c.strokeStyle = FR2; c.lineWidth = 12; c.beginPath(); c.moveTo(x - 60, FL - 7); c.lineTo(x + 78, FL - 7); c.stroke();
@@ -86,8 +90,8 @@ function bill(c, x, y, rot = 0) { c.save(); c.translate(x, y); c.rotate(rot); rr
 function armchair(c, x, FL, part) { const red = '#c8424a', red2 = '#94283a', red3 = '#e0606a';
   if (part === 'back') { rr(c, x - 118, FL - 330, 236, 300, 50, red2); rr(c, x - 104, FL - 318, 208, 270, 42, red); rr(c, x - 90, FL - 300, 60, 210, 30, red3 + '55'); }
   else { rr(c, x - 132, FL - 150, 56, 150, 22, red2); rr(c, x + 76, FL - 150, 56, 150, 22, red2); rr(c, x - 128, FL - 146, 48, 40, 18, red3); rr(c, x + 80, FL - 146, 48, 40, 18, red3); rr(c, x - 84, FL - 70, 168, 62, 16, red); } }
-function bubble(c, x, y, s, k) { if (k <= 0) return; scaled(c, x, y + 30, Math.min(1.1, k), () => { c.save(); c.font = '30px "Lilita One"'; const w = c.measureText(s).width + 36; c.restore();
-  rr(c, x - w / 2, y - 26, w, 52, 14, '#ffffff'); c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(x - 10, y + 24); c.lineTo(x + 8, y + 24); c.lineTo(x - 4, y + 42); c.fill(); text(c, s, x, y + 1, 30, NAVY); }); }
+function bubble(c, x, y, s, k) { if (k <= 0) return; scaled(c, x, y + 30, Math.min(1.1, k), () => { c.save(); c.font = '700 28px "Montserrat"'; const w = c.measureText(s).width + 36; c.restore();
+  rr(c, x - w / 2, y - 26, w, 52, 14, '#ffffff'); c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(x - 10, y + 24); c.lineTo(x + 8, y + 24); c.lineTo(x - 4, y + 42); c.fill(); text(c, s, x, y + 1, 28, NAVY); }); }
 function badge(c, s, x, y, k, col = GREENT) { if (k <= 0) return; scaled(c, x, y, Math.min(1.1, k), () => text(c, s, x, y, 28, col, 'center', { stroke: 'rgba(5,10,40,.65)', sw: 6 })); }
 function sign(c, x, y, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { c.save(); c.translate(x, y); c.rotate(-.07); c.fillStyle = 'rgba(0,0,15,.35)'; c.fillRect(-122, -58, 252, 128);
   rr(c, -126, -64, 252, 128, 8, '#f3e3bf'); rr(c, -118, -56, 236, 112, 6, '#ead6a8'); ell(c, 0, -52, 6, 6, '#7a5a34'); text(c, 'MUNKATÁRSAT', 0, -14, 30, '#a3343c'); text(c, 'KERESÜNK', 0, 24, 30, '#a3343c'); c.restore(); }); }
@@ -131,7 +135,7 @@ function suitTorso(c, x, top, bot, w, tie, shape) {   // a suit jacket with a wh
 function boss(c, o) { const { x, FL, u, fat } = o, sit = o.sit || 0, lift = (1 - sit) * 34 * u, sh = o.shake ? Math.sin(o.t * 46) * 4 * u : 0;
   const R = (fat ? 74 : 60) * u, hx = x + sh + (o.lean || 0) * 40 * u, hy = FL - (fat ? 300 : 325) * u - lift;
   const shY = FL - (fat ? 238 : 255) * u - lift, shX = (fat ? 86 : 44) * u, legTop = FL - (fat ? 100 : 125) * u - (fat ? lift : 0);
-  for (const sd of [-1, 1]) { const lx = x + sd * (fat ? 40 : 17) * u; limb(c, lx, legTop, lx + sd * (fat ? 6 : 2) * u, FL - 16 * u, (fat ? 34 : 27) * u, SUIT[2]); ell(c, lx + sd * 4 * u - 6 * u, FL - 9 * u, 25 * u, 12 * u, '#14121c'); }
+  for (const sd of [-1, 1]) { const lx = x + sd * (fat ? 40 : 17) * u, st = o.walk ? Math.sin(o.walk + (sd > 0 ? Math.PI : 0)) * 16 * u : 0; limb(c, lx, legTop, lx + sd * (fat ? 6 : 2) * u + st, FL - 16 * u - Math.max(0, st) * .5, (fat ? 34 : 27) * u, SUIT[2]); ell(c, lx + sd * 4 * u - 6 * u, FL - 9 * u, 25 * u, 12 * u, '#14121c'); }
   const hand = (sd, tgt, rest) => { const sx = x + sd * shX, sy = shY + 8 * u; let [tx, ty] = tgt || rest; const L = (fat ? 112 : 100) * u, d = Math.hypot(tx - sx, ty - sy); if (d > L) { tx = sx + (tx - sx) / d * L; ty = sy + (ty - sy) / d * L; }
     limb(c, sx, sy, tx, ty, (fat ? 30 : 24) * u, SUIT[1]); ell(c, tx, ty, (fat ? 18 : 15) * u, (fat ? 18 : 15) * u, '#eeeeea'); };
   const restL = fat ? [x - 58 * u, FL - 150 * u - lift] : [x - 50 * u, FL - 140 * u], restR = fat ? [x + 58 * u, FL - 150 * u - lift] : [x + 50 * u, FL - 140 * u];
@@ -154,57 +158,60 @@ function badRoom(c, t) { const R = TOP, { Y0, FL } = R; roomSet(c, R, t); const 
   pipe(c, pipeB(Y0)); text(c, 'PROFIT', MX_B - 70, Y0 + 165, 22, GOLD, 'center');
   machine(c, MX_B, FL, t, anyOn ? (t < 12 ? t * 6 : 12 * 6) + (t > FASTER && t < GLIDE ? (t - FASTER) * 6 : 0) : 12 * 6 + (QUIT[0] - 12) * 0, 0);
   for (let i = 0; i < 3; i++) { const q = QUIT[i]; bike(c, BIKES[i], FL, t < q ? ph + i : q * 9 + i);
-    if (t < q + .45) { const faster = t > FASTER && t < GLIDE; rider(c, i, BIKES[i], FL, t, t < q ? ph + i * 1.7 : q * 9 + i * 1.7, { room: 'b', smile: faster ? 0 : .12, sad: faster || t > ANGRY[0] ? .9 : .45, sweat: faster || (t > ANGRY[0] && t < q) }); }
-    bubble(c, BIKES[i] + 10, FL - 300, 'FELMONDOK', pop(t, q - .55) * (1 - ss(seg(t, q + .3, q + .5)))); }
-  for (let i = 0; i < 3; i++) { const q = QUIT[i]; if (t >= q + .45 && t < q + 1.6) { const u = seg(t, q + .45, q + 1.6); walker(c, i, lerp(BIKES[i] - 40, -140, u), FL, t, -1, { room: 'b' }); } }
+    if (t < q) { const faster = t > FASTER && t < GLIDE, hitK = i === 2 ? Math.sin(clamp((t - HIT) / .4) * Math.PI) : 0; if (hitK > 0) { c.save(); c.translate(BIKES[i], FL - 150); c.rotate(-.18 * hitK); c.translate(-BIKES[i], -(FL - 150)); }
+      rider(c, i, BIKES[i], FL, t, ph + i * 1.7, { room: 'b', smile: faster ? 0 : .12, sad: faster || t > ANGRY[0] ? .9 : .45, sweat: faster || (t > ANGRY[0] && t < q) }); if (hitK > 0) c.restore(); }
+    bubble(c, BIKES[i] - (i === 2 ? 25 : 0), FL - 300, 'FELMONDOK', pop(t, BUB[i]) * (1 - ss(seg(t, BUBEND[i] - .15, BUBEND[i])))); }
+  for (let i = 0; i < 3; i++) { const q = QUIT[i]; if (t >= q && t < q + .7) { const u = seg(t, q, q + .7); walker(c, i, lerp(BIKES[i] - 30, -140, u), FL, t, -1, { room: 'b' }); } }
   // the boss: in his armchair; jumps up to shout at the third worker; grey and grim at the end
   armchair(c, BOSS_B, FL, 'back');
-  const up = ss(seg(t, ANGRY[0], ANGRY[0] + .25)) * (1 - ss(seg(t, ANGRY[1] - .1, ANGRY[1] + .2))), faster = t > FASTER && t < GLIDE, shout = faster || up > .3, grey = ss(seg(t, GREY, GREY + .6));
-  const bx = BOSS_B - up * 120, last = BAD_COINS.filter(te => te + 1.06 <= t).pop() ?? -9, chomp = 1 - .3 * Math.max(0, 1 - (t - last - 1.06) / .15);
-  const B = boss(c, { t, x: bx, FL, u: 1, fat: true, sit: 1 - up, f: -.3, lean: up * -.3, face: grey > .4 ? 'grim' : (shout ? 'yell' : 'greedy'), open: chomp, grey, shake: shout,
-    handL: shout ? [bx - 200, FL - 280 + 10 * Math.sin(t * 20)] : undefined });
-  if (up > .2) { const u = seg(t, ANGRY[0] + .2, ANGRY[0] + .65), sx = BIKES[2] + 20, sy = FL - 250; for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2, d = 18 + 40 * u; c.save(); c.globalAlpha = Math.sin(u * Math.PI); c.strokeStyle = '#ffd36a'; c.lineWidth = 7; c.lineCap = 'round'; c.beginPath(); c.moveTo(sx + Math.cos(a) * d, sy + Math.sin(a) * d); c.lineTo(sx + Math.cos(a) * (d + 22), sy + Math.sin(a) * (d + 22)); c.stroke(); c.restore(); } }
+  const up = ss(seg(t, STAND - .1, STAND + .1)) * (1 - ss(seg(t, SIT - .08, SIT + .05))), faster = t > FASTER && t < GLIDE, shout = faster || (up > .3 && t < BACK[0] + .2), grey = ss(seg(t, GREY, GREY + .5));
+  const wk = ss(seg(t, WALK[0], WALK[1])) * (1 - ss(seg(t, BACK[0], BACK[1]))), walking = (t > WALK[0] && t < WALK[1]) || (t > BACK[0] && t < BACK[1]), swing = t > HIT - .12 && t < HIT + .18 ? Math.sin(clamp((t - HIT + .12) / .3) * Math.PI) : 0;
+  const bx = lerp(BOSS_B - up * 60, BIKES[2] + 205, wk), last = BAD_COINS.filter(te => te + 1.06 <= t).pop() ?? -9, chomp = 1 - .3 * Math.max(0, 1 - (t - last - 1.06) / .15);
+  const B = boss(c, { t, x: bx, FL, u: 1, fat: true, sit: 1 - up, f: -.3, lean: up * -.3, face: grey > .4 ? 'grim' : (shout ? 'yell' : 'greedy'), open: chomp, grey, shake: shout && !walking, walk: walking ? t * 14 : 0,
+    handL: swing > 0 ? [bx - 150, FL - 250 - 60 * (1 - swing)] : (shout || (t > TAKES && t < GLIDE) ? [bx - 200, FL - 280 + (shout ? 10 * Math.sin(t * 20) : 0)] : undefined) });
+  if (t > HIT && t < HIT + .55) { const u = seg(t, HIT, HIT + .55), sx = BIKES[2] + 30, sy = FL - 260; for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2, d = 18 + 40 * u; c.save(); c.globalAlpha = Math.sin(u * Math.PI); c.strokeStyle = '#ffd36a'; c.lineWidth = 7; c.lineCap = 'round'; c.beginPath(); c.moveTo(sx + Math.cos(a) * d, sy + Math.sin(a) * d); c.lineTo(sx + Math.cos(a) * (d + 22), sy + Math.sin(a) * (d + 22)); c.stroke(); c.restore(); } }
   // coins along the pipe into his mouth
   const mouth = B.mouth;
   for (const te of BAD_COINS) { const a = t - te; if (a < 0 || a > 1.06) continue; if (a < .8) { const [x, y] = polyAt(pipeB(Y0), a / .8); coin(c, x, y - 14); } else { const u = (a - .8) / .26, p0 = pipeB(Y0)[3]; coin(c, lerp(p0[0], mouth[0], u), lerp(p0[1] + 6, mouth[1], u) - 12 * Math.sin(u * Math.PI), 12 * (1 - .55 * u)); } }
   if (up < .5) armchair(c, BOSS_B, FL, 'front');
   // the money
-  const v = BADM(STEP(t)), falling = t > QUIT[2]; text(c, fmt(v), 990, Y0 + 100, 58, falling ? REDT : GOLD, 'right', { stroke: 'rgba(30,5,12,.55)', sw: 8 }); }
+  const v = BADM(STEP(t)), falling = t > 7.0; if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(v), 990, Y0 + 100, 58, falling ? REDT : GOLD, 'right', { stroke: 'rgba(30,5,12,.55)', sw: 8 }); c.restore(); } }
 // the good room: the pipe rains the coins down on the team; a bonus, a new hire, an upgraded machine
 function goodRoom(c, t) { const R = BOT, { Y0, FL } = R; roomSet(c, R, t); const ph = pedal(t, 0), gold = ss(seg(t, UPGRADE, UPGRADE + .4));
-  const hireBike = pop(t, HIRE - .1, .35); const nb = t < HIRE ? 3 : 4;
+  const hireBike = pop(t, HIRE - .05, .3); const nb = t < HIRE ? 3 : 4;
   pipe(c, [[MX_G, Y0 + 330], [MX_G, Y0 + 175], [BIKES[0] - 30, Y0 + 175]]); for (let i = 0; i < 4; i++) if (i < 3 || hireBike > .3) pipe(c, [[BIKES[i], Y0 + 175], [BIKES[i], Y0 + 205]]);
   text(c, 'PROFIT', 260, Y0 + 145, 22, GOLD); machine(c, MX_G, FL, t, t * 6 * (1 + gold * .6), gold);
-  badge(c, 'FEJLESZTÉS', MX_G, FL - 250, pop(t, UPGRADE) * (1 - ss(seg(t, UPGRADE + 1.3, UPGRADE + 1.6))), GOLD);
+  badge(c, 'FEJLESZTÉS', MX_G, FL - 250, pop(t, UPGRADE) * (1 - ss(seg(t, 10.2, 10.4))), GOLD);
   if (gold > 0 && gold < 1) { c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = Math.sin(gold * Math.PI) * .6; const gg = c.createRadialGradient(MX_G, FL - 105, 10, MX_G, FL - 105, 190); gg.addColorStop(0, 'rgba(255,220,120,.9)'); gg.addColorStop(1, 'rgba(255,220,120,0)'); c.fillStyle = gg; c.fillRect(MX_G - 200, FL - 300, 400, 400); c.restore(); }
   for (let i = 0; i < 4; i++) { const x = BIKES[i];
-    if (i === 3) { bike(c, x, FL, ph + 3, hireBike); const u = seg(t, HIRE, HIRE + .75); if (t >= HIRE && u < 1) walker(c, 3, lerp(-140, x - 40, ease3(u)), FL, t, 1, { room: 'g', smile: .8, sad: 0 }); else if (u >= 1) rider(c, 3, x, FL, t, ph + 5, { room: 'g', smile: .85 });
-      badge(c, 'ÚJ KOLLÉGA', x + 10, FL - 300, pop(t, HIRE + .6) * (1 - ss(seg(t, HIRE + 1.8, HIRE + 2.1)))); continue; }
+    if (i === 3) { bike(c, x, FL, ph + 3, hireBike); const u = seg(t, HIRE, HIRE + .4); if (t >= HIRE && u < 1) walker(c, 3, lerp(-140, x - 40, ease3(u)), FL, t, 1, { room: 'g', smile: .8, sad: 0 }); else if (u >= 1) rider(c, 3, x, FL, t, ph + 5, { room: 'g', smile: .85 });
+      badge(c, 'ÚJ KOLLÉGA', x + 10, FL - 300, pop(t, HIRE + .4) * (1 - ss(seg(t, 8.0, 8.2)))); continue; }
     bike(c, x, FL, ph + i); rider(c, i, x, FL, t, ph + i * 1.7, { room: 'g', smile: .9, cap: i === 0 });
-    badge(c, 'BÓNUSZ', x + 10, FL - 300, pop(t, M1 + .05 + i * .12) * (1 - ss(seg(t, M1 + 1.2, M1 + 1.5)))); }
+    badge(c, 'BÓNUSZ', x + 10, FL - 300, pop(t, 4.0 + i * .05) * (1 - ss(seg(t, 5.3, 5.5)))); }
   // the boss: stands beside the machine, smiling; points to the team when he shares; waves at the end
-  const share = t > SHARES - .3 && t < ZOOM_OUT + .2, wave = t > 12.6;
+  const share = t > GLIDE && t < ZOOM_OUT + .15, wave = false;
   boss(c, { t, x: BOSS_G, FL, u: 1.08, fat: false, f: -.25, face: 'kind', handL: share ? [BOSS_G - 150, FL - 230] : undefined, handR: wave ? [BOSS_G + 70 + 14 * Math.sin(t * 9), FL - 400] : undefined });
   // coins and bonus notes travel along the pipe and drop onto the riders
   const drop = (te, w, draw) => { const a = t - te, path = pipeG(Y0, w), L = Math.abs(MX_G - BIKES[w]) + 190, tp = L / 820; if (a < 0) return; if (a < tp) { const [x, y] = polyAt(path, a / tp); draw(x, y - 14, 0); return; }
     const u = (a - tp) / .38; if (u > 1) return; const [x0, y0] = path[3], tgtY = FL - 255; draw(x0, lerp(y0 + 10, tgtY, u * u), u); };
   for (const g of GOOD_COINS) drop(g.te, g.w, (x, y, u) => coin(c, x, y, 12 * (1 - .4 * u)));
   for (const b of BILLS) drop(b.te, b.w, (x, y, u) => bill(c, x, y, u * 1.2));
-  text(c, fmt(GOODM(STEP(t))), 990, Y0 + 100, 58, GREENT, 'right', { stroke: 'rgba(3,10,40,.6)', sw: 8 }); }
+  if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(GOODM(STEP(t))), 990, Y0 + 100, 58, GREENT, 'right', { stroke: 'rgba(3,10,40,.6)', sw: 8 }); c.restore(); } }
 // —— the frame ——
-function take(c, t) { const [cx, cy, z] = KF(t, CAM);
+let CNT = 1;
+function take(c, t) { const [cx, cy, z] = KF(t, CAM); CNT = clamp(1 - (z - 1) / .25);
   c.save(); c.translate(540, 960); c.scale(z, z); c.translate(-cx, -cy);
   const fl = c.createLinearGradient(0, 1630, 0, 2200); fl.addColorStop(0, '#061344'); fl.addColorStop(1, '#00113F'); c.fillStyle = fl; c.fillRect(-300, 1630, 1680, 600);
   badRoom(c, t); goodRoom(c, t);
   rr(c, -300, TOP.Y0 + 640, 1680, 20, 0, '#1a0812'); c.fillStyle = '#2e58c8'; c.fillRect(-300, BOT.Y0 - 4, 1680, 4);   // the line between the rooms
-  const mi = MONTHS.filter(m => t >= m).length; if (mi) { const k = pop(t, MONTHS[mi - 1], .3); scaled(c, 300, BOT.Y0 - 10, Math.min(1.1, .8 + .2 * k), () => { rr(c, 300 - 82, BOT.Y0 - 30, 164, 40, 12, GOLD); text(c, `${mi}. HÓNAP`, 300, BOT.Y0 - 9, 26, NAVY); }); }
+  const mi = MONTHS.filter(m => t >= m[0]).length; if (mi) { const [mt, mn] = MONTHS[mi - 1], k = pop(t, mt, .3); scaled(c, 300, BOT.Y0 - 10, Math.min(1.1, .8 + .2 * k), () => { rr(c, 300 - 82, BOT.Y0 - 30, 164, 40, 12, GOLD); text(c, `${mn}. HÓNAP`, 300, BOT.Y0 - 9, 26, NAVY); }); }
   c.restore();
   // the title (fixed on screen) and the zoomed scenes' big words
   text(c, 'UGYANAZ A CSAPAT.', 540, 196, 62, CREAM); text(c, 'MÁS FŐNÖK.', 540, 266, 62, GOLD);
-  const fk = pop(t, FASTER, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (fk > 0) scaled(c, 330, 690, fk, () => text(c, 'GYORSABBAN!', 330, 690, 92, REDT, 'center', { stroke: '#3a0a14', sw: 14 }));
-  const tk = pop(t, TAKES, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (tk > 0) scaled(c, 540, 1520, tk, () => text(c, 'MINDENT ELVESZ.', 540, 1520, 76, REDT, 'center', { stroke: '#3a0a14', sw: 12 }));
-  const sk = pop(t, SHARES, .28) * (1 - ss(seg(t, ZOOM_OUT - .2, ZOOM_OUT + .15))); if (sk > 0) scaled(c, 540, 1480, sk, () => text(c, 'MEGOSZTJA VELÜK.', 540, 1480, 76, BLUET, 'center', { stroke: '#06103d', sw: 12 })); }
-await start({ scenes: [[0, take]], words: [], story: STORY, dur: DUR, stage: false });
+  const fk = pop(t, FASTER, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (fk > 0) scaled(c, 420, 470, fk, () => text(c, 'GYORSABBAN!', 420, 470, 80, REDT, 'center', { stroke: '#3a0a14', sw: 14 }));
+  const tk = pop(t, TAKES, .28) * (1 - ss(seg(t, GLIDE - .25, GLIDE + .1))); if (tk > 0) scaled(c, 540, 1520, tk, () => text(c, 'MINDENT ELVESZ.', 540, 1520, 70, REDT, 'center', { stroke: '#3a0a14', sw: 12 }));
+  const sk = pop(t, SHARES, .28) * (1 - ss(seg(t, ZOOM_OUT - .2, ZOOM_OUT + .15))); if (sk > 0) scaled(c, 540, 1480, sk, () => text(c, 'MEGOSZTJA VELÜK.', 540, 1480, 68, BLUET, 'center', { stroke: '#06103d', sw: 12 })); }
+await start({ scenes: [[0, take]], words: [], story: STORY, dur: DUR, stage: false, ending: false });
 // sound cues
 window.EV = [
   ...BAD_COINS.map(te => ({ t: +(te + 1.0).toFixed(3), type: 'eat' })),
@@ -212,6 +219,6 @@ window.EV = [
   ...BILLS.map(b => ({ t: +(b.te + (Math.abs(MX_G - BIKES[b.w]) + 190) / 820 + .38).toFixed(3), type: 'bill', x: BIKES[b.w] })),
   { t: ZOOM_IN, type: 'zoom', d: .6 }, { t: GLIDE, type: 'zoom', d: .7 }, { t: ZOOM_OUT, type: 'zoom', d: .6 },
   { t: FASTER, type: 'stamp' }, { t: TAKES, type: 'stamp' }, { t: SHARES, type: 'stamp' },
-  ...MONTHS.map(m => ({ t: m, type: 'month' })), ...QUIT.map((q, i) => ({ t: q - .55, type: 'quit', x: BIKES[i] })), ...QUIT.map((q, i) => ({ t: q + .45, type: 'leave', x: BIKES[i] })),
+  ...MONTHS.map(m => ({ t: m[0], type: 'month' })), ...BUB.map((q, i) => ({ t: q, type: 'quit', x: BIKES[i] })), ...QUIT.map((q, i) => ({ t: q, type: 'leave', x: BIKES[i] })), { t: HIT, type: 'hit' },
   { t: ANGRY[0], type: 'jump' }, { t: HIRE, type: 'hire' }, { t: UPGRADE, type: 'upgrade' }, { t: SIGN, type: 'sign' }, { t: GREY, type: 'grey' }].sort((p, q) => p.t - q.t);
 window.ACT = { bad: [0, 1, 2].map(i => QUIT[i]), hire: HIRE, faster: [FASTER, GLIDE], upgrade: UPGRADE };

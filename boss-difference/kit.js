@@ -30,7 +30,7 @@ export function onQuad(c, q, w, h, f) { const [p0, p1, , p3] = q; c.save(); c.tr
 export async function loadImage(src) { const i = new Image(); i.src = src; await i.decode(); return i; }
 
 // —— the reel: scenes [[start, draw(c, t)], …] on the stage under the caption; caption at the top ——
-export async function start({ scenes, words, story, dur, caption = {}, continuous = [], stage = true }) {
+export async function start({ scenes, words, story, dur, caption = {}, continuous = [], stage = true, ending = true }) {
   await Promise.all([document.fonts.load('800 80px "Unbounded"', 'ÁÉŐŰ?'), document.fonts.load('600 42px "Inter"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű'), document.fonts.load('500 42px "JBMono"', 'ÁÉŐŰáéőű')]);
   const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
   const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; }; const [bufA, actx] = mk(), [bufB, bctx] = mk();
@@ -46,14 +46,14 @@ export async function start({ scenes, words, story, dur, caption = {}, continuou
   const paint = (c, i, t) => { c.setTransform(K, 0, 0, K, 0, 0); c.clearRect(0, 0, 1080, 1920); STAGE(c); scenes[i][1](c, t); };
   function endCard(c, t) { const u = ss(seg(t, story + .15, story + 1.05)), w = 1080 * .30, h = w * LOGO.height / LOGO.width, s = 1.04 - .04 * u; c.save(); c.globalAlpha = u * .75; if (u < 1) c.filter = `blur(${(1 - u) * 6 * K}px)`; c.translate(540, 960); c.scale(s, s); c.drawImage(LOGO_C, -w / 2, -h / 2, w, h); c.restore(); }
   function draw(c, t) {
-    c.setTransform(K, 0, 0, K, 0, 0); bg(c); if (t >= story) return endCard(c, t);
+    c.setTransform(K, 0, 0, K, 0, 0); bg(c); if (ending && t >= story) return endCard(c, t);
     const i = sceneAt(t), t0 = scenes[i][0], dt = t - t0, TR = .35;
     if (i > 0 && dt < TR && !continuous.includes(i)) { const e = ss(dt / TR); paint(actx, i - 1, t0 - 1 / 60); paint(bctx, i, t); c.setTransform(1, 0, 0, 1, 0, 0);
       c.save(); c.globalAlpha = 1 - e; c.filter = `blur(${e * 12 * K}px)`; c.translate(W / 2, H / 2); c.scale(1 + .12 * e, 1 + .12 * e); c.translate(-W / 2, -H / 2); c.drawImage(bufA, 0, 0); c.restore();
       c.save(); c.globalAlpha = e; c.filter = `blur(${(1 - e) * 12 * K}px)`; c.translate(W / 2, H / 2); c.scale(.9 + .1 * e, .9 + .1 * e); c.translate(-W / 2, -H / 2); c.drawImage(bufB, 0, 0); c.restore(); }
     else { c.save(); STAGE(c); scenes[i][1](c, t); c.restore(); }
     c.setTransform(K, 0, 0, K, 0, 0); cap(c, t);
-    const f = ss(seg(t, story - .7, story)); if (f > 0) { c.globalAlpha = f; c.fillStyle = MID; c.fillRect(0, 0, 1080, 1920); c.globalAlpha = 1; }
+    const f = ending ? ss(seg(t, story - .7, story)) : 0; if (f > 0) { c.globalAlpha = f; c.fillStyle = MID; c.fillRect(0, 0, 1080, 1920); c.globalAlpha = 1; }
   }
   window.DUR = dur; window.EV = []; window.render = t => draw(ctx, t); window.render(0); window.READY = true;
 }
