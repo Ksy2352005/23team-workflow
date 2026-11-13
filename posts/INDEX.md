@@ -15,6 +15,6 @@
 | HU 008 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/008-story24-havi-konyv/` (source: `book-subscription/`) |
 | HU 009 | HU | Motion reel M01 (redone, approved) | „Tükrözés” (mirroring) | 2026-11-12 | — | `posts/HU/009-m01-tukrozes/` (source: `m01-mirroring/`) |
 | HU 010 | HU | Motion reel M02 (v4: thin-line reference style, guiding orb, CTA 1) | „Megerősítés” (confirmation) | 2026-11-13 | — | `posts/HU/010-m02-megerosites/` (source: `m02-confirmation/`) |
-| HU 011 | HU | Simulation reel (v4: frame-for-frame remake, funnier, reference audio, no end card) | „Ugyanaz a csapat. Más főnök.” (same team, different boss) | 2026-11-13 | — | `posts/HU/011-mas-fonok/` (source: `boss-difference/`) |
+| HU 011 | HU | Simulation reel (v5: frame-for-frame remake, evil fat boss, punch and kick, reference audio, no end card) | „Ugyanaz a csapat. Más főnök.” (same team, different boss) | 2026-11-13 | — | `posts/HU/011-mas-fonok/` (source: `boss-difference/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
