@@ -104,7 +104,7 @@ def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0,
     fx = fx[:N].copy(); n0, n1 = int((story - .6) * SR), int((story + .1) * SR); fx[n0:n1] *= np.linspace(1, 0, n1 - n0)[:, None]; fx[n1:] = 0
     vo = load_mono(os.path.join(here, voice)); vo = end_clean(vo)
     if cta:   # the spoken call to action over the end card, processed exactly like the voice so it sounds the same
-        cv = end_clean(load_mono(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cta', f'cta-{cta}-hu-x{cta_speed:.2f}.mp3'))); sr_ = lambda x: np.sqrt(np.mean(x[np.abs(x) > np.abs(x).max() * .05] ** 2)); cv = cv * (sr_(vo) / max(sr_(cv), 1e-9)) * cta_gain   # user 2026-11-13: a little quieter than the voice (0.6 = -4.4 dB)   # same loudness as the voice (user 2026-11-13: the CTA was too quiet)
+        cv = end_clean(load_mono(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cta', f'cta-{cta}-hu-x{cta_speed:.2f}.mp3'))); sr_ = lambda x: np.sqrt(np.mean(x[np.abs(x) > np.abs(x).max() * .05] ** 2)); cv = cv * ((sr_(vo) / max(sr_(cv), 1e-9)) if np.abs(vo).max() > 1e-4 else 1.0) * cta_gain   # user 2026-11-13: a little quieter than the voice (0.6 = -4.4 dB)   # same loudness as the voice (user 2026-11-13: the CTA was too quiet)
         at = int((story + CTA_AT) * SR); full = np.zeros(max(len(vo), at + len(cv))); full[:len(vo)] = vo; full[at:at + len(cv)] += cv; vo = full
     vo = compress(norm(vo, .9), thr=.3, ratio=3); vb = np.zeros((N, 2)); n = min(len(vo), N); vb[:n, 0] = vo[:n]; vb[:n, 1] = vo[:n]
     env = smooth(np.abs(vb[:, 0]), .25); duck = np.clip(env / (env.max() * .3), 0, 1); duck = smooth(duck, .3)
