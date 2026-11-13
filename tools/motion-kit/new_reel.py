@@ -6,7 +6,7 @@ import json, os, re, shutil, subprocess, sys, urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))); KIT = os.path.join(ROOT, 'tools', 'motion-kit')
 folder, script, title = sys.argv[1], sys.argv[2], sys.argv[3]; speed = float(sys.argv[4]) if len(sys.argv) > 4 else 1.1
 D = os.path.join(ROOT, folder); os.makedirs(os.path.join(D, 'refs'), exist_ok=True); os.makedirs(os.path.join(D, 'fonts'), exist_ok=True)
-shutil.copy(os.path.join(KIT, 'kit.js'), D); shutil.copy(os.path.join(KIT, 'logo-23.png'), D)
+shutil.copy(os.path.join(KIT, 'kit.js'), D); shutil.copy(os.path.join(KIT, 'logo-23.png'), D); shutil.copy(os.path.join(KIT, 'iconkit.js'), D); shutil.copy(os.path.join(ROOT, 'tools', 'icons', 'lucide', 'icon-nodes.json'), os.path.join(D, 'icons.json'))
 for f in os.listdir(KIT):
     if f.endswith('.ttf') or f.startswith('OFL'): shutil.copy(os.path.join(KIT, f), os.path.join(D, 'fonts'))
 shutil.copy(os.path.join(ROOT, script), os.path.join(D, 'refs', 'script-hu.txt'))

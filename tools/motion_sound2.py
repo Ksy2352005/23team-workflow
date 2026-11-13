@@ -60,6 +60,15 @@ def melt(d=.8, v=.12):   # something melting / pouring down: a falling tone and 
 def chime(v=.12, f=1568):   # a soft rounded bell (slow 15 ms attack, long tail) for a coin turning bright
     d = 2.2; tt = t_(d); y = sum(a * np.sin(2 * np.pi * f * k * tt) * np.exp(-tt / tau) for k, a, tau in [(1, 1, .9), (2.01, .4, .5), (3.0, .15, .3)])
     return verb(y * np.minimum(1, tt / .015), 2.0, .45) * v
+# —— the studio library (tools/sfx-lib, ElevenLabs sound effects; user 2026-11-13: the synthesized effects sounded cheap) ——
+_LIBC = {}
+def lib(name, v=.2, lowpass=None):   # a library sound, mono, peak-normalised, with a soft 8 ms fade-in so it can never click
+    if name not in _LIBC:
+        p = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sfx-lib', name + '.mp3'); x = load_mono(p); x = x / (np.abs(x).max() + 1e-9)
+        n = int(.008 * SR); x[:n] *= np.linspace(0, 1, n); m = int(.03 * SR); x[-m:] *= np.linspace(1, 0, m); _LIBC[name] = x
+    x = _LIBC[name]; x = lp(x, lowpass) if lowpass else x; return x * v
+def draw_on(v=.12): return lib('draw-on-a', v, 7000)          # a glowing line drawing itself (bright, so softened)
+def draw_on2(v=.12): return lib('draw-on-b', v, 7000)
 # —— the bed ——
 CH = [(50, 57, 62, 65, 69), (46, 53, 58, 62, 69), (41, 48, 57, 60, 64), (48, 55, 60, 64, 67)]   # Dm(add9), Bbmaj7-ish, F, C — warm, not happy, not dark
 def ambient_bed(d, seed=0, seg=6.0):
@@ -95,7 +104,7 @@ def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0,
     fx = fx[:N].copy(); n0, n1 = int((story - .6) * SR), int((story + .1) * SR); fx[n0:n1] *= np.linspace(1, 0, n1 - n0)[:, None]; fx[n1:] = 0
     vo = load_mono(os.path.join(here, voice)); vo = end_clean(vo)
     if cta:   # the spoken call to action over the end card, processed exactly like the voice so it sounds the same
-        cv = end_clean(load_mono(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cta', f'cta-{cta}-hu-x{cta_speed:.2f}.mp3'))); cv = cv / (np.abs(cv).max() + 1e-9) * np.abs(vo).max()
+        cv = end_clean(load_mono(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cta', f'cta-{cta}-hu-x{cta_speed:.2f}.mp3'))); sr_ = lambda x: np.sqrt(np.mean(x[np.abs(x) > np.abs(x).max() * .05] ** 2)); cv = cv * (sr_(vo) / max(sr_(cv), 1e-9))   # same loudness as the voice (user 2026-11-13: the CTA was too quiet)
         at = int((story + CTA_AT) * SR); full = np.zeros(max(len(vo), at + len(cv))); full[:len(vo)] = vo; full[at:at + len(cv)] += cv; vo = full
     vo = compress(norm(vo, .9), thr=.3, ratio=3); vb = np.zeros((N, 2)); n = min(len(vo), N); vb[:n, 0] = vo[:n]; vb[:n, 1] = vo[:n]
     env = smooth(np.abs(vb[:, 0]), .25); duck = np.clip(env / (env.max() * .3), 0, 1); duck = smooth(duck, .3)
