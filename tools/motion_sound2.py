@@ -84,7 +84,9 @@ def end_clean(vo):   # ElevenLabs files can end on a cut-off burst (sounds like 
     cut = min(len(vo), (k + 1) * w); f = int(.05 * SR); out = vo[:cut].copy(); out[-f:] *= np.linspace(1, 0, f) ** 2   # end at the start of the burst, faded
     return out
 def smooth(x, sec): k = max(1, int(sec * SR)); return np.convolve(x, np.ones(k) / k, 'same')
-def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0, logo_trim=0.0, seed=0, out='out/mix.wav'):
+CTA_AT = 1.3   # the call to action starts 1.3 s into the end card, after the logo's sound has bloomed
+def cta_len(n, speed=1.10): return float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cta', f'cta-{n}-hu-x{speed:.2f}.mp3')], capture_output=True, text=True).stdout)
+def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0, logo_trim=0.0, seed=0, out='out/mix.wav', cta=None, cta_speed=1.10):
     N = int(dur * SR) + SR
     bed = np.zeros(N); b = ambient_bed(story + 1.0, seed); bed[:min(N, len(b))] = b[:N]
     g = np.ones(N)
@@ -92,6 +94,9 @@ def write_mix(here, voice, fx, story, dur, dips=(), bed_level=.22, fx_level=2.0,
     g = smooth(g, .45); fi, fo = int(1.2 * SR), int(1.4 * SR); g[:fi] *= np.linspace(0, 1, fi); e0 = int((story + .1) * SR); g[e0 - fo:e0] *= np.linspace(1, 0, fo); g[e0:] = 0
     fx = fx[:N].copy(); n0, n1 = int((story - .6) * SR), int((story + .1) * SR); fx[n0:n1] *= np.linspace(1, 0, n1 - n0)[:, None]; fx[n1:] = 0
     vo = load_mono(os.path.join(here, voice)); vo = end_clean(vo)
+    if cta:   # the spoken call to action over the end card, processed exactly like the voice so it sounds the same
+        cv = end_clean(load_mono(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cta', f'cta-{cta}-hu-x{cta_speed:.2f}.mp3'))); cv = cv / (np.abs(cv).max() + 1e-9) * np.abs(vo).max()
+        at = int((story + CTA_AT) * SR); full = np.zeros(max(len(vo), at + len(cv))); full[:len(vo)] = vo; full[at:at + len(cv)] += cv; vo = full
     vo = compress(norm(vo, .9), thr=.3, ratio=3); vb = np.zeros((N, 2)); n = min(len(vo), N); vb[:n, 0] = vo[:n]; vb[:n, 1] = vo[:n]
     env = smooth(np.abs(vb[:, 0]), .25); duck = np.clip(env / (env.max() * .3), 0, 1); duck = smooth(duck, .3)
     vr = np.sqrt(np.mean(vb[np.abs(vb[:, 0]) > .02] ** 2))
