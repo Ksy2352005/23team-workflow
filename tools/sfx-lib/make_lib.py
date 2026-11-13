@@ -35,6 +35,8 @@ LIB2 = {
   'upgrade-shine': (1.5, 'cartoon power-up upgrade sparkle rising, bright but soft'),
   'sad-deflate': (1.5, 'soft cartoon deflating descending wobble, comic disappointment, gentle'),
   'stamp-thud': (0.8, 'bold soft thump of a big word slamming onto the screen, punchy but warm'),
+  'punch-hard': (0.8, 'heavy cartoon punch smack hit, loud punchy impact with a short thud'),
+  'kick-launch': (1.6, 'cartoon kick thump followed by a fast whoosh of someone flying far away with a fading comic whistle'),
 }
 for k, (d, txt) in LIB2.items(): LIB[k] = (d, txt + STYLE2 + '|')
 for name, (dur, text) in LIB.items():
