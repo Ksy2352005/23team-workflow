@@ -17,6 +17,6 @@
 | HU 010 | HU | Motion reel M02 (v4: thin-line reference style, guiding orb, CTA 1) | „Megerősítés” (confirmation) | 2026-11-13 | — | `posts/HU/010-m02-megerosites/` (source: `m02-confirmation/`) |
 | HU 011 | HU | Simulation reel (v7: frame-for-frame remake, red evil boss, swelling pocket, hit + kick out of scene, reference audio + louder hits, no end card) | „Ugyanaz a csapat. Más főnök.” (same team, different boss) | 2026-11-13 | ✅ posted | `posts/HU/011-mas-fonok/` (source: `boss-difference/`) |
 | HU 012 | HU | Motion reel M03 (black + turquoise, orb style, visual hook, CTA 1) | „Halo-hatás” (the halo effect) | 2026-11-13 | — | `posts/HU/012-m03-halo/` (source: `m03-halo/`) |
-| HU 013 | HU | Simulation reel (original, boss-video format: cheap shop vs brand; new palette; ElevenLabs music; no end card) | „Ugyanaz a termék. Más márka.” (same product, different brand) | 2026-11-14 | — | `posts/HU/013-mas-marka/` (source: `brand-difference/`) |
+| HU 013 | HU | One-scene story (cheap shop vs brand; new palette; ElevenLabs music; no end card; 4K-supersampled HQ master) | „Ugyanaz a termék. Más márka.” (same product, different brand) | 2026-11-14 | — | `posts/HU/013-mas-marka/` (source: `brand-difference/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
