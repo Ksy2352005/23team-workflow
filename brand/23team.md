@@ -30,6 +30,21 @@ Lines in use: "Your business. Your goals. Your package." · "Stay visible, stay 
 - The caption area must be exactly the scene's top colour, which is now `#00113F`.
 - Already-posted content is not changed. The website navy `#002C66` stays on the site for now (same colour family).
 
+## Motion-reel palette (LOCKED by the user 2026-11-14)
+The user's brand colours for the page: dark blue, turquoise, black and white. Motion reels use exactly these (first used in M03, HU 012):
+
+| Role | Colour | Hex |
+|---|---|---|
+| Background | Black | `#000000` |
+| Centre glow (depth) | Midnight dark blue, 75% at the centre fading to 0 | `#00113F` |
+| Drawings and captions | White | `#F4F7FF` (captions at 95% opacity) |
+| Accent: the orb's glow, halos, rays, ripples, light cones | Turquoise | `#2ED3C6` |
+| Hook impact flash | Pale turquoise (32% for 0.22 s) | `#BFF7F1` |
+| End card | White 23 logo at 75% opacity on black | `#F4F7FF` on `#000000` |
+
+- Never change these per reel. Story films keep the blue mascot world (`#00113F`, see above).
+- The website's turquoise `#40E0D0` (below) is slightly brighter; the reels use `#2ED3C6`, which reads better on black.
+
 ## Visual system (taken from the 23team.hu CSS)
 | Token | Hex |
 |---|---|
