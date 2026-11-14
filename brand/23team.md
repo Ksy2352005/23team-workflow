@@ -22,13 +22,29 @@ Direct, short, friendly, second person, benefit-led, little jargon.
 Process: Talk → Plan → Create → Grow.
 Lines in use: "Your business. Your goals. Your package." · "Stay visible, stay relevant and stay in people's minds."
 
-## Main blue (locked 2026-11-11)
-**Midnight `#00113F`** is 23 Team's main blue from now on: backgrounds of reels and films, carousels, end cards and graphics, on both pages.
-- Pure deep blue (hue 224°), no violet, no teal. Chosen for trust, competence and a premium feel, and so the mascots, gold and cream text stand out.
-- Depth: never a flat fill on a whole video; add a soft centre glow in **`#163A8C`** (a lighter blue of the same hue) fading back to `#00113F`.
-- The mascots keep their own blues (`#2448bb`, `#2a52c9`, `#1f3fa6`). Accents stay gold `#ecbd4a` and cream `#f6efdc`.
-- The caption area must be exactly the scene's top colour, which is now `#00113F`.
-- Already-posted content is not changed. The website navy `#002C66` stays on the site for now (same colour family).
+## Brand colours (LOCKED by the user 2026-11-14; replaces the 2026-11-11 "main blue" rule)
+23 Team's colours are four: **black, dark blue, turquoise and white**. Every new reel, film, carousel, end card and graphic on both pages uses them.
+
+| Colour | Hex | Use |
+|---|---|---|
+| Black | `#000000` | backgrounds (motion reels, end cards) |
+| Dark blue (midnight) | `#00113F` | depth: centre glows, dark story worlds, panels |
+| Turquoise | `#2ED3C6` | the accent: highlights, key words, glows, light |
+| White | `#F4F7FF` | lines, text, the 23 logo |
+
+- The old all-blue look (`#00113F` backgrounds with a `#163A8C` glow, gold `#ecbd4a` accents) is retired for new work; already-posted content is not changed.
+- The mascots keep their own colours (blues `#2448bb`, `#2a52c9`, `#1f3fa6`; the white owner `#eeeeea`).
+- The website keeps its own navy `#002C66` and turquoise `#40E0D0` for now.
+
+## Story-film world (LOCKED by the user 2026-11-14, first test `restaurant-dark/`)
+Story films move from the blue world to a **dark** world, so the blue mascots stand out instead of blending into blue walls:
+- **Backgrounds, sky, caption area and end card:** near-black midnight (`#050710` → `#0a0f1f`), with a soft `#00113F` centre glow for depth; never pure flat black.
+- **Walls and floors:** very dark midnight (the old blues darkened to about 40% of their lightness, hue 226°), and **warm dark browns** for cosy interiors (restaurants, shops, homes); no purple tints.
+- **Light carries the mood:** always keep warm light sources (lamps, candles, lit windows, string lights, a soft spotlight), so the films feel cosy and cinematic, not gloomy.
+- **Mascots always lit:** blue mascots get a soft spotlight or rim light and never stand in a dark corner (blue on black loses contrast).
+- **Daytime and outdoor scenes stay daytime:** brighter, with dark-blue walls instead of bright blue; don't force every story into night.
+- **Captions:** white text; key words in turquoise `#2ED3C6` (not gold).
+- **How to convert an old film:** darken every blue surface colour (hue 195–265°) to 42% lightness and 70% saturation at hue 226°, pull leftover dark purples into the same midnight, and make the wall tints neutral (`rgba(0,2,14,.3)`); see `restaurant-dark/sets.js`.
 
 ## Motion-reel palette (LOCKED by the user 2026-11-14)
 The user's brand colours for the page: dark blue, turquoise, black and white. Motion reels use exactly these (first used in M03, HU 012):
@@ -42,7 +58,7 @@ The user's brand colours for the page: dark blue, turquoise, black and white. Mo
 | Hook impact flash | Pale turquoise (32% for 0.22 s) | `#BFF7F1` |
 | End card | White 23 logo at 75% opacity on black | `#F4F7FF` on `#000000` |
 
-- Never change these per reel. Story films keep the blue mascot world (`#00113F`, see above).
+- Never change these per reel. Story films use the dark story-film world (above).
 - The website's turquoise `#40E0D0` (below) is slightly brighter; the reels use `#2ED3C6`, which reads better on black.
 
 ## Visual system (taken from the 23team.hu CSS)

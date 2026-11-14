@@ -3,7 +3,7 @@
 Locked choices for every animation reel. Follow these unless the brief for a film says otherwise.
 
 ## Main blue (locked 2026-11-11)
-New films use **`#00113F`** (midnight) as the background and caption-area colour (`TOP`), with a centre glow in `#163A8C`; the end card background is also `#00113F`. Mascot blues are unchanged. Films made before this date keep their old blues (`#111a52`, end card `#0b1438`). Details: `brand/23team.md`.
+**Update 2026-11-14 (user): new and re-rendered films use the dark story-film world (`brand/23team.md` → "Story-film world"): near-black midnight backgrounds and caption area, warm lights, turquoise key words.** Before that, films used **`#00113F`** (midnight) as the background and caption-area colour (`TOP`), with a centre glow in `#163A8C`; the end card background is also `#00113F`. Mascot blues are unchanged. Films made before this date keep their old blues (`#111a52`, end card `#0b1438`). Details: `brand/23team.md`.
 
 ## End card: the 23 logo (locked)
 
