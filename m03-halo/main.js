@@ -4,8 +4,8 @@
 import { WORDS } from './captions.js';
 import { start, ss, seg, clamp, lerp, ease3, WHITE, MID, K } from './kit.js';
 const T = i => WORDS[i][1];
-const STORY = 52.1, DUR = 56.9;   // DUR = STORY + 1.3 + call to action (line 2) + 1.5 s of the logo alone
-const LW = 3.2;
+const STORY = 52.1, DUR = 56.8;   // the call to action (line 1) ends at 55.3 s; then 1.5 s of the logo alone
+const LW = 3.2, TURQ = '#2ED3C6';   // the brand's turquoise: the light's glow, halos, rays and ripples
 // —— line geometry: every drawing is a list of strokes, every stroke a list of points, so it can draw itself on and off by length ——
 const arc = (cx, cy, rx, ry, a0, a1, n = 64) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]; });
 const ring = (cx, cy, r, ry = r, a0 = -Math.PI / 2) => arc(cx, cy, r, ry, a0, a0 + Math.PI * 2, 96);
@@ -46,17 +46,17 @@ function part(c, pts, f0, f1) {   // the stretch of a stroke between fractions f
   for (let i = 1; i < pts.length; i++) { const l0 = L[i - 1], l1 = L[i]; if (l1 < a || l0 > b) continue; const s0 = clamp((a - l0) / (l1 - l0 || 1)), s1 = clamp((b - l0) / (l1 - l0 || 1));
     const p = [lerp(pts[i - 1][0], pts[i][0], s0), lerp(pts[i - 1][1], pts[i][1], s0)], q = [lerp(pts[i - 1][0], pts[i][0], s1), lerp(pts[i - 1][1], pts[i][1], s1)]; if (!started) { c.moveTo(...p); started = true; } c.lineTo(...q); }
   c.stroke(); }
-function pen(c, a = 1, w = LW) { c.globalAlpha = a; c.strokeStyle = WHITE; c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; c.shadowColor = 'rgba(190,210,255,.55)'; c.shadowBlur = 7 * K; }
+function pen(c, a = 1, w = LW, col = WHITE) { c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; c.shadowColor = 'rgba(190,210,255,.55)'; c.shadowBlur = 7 * K; }
 // an element: strokes (or a function of t), drawn on from `a` over `din` s (strokes staggered), held, and drawn off (erased from its start) from `b` over `dout` s
 const ELS = [];
-const el = (strokes, a, b, o = {}) => { const e = { strokes, a, b, din: o.din ?? .8, dout: o.dout ?? .55, alpha: o.alpha ?? 1, x: o.x ?? 540, tag: o.tag, quiet: o.quiet }; ELS.push(e); return e; };
+const el = (strokes, a, b, o = {}) => { const e = { col: o.col, strokes, a, b, din: o.din ?? .8, dout: o.dout ?? .55, alpha: o.alpha ?? 1, x: o.x ?? 540, tag: o.tag, quiet: o.quiet }; ELS.push(e); return e; };
 function drawEl(c, e, t) { if (t < e.a || t > e.b + e.dout) return; const S = typeof e.strokes === 'function' ? e.strokes(t) : e.strokes, n = S.length, st = Math.min(.12, .45 / n);
-  const pin = ss(seg(t, e.a, e.a + e.din)), pout = ss(seg(t, e.b, e.b + e.dout)); c.save(); pen(c, e.alpha * (1 - pout * .35));
+  const pin = ss(seg(t, e.a, e.a + e.din)), pout = ss(seg(t, e.b, e.b + e.dout)); c.save(); pen(c, e.alpha * (1 - pout * .35), LW, e.col || WHITE); if (e.col) c.shadowColor = 'rgba(46,211,198,.7)';
   S.forEach((s, k) => { const fi = clamp((pin - k * st) / (1 - (n - 1) * st)), fo = clamp((pout - k * st) / (1 - (n - 1) * st)); part(c, s, ss(fo), ss(fi)); }); c.restore(); }
 // the orb: one soft light that travels through the whole film (key frames: time, x, y, radius; eased between)
 function orbDraw(c, x, y, r, a = 1, dark = 0) { if (r <= .3 || a <= 0) return; c.save(); c.globalAlpha = a;
-  const g = c.createRadialGradient(x, y, r * .6, x, y, r * 3.4); g.addColorStop(0, 'rgba(225,235,255,.38)'); g.addColorStop(1, 'rgba(225,235,255,0)'); c.fillStyle = g; c.fillRect(x - r * 3.4, y - r * 3.4, r * 6.8, r * 6.8);
-  c.fillStyle = WHITE; c.shadowColor = 'rgba(210,222,255,.9)'; c.shadowBlur = 22 * K; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+  const g = c.createRadialGradient(x, y, r * .6, x, y, r * 3.4); g.addColorStop(0, 'rgba(46,211,198,.42)'); g.addColorStop(1, 'rgba(46,211,198,0)'); c.fillStyle = g; c.fillRect(x - r * 3.4, y - r * 3.4, r * 6.8, r * 6.8);
+  c.fillStyle = WHITE; c.shadowColor = 'rgba(46,211,198,.95)'; c.shadowBlur = 22 * K; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
   if (dark > 0) { c.shadowBlur = 0; c.globalAlpha = a * dark; c.fillStyle = MID; c.beginPath(); c.arc(x, y, r * .9, 0, 7); c.fill(); } c.restore(); }
 function track(keys, t) { if (t <= keys[0][0]) return keys[0].slice(1); for (let i = 1; i < keys.length; i++) if (t < keys[i][0]) { const u = ss(seg(t, keys[i - 1][0], keys[i][0])); return keys[i].slice(1).map((v, k) => lerp(keys[i - 1][k + 1], v, u)); } return keys[keys.length - 1].slice(1); }
 const glides = [];   // orb moves that cover a real distance (each gets a soft whoosh)
@@ -66,9 +66,9 @@ const ACC = [];
 const rays = (x, y, r0, at, o = {}) => ACC.push({ k: 'rays', x, y, r0, at, n: o.n ?? 12, len: o.len ?? 70 });
 const ripple = (x, y, r0, at) => ACC.push({ k: 'ripple', x, y, r0, at });
 function drawAcc(c, A, t) { const u = seg(t, A.at, A.at + 1.3); if (u <= 0 || u >= 1) return; c.save();
-  if (A.k === 'rays') { pen(c, Math.sin(u * Math.PI), LW * .9); for (let k = 0; k < A.n; k++) { const an = k / A.n * Math.PI * 2 - Math.PI / 2, r0 = A.r0 + 40 * ease3(u), r1 = r0 + A.len * Math.sin(u * Math.PI);
+  if (A.k === 'rays') { pen(c, Math.sin(u * Math.PI), LW * .9, TURQ); for (let k = 0; k < A.n; k++) { const an = k / A.n * Math.PI * 2 - Math.PI / 2, r0 = A.r0 + 40 * ease3(u), r1 = r0 + A.len * Math.sin(u * Math.PI);
     c.beginPath(); c.moveTo(A.x + Math.cos(an) * r0, A.y + Math.sin(an) * r0); c.lineTo(A.x + Math.cos(an) * r1, A.y + Math.sin(an) * r1); c.stroke(); } }
-  if (A.k === 'ripple') { pen(c, (1 - u) * .8, LW * .8); c.beginPath(); c.arc(A.x, A.y, A.r0 + 260 * ease3(u), 0, 7); c.stroke(); } c.restore(); }
+  if (A.k === 'ripple') { pen(c, (1 - u) * .8, LW * .8, TURQ); c.beginPath(); c.arc(A.x, A.y, A.r0 + 260 * ease3(u), 0, 7); c.stroke(); } c.restore(); }
 // —— M03's own drawings ——
 const rrect = (x, y, w, h, r) => close([[x + r, y], [x + w - r, y], ...arc(x + w - r, y + r, r, r, -Math.PI / 2, 0, 8).slice(1), [x + w, y + h - r], ...arc(x + w - r, y + h - r, r, r, 0, Math.PI / 2, 8).slice(1), [x + r, y + h], ...arc(x + r, y + h - r, r, r, Math.PI / 2, Math.PI, 8).slice(1), [x, y + r], ...arc(x + r, y + r, r, r, Math.PI, Math.PI * 1.5, 8).slice(1)]);
 const star5 = (x, y, r) => close(Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; return [x + Math.cos(a) * rr, y + Math.sin(a) * rr]; }));
@@ -98,11 +98,11 @@ const HOOK = .42;
 rays(540, 1150, 70, HOOK, { n: 16, len: 110 }); ripple(540, 1150, 40, HOOK); ripple(540, 1150, 10, HOOK + .12);
 el([CHART, ...arrowHead], .66, T(7) - .05, { din: 1.0, dout: .4 });
 el(figure(HX, F), T(7) + .05, T(9) + .1, { din: .6, x: HX });
-el(halo(HX, above(HX, F)[1] - 6, 120), T(7) + .4, T(9) + .15, { din: .35, quiet: 1 });
+el(halo(HX, above(HX, F)[1] - 6, 120), T(7) + .4, T(9) + .15, { din: .35, col: TURQ, quiet: 1 });
 rays(HX, above(HX, F)[1] - 6, 140, T(7) + .45, { n: 14, len: 70 });
 // 1 „A halo-hatás egy gondolkodási torzítás”: a head with a halo above it, the light is its mind; on „torzítás” the straight lines in its mind bend
 el(bust(540, 1080, 175), T(9) + .35, T(13) - .2, { din: .8 });
-el(halo(540, 865, 125), T(9) + .6, T(13) - .2, { din: .4, quiet: 1 });
+el(halo(540, 865, 125), T(9) + .6, T(13) - .2, { din: .4, col: TURQ, quiet: 1 });
 el(t => { const a = 26 * ss(seg(t, T(12) - .1, T(12) + .5)); return [0, 1].map(k => Array.from({ length: 41 }, (_, i) => [445 + i * 4.75, 1050 + k * 60 + a * Math.sin(i / 40 * Math.PI * 3 + k)])); }, T(11), T(13) - .25, { din: .5, quiet: 1 });
 // 2 „ha valami egy dologban jó benyomást kelt, az a többiről … is befolyásolja”: four cards; a star lights the first, then the glow spreads to the others
 const CX = [180, 420, 660, 900], CY = 1200;
@@ -123,7 +123,7 @@ const lidUp = t => 220 * ease3(seg(t, T(57) - .1, T(57) + .5));
 el(t => gift(540, 1560, 360, 270, lidUp(t)), T(47) + .1, T(64) - .2, { din: .8 });
 rays(540, 1360, 230, T(51) + .05, { n: 14, len: 60 });
 el(t => { const r = ss(seg(t, T(58) - .2, T(60) + .1)); return bottle(540, 1560 - 30 - 230 * r, 300); }, T(58) - .2, T(64) - .25, { din: .5, quiet: 1 });
-el(halo(540, 1000, 105), T(60) + .1, T(64) - .2, { din: .35, quiet: 1 });
+el(halo(540, 1000, 105), T(60) + .1, T(64) - .2, { din: .35, col: TURQ, quiet: 1 });
 rays(540, 1000, 120, T(61) + .05, { n: 14, len: 60 });
 // 5 „Gondolj a boltodra vagy a weboldaladra”: a shop, then a website
 el(shop(320, 1430, 320, 320), T(64) - .05, T(70) - .2, { x: 320, din: .6 });
@@ -141,12 +141,12 @@ el(sealed(540, 1600), T(90) + .45, T(101) - .2, { din: .7 });
 [0, 1, 2, 3, 4].forEach(k => el([star5(330 + k * 105, 1150, 40)], T(95) + k * .12, T(101) - .25, { din: .3, quiet: k > 0, x: 330 + k * 105 }));
 // 8 „Az így kialakuló pozitív benyomás a vásárlóid más véleményeire is hatással lesz”: a person with a halo; the halo ripples out and halos appear over two more people
 el(figure(540, F), T(101) + .05, T(113) - .2, { din: .6 });
-el(halo(540, above(540, F)[1] - 6, 110), T(102) + .2, T(113) - .2, { din: .35, quiet: 1 });
+el(halo(540, above(540, F)[1] - 6, 110), T(102) + .2, T(113) - .2, { din: .35, col: TURQ, quiet: 1 });
 el(figure(220, F, 2.2), T(103), T(113) - .2, { din: .6, quiet: 1, x: 220 });
 el(figure(860, F, 2.2), T(103) + .15, T(113) - .2, { din: .6, quiet: 1, x: 860 });
 ripple(540, above(540, F)[1], 60, T(105));
-el(halo(220, above(220, F, 2.2)[1] - 6, 90), T(108), T(113) - .25, { din: .35, quiet: 1 });
-el(halo(860, above(860, F, 2.2)[1] - 6, 90), T(108) + .25, T(113) - .25, { din: .35, quiet: 1 });
+el(halo(220, above(220, F, 2.2)[1] - 6, 90), T(108), T(113) - .25, { din: .35, col: TURQ, quiet: 1 });
+el(halo(860, above(860, F, 2.2)[1] - 6, 90), T(108) + .25, T(113) - .25, { din: .35, col: TURQ, quiet: 1 });
 // 9 „Koncentrálj a kiváló brandingre és a nagyszerű vásárlói élményre”: a focus ring around the light, then a cut diamond (branding) and a heart (experience)
 el(crosshair(540, 1150, 110), T(113) - .05, T(116) - .3, { din: .5 });
 el(diamond(330, 1220, 2.1), T(116) - .1, T(122) - .2, { din: .7, x: 330 });
@@ -156,7 +156,7 @@ const STOPS = [.12, .34, .56, .78, 1];
 el([PATH], T(122) + .1, T(135) - .25, { din: .9 });
 STOPS.forEach((u, k) => { const [x, y] = polyAt(PATH, u); el([ring(x, y, 26)], T(122) + .3 + k * .08, T(135) - .3, { din: .3, quiet: 1 }); el([star5(x, y, 20)], T(128) + k * .55, T(135) - .3, { din: .25, quiet: 1 }); });
 // 11 „Szóval használd ki.”: the light comes to the middle and a big halo snaps on above it; rays
-el(halo(540, 1060, 170), T(136) - .25, STORY + .4, { din: .4 });
+el(halo(540, 1060, 170), T(136) - .25, STORY + .4, { din: .4, col: TURQ });
 rays(540, 1150, 120, T(136) + .1, { n: 18, len: 90 });
 // the light's path
 const tip = t => polyAt(CHART, ss(ss(seg(t, .66, 1.66))));
@@ -185,7 +185,7 @@ function take(c, t) { const shake = t > HOOK && t < HOOK + .25 ? 10 * (1 - (t - 
   for (const A of ACC) drawAcc(c, A, t);
   chartCoins(c, t);
   // a soft cone of light from the halo onto the person (the hook) and onto the product (the box)
-  const cone = (x, y0, y1, w, a) => { if (a <= 0) return; c.save(); c.globalAlpha = a * .5; const g = c.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, 'rgba(235,242,255,.55)'); g.addColorStop(1, 'rgba(235,242,255,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 110, y0); c.lineTo(x + 110, y0); c.lineTo(x + w, y1); c.lineTo(x - w, y1); c.closePath(); c.fill(); c.restore(); };
+  const cone = (x, y0, y1, w, a) => { if (a <= 0) return; c.save(); c.globalAlpha = a * .5; const g = c.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, 'rgba(46,211,198,.4)'); g.addColorStop(1, 'rgba(46,211,198,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(x - 110, y0); c.lineTo(x + 110, y0); c.lineTo(x + w, y1); c.lineTo(x - w, y1); c.closePath(); c.fill(); c.restore(); };
   cone(HX, above(HX, F)[1] - 6, F + 10, 300, ss(seg(t, T(7) + .45, T(7) + .8)) * (1 - ss(seg(t, T(9), T(9) + .3))));
   cone(540, 1000, 1560, 260, ss(seg(t, T(60) + .2, T(60) + .6)) * (1 - ss(seg(t, T(64) - .3, T(64)))));
   // the heart fills with warm light on „jó érzés”
@@ -193,7 +193,7 @@ function take(c, t) { const shake = t > HOOK && t < HOOK + .25 ? 10 * (1 - (t - 
   const [x, y, r] = orbAt(t), fade = 1 - ss(seg(t, STORY - .5, STORY)), flash = t > HOOK && t < HOOK + .3 ? 1 + 1.6 * (1 - (t - HOOK) / .3) : 1;
   orbDraw(c, x, y + (t > .58 && t < T(7) ? 0 : 6 * Math.sin(t * 1.6)), r * flash * (1 + .04 * Math.sin(t * 2.3)), fade);
   c.restore();
-  const fl = t > HOOK && t < HOOK + .22 ? .45 * (1 - (t - HOOK) / .22) : 0; if (fl > 0) { c.save(); c.globalAlpha = fl; c.fillStyle = '#eaf0ff'; c.fillRect(0, 0, 1080, 1920); c.restore(); }   // the hook's impact flash
+  const fl = t > HOOK && t < HOOK + .22 ? .32 * (1 - (t - HOOK) / .22) : 0; if (fl > 0) { c.save(); c.globalAlpha = fl; c.fillStyle = '#bff7f1'; c.fillRect(0, 0, 1080, 1920); c.restore(); }   // the hook's impact flash
 }
 await start({ scenes: [[0, take]], words: WORDS, story: STORY, dur: DUR, stage: false, caption: { font: '600 46px "Inter"', mode: 'fade', y: 470 } });
 // sound cues: the hook (tunnel rush, impact, chart rise), each drawing's draw-on, each glide of the light, rays and ripples
