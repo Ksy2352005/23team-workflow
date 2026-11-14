@@ -45,6 +45,19 @@ The user's brand colours for the page: dark blue, turquoise, black and white. Mo
 - Never change these per reel. Story films keep the blue mascot world (`#00113F`, see above).
 - The website's turquoise `#40E0D0` (below) is slightly brighter; the reels use `#2ED3C6`, which reads better on black.
 
+## Reel cover style (LOCKED by the user 2026-11-14)
+Reference: `brand/covers/m03-halo-cover.png` (the user's cover for M03, HU 012). Measured colours:
+
+| Role | Hex |
+|---|---|
+| Background: near-black navy, slightly lighter in the middle | `#000212` (centre about `#010818`) |
+| Hero word (e.g. „HALO”): bright electric turquoise, glowing | `#30FCF4` |
+| Small words above and below (e.g. „THE”, „EFFECT”): white, wide letter-spacing | `#FBFCFC` |
+| Details: a white glowing line drawing tied to the topic (the halo ring), a turquoise glow line under the title | `#FBFCFC`, `#30FCF4` |
+
+- Layout: the title centred in the middle of the 9:16 frame, three lines (small, BIG turquoise, small), a heavy geometric sans, nothing else on the cover.
+- The cover's turquoise `#30FCF4` is brighter than the reels' `#2ED3C6`; the user may unify them later.
+
 ## Visual system (taken from the 23team.hu CSS)
 | Token | Hex |
 |---|---|
