@@ -21,7 +21,6 @@ for e in EV:
     if ty == 'saleB': add(fx, lib('cash-coins', .16), t, pan=-.1)
     if ty == 'saleG': add(fx, lib('cash-coins', .2), t, pan=.1)
     if ty == 'yuck': k += 1; add(fx, lib('sour-wobble', .3 if k % 2 else .22), t)
-    if ty == 'photo': add(fx, lib('camera-shutter', .22), t)
     if ty == 'shout': add(fx, lib('megaphone-blare', .4), t)
     if ty == 'zoom': add(fx, lib('whoosh-soft-a', .3), t - .1)
     if ty == 'sign': add(fx, lib('sign-slap', .45), t)
@@ -31,7 +30,7 @@ for e in EV:
     if ty == 'grey': add(fx, lib('sad-deflate', .45), t)
     if ty in ('raise', 'shop2'): add(fx, lib('upgrade-shine', .4), t)
     if ty == 'fly': add(fx, lib('fly-buzz', .25), t)
-n = int(DUR * SR); mix = mus[:n] + fx[:n] * .9
+n = int(DUR * SR); mix = mus[:n] + fx[:n] * .6   # v4: effects a bit quieter (user)
 mix[-int(.02 * SR):] *= np.linspace(1, 0, int(.02 * SR))[:, None]
 mix /= max(1.0, np.abs(mix).max() / .95)
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True); sf.write(os.path.join(HERE, 'out', 'mix.wav'), mix.astype(np.float32), SR); print('mix', round(len(mix) / SR, 2), 's')

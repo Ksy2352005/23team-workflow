@@ -114,7 +114,7 @@ const RAISE = 12.2, SHOP2 = 16.4;                                // the brand ra
 const priceB = t => CUT.filter(p => t >= p[0]).pop()[1], priceG = t => t < RAISE ? 990 : 1290;
 // the customers: the cheap shop pulls a crowd at first, then it thins out; the brand starts slow and keeps growing
 const ARR_B = [0, .8, 1.6, 2.4, 3.3, 4.5, 7.5, 9.4, 11.8, 14.8], ARR_G = [.2, 2.3, 4.3, 6.8, 8.0, 9.1, 10.1, 11.0, 11.8, 12.6, 13.3, 14.0, 14.7, 15.4, 16.1, 16.8, 17.5, 18.2, 18.9, 19.6];   // later customers come faster: a neat queue that grows
-function queue(arr, svc, walk = .9) { const C = []; let free = 0; arr.forEach((a, i) => { if (i >= 3) a = Math.max(a, C[i - 3].e - walk + .15);   // the next customer only walks in when there is room in the line
+function queue(arr, svc, walk = 1.35) { const C = []; let free = 0; arr.forEach((a, i) => { if (i >= 3) a = Math.max(a, C[i - 3].e - walk + .15);   // the next customer only walks in when there is room in the line
     const s = Math.max(a + walk, free), e = s + svc; free = e; C.push({ i, a, s, e }); }); return C; }
 const QB = queue(ARR_B, .5), QG = queue(ARR_G, .9);
 const SKINS = ['blue1', 'blue2', 'blue3'], LOOKS = [{}, { fem: 'bun' }, { cap: true }, { fem: 'pony' }, { specs: true }, { fem: 'bob' }, { helmet: true }, { fem: 'beret' }, { tache: true }, { fem: 'band' }, { fem: 'long' }, {}];
@@ -148,37 +148,39 @@ function bottle(c, x, y, s = 1, brand = false, rot = 0) { c.save(); c.translate(
 function stall(c, R, t) { const { Y0, FL, kind } = R, bad = kind === 'bad', x0 = STALL - 120, w = 300;
   if (bad) { rr(c, x0, FL - 165, w, 165, 6, '#5b4a3c'); rr(c, x0 - 8, FL - 178, w + 16, 18, 4, '#6e5a48'); c.strokeStyle = 'rgba(30,20,15,.5)'; c.lineWidth = 3; for (let k = 1; k < 4; k++) { c.beginPath(); c.moveTo(x0 + k * 75 + (k % 2) * 6, FL - 160); c.lineTo(x0 + k * 75 - 4, FL - 4); c.stroke(); }
     for (let k = 0; k < 4; k++) bottle(c, x0 + 40 + k * 32, FL - 178, .85, false, (k - 1.5) * .08);
-    c.save(); c.translate(450, Y0 + 185); c.rotate(-.06 + .02 * Math.sin(t * 3)); rr(c, -150, -48, 300, 96, 6, '#e9e3cf'); text(c, 'LIMONÁDÉ', 0, 30, 22, '#3a2a10'); text(c, 'OLCSÓ!!!', 0, -12, 46, '#d2232a'); c.restore();
-    const p = priceB(t), pk = pop(t, CUT.filter(q => t >= q[0]).pop()[0]); scaled(c, x0 + 70, FL - 225, pk, () => { rr(c, x0 + 10, FL - 254, 120, 56, 10, '#ffd36a'); text(c, p + ' Ft', x0 + 70, FL - 225, 28, '#3a1b0a'); }); }
+    c.save(); c.translate(345, Y0 + 165); c.rotate(-.06 + .02 * Math.sin(t * 3)); rr(c, -150, -48, 300, 96, 6, '#e9e3cf'); text(c, 'LIMONÁDÉ', 0, 30, 22, '#3a2a10'); text(c, 'OLCSÓ!!!', 0, -12, 46, '#d2232a'); c.restore();
+    const p = priceB(t), pk = pop(t, CUT.filter(q => t >= q[0]).pop()[0]); scaled(c, x0 - 20, FL - 335, pk, () => { rr(c, x0 - 125, FL - 375, 210, 80, 14, '#ffd36a'); text(c, p + ' Ft', x0 - 20, FL - 333, 46, '#3a1b0a'); }); }
   else { rr(c, x0, FL - 165, w, 165, 16, '#0d1d40'); rr(c, x0 - 8, FL - 178, w + 16, 18, 8, '#13295a'); rr(c, x0, FL - 100, w, 10, 0, '#2ED3C6');
     for (let k = 0; k < 4; k++) bottle(c, x0 + 40 + k * 32, FL - 178, .85, true);
-    c.save(); c.translate(450, Y0 + 185); rr(c, -150, -52, 300, 104, 22, '#071a3a'); c.strokeStyle = '#2ED3C6'; c.lineWidth = 4; c.beginPath(); c.roundRect(-150, -52, 300, 104, 22); c.stroke();
+    c.save(); c.translate(340, Y0 + 185); rr(c, -150, -52, 300, 104, 22, '#071a3a'); c.strokeStyle = '#2ED3C6'; c.lineWidth = 4; c.beginPath(); c.roundRect(-150, -52, 300, 104, 22); c.stroke();
     lemon(c, -86, 2, 26); text(c, 'LIMÓ', 20, 4, 54, WHITE_T); c.restore();
-    const p = priceG(t), pk = pop(t, t < RAISE ? 0 : RAISE); scaled(c, x0 + 70, FL - 225, pk, () => { rr(c, x0, FL - 254, 140, 56, 12, '#2ED3C6'); text(c, fmt(p), x0 + 70, FL - 225, 26, '#03222a'); }); } }
+    const p = priceG(t), pk = pop(t, t < RAISE ? 0 : RAISE); scaled(c, x0 - 20, FL - 335, pk, () => { rr(c, x0 - 150, FL - 375, 260, 80, 14, '#2ED3C6'); text(c, fmt(p), x0 - 20, FL - 333, 44, '#03222a'); }); } }
 // the cheap shop's sale sign: it gets bigger every month, and at the end it falls on his head
 function saleSign(c, t) { const { Y0, FL } = TOP; const k = SALE.filter(q => t >= q[0]).length - 1, s = [.8, 1.15, 1.5][k], pk = pop(t, SALE[k][0], .3);
   let x = 190, y = Y0 + 300, rot = -.1;
   if (t > FALL - .3) { const u = seg(t, FALL - .3, FALL); x = lerp(190, SELLER - 70, ease3(u)); y = lerp(Y0 + 300, FL - 200, u * u); rot = lerp(-.1, .35, u); if (t > FALL) { y = FL - 200 + 4 * Math.sin((t - FALL) * 40) * Math.exp(-(t - FALL) * 5); rot = .35; } }
   scaled(c, x, y, s * Math.min(1.08, pk), () => { c.save(); c.translate(x, y); c.rotate(rot); rr(c, -110, -60, 220, 120, 10, '#d2232a'); rr(c, -100, -50, 200, 100, 8, '#ff3b30'); text(c, SALE[k][1], 0, 4, 60, '#ffffff'); c.restore(); }); }
 // —— the people ——
-function custPos(Q, q, t, R) { const ahead = Q.filter(o => o.i < q.i).reduce((a, o) => a + (1 - ss(seg(t, o.e, o.e + .3))), 0), slotX = SLOT0 - SLOTW * ahead, walkX = -140 + 640 * (t - q.a);
+function custPos(Q, q, t, R) { const ahead = Q.filter(o => o.i < q.i).reduce((a, o) => a + (1 - ss(seg(t, o.e, o.e + .3))), 0), slotX = SLOT0 - SLOTW * ahead, walkX = -140 + 430 * (t - q.a);
   return Math.min(slotX, walkX); }
 function customer(c, Q, q, t, R, good) { const { FL } = R, L = look(q.i + (good ? 3 : 0)); if (t < q.a) return;
   if (t < q.e) { const x = custPos(Q, q, t, R), moving = Math.abs(custPos(Q, q, t + .05, R) - x) > 1;
-    drawMascot(c, { id: 'c' + q.i + R.kind, ...L, s: .95, x, y: FL, f: .6, walk: moving ? 1 : 0, phi: t * 13, smile: good ? .8 : .35, look: .1, handR: t > q.e - .25 ? [x + 60, FL - 160] : undefined }); return; }
-  const u = t - q.e, out = seg(t, q.e + .05, q.e + 2.4); if (out >= 1) return;   // v3: pays and walks straight out to the right (photo or sip on the way)
+    drawMascot(c, { id: 'c' + q.i + R.kind, ...L, s: .95, x, y: FL, f: .6, walk: moving ? 1 : 0, phi: t * 10, smile: good ? .8 : .35, look: .1, handR: t > q.e - .25 ? [x + 60, FL - 160] : undefined }); return; }
+  const u = t - q.e, out = seg(t, q.e + .05, q.e + 3.3); if (out >= 1) return;   // v3: pays and walks straight out to the right (photo or sip on the way)
   const x = lerp(SLOT0 + 95, 1260, ease3(out) * .3 + out * .7), y = FL + 46;   // v3: leaving to the right, past the counter, away from the line
-  if (good) { const phone = u > .1 && u < 1.1; drawMascot(c, { id: 'o' + q.i + R.kind, ...L, s: .95, x, y, f: .6, walk: out > 0 ? 1 : 0, phi: t * 13, smile: 1, look: -.2, handL: phone ? [x - 30, y - 230] : undefined, handR: [x + 34, y - 120] });
+  if (good) { const phone = false;   // v4: no phones (user)
+    drawMascot(c, { id: 'o' + q.i + R.kind, ...L, s: .95, x, y, f: .6, walk: out > 0 ? 1 : 0, phi: t * 10, smile: 1, look: -.2, handL: phone ? [x - 30, y - 230] : undefined, handR: [x + 34, y - 120] });
     if (phone) { rr(c, x - 52, y - 268, 34, 56, 6, '#11182c'); rr(c, x - 49, y - 265, 28, 50, 4, '#2ED3C6'); const fl = seg(t, q.e + .35, q.e + .55); if (fl > 0 && fl < 1) { c.save(); c.globalAlpha = 1 - fl; ell(c, x - 35, y - 240, 60 * fl + 10, 60 * fl + 10, 'rgba(255,255,255,.9)'); c.restore(); } }
     bottle(c, x + 40, y - 106, .7, true); for (let k = 0; k < 2; k++) { const v = seg(t, q.e + .55 + k * .15, q.e + 1.4 + k * .15); if (v > 0 && v < 1) heartShape(c, x - 30 + (k ? 30 : -10) + 10 * Math.sin(v * 8), y - 280 - 120 * v, 16, 1 - v); } }
-  else { const sip = u > .15 && u < 1.0; drawMascot(c, { id: 'o' + q.i + R.kind, ...L, s: .95, x, y, f: .6, walk: out > 0 ? 1 : 0, phi: t * 13, smile: 0, sad: u > .5 ? 1 : .3, o: u > .5 && u < 1.2 ? .8 : 0, look: .2, handR: sip ? [x + 22, y - 175] : [x + 34, y - 110] });
+  else { const sip = u > .15 && u < 1.0; drawMascot(c, { id: 'o' + q.i + R.kind, ...L, s: .95, x, y, f: .6, walk: out > 0 ? 1 : 0, phi: t * 10, smile: 0, sad: u > .5 ? 1 : .3, o: u > .5 && u < 1.2 ? .8 : 0, look: .2, handR: sip ? [x + 22, y - 175] : [x + 34, y - 110] });
     bottle(c, sip ? x + 26 : x + 40, sip ? y - 195 : y - 96, .7, false, sip ? -2.2 : 0); bubble(c, x + 10, y - 330, q.i % 2 ? 'FÚJ!' : 'BLEH!', pop(t, q.e + .55, .2) * (1 - ss(seg(t, q.e + 1.25, q.e + 1.4))));
     if (u > .5 && u < 1.3) for (let k = 0; k < 3; k++) { c.save(); c.globalAlpha = .6; c.strokeStyle = '#9fd36a'; c.lineWidth = 4; c.beginPath(); const yy = y - 200 - k * 18 - 30 * (u - .5); c.moveTo(x - 30, yy); c.quadraticCurveTo(x - 15, yy - 10, x, yy); c.quadraticCurveTo(x + 15, yy + 10, x + 30, yy); c.stroke(); c.restore(); } } }   // stink lines
 // —— the rooms ——
-function badRoom(c, t) { const R = TOP, { Y0, FL } = R; roomSet(c, R, t); stall(c, R, t);
+function badRoom(c, t) { const R = TOP, { Y0, FL } = R; roomSet(c, R, t);
   const shout = (t > TALK_B && t < GLIDE) || [7.6, 10.8].some(m => t > m - .15 && t < m + .8), bonk = t > FALL, grey = ss(seg(t, FALL + 1.5, FALL + 2));
   const B = boss(c, { t, x: SELLER, FL: FL - 40, u: .95, fat: true, sit: 0, f: -.35, face: bonk ? (grey > .4 ? 'grim' : 'pout') : shout ? 'yell' : (t > 13.0 ? 'glare' : 'smirk'), grey, shake: shout, flush: shout ? 1 : .3,
     handL: shout ? [SELLER - 120, FL - 330] : [SELLER - 90, FL - 220] });
+  stall(c, R, t);   // the counter in front of the seller
   if (shout && !bonk) { const mx = SELLER - 120, my = FL - 335; c.save(); c.translate(mx, my); c.rotate(-.15); c.fillStyle = '#e8e2d0'; c.beginPath(); c.moveTo(0, -14); c.lineTo(-90, -40); c.lineTo(-90, 40); c.lineTo(0, 14); c.closePath(); c.fill(); rr(c, -6, -16, 30, 32, 6, '#d2232a'); c.restore();   // the megaphone
     for (let k = 0; k < 3; k++) { const u = ((t * 2.4 + k / 3) % 1); c.save(); c.globalAlpha = 1 - u; c.strokeStyle = '#ffd36a'; c.lineWidth = 6; c.beginPath(); c.arc(mx - 90, my - 15, 30 + 60 * u, Math.PI * .8, Math.PI * 1.2); c.stroke(); c.restore(); }
     bubble(c, mx - 150, my - 90, 'OLCSÓ! OLCSÓ!', pop(t, Math.max(TALK_B, [7.6, 10.8].find(m => t > m - .15 && t < m + .8) ?? TALK_B) + .05, .2)); }
@@ -187,11 +189,12 @@ function badRoom(c, t) { const R = TOP, { Y0, FL } = R; roomSet(c, R, t); stall(
   if (bonk) { for (let k = 0; k < 3; k++) { const a = t * 7 + k * 2.1; star(c, B.head[0] + Math.cos(a) * 70, B.head[1] - B.R - 10 + Math.sin(a) * 14, 15); } }
   if (t > 19.4) { const fx = B.head[0] + 90 * Math.cos(t * 5), fy = B.head[1] - 70 + 30 * Math.sin(t * 7.3); ell(c, fx, fy, 6, 5, '#111'); c.save(); c.globalAlpha = .6; ell(c, fx - 4, fy - 6, 6, 3, '#dfe8f0'); ell(c, fx + 4, fy - 6, 6, 3, '#dfe8f0'); c.restore(); }   // a fly buzzes around him
   if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(revenue(SALES_B, t)), 990, Y0 + 100, 54, t > 12.5 ? REDT : '#ffd36a', 'right', { stroke: 'rgba(20,10,10,.6)', sw: 8 }); c.restore(); } }
-function goodRoom(c, t) { const R = BOT, { Y0, FL } = R; roomSet(c, R, t); stall(c, R, t);
+function goodRoom(c, t) { const R = BOT, { Y0, FL } = R; roomSet(c, R, t);
   const cheer = t > RAISE + .2 && t < RAISE + 1.0 || t > SHOP2 && t < SHOP2 + 1, serving = QG.some(q => t > q.e - .25 && t < q.e + .05);
   boss(c, { t, x: SELLER + 10, FL: FL - 40, u: .85, fat: false, f: -.25, face: cheer ? 'cheer' : 'kind', front: cheer, handL: cheer ? [SELLER - 10, FL - 270] : serving ? [SELLER - 120, FL - 210] : undefined, handR: cheer ? [SELLER + 30, FL - 272] : undefined });
+  stall(c, R, t);
   for (const q of QG) customer(c, QG, q, t, R, true);
-  badge(c, 'ÁREMELÉS!', STALL - 50, FL - 300, pop(t, RAISE) * (1 - ss(seg(t, RAISE + 1.6, RAISE + 1.9))), TURQ, 30);
+  badge(c, 'ÁREMELÉS!', STALL - 140, FL - 410, pop(t, RAISE) * (1 - ss(seg(t, RAISE + 1.6, RAISE + 1.9))), TURQ, 30);
   if (t > SHOP2) { const k = pop(t, SHOP2, .35); scaled(c, 195, Y0 + 285, k, () => { rr(c, 80, Y0 + 240, 230, 92, 18, '#071a3a'); c.strokeStyle = '#2ED3C6'; c.lineWidth = 4; c.beginPath(); c.roundRect(80, Y0 + 240, 230, 92, 18); c.stroke(); text(c, '2. ÜZLET', 195, Y0 + 270, 30, TURQ); text(c, 'NYÍLT!', 195, Y0 + 305, 24, WHITE_T); }); }
   if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(revenue(SALES_G, t)), 990, Y0 + 100, 54, TURQ, 'right', { stroke: 'rgba(0,10,20,.6)', sw: 8 }); c.restore(); } }
 // —— the frame ——
