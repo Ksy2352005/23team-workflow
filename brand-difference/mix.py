@@ -5,9 +5,14 @@ turns grey, a sparkle for the price rise and the second shop, and a fly buzzing 
 import json, os, subprocess, sys
 import numpy as np, soundfile as sf
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from motion_sound2 import lib, add, buf, SR
-DUR = 15.0
+DUR = 22.0
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(HERE, 'refs', 'music.mp3'), '-ac', '2', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
-mus = np.frombuffer(raw, np.float32).astype(np.float64).reshape(-1, 2)[:int(DUR * SR)]
+mus = np.frombuffer(raw, np.float32).astype(np.float64).reshape(-1, 2)
+L = int(15.0 * SR); xf = int(.35 * SR); body = mus[:L]   # loop the track (made as a seamless loop) to the new length with a short crossfade
+out = body.copy()
+while len(out) < int(DUR * SR) + xf:
+    w = np.linspace(0, 1, xf)[:, None]; tail = out[-xf:] * (1 - w) + body[:xf] * w; out = np.concatenate([out[:-xf], tail, body[xf:]])
+mus = out[:int(DUR * SR)]
 mus = mus / np.abs(mus).max() * .42
 EV = json.load(open(os.path.join(HERE, 'events.json')))['ev']
 fx = buf(DUR); k = 0

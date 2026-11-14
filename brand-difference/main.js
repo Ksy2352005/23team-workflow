@@ -7,7 +7,7 @@
 import { start, ss, seg, clamp, lerp, ease3, hash, K } from './kit.js';
 import { drawMascot } from './char2d.js';
 await document.fonts.load('700 40px "Montserrat"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű');
-const STORY = 15.0, DUR = 15.0;
+const STORY = 22.0, DUR = 22.0;   // v2 (user 2026-11-14): longer and calmer, customers one at a time
 const REDT = '#ff5a5a', TURQ = '#2ED3C6', WHITE_T = '#F4F7FF', GREENT = '#2ED3C6', NAVY = '#03122e', CREAM = '#F4F7FF', GOLD = '#ffd36a';
 function heartShape(c, x, y, r, a = 1) { c.save(); c.globalAlpha = a; c.fillStyle = '#ff7aa2'; c.beginPath(); c.moveTo(x, y + r * .9); c.bezierCurveTo(x - r * 1.3, y, x - r * .8, y - r, x, y - r * .35); c.bezierCurveTo(x + r * .8, y - r, x + r * 1.3, y, x, y + r * .9); c.fill(); c.restore(); }
 const spring = (t, at, d = .35, b = .45) => { if (t < at) return 0; const u = (t - at) / d; return 1 - Math.exp(-4.5 * u) * Math.cos(u * Math.PI * (1 + b * 2)) ; };
@@ -106,16 +106,16 @@ const DY = 130, TOP = { Y0: 330 + DY, kind: 'bad' }, BOT = { Y0: 990 + DY, kind:
 for (const R of [TOP, BOT]) R.FL = R.Y0 + 560;
 const STALL = 760, SELLER = 830, SLOT0 = 600, SLOTW = 112;   // the counter, the seller behind it, the front of the queue
 // the story's clock
-const ZOOM_IN = 2.0, TALK_B = 2.3, GLIDE = 3.75, ZOOM_OUT = 5.0, M1 = 5.3, MONTHS = [[M1, 1], [8.0, 3], [11.0, 6]];
-const CUT = [[0, 290], [5.6, 190], [7.8, 99], [10.4, 29]];      // the cheap shop keeps cutting its price…
-const SALE = [[0, '−50%'], [5.6, '−70%'], [7.8, '−90%']];      // …and its sign keeps growing
-const FALL = 12.2;                                              // the giant sign falls on his head
-const RAISE = 8.6, SHOP2 = 11.6;                                // the brand raises its price, then opens a second shop
+const ZOOM_IN = 2.6, TALK_B = 2.9, GLIDE = 5.0, ZOOM_OUT = 6.6, M1 = 7.0, MONTHS = [[M1, 1], [11.2, 3], [15.4, 6]];
+const CUT = [[0, 290], [7.6, 190], [10.8, 99], [14.4, 29]];      // the cheap shop keeps cutting its price…
+const SALE = [[0, '−50%'], [7.6, '−70%'], [10.8, '−90%']];      // …and its sign keeps growing
+const FALL = 17.6;                                              // the giant sign falls on his head
+const RAISE = 12.2, SHOP2 = 16.4;                                // the brand raises its price, then opens a second shop
 const priceB = t => CUT.filter(p => t >= p[0]).pop()[1], priceG = t => t < RAISE ? 990 : 1290;
 // the customers: the cheap shop pulls a crowd at first, then it thins out; the brand starts slow and keeps growing
-const ARR_B = [0, .35, .75, 1.2, 1.7, 2.3, 2.9, 3.6, 5.4, 6.2, 7.2, 8.5, 10.0], ARR_G = [.1, 1.5, 2.9, 4.4, 5.2, 5.8, 6.4, 6.9, 7.4, 7.9, 8.4, 8.9, 9.4, 9.8, 10.2, 10.6, 11.0, 11.4, 11.8, 12.2, 12.6, 13.0, 13.4, 13.8, 14.2];
+const ARR_B = [0, .8, 1.6, 2.4, 3.3, 4.5, 7.5, 9.4, 11.8, 14.8], ARR_G = [.2, 2.3, 4.3, 6.8, 8.0, 9.1, 10.1, 11.0, 11.8, 12.6, 13.3, 14.0, 14.7, 15.4, 16.1, 16.8, 17.5, 18.2, 18.9, 19.6];   // later customers come faster: a neat queue that grows
 function queue(arr, svc, walk = .9) { const C = []; let free = 0; arr.forEach((a, i) => { const s = Math.max(a + walk, free), e = s + svc; free = e; C.push({ i, a, s, e }); }); return C; }
-const QB = queue(ARR_B, .42), QG = queue(ARR_G, .38);
+const QB = queue(ARR_B, .5), QG = queue(ARR_G, .9);
 const SKINS = ['blue1', 'blue2', 'blue3'], LOOKS = [{}, { fem: 'bun' }, { cap: true }, { fem: 'pony' }, { specs: true }, { fem: 'bob' }, { helmet: true }, { fem: 'beret' }, { tache: true }, { fem: 'band' }, { fem: 'long' }, {}];
 const look = i => ({ skin: SKINS[i % 3], ...LOOKS[(i * 5) % LOOKS.length] });
 const SALES_B = QB.map(q => [q.e, 100 * priceB(q.s)]), SALES_G = QG.map(q => [q.e, 100 * priceG(q.s)]);   // each customer stands for a day's sales
@@ -164,7 +164,7 @@ function custPos(Q, q, t, R) { const ahead = Q.filter(o => o.i < q.i).reduce((a,
 function customer(c, Q, q, t, R, good) { const { FL } = R, L = look(q.i + (good ? 3 : 0)); if (t < q.a) return;
   if (t < q.e) { const x = custPos(Q, q, t, R), moving = Math.abs(custPos(Q, q, t + .05, R) - x) > 1;
     drawMascot(c, { id: 'c' + q.i + R.kind, ...L, s: .95, x, y: FL, f: .6, walk: moving ? 1 : 0, phi: t * 13, smile: good ? .8 : .35, look: .1, handR: t > q.e - .25 ? [x + 60, FL - 160] : undefined }); return; }
-  const u = t - q.e, out = seg(t, q.e + (good ? 1.1 : 1.3), q.e + (good ? 2.2 : 2.2)); if (out >= 1) return;
+  const u = t - q.e, out = seg(t, q.e + (good ? 1.2 : 1.35), q.e + 2.6); if (out >= 1) return;
   const x = lerp(SLOT0 + 20, -160, out), y = FL + 40;   // leaving in front of the queue
   if (good) { const phone = u > .1 && u < 1.1; drawMascot(c, { id: 'o' + q.i + R.kind, ...L, s: .95, x, y, f: out > 0 ? -.6 : .2, walk: out > 0 ? 1 : 0, phi: t * 13, smile: 1, look: -.2, handL: phone ? [x - 30, y - 230] : undefined, handR: [x + 34, y - 120] });
     if (phone) { rr(c, x - 52, y - 268, 34, 56, 6, '#11182c'); rr(c, x - 49, y - 265, 28, 50, 4, '#2ED3C6'); const fl = seg(t, q.e + .35, q.e + .55); if (fl > 0 && fl < 1) { c.save(); c.globalAlpha = 1 - fl; ell(c, x - 35, y - 240, 60 * fl + 10, 60 * fl + 10, 'rgba(255,255,255,.9)'); c.restore(); } }
@@ -174,17 +174,17 @@ function customer(c, Q, q, t, R, good) { const { FL } = R, L = look(q.i + (good 
     if (u > .5 && u < 1.3) for (let k = 0; k < 3; k++) { c.save(); c.globalAlpha = .6; c.strokeStyle = '#9fd36a'; c.lineWidth = 4; c.beginPath(); const yy = y - 200 - k * 18 - 30 * (u - .5); c.moveTo(x - 30, yy); c.quadraticCurveTo(x - 15, yy - 10, x, yy); c.quadraticCurveTo(x + 15, yy + 10, x + 30, yy); c.stroke(); c.restore(); } } }   // stink lines
 // —— the rooms ——
 function badRoom(c, t) { const R = TOP, { Y0, FL } = R; roomSet(c, R, t); stall(c, R, t);
-  const shout = (t > TALK_B && t < GLIDE) || [5.6, 7.8].some(m => t > m - .15 && t < m + .8), bonk = t > FALL, grey = ss(seg(t, FALL + 1.5, FALL + 2));
-  const B = boss(c, { t, x: SELLER, FL: FL - 40, u: .95, fat: true, sit: 0, f: -.35, face: bonk ? (grey > .4 ? 'grim' : 'pout') : shout ? 'yell' : (t > 9.4 ? 'glare' : 'smirk'), grey, shake: shout, flush: shout ? 1 : .3,
+  const shout = (t > TALK_B && t < GLIDE) || [7.6, 10.8].some(m => t > m - .15 && t < m + .8), bonk = t > FALL, grey = ss(seg(t, FALL + 1.5, FALL + 2));
+  const B = boss(c, { t, x: SELLER, FL: FL - 40, u: .95, fat: true, sit: 0, f: -.35, face: bonk ? (grey > .4 ? 'grim' : 'pout') : shout ? 'yell' : (t > 13.0 ? 'glare' : 'smirk'), grey, shake: shout, flush: shout ? 1 : .3,
     handL: shout ? [SELLER - 120, FL - 330] : [SELLER - 90, FL - 220] });
   if (shout && !bonk) { const mx = SELLER - 120, my = FL - 335; c.save(); c.translate(mx, my); c.rotate(-.15); c.fillStyle = '#e8e2d0'; c.beginPath(); c.moveTo(0, -14); c.lineTo(-90, -40); c.lineTo(-90, 40); c.lineTo(0, 14); c.closePath(); c.fill(); rr(c, -6, -16, 30, 32, 6, '#d2232a'); c.restore();   // the megaphone
     for (let k = 0; k < 3; k++) { const u = ((t * 2.4 + k / 3) % 1); c.save(); c.globalAlpha = 1 - u; c.strokeStyle = '#ffd36a'; c.lineWidth = 6; c.beginPath(); c.arc(mx - 90, my - 15, 30 + 60 * u, Math.PI * .8, Math.PI * 1.2); c.stroke(); c.restore(); }
-    bubble(c, mx - 150, my - 90, 'OLCSÓ! OLCSÓ!', pop(t, Math.max(TALK_B, [5.6, 7.8].find(m => t > m - .15 && t < m + .8) ?? TALK_B) + .05, .2)); }
+    bubble(c, mx - 150, my - 90, 'OLCSÓ! OLCSÓ!', pop(t, Math.max(TALK_B, [7.6, 10.8].find(m => t > m - .15 && t < m + .8) ?? TALK_B) + .05, .2)); }
   for (const q of QB) customer(c, QB, q, t, R, false);
   saleSign(c, t);
   if (bonk) { for (let k = 0; k < 3; k++) { const a = t * 7 + k * 2.1; star(c, B.head[0] + Math.cos(a) * 70, B.head[1] - B.R - 10 + Math.sin(a) * 14, 15); } }
-  if (t > 13.4) { const fx = B.head[0] + 90 * Math.cos(t * 5), fy = B.head[1] - 70 + 30 * Math.sin(t * 7.3); ell(c, fx, fy, 6, 5, '#111'); c.save(); c.globalAlpha = .6; ell(c, fx - 4, fy - 6, 6, 3, '#dfe8f0'); ell(c, fx + 4, fy - 6, 6, 3, '#dfe8f0'); c.restore(); }   // a fly buzzes around him
-  if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(revenue(SALES_B, t)), 990, Y0 + 100, 54, t > 9 ? REDT : '#ffd36a', 'right', { stroke: 'rgba(20,10,10,.6)', sw: 8 }); c.restore(); } }
+  if (t > 19.4) { const fx = B.head[0] + 90 * Math.cos(t * 5), fy = B.head[1] - 70 + 30 * Math.sin(t * 7.3); ell(c, fx, fy, 6, 5, '#111'); c.save(); c.globalAlpha = .6; ell(c, fx - 4, fy - 6, 6, 3, '#dfe8f0'); ell(c, fx + 4, fy - 6, 6, 3, '#dfe8f0'); c.restore(); }   // a fly buzzes around him
+  if (CNT > 0) { c.save(); c.globalAlpha = CNT; text(c, fmt(revenue(SALES_B, t)), 990, Y0 + 100, 54, t > 12.5 ? REDT : '#ffd36a', 'right', { stroke: 'rgba(20,10,10,.6)', sw: 8 }); c.restore(); } }
 function goodRoom(c, t) { const R = BOT, { Y0, FL } = R; roomSet(c, R, t); stall(c, R, t);
   const cheer = t > RAISE + .2 && t < RAISE + 1.0 || t > SHOP2 && t < SHOP2 + 1, serving = QG.some(q => t > q.e - .25 && t < q.e + .05);
   boss(c, { t, x: SELLER + 10, FL: FL - 40, u: .85, fat: false, f: -.25, face: cheer ? 'cheer' : 'kind', front: cheer, handL: cheer ? [SELLER - 10, FL - 270] : serving ? [SELLER - 120, FL - 210] : undefined, handR: cheer ? [SELLER + 30, FL - 272] : undefined });
@@ -207,6 +207,6 @@ function take(c, t) { const [cx, cy, z] = KF(t, CAM); CNT = clamp(1 - (z - 1) / 
   const sk = pop(t, GLIDE + .15, .28) * (1 - ss(seg(t, ZOOM_OUT - .05, ZOOM_OUT + .15))); if (sk > 0) scaled(c, 540, 1560, sk, () => text(c, 'MÁRKÁT ÉPÍT.', 540, 1560, 72, TURQ, 'center', { stroke: '#00111f', sw: 12 })); }
 await start({ scenes: [[0, take]], words: [], story: STORY, dur: DUR, stage: false, ending: false });
 window.EV = [...QB.map(q => ({ t: q.e, type: 'saleB' })), ...QG.map(q => ({ t: q.e, type: 'saleG' })), ...QB.map(q => ({ t: q.e + .55, type: 'yuck' })), ...QG.map(q => ({ t: q.e + .4, type: 'photo' })),
-  { t: ZOOM_IN, type: 'zoom' }, { t: GLIDE, type: 'zoom' }, { t: ZOOM_OUT, type: 'zoom' }, { t: TALK_B, type: 'shout' }, { t: 5.45, type: 'shout' }, { t: 7.65, type: 'shout' },
+  { t: ZOOM_IN, type: 'zoom' }, { t: GLIDE, type: 'zoom' }, { t: ZOOM_OUT, type: 'zoom' }, { t: TALK_B, type: 'shout' }, { t: 7.45, type: 'shout' }, { t: 10.65, type: 'shout' },
   ...SALE.slice(1).map(s => ({ t: s[0], type: 'sign' })), ...MONTHS.map(m => ({ t: m[0], type: 'month' })), { t: FALL - .3, type: 'fall' }, { t: FALL, type: 'bonk' }, { t: FALL + 1.5, type: 'grey' },
-  { t: RAISE, type: 'raise' }, { t: SHOP2, type: 'shop2' }, { t: 13.4, type: 'fly' }].sort((p, q) => p.t - q.t);
+  { t: RAISE, type: 'raise' }, { t: SHOP2, type: 'shop2' }, { t: 19.4, type: 'fly' }].sort((p, q) => p.t - q.t);
