@@ -36,6 +36,12 @@ LIB2 = {
   'sad-deflate': (1.5, 'soft cartoon deflating descending wobble, comic disappointment, gentle'),
   'stamp-thud': (0.8, 'bold soft thump of a big word slamming onto the screen, punchy but warm'),
   'punch-hard': (0.8, 'heavy cartoon punch smack hit, loud punchy impact with a short thud'),
+  'camera-shutter': (0.5, 'phone camera shutter click, crisp and quick'),
+  'megaphone-blare': (1.2, 'cartoon megaphone blaring a short squawk with feedback, funny, no words'),
+  'bonk': (0.8, 'cartoon bonk of a big sign hitting someone on the head, hollow wooden thud with a little wobble'),
+  'fly-buzz': (2.0, 'a single fly buzzing around, comic, close'),
+  'cash-coins': (0.6, 'soft cash register drawer and coins, pleasant, short'),
+  'sour-wobble': (0.9, 'comic sour disgusted reaction sound, wobbly descending boing, no voice'),
   'kick-launch': (1.6, 'cartoon kick thump followed by a fast whoosh of someone flying far away with a fading comic whistle'),
 }
 for k, (d, txt) in LIB2.items(): LIB[k] = (d, txt + STYLE2 + '|')
