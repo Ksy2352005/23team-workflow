@@ -102,7 +102,7 @@ function boss(c, o) { const { x, FL, u, fat } = o, sit = o.sit || 0, lift = (1 -
   if (o.flush > 0) { c.save(); c.globalAlpha = o.flush * .78; const g = c.createRadialGradient(hx, hy + R * .2, R * .1, hx, hy, R); g.addColorStop(0, 'rgba(235,40,40,1)'); g.addColorStop(1, 'rgba(200,30,40,.55)'); c.fillStyle = g; c.beginPath(); c.arc(hx, hy, R, 0, 7); c.fill(); c.restore(); }
   face(c, hx, hy, R, o.f ?? -.3, o.face, o); if (o.stache) villainStache(c, hx + (o.f ?? -.3) * R * .35, hy + R * .2, R, o.t, o.grey > .5); return { mouth: [hx + (o.f ?? -.3) * R * .35, hy + .38 * R], head: [hx, hy], R }; }
 // —— the two shops ——
-const DY = 130, TOP = { Y0: 330 + DY, kind: 'bad' }, BOT = { Y0: 990 + DY, kind: 'good' };
+const DY = 170, TOP = { Y0: 330 + DY, kind: 'bad' }, BOT = { Y0: 990 + DY, kind: 'good' };   // v5: 40 px lower (the title was close to Instagram's top zone)
 for (const R of [TOP, BOT]) R.FL = R.Y0 + 560;
 const STALL = 760, SELLER = 830, SLOT0 = 600, SLOTW = 150;   // v3: a spaced line of at most three   // the counter, the seller behind it, the front of the queue
 // the story's clock
