@@ -76,6 +76,12 @@ anything one chat makes or decides is written here, so the other chats know it.
 - No 23 end card and no call to action: the video ends where the reference ends (`start({..., ending: false})` in the film's `kit.js`).
 - On-screen text in **Montserrat Bold** (our font, has ő and ű); never Lilita One (it drew Ő/Ű wrong).
 
+## One-scene stories (user's name for the format, 2026-11-14; HU 011 boss video: 50% retention to the end, the page's best)
+- One split-screen scene comparing a bad and a good way of doing business (top: the bad one, bottom: the good one), our mascot world in the brand palette, a clear lesson, funny moments, counters that race (readable steps), a mid-video twist, a funny villain, no voice, no end card, ends where it loops. 15–22 s.
+- Calm and organised: customers one at a time, a spaced line of at most three, leavers exit on the other side; big clear price tags; Montserrat Bold for all text.
+- Sound: an original ElevenLabs music track made for the video (loopable), cartoon effects from `tools/sfx-lib/` a bit under the music.
+- Model: `brand-difference/` (HU 013, „Ugyanaz a termék. Más márka.”). Ideas list: cheap logo vs real brand, posts once a year vs every day, ignores reviews vs listens, copycat vs original, shouting ads vs stories.
+
 ## Transcribing
 Skill `.claude/skills/transcribe`: `/root/lemo-opuscar/.venv/bin/python tools/transcribe.py <video/audio> --out transcripts`. Videos must be uploaded as files (Instagram/TikTok links can't be downloaded here).
 
