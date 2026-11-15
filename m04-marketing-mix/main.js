@@ -4,7 +4,7 @@
 import { WORDS } from './captions.js';
 import { start, ss, seg, clamp, lerp, ease3, WHITE, MID, K } from './kit.js';
 const T = i => WORDS[i][1];
-const STORY = 43.5, DUR = 48.6;   // the call to action (line 3) 1.3 s into the end card, then 1.5 s of the logo alone
+const STORY = 43.5, DUR = 48.9;   // the call to action (line 3) 1.3 s into the end card, then 1.5 s of the logo alone
 const LW = 3.2, TURQ = '#2ED3C6';   // the brand's turquoise: the light's glow, halos, rays and ripples
 // —— line geometry: every drawing is a list of strokes, every stroke a list of points, so it can draw itself on and off by length ——
 const arc = (cx, cy, rx, ry, a0, a1, n = 64) => Array.from({ length: n + 1 }, (_, i) => { const a = a0 + (a1 - a0) * i / n; return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]; });

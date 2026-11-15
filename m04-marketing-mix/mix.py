@@ -4,7 +4,7 @@ Then a soft draw-on for each drawing, a whoosh for each glide of the light, a sh
 Ends with the spoken call to action (line 3), a little below the voice, then 1.5 s of the logo alone."""
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from motion_sound2 import *
-STORY, DUR = 43.5, 48.6
+STORY, DUR = 43.5, 48.9
 EV = json.load(open(os.path.join(HERE, 'events.json')))['ev']
 fx = buf(DUR); k = 0
 for e in EV:
