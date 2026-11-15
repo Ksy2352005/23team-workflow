@@ -106,42 +106,70 @@ function testRig0(c, t, o) { const L = [130, 520], R = [560, 950], y0 = 1560, y1
   vacuum(c, vx(0), 1640, 1.25, { ours: true, run: o.running }); vacuum(c, vx(1), 1640, 1.25, { run: o.running }); }
 
 const SHOT = {
-  intro(c, t) {   // a small vacuum maker shows its new product: a little workshop; a cloth is pulled off the new vacuum
+  intro(c, t) {   // v3 (user 2026-11-15: clearer, more alive): a little garage workshop; the owner tightens the last screw, switches the new vacuum on, it sucks up the crumbs, an „ÚJ!” sticker slaps on, he jumps for joy
     bg(c, '#0d2463'); floor(c); const H = HIT;
-    // the little workshop behind: a small building
-    rrect(c, 140, 1180, 800, 520, 24, '#141b2f'); c.fillStyle = '#181f35'; c.beginPath(); c.moveTo(110, 1200); c.lineTo(540, 1000); c.lineTo(970, 1200); c.closePath(); c.fill(); rrect(c, 230, 1290, 150, 120, 10, '#9fc7f0'); rrect(c, 700, 1290, 150, 120, 10, '#9fc7f0');
-    // the plinth and the new vacuum: the cloth slides off on "új"
-    const on = ss(seg(t, .2, .9)), rise = E(t, H.unveil - .55, .45, .4);
-    if (on > 0) { c.save(); c.globalAlpha = on * .55; const cg = c.createLinearGradient(0, 980, 0, 1700); cg.addColorStop(0, 'rgba(255,236,190,.0)'); cg.addColorStop(1, 'rgba(255,236,190,.35)'); c.fillStyle = cg; c.beginPath(); c.moveTo(500, 980); c.lineTo(580, 980); c.lineTo(760, 1700); c.lineTo(320, 1700); c.closePath(); c.fill(); c.restore(); }   // a spotlight comes on
-    rrect(c, 400, 1640, 280, 60, 10, SAND2);
-    if (rise > 0) { c.save(); c.beginPath(); c.rect(0, 0, 1080, 1640); c.clip(); c.translate(0, 420 * (1 - Math.min(1, rise))); vacuum(c, 540, 1640, 1.45, { ours: true }); c.restore(); }   // the new vacuum rises from its stand
-    if (t > H.unveil) { spark(c, 540, 1350, t, H.unveil, 7, 220, 18); pop(c, 760, 1280, E(t, H.unveil, .3, .5), () => { rrect(c, 690, 1250, 140, 64, 14, GOLD); text(c, 'ÚJ', 760, 1284, 46, NAVY); }); }
-    boss(c, t, 260, F, 1.5, { f: .4, look: .3, smile: 1 });
+    rrect(c, 110, 960, 860, 740, 22, '#141a2e'); for (let k = 0; k < 6; k++) rrect(c, 150 + k * 140, 1000, 6, 360, 3, '#1b2340');   // the garage's back wall
+    [[240, 1080, 'w'], [360, 1060, 'h'], [480, 1090, 's']].forEach(([x, y, k]) => { c.fillStyle = '#2a3354'; if (k === 'w') { rrect(c, x - 8, y - 50, 16, 100, 6, '#2a3354'); ell(c, x, y - 52, 22, 18, '#2a3354'); } if (k === 'h') { rrect(c, x - 6, y - 40, 12, 110, 5, '#2a3354'); rrect(c, x - 36, y - 56, 72, 26, 6, '#2a3354'); } if (k === 's') { rrect(c, x - 5, y - 50, 10, 70, 4, '#2a3354'); rrect(c, x - 13, y + 18, 26, 44, 8, '#2a3354'); } });   // tools on the wall
+    const lampOn = .6 + .4 * ss(seg(t, .1, .5)); c.save(); c.globalAlpha = lampOn * .5; const cg = c.createLinearGradient(0, 1010, 0, 1470); cg.addColorStop(0, 'rgba(255,230,170,.0)'); cg.addColorStop(1, 'rgba(255,230,170,.45)'); c.fillStyle = cg; c.beginPath(); c.moveTo(610, 1010); c.lineTo(690, 1010); c.lineTo(900, 1470); c.lineTo(400, 1470); c.closePath(); c.fill(); c.restore();
+    rrect(c, 646, 960, 8, 40, 3, '#0d1220'); c.fillStyle = '#2c3658'; c.beginPath(); c.ellipse(650, 1010, 46, 22, 0, Math.PI, 0); c.fill(); ell(c, 650, 1012, 18, 7, '#ffe6a8');   // the lamp
+    rrect(c, 330, 1470, 600, 34, 8, WOOD); rrect(c, 350, 1504, 22, 196, 6, WOOD3); rrect(c, 888, 1504, 22, 196, 6, WOOD3);   // the workbench
+    const run = t > 1.85 && t < 2.5 ? 1 : 0;
+    vacuum(c, 680, 1470, 1.05, { ours: true, run });
+    for (let k = 0; k < 6; k++) { const x0 = 760 + k * 24, u = ss(seg(t, 1.9 + k * .05, 2.25 + k * .05)); if (u >= 1) continue; ell(c, lerp(x0, 700, u), 1464 - 3 * (k % 2), 6 * (1 - u * .6), 5 * (1 - u * .6), '#c9a46a'); }   // crumbs sucked up
+    const screw = t < 1.75, hp = screw ? [610, 1300 + 6 * Math.sin(t * 22)] : (t < 1.95 ? [640, 1360] : undefined);
+    const jump = E(t, H.unveil + .05, .35, .5), jy = t > H.unveil ? -40 * Math.sin(clamp((t - H.unveil) / .5) * Math.PI) : 0;
+    boss(c, t, 470, F + jy, 1.55, { f: .5, look: .25, smile: t > H.unveil ? 1 : .75, handR: hp, squash: wob(t, H.unveil, .4, 18, .5) });
+    if (screw) { c.save(); c.translate(hp[0], hp[1]); c.rotate(-.6 + .25 * Math.sin(t * 22)); rrect(c, -8, -10, 16, 46, 6, '#d94a3a'); rrect(c, -3, -48, 6, 40, 3, STEEL); c.restore(); }   // the screwdriver
+    if (t > H.unveil) { spark(c, 700, 1240, t, H.unveil, 7, 200, 18); pop(c, 760, 1210, E(t, H.unveil, .3, .5), () => { c.save(); c.translate(760, 1210); c.rotate(-.12); rrect(c, -78, -36, 156, 72, 16, GOLD); text(c, 'ÚJ!', 0, 2, 52, NAVY); c.restore(); }); }
   },
-  rivals(c, t) {   // the big rivals: piles of money; three huge billboards, each with a rose vacuum and a big claim; our little gold one looks up
+  rivals(c, t) {   // v3: three giant towers shoot up around the tiny garage; money rains on them; their billboards show off: a muscle vacuum (strongest), a rocket vacuum (fastest), a crowned vacuum (best); the owner looks up, worried
     bg(c, '#0d2463'); floor(c); const H = HIT;
-    for (let i = 0; i < 9; i++) rrect(c, 40 + i * 120, 1300 - hash(i + 4) * 260, 100, 400 + hash(i + 4) * 260, 6, '#0f1428');   // a city behind
-    const B = [[235, 1130, H.claims[0], 'LEGERŐSEBB'], [540, 1040, H.claims[1], 'LEGGYORSABB'], [845, 1130, H.claims[2], 'LEGJOBB']];
-    B.forEach(([x, y, at, s], i) => billboard(c, x, y, 300, 230, E(t, H.boards + i * .25, .35, .45), () => { vacuum(c, x, y + 108, .34); const k = E(t, at, .3, .55); if (k > 0) scaled(c, x, y - 62, Math.min(1.15, k), () => text(c, s, x, y - 58, s.length > 8 ? 38 : 50, GOLD)); }));
-    // the money: bags and coin stacks
-    moneyBag(c, 170, F, 1.1, E(t, H.money, .35, .5)); coins(c, 300, F - 14, 9, seg(t, H.money + .1, H.money + 1.0)); coins(c, 400, F - 14, 6, seg(t, H.money + .3, H.money + 1.1)); moneyBag(c, 900, F, 1.2, E(t, H.money + .3, .35, .5)); coins(c, 780, F - 14, 8, seg(t, H.money + .4, H.money + 1.2));
-    vacuum(c, 600, F, .7, { ours: true });
+    const TW = [[195, H.boards], [540, H.boards + .15], [885, H.boards + .3]];
+    TW.forEach(([x, at], i) => { const k = Math.min(1, E(t, at, .45, .3)); if (k <= 0) return; const top = 820 + (i === 1 ? -60 : 0), h = (F - top) * k;
+      rrect(c, x - 140, F - h, 280, h, 10, '#1a2140'); for (let r = 0; r < 7; r++) for (let q = 0; q < 3; q++) { const wy = F - h + 330 + r * 70; if (wy < F - 40) rrect(c, x - 100 + q * 75, wy, 44, 36, 4, hash(i * 30 + r * 3 + q) > .45 ? '#ffd889' : '#262e52'); } });
+    // the money pours down on the towers
+    if (t > H.money) for (let k = 0; k < 26; k++) { const st = H.money + hash(k) * 1.6, u = (t - st) / .9; if (u < 0 || u > 1) continue; const x = [195, 540, 885][k % 3] + (hash(k + 9) - .5) * 220, y = lerp(560, 860, u * u); ell(c, x, y + 4, 22, 8, GOLD2); ell(c, x, y, 22, 8, GOLD); }
+    moneyBag(c, 120, F, 1.0, E(t, H.money + .4, .35, .5)); moneyBag(c, 960, F, 1.1, E(t, H.money + .7, .35, .5));
+    // the billboards on the towers, each with its show-off gag
+    const BB = [[195, 1000, 'LEGERŐSEBB', 'muscle'], [540, 940, 'LEGGYORSABB', 'rocket'], [885, 1000, 'LEGJOBB', 'crown']];
+    BB.forEach(([x, y, s, gag], i) => { const k = E(t, 7.2 + i * .25, .35, .45); if (k <= 0) return; pop(c, x, y, k, () => {
+      rrect(c, x - 125, y - 125, 250, 250, 14, CREAM); rrect(c, x - 115, y - 115, 230, 230, 10, '#141b2f');
+      const cl = E(t, H.claims[i], .3, .55), vy = y + 95;
+      if (gag === 'rocket' && cl > 0) { for (let q = 0; q < 4; q++) { c.save(); c.globalAlpha = .7; rrect(c, x - 110 + ((t * 600 + q * 60) % 90), vy - 120 + q * 22, 40, 6, 3, '#9fc7f0'); c.restore(); } c.save(); c.globalAlpha = .9; ell(c, x - 40, vy - 30, 24 + 6 * Math.sin(t * 40), 12, '#ff9a3c'); c.restore(); }
+      c.save(); if (gag === 'rocket' && cl > 0) { c.translate(x, vy); c.rotate(.35); c.translate(-x, -vy); } vacuum(c, x, vy, .3); c.restore();
+      if (gag === 'muscle' && cl > 0) { const pump = Math.abs(Math.sin(t * 7)); for (const sd of [-1, 1]) { const sx = x + sd * 10, sy = vy - 75, ex = x + sd * 52, ey = vy - 75; c.strokeStyle = ROSE2; c.lineWidth = 12; c.lineCap = 'round'; c.beginPath(); c.moveTo(sx, sy); c.lineTo(ex, ey); c.lineTo(ex, ey - 34); c.stroke(); ell(c, x + sd * 34, sy - 10 - 4 * pump, 12 + 5 * pump, 10 + 4 * pump, ROSE); } }
+      if (gag === 'crown' && cl > 0) { c.save(); c.translate(x - 12, vy - 128); c.fillStyle = GOLD; c.beginPath(); c.moveTo(-26, 12); c.lineTo(-30, -14); c.lineTo(-12, 0); c.lineTo(0, -20); c.lineTo(12, 0); c.lineTo(30, -14); c.lineTo(26, 12); c.closePath(); c.fill(); c.restore(); spark(c, x, vy - 60, t, H.claims[i], 5, 80, 10); }
+      if (cl > 0) scaled(c, x, y - 82, Math.min(1.15, cl), () => text(c, s, x, y - 80, s.length > 8 ? 34 : 46, GOLD)); }); });
+    // the tiny garage in front, the owner looks up, worried
+    rrect(c, 440, F - 170, 200, 170, 10, '#2a3354'); c.fillStyle = '#323c66'; c.beginPath(); c.moveTo(425, F - 165); c.lineTo(540, F - 235); c.lineTo(655, F - 165); c.closePath(); c.fill(); rrect(c, 505, F - 100, 70, 100, 6, '#141a2e');
+    vacuum(c, 610, F, .42, { ours: true }); boss(c, t, 470, F, .85, { f: .4, look: -1, smile: .1, sad: .5 });
   },
-  copy(c, t) {   // at first the small firm copies them: the manager and a colleague at a drawing board, sketching a billboard just like theirs
+  copy(c, t) {   // v3: at first they copy the giants: the owner makes his own cardboard sign „MI IS!” (us too!) and proudly holds it up; a giant billboard slides in behind and makes it tiny; the wind bends it
     bg(c, '#0d2463'); floor(c); const H = HIT;
-    // the board on an easel
-    rrect(c, 330, 1060, 460, 330, 14, CREAM); rrect(c, 350, 1080, 420, 290, 8, '#ffffff'); c.fillStyle = WOOD3; c.save(); c.translate(560, 1390); for (const a of [-.25, .25]) { c.save(); c.rotate(a); c.fillRect(-8, 0, 16, 320); c.restore(); } c.restore();
-    const d = seg(t, 11.9, 14.6);   /* drawing starts at once (no blank board) */ if (d > 0) { c.save(); c.beginPath(); c.rect(350, 1080, 420 * clamp(d * 1.4), 290); c.clip(); vacuum(c, 440, 1330, .5, { ours: true }); text(c, 'LEG…', 640, 1200, 64, NAVY); c.strokeStyle = NAVY; c.lineWidth = 6; c.beginPath(); c.moveTo(560, 1260); c.lineTo(730, 1260); c.moveTo(560, 1300); c.lineTo(690, 1300); c.stroke(); c.restore(); }
-    const pen = [lerp(380, 740, (Math.sin(t * 5) + 1) / 2 * (d > 0 && d < 1 ? 1 : 0) + (d >= 1 ? .5 : 0)), 1200 + 50 * Math.sin(t * 9)];
-    boss(c, t, 220, F, 1.55, { f: .4, look: .2, smile: .8, handR: d > 0 && d < 1 ? pen : undefined }); cust(c, t, 1, 900, F, 1.45, { f: -.4, look: -.2, smile: .8 });
-    check(c, 220, 1180, 42, E(t, H.decide1, .45, .2) * (1 - ss(seg(t, H.draft, H.draft + .3))));
+    const giant = ease(seg(t, 14.75, 15.45)); if (giant > 0) { c.save(); c.translate(0, -700 * (1 - giant)); rrect(c, 120, 760, 840, 470, 18, CREAM); rrect(c, 140, 780, 800, 430, 12, '#141b2f'); vacuum(c, 330, 1180, .7); text(c, 'LEGJOBB!', 680, 990, 96, GOLD); rrect(c, 300, 1230, 24, 470, 6, '#181f35'); rrect(c, 756, 1230, 24, 470, 6, '#181f35'); c.restore(); }
+    const d = seg(t, 12.0, 14.3), wind = t > 15.4 ? .22 * Math.sin((t - 15.4) * 7) * Math.exp(-(t - 15.4) * 1.2) + .1 : 0, hold = ease(seg(t, 14.3, 14.75));
+    const sx = lerp(620, 520, hold), sy = lerp(1500, 1230, hold);   // the cardboard sign: drawn on the table, then held up high
+    rrect(c, 560, 1520, 400, 26, 8, WOOD); rrect(c, 590, 1546, 18, 154, 5, WOOD3); rrect(c, 912, 1546, 18, 154, 5, WOOD3);
+    c.save(); c.translate(sx, sy); c.rotate(wind); rrect(c, -8, 40, 16, 210 * hold, 4, WOOD3); rrect(c, -130, -85, 260, 150, 10, '#d9b98a'); rrect(c, -122, -77, 244, 134, 8, '#e8cfa2');
+    if (d > 0) { c.save(); c.beginPath(); c.rect(-122, -77, 244 * clamp(d * 1.3), 134); c.clip(); vacuum(c, -75, 50, .3, { ours: true }); text(c, 'MI IS!', 40, -8, 50, NAVY); c.restore(); } c.restore();
+    const pen = d > 0 && d < 1 ? [sx - 100 + 220 * ((Math.sin(t * 6) + 1) / 2), sy - 10 + 20 * Math.sin(t * 11)] : (hold > 0 ? [sx - 10, sy + 70] : undefined);
+    boss(c, t, 400, F, 1.5, { f: .5, look: giant > .5 ? -.9 : .2, smile: giant > .5 ? .1 : .85, sad: giant > .5 ? .5 : 0, handR: pen });
+    check(c, 400, 1110, 40, E(t, H.decide1, .45, .2) * (1 - ss(seg(t, 13.9, 14.2))));
+    if (giant > .9) for (let k = 0; k < 2; k++) { const u = ((t * 1.4 + k * .5) % 1); c.save(); c.globalAlpha = Math.sin(u * Math.PI); c.fillStyle = '#a8dcff'; const dx = 430 + k * 30, dy = 1290 + 50 * u * u; c.beginPath(); c.moveTo(dx, dy - 12); c.quadraticCurveTo(dx + 8, dy, dx, dy + 6); c.quadraticCurveTo(dx - 8, dy, dx, dy - 12); c.fill(); c.restore(); }   // a drop of sweat
   },
-  ignore(c, t) {   // but people don't listen any more: shoppers walk past the billboards, eyes on their phones, while the claims fade out
-    bg(c, '#0d2463'); floor(c); const H = HIT; const fade = ss(seg(t, H.noone - .3, H.noone + .6));
-    [[300, 1150, 'LEGJOBB'], [800, 1150, 'LEGGYORSABB']].forEach(([x, y, s]) => billboard(c, x, y, 340, 210, 1, () => { vacuum(c, x, y + 88, .27); word(c, s, x, y - 50, s.length > 8 ? 36 : 48, GOLD, 1 - .75 * fade); }));
-    for (let k = 0; k < 3; k++) { const x = ((t - 16.8) * 120 + k * 380) % 1300 - 110; const ph = phoneInHand(c, x, F, 1.4, .45); cust(c, t, k, x, F, 1.4, { f: .45, walk: 1, look: .5, smile: .6, handR: ph }); phoneInHand(c, x, F, 1.4, .45); }
-    boss(c, t, 175, F, 1.5, { f: .4, look: .4, smile: .4 }); badge(c, 'ex', 175, 1180, 44, E(t, H.notice, .3, .5));
-    eyeB(c, 540, 1300, 60, E(t, H.noone, .3, .5)); cross(c, 540, 1300, 40, seg(t, H.noone + .2, H.noone + .6));
+  ignore(c, t) {   // v3: shoppers walk by with big headphones, eyes on their phones; the billboards fire their claims at them and the words bounce off and fall; the marketing manager (glasses, clipboard) watches and has a „!” moment; a shopper yawns; the words crumble
+    bg(c, '#0d2463'); floor(c); const H = HIT;
+    [[230, 960, 'LEGJOBB'], [850, 960, 'LEGGYORSABB']].forEach(([x, y, s]) => billboard(c, x, y, 330, 200, 1, () => { vacuum(c, x - 95, y + 80, .25); text(c, s, x + 30, y - 10, s.length > 8 ? 32 : 46, GOLD); }));
+    const WORDS2 = ['LEGJOBB!', 'LEGERŐSEBB!', 'LEGGYORSABB!', 'LEGJOBB!', 'SZUPER!', 'LEGJOBB!'];
+    for (let k = 0; k < 6; k++) { const st = 16.9 + k * .62, u = seg(t, st, st + 1.25); if (u <= 0 || u >= 1) continue; const from = k % 2 ? [850, 1080] : [230, 1080], hitX = 360 + ((k * 170) % 420), hitY = 1360;
+      let x, y, rot = 0, a = 1; if (u < .45) { const v = u / .45; x = lerp(from[0], hitX, v); y = lerp(from[1], hitY, v) - 120 * Math.sin(v * Math.PI); } else { const v = (u - .45) / .55; x = hitX + (k % 2 ? 80 : -80) * v; y = hitY + 340 * v * v - 60 * Math.sin(v * Math.PI); rot = (k % 2 ? 1 : -1) * 2.5 * v; a = t > 20.5 ? 1 - seg(t, 20.5, 21.2) : 1; }
+      c.save(); c.globalAlpha = a; c.translate(x, y); c.rotate(rot); text(c, WORDS2[k], 0, 0, 40, GOLD); c.restore(); }
+    for (let k = 0; k < 3; k++) { const x = 400 + k * 210 + (t - 16.5) * 22; const yawn = k === 1 && t > H.noone && t < H.noone + 1.0;
+      const ph = phoneInHand(c, x, F, 1.3, .45); cust(c, t, k, x, F, 1.3, { f: .45, walk: 1, look: .6, smile: yawn ? 0 : .4, handR: ph }); phoneInHand(c, x, F, 1.3, .45);
+      const Hh = 210 * 1.3 * 1.08, hy = F - .76 * Hh, R = .225 * Hh; c.save(); c.strokeStyle = '#1c1f2a'; c.lineWidth = 12; c.beginPath(); c.arc(x, hy, R * 1.08, Math.PI * 1.05, Math.PI * 1.95); c.stroke(); for (const sd of [-1, 1]) rrect(c, x + sd * R * 1.02 - 14, hy - 22, 28, 48, 12, '#d94a3a'); c.restore();   // big headphones
+      if (yawn) { c.save(); c.globalAlpha = Math.sin(seg(t, H.noone, H.noone + 1) * Math.PI); ell(c, x + 16, hy + R * .45, 14, 20, '#3a1a20'); c.restore(); } }
+    const mk = E(t, 17.2, .35, .45); if (mk > 0) { const mx = 130, s = 1.45; scaled(c, mx, F, Math.min(1.1, mk), () => { mascot(c, { id: 'mgr', skin: 'blue2', specs: true, s, x: mx, y: F, f: .55, look: t > H.notice ? -.6 : .2, smile: t > H.notice ? .1 : .6, o: t > H.notice && t < H.notice + .8 ? .7 : 0, blink: blinkAt(t, 11), handR: [mx + 60, F - 170] }); rrect(c, mx + 40, F - 210, 56, 74, 6, '#e8e2d0'); rrect(c, mx + 52, F - 222, 32, 14, 4, STEEL); });
+      pop(c, mx + 40, F - 420, E(t, H.notice, .3, .5), () => { ell(c, mx + 44, F - 412, 42, 42, 'rgba(0,0,20,.3)'); ell(c, mx + 40, F - 420, 42, 42, GOLD); text(c, '!', mx + 40, F - 418, 60, NAVY); }); }
   },
   idea(c, t) {   // so he came up with a strange idea: a close-up, the bulb
     bg(c, '#0d2463'); floor(c); const H = HIT; const z = 1 + .06 * ss(seg(t, 21.6, 24.3)); c.save(); c.translate(540, 1700); c.scale(z, z); c.translate(-540, -1700);
