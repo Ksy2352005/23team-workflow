@@ -29,7 +29,8 @@ function glow(c, x, y, r, a) { if (a <= 0) return; c.save(); c.globalCompositeOp
 function scaled(c, x, y, k, f) { if (k <= 0) return; c.save(); c.translate(x, y); c.scale(k, k); c.translate(-x, -y); f(); c.restore(); }
 function spot(c, x, y, w, a = .35) { const g = c.createRadialGradient(x, y, 0, x, y, w); g.addColorStop(0, `rgba(0,0,20,${a})`); g.addColorStop(1, 'rgba(0,0,20,0)'); c.save(); c.translate(x, y); c.scale(1, .2); c.translate(-x, -y); c.fillStyle = g; c.beginPath(); c.arc(x, y, w, 0, 7); c.fill(); c.restore(); }
 function mascot(c, P, k = 1) { spot(c, P.x, P.y + 4, Hs(P.s) * .42); scaled(c, P.x, P.y, k, () => drawMascot(c, { ...P, shadow: false })); }
-function text(c, s, x, y, size, col = CREAM, align = 'center') { c.font = `${size}px "Lilita One"`; c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
+function text(c, s, x, y, size, col = CREAM, align = 'center') { c.font = `700 ${Math.round(size * .84)}px "Montserrat"`;   // Montserrat (has Ő and Ű), a little smaller as it is wider
+  c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
 function ell(c, x, y, rx, ry, col, rot = 0) { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, Math.max(.1, rx), Math.max(.1, ry), rot, 0, 7); c.fill(); }
 // the stage: the part of the frame under the captions where the story plays; each shot names the box its content needs, and the camera fits that box inside the stage
 const STAGE = { x0: 50, x1: 1030, y0: 760, y1: 1860 };   // the story plays under the caption area
@@ -110,26 +111,27 @@ const SHOT = {
     // the little workshop behind: a small building
     rrect(c, 140, 1180, 800, 520, 24, '#141b2f'); c.fillStyle = '#181f35'; c.beginPath(); c.moveTo(110, 1200); c.lineTo(540, 1000); c.lineTo(970, 1200); c.closePath(); c.fill(); rrect(c, 230, 1290, 150, 120, 10, '#9fc7f0'); rrect(c, 700, 1290, 150, 120, 10, '#9fc7f0');
     // the plinth and the new vacuum: the cloth slides off on "új"
-    rrect(c, 420, 1640, 240, 60, 10, SAND2); const off = ease(seg(t, H.unveil - .2, H.unveil + .5));
-    vacuum(c, 540, 1640, 1.15, { ours: true });
-    if (off < 1) { c.save(); c.globalAlpha = 1 - ss(seg(off, .6, 1)); c.translate(540 + 260 * off, 1260 + 260 * off * off); c.rotate(.9 * off); c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(-110, -150); c.quadraticCurveTo(0, -200, 110, -150); c.lineTo(130, 380); c.lineTo(-130, 380); c.closePath(); c.fill(); c.restore(); }
+    const on = ss(seg(t, .2, .9)), rise = E(t, H.unveil - .55, .45, .4);
+    if (on > 0) { c.save(); c.globalAlpha = on * .55; const cg = c.createLinearGradient(0, 980, 0, 1700); cg.addColorStop(0, 'rgba(255,236,190,.0)'); cg.addColorStop(1, 'rgba(255,236,190,.35)'); c.fillStyle = cg; c.beginPath(); c.moveTo(500, 980); c.lineTo(580, 980); c.lineTo(760, 1700); c.lineTo(320, 1700); c.closePath(); c.fill(); c.restore(); }   // a spotlight comes on
+    rrect(c, 400, 1640, 280, 60, 10, SAND2);
+    if (rise > 0) { c.save(); c.beginPath(); c.rect(0, 0, 1080, 1640); c.clip(); c.translate(0, 420 * (1 - Math.min(1, rise))); vacuum(c, 540, 1640, 1.45, { ours: true }); c.restore(); }   // the new vacuum rises from its stand
     if (t > H.unveil) { spark(c, 540, 1350, t, H.unveil, 7, 220, 18); pop(c, 760, 1280, E(t, H.unveil, .3, .5), () => { rrect(c, 690, 1250, 140, 64, 14, GOLD); text(c, 'ÚJ', 760, 1284, 46, NAVY); }); }
     boss(c, t, 260, F, 1.5, { f: .4, look: .3, smile: 1 });
   },
   rivals(c, t) {   // the big rivals: piles of money; three huge billboards, each with a rose vacuum and a big claim; our little gold one looks up
     bg(c, '#0d2463'); floor(c); const H = HIT;
     for (let i = 0; i < 9; i++) rrect(c, 40 + i * 120, 1300 - hash(i + 4) * 260, 100, 400 + hash(i + 4) * 260, 6, '#0f1428');   // a city behind
-    const B = [[235, 1170, H.claims[0], 'LEGERŐSEBB'], [540, 1110, H.claims[1], 'LEGGYORSABB'], [845, 1170, H.claims[2], 'LEGJOBB']];
-    B.forEach(([x, y, at, s], i) => billboard(c, x, y, 270, 190, E(t, H.boards + i * .25, .35, .45), () => { vacuum(c, x, y + 88, .27); const k = E(t, at, .3, .55); if (k > 0) scaled(c, x, y - 52, Math.min(1.15, k), () => text(c, s, x, y - 46, s.length > 8 ? 30 : 42, GOLD)); }));
+    const B = [[235, 1130, H.claims[0], 'LEGERŐSEBB'], [540, 1040, H.claims[1], 'LEGGYORSABB'], [845, 1130, H.claims[2], 'LEGJOBB']];
+    B.forEach(([x, y, at, s], i) => billboard(c, x, y, 300, 230, E(t, H.boards + i * .25, .35, .45), () => { vacuum(c, x, y + 108, .34); const k = E(t, at, .3, .55); if (k > 0) scaled(c, x, y - 62, Math.min(1.15, k), () => text(c, s, x, y - 58, s.length > 8 ? 38 : 50, GOLD)); }));
     // the money: bags and coin stacks
     moneyBag(c, 170, F, 1.1, E(t, H.money, .35, .5)); coins(c, 300, F - 14, 9, seg(t, H.money + .1, H.money + 1.0)); coins(c, 400, F - 14, 6, seg(t, H.money + .3, H.money + 1.1)); moneyBag(c, 900, F, 1.2, E(t, H.money + .3, .35, .5)); coins(c, 780, F - 14, 8, seg(t, H.money + .4, H.money + 1.2));
-    vacuum(c, 600, F, .55, { ours: true });
+    vacuum(c, 600, F, .7, { ours: true });
   },
   copy(c, t) {   // at first the small firm copies them: the manager and a colleague at a drawing board, sketching a billboard just like theirs
     bg(c, '#0d2463'); floor(c); const H = HIT;
     // the board on an easel
     rrect(c, 330, 1060, 460, 330, 14, CREAM); rrect(c, 350, 1080, 420, 290, 8, '#ffffff'); c.fillStyle = WOOD3; c.save(); c.translate(560, 1390); for (const a of [-.25, .25]) { c.save(); c.rotate(a); c.fillRect(-8, 0, 16, 320); c.restore(); } c.restore();
-    const d = seg(t, H.draft - .2, H.draft + 1.4); if (d > 0) { c.save(); c.beginPath(); c.rect(350, 1080, 420 * clamp(d * 1.4), 290); c.clip(); vacuum(c, 440, 1330, .5, { ours: true }); text(c, 'LEG…', 640, 1200, 64, NAVY); c.strokeStyle = NAVY; c.lineWidth = 6; c.beginPath(); c.moveTo(560, 1260); c.lineTo(730, 1260); c.moveTo(560, 1300); c.lineTo(690, 1300); c.stroke(); c.restore(); }
+    const d = seg(t, 11.9, 14.6);   /* drawing starts at once (no blank board) */ if (d > 0) { c.save(); c.beginPath(); c.rect(350, 1080, 420 * clamp(d * 1.4), 290); c.clip(); vacuum(c, 440, 1330, .5, { ours: true }); text(c, 'LEG…', 640, 1200, 64, NAVY); c.strokeStyle = NAVY; c.lineWidth = 6; c.beginPath(); c.moveTo(560, 1260); c.lineTo(730, 1260); c.moveTo(560, 1300); c.lineTo(690, 1300); c.stroke(); c.restore(); }
     const pen = [lerp(380, 740, (Math.sin(t * 5) + 1) / 2 * (d > 0 && d < 1 ? 1 : 0) + (d >= 1 ? .5 : 0)), 1200 + 50 * Math.sin(t * 9)];
     boss(c, t, 220, F, 1.55, { f: .4, look: .2, smile: .8, handR: d > 0 && d < 1 ? pen : undefined }); cust(c, t, 1, 900, F, 1.45, { f: -.4, look: -.2, smile: .8 });
     check(c, 220, 1180, 42, E(t, H.decide1, .45, .2) * (1 - ss(seg(t, H.draft, H.draft + .3))));
@@ -148,10 +150,10 @@ const SHOT = {
   },
   pair(c, t) {   // instead of a usual ad: the billboard slides away; two vacuums are set side by side: theirs, gold, and a well-known one, rose
     bg(c, '#0d2463'); floor(c); const H = HIT;
-    const gone = ease(seg(t, H.instead, H.instead + .6)); if (gone < 1) billboard(c, 540 - 900 * gone, 1080, 460, 240, 1, () => { vacuum(c, 400 - 900 * gone, 1170, .42); text(c, 'LEGJOBB', 600 - 900 * gone, 1084, 52, GOLD); });
+    const gone = ease(seg(t, H.instead + .55, H.instead + 1.0)); if (gone < 1) { billboard(c, 540 - 900 * gone, 1080, 460, 240, 1, () => { vacuum(c, 400 - 900 * gone, 1170, .42); text(c, 'LEGJOBB', 600 - 900 * gone, 1084, 56, GOLD); }); cross(c, 540 - 900 * gone, 1200, 120, seg(t, H.instead - .1, H.instead + .35)); }
     rrect(c, 140, 1640, 800, 60, 12, SAND2);
-    pop(c, 340, F - 60, E(t, H.pair, .35, .45), () => vacuum(c, 340, F - 60, 1.45, { ours: true }));
-    pop(c, 740, F - 60, E(t, H.pair + .2, .35, .45), () => vacuum(c, 740, F - 60, 1.45));
+    pop(c, 340, F - 60, E(t, H.instead + .9, .35, .45), () => vacuum(c, 340, F - 60, 1.45, { ours: true }));
+    pop(c, 740, F - 60, E(t, H.instead + 1.1, .35, .45), () => vacuum(c, 740, F - 60, 1.45));
     pop(c, 340, 1100, E(t, H.ours, .3, .5), () => { ell(c, 344, 1108, 54, 54, 'rgba(0,0,20,.3)'); ell(c, 340, 1100, 54, 54, CREAM); heart(c, 340, 1104, 28, 1, GOLD2); });
     pop(c, 740, 1100, E(t, H.known, .3, .5), () => { ell(c, 744, 1108, 54, 54, 'rgba(0,0,20,.3)'); ell(c, 740, 1100, 54, 54, CREAM); star(c, 740, 1102, 30, 1, ROSE); });
     if (t > H.pair) glow(c, 540, 1500, 380, .15);
