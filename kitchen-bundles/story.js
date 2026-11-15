@@ -2,7 +2,7 @@
 // A kitchen shop's forgotten tools sell once they are packed into kits for beginners, birthday cakes and dessert lovers.
 import { WORDS } from './captions.js';
 const T = i => WORDS[i][1];
-export const STORY = 56.9, DUR = 59.1;
+export const STORY = 56.9, DUR = 61.9;   // end card: the call to action (line 4) 1.3 s in, then 1.5 s of the logo alone
 export const TS = 1;
 export const VO = 'refs/voiceover-hu-x1.15.mp3';
 export const SHOTS = [[0, 'store', 'cut'], [4.4, 'dusty', 'soft'], [9.9, 'onething', 'soft'], [16.6, 'decide', 'whip'], [22.0, 'bundles', 'soft'], [31.6, 'match', 'whip'], [37.0, 'easy', 'soft'], [42.8, 'sold', 'whip'], [48.4, 'lesson', 'soft']];

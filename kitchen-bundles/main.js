@@ -10,7 +10,7 @@ const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
 const [bufA, actx] = mk(), [bufB, bctx] = mk();
-const TOP = '#00113F', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#00113F';
+const TOP = '#050916', NAVY = '#0f131e', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#050916';
 const GLOW = (() => { const [c, x] = mk(); c.width = c.height = 256; const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,214,120,1)'); g.addColorStop(.25, 'rgba(255,214,120,.45)'); g.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c; })();
 
 function sp(tau, d = .4, b = .2) {   // a spring like Motion's { type: 'spring', visualDuration, bounce }
@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
+function bg(c, col = '#1a2138') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: kitchen tools, shelves, kit boxes ——
 const T = i => WORDS[i][1];
@@ -67,13 +67,13 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', WOOD2 = '#a6744a',
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0a1022'); fl.addColorStop(1, '#070b18'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 function grey(c, g, f) { if (g > 0) { c.save(); c.filter = `saturate(${1 - g}) brightness(${1 - .4 * g})`; f(); c.restore(); } else f(); }
 // the tools: each stands on y (its bottom), centred on x, at scale s
-function pan(c, x, y, s) { rrect(c, x + 60 * s, y - 34 * s, 110 * s, 16 * s, 8 * s, '#1a1f3a'); c.fillStyle = '#2b2f48'; c.beginPath(); c.ellipse(x, y - 26 * s, 76 * s, 18 * s, 0, 0, 7); c.fill(); rrect(c, x - 76 * s, y - 28 * s, 152 * s, 28 * s, 10 * s, '#2b2f48'); c.fillStyle = '#41466a'; c.beginPath(); c.ellipse(x, y - 28 * s, 68 * s, 13 * s, 0, 0, 7); c.fill(); }
-function pot(c, x, y, s) { rrect(c, x - 70 * s, y - 100 * s, 140 * s, 100 * s, 16 * s, ROSE); rrect(c, x - 78 * s, y - 108 * s, 156 * s, 16 * s, 8 * s, ROSE2); rrect(c, x - 98 * s, y - 86 * s, 24 * s, 14 * s, 6 * s, '#1a1f3a'); rrect(c, x + 74 * s, y - 86 * s, 24 * s, 14 * s, 6 * s, '#1a1f3a'); rrect(c, x - 12 * s, y - 124 * s, 24 * s, 16 * s, 6 * s, '#1a1f3a'); }
+function pan(c, x, y, s) { rrect(c, x + 60 * s, y - 34 * s, 110 * s, 16 * s, 8 * s, '#0d0f16'); c.fillStyle = '#14161c'; c.beginPath(); c.ellipse(x, y - 26 * s, 76 * s, 18 * s, 0, 0, 7); c.fill(); rrect(c, x - 76 * s, y - 28 * s, 152 * s, 28 * s, 10 * s, '#14161c'); c.fillStyle = '#1e212a'; c.beginPath(); c.ellipse(x, y - 28 * s, 68 * s, 13 * s, 0, 0, 7); c.fill(); }
+function pot(c, x, y, s) { rrect(c, x - 70 * s, y - 100 * s, 140 * s, 100 * s, 16 * s, ROSE); rrect(c, x - 78 * s, y - 108 * s, 156 * s, 16 * s, 8 * s, ROSE2); rrect(c, x - 98 * s, y - 86 * s, 24 * s, 14 * s, 6 * s, '#0d0f16'); rrect(c, x + 74 * s, y - 86 * s, 24 * s, 14 * s, 6 * s, '#0d0f16'); rrect(c, x - 12 * s, y - 124 * s, 24 * s, 16 * s, 6 * s, '#0d0f16'); }
 function whisk(c, x, y, s, rot = 0) { c.save(); c.translate(x, y - 90 * s); c.rotate(rot); rrect(c, -9 * s, 20 * s, 18 * s, 70 * s, 8 * s, WOOD2); c.strokeStyle = STEEL; c.lineWidth = 4 * s; for (let k = -2; k <= 2; k++) { c.beginPath(); c.moveTo(-4 * s, 22 * s); c.bezierCurveTo(k * 22 * s, 0, k * 26 * s, -70 * s, 0, -84 * s); c.stroke(); } c.restore(); }
-function cakeTin(c, x, y, s) { rrect(c, x - 80 * s, y - 56 * s, 160 * s, 56 * s, 6 * s, STEEL); c.fillStyle = STEEL2; c.beginPath(); c.ellipse(x, y - 56 * s, 80 * s, 16 * s, 0, 0, 7); c.fill(); c.fillStyle = '#5f6990'; c.beginPath(); c.ellipse(x, y - 56 * s, 70 * s, 12 * s, 0, 0, 7); c.fill(); rrect(c, x + 74 * s, y - 40 * s, 14 * s, 26 * s, 4 * s, STEEL2); }
+function cakeTin(c, x, y, s) { rrect(c, x - 80 * s, y - 56 * s, 160 * s, 56 * s, 6 * s, STEEL); c.fillStyle = STEEL2; c.beginPath(); c.ellipse(x, y - 56 * s, 80 * s, 16 * s, 0, 0, 7); c.fill(); c.fillStyle = '#2b2e39'; c.beginPath(); c.ellipse(x, y - 56 * s, 70 * s, 12 * s, 0, 0, 7); c.fill(); rrect(c, x + 74 * s, y - 40 * s, 14 * s, 26 * s, 4 * s, STEEL2); }
 function pipingBag(c, x, y, s) { c.save(); c.translate(x, y - 70 * s); c.rotate(.5); c.fillStyle = SAND; c.beginPath(); c.moveTo(-40 * s, -60 * s); c.lineTo(40 * s, -60 * s); c.lineTo(8 * s, 50 * s); c.lineTo(-8 * s, 50 * s); c.closePath(); c.fill(); c.fillStyle = ROSE; c.beginPath(); c.moveTo(-28 * s, -20 * s); c.lineTo(28 * s, -20 * s); c.lineTo(8 * s, 50 * s); c.lineTo(-8 * s, 50 * s); c.closePath(); c.fill(); c.fillStyle = STEEL; c.beginPath(); c.moveTo(-9 * s, 48 * s); c.lineTo(9 * s, 48 * s); c.lineTo(0, 74 * s); c.closePath(); c.fill(); c.restore(); }
 function bowl(c, x, y, s, col = MINT) { c.fillStyle = col; c.beginPath(); c.moveTo(x - 86 * s, y - 70 * s); c.lineTo(x + 86 * s, y - 70 * s); c.quadraticCurveTo(x + 80 * s, y, x, y); c.quadraticCurveTo(x - 80 * s, y, x - 86 * s, y - 70 * s); c.fill(); c.fillStyle = 'rgba(0,0,20,.2)'; c.beginPath(); c.ellipse(x, y - 70 * s, 86 * s, 14 * s, 0, 0, 7); c.fill(); }
 function cup(c, x, y, s) { c.fillStyle = 'rgba(200,225,250,.85)'; c.beginPath(); c.moveTo(x - 40 * s, y - 90 * s); c.lineTo(x + 40 * s, y - 90 * s); c.lineTo(x + 32 * s, y); c.lineTo(x - 32 * s, y); c.closePath(); c.fill(); c.strokeStyle = 'rgba(200,225,250,.85)'; c.lineWidth = 8 * s; c.beginPath(); c.arc(x + 44 * s, y - 50 * s, 20 * s, -1.4, 1.4); c.stroke(); c.fillStyle = ROSE; for (let k = 1; k < 4; k++) c.fillRect(x - 30 * s, y - k * 22 * s, 18 * s, 3 * s); }
@@ -98,7 +98,7 @@ function heartIcon(c, x, y, s) { heart(c, x, y + 2 * s, 20 * s, 1, ROSE); }
 const KITS = [{ col: MINT, label: hatIcon, items: [['bowl', -70, .7], ['whisk', 20, .9], ['cup', 90, .7], ['spoon', -10, .8]] },
   { col: ROSE, label: cakeIcon, items: [['cakeTin', -50, .8], ['candles', 80, 1], ['pipingBag', 30, .8]] },
   { col: GOLD, label: heartIcon, items: [['ramekin', -80, .9], ['cutter', 10, .9], ['whisk', 90, .8]] }];
-function shelf(c, x0, x1, ys, goods) { rrect(c, x0, ys[0] - 190, x1 - x0, F - ys[0] + 190, 14, '#1f2c70'); ys.forEach((y, i) => { goods && goods(i, y); rrect(c, x0, y, x1 - x0, 16, 4, '#4a5cae'); rrect(c, x0, y + 16, x1 - x0, 10, 0, '#34449a'); }); }
+function shelf(c, x0, x1, ys, goods) { rrect(c, x0, ys[0] - 190, x1 - x0, F - ys[0] + 190, 14, '#12182a'); ys.forEach((y, i) => { goods && goods(i, y); rrect(c, x0, y, x1 - x0, 16, 4, '#252c43'); rrect(c, x0, y + 16, x1 - x0, 10, 0, '#1c233a'); }); }
 function dust(c, x, y, w, a) { if (a <= 0) return; c.save(); c.globalAlpha = a; c.strokeStyle = 'rgba(220,225,240,.55)'; c.lineWidth = 2; c.beginPath(); c.moveTo(x - w / 2, y - 120); c.quadraticCurveTo(x - w / 4, y - 80, x, y - 110); c.moveTo(x - w / 2, y - 120); c.quadraticCurveTo(x - w / 2 + 30, y - 70, x - w / 2 + 6, y - 40); c.moveTo(x - w / 2, y - 120); c.lineTo(x - w / 2 + 40, y - 70); c.stroke(); for (let k = 0; k < 10; k++) ell(c, x - w / 2 + hash(k) * w, y - 10 - hash(k + 4) * 60, 3, 3, 'rgba(220,225,240,.6)'); c.restore(); }
 function bulbIcon(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { glow(c, x, y, r * 3, .7); ell(c, x, y, r, r, '#ffd889'); rrect(c, x - r * .45, y + r * .8, r * .9, r * .5, r * .15, SAND2); c.strokeStyle = GOLD2; c.lineWidth = r * .12; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - r * .3, y + r * .2); c.lineTo(x, y - r * .25); c.lineTo(x + r * .3, y + r * .2); c.stroke(); for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .5; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.35, y + Math.sin(a) * r * 1.35); c.lineTo(x + Math.cos(a) * r * 1.75, y + Math.sin(a) * r * 1.75); c.stroke(); } }); }
 function calendarBadge(c, x, y, k, n) { pop(c, x, y, k, () => { rrect(c, x - 60, y - 70, 120, 140, 12, CREAM); rrect(c, x - 60, y - 70, 120, 36, 12, ROSE); c.fillStyle = ROSE; c.fillRect(x - 60, y - 48, 120, 14); text(c, String(n), x, y + 18, 58, NAVY); }); }
@@ -117,21 +117,21 @@ function bigShelf(c, t, o = {}) { const g = o.grey || 0, gone = o.gone || 0, hl 
 
 const SHOT = {
   store(c, t) {   // a kitchen shop full of products; some sell badly: the top shelf goes grey
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     bigShelf(c, t, { grey: ss(seg(t, H.bad - .2, H.bad + .4)) });
     owner(c, t, 170, F, 1.55, { f: .4, look: .3, smile: lerp(1, .5, ss(seg(t, H.bad, H.bad + .4))) });
     badge(c, 'x', 670, 1050, 48, E(t, H.bad + .1, .3, .5));
   },
   dusty(c, t) {   // the cake tins, the small whisks and the decorating tools: each lights up in turn; months go by; dust and cobwebs
-    bg(c, '#163A8C'); floor(c); const H = HIT; const z = 1.35; c.save(); c.translate(670, 1250); c.scale(z, z); c.translate(-670, -1330);
+    bg(c, '#0d2463'); floor(c); const H = HIT; const z = 1.35; c.save(); c.translate(670, 1250); c.scale(z, z); c.translate(-670, -1330);
     const hl = H.items.map((a, i) => ss(seg(t, a - .1, a + .2)) * (1 - ss(seg(t, (H.items[i + 1] || H.months) - .1, (H.items[i + 1] || H.months) + .2))));
     bigShelf(c, t, { grey: .8, hl, dust: ss(seg(t, H.months, H.months + 1.0)) }); c.restore();
     calendarBadge(c, 180, 1150, E(t, H.months - .2, .3, .5), 3 + Math.floor(clamp(seg(t, H.months, H.months + 1)) * 5));
   },
   onething(c, t) {   // customers come in for one thing: she walks straight to the pans, takes one, and leaves; the rest of the shop she never looks at
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     const dim = ss(seg(t, H.rarely - .2, H.rarely + .4)); bigShelf(c, t, { grey: .8 });
-    if (dim > 0) { c.save(); c.globalAlpha = .3 * dim; c.fillStyle = '#00113F'; c.fillRect(330, 1060, 680, 640); c.restore(); }
+    if (dim > 0) { c.save(); c.globalAlpha = .3 * dim; c.fillStyle = '#050916'; c.fillRect(330, 1060, 680, 640); c.restore(); }
     const inn = walkU(t, 10.2, H.specific), take = t > H.specific + .3, out = walkU(t, H.come + .1, H.come + 1.6);
     const x = out.u > 0 ? lerp(560, -150, ss(out.u)) : lerp(-150, 560, ss(inn.u));
     const hand = take ? [x + (out.u > 0 ? -60 : 60), 1500] : (t > H.specific - .3 ? [640, 1440] : undefined);
@@ -142,7 +142,7 @@ const SHOT = {
     eyeB(c, 670, 1150, 54, E(t, H.rarely, .3, .5)); cross(c, 670, 1150, 36, seg(t, H.rarely + .2, H.rarely + .6));
   },
   decide(c, t) {   // so he decides: not one by one, but ready-made kits: the tools fly off the shelf into an open box, which closes with a bow
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     owner(c, t, 190, F, 1.6, { f: .4, look: .3, smile: 1, squash: wob(t, H.dec, .4, 18, .5) }); bulbIcon(c, 190, 1150, 44, E(t, H.dec, .3, .5) * (1 - ss(seg(t, H.kits, H.kits + .3))));
     // the tools, one by one, apart; then each flies into the box
     const items = [['cakeTin', 450, 1330, 1.1], ['whisk', 630, 1340, 1.4], ['pipingBag', 790, 1330, 1.2], ['bowl', 950, 1340, .9]];
@@ -153,12 +153,12 @@ const SHOT = {
     if (t > H.assemble + .4) spark(c, 680, 1480, t, H.assemble + .4, 7, 220, 16);
   },
   bundles(c, t) {   // a kit for beginners, a kit for birthday cakes, a kit for dessert lovers: three boxes; each opens and shows what is inside
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     KITS.forEach((k, i) => { const x = [210, 540, 870][i], a = E(t, H.kit[i] - .3, .35, .45), open = ss(seg(t, H.kitOpen[i] - .2, H.kitOpen[i] + .6)); pop(c, x, F - 40, a, () => box(c, x, F - 40, .92, { open, col: k.col, label: k.label, items: k.items })); });
     for (let i = 0; i < 3; i++) if (t > H.kitOpen[i] + .3) spark(c, [210, 540, 870][i], 1360, t, H.kitOpen[i] + .3, 5, 120, 12);
   },
   match(c, t) {   // in every kit, things that belong together, all you need to start: the birthday kit's tools join up, and a cake appears
-    bg(c, '#163A8C'); floor(c); const H = HIT; const k = KITS[1];
+    bg(c, '#0d2463'); floor(c); const H = HIT; const k = KITS[1];
     const join = ease(seg(t, H.fit - .2, H.fit + .6)), make = ss(seg(t, H.start - .3, H.start + .4));
     box(c, 540, F - 30, 1.25, { open: 1, col: k.col, label: k.label });
     const P = [[300, 1330, 'cakeTin', .9], [540, 1220, 'pipingBag', 1], [780, 1330, 'candles', 1.1]];
@@ -169,7 +169,7 @@ const SHOT = {
     cust(c, t, 2, 905, F, 1.4, { f: -.4, look: -.3, smile: lerp(.8, 1, make) });
   },
   easy(c, t) {   // no more hunting for each tool one by one: on the left, a shopper with a list searches shelf after shelf; on the right, she just takes one box
-    bg(c, '#163A8C'); floor(c); const H = HIT; const sw = ss(seg(t, H.simply - .3, H.simply + .2));
+    bg(c, '#0d2463'); floor(c); const H = HIT; const sw = ss(seg(t, H.simply - .3, H.simply + .2));
     // left: the hunt
     c.save(); c.globalAlpha = 1 - .6 * sw; shelf(c, 60, 500, [1300, 1500, F - 20], (i, y) => { [['whisk', 150], ['cup', 280], ['spoon', 410]].forEach(([n, x], j) => { const k = (i + j) % 3; TOOLS[[n, 'cakeTin', 'bowl'][k]](c, x + (k === 1 ? 0 : 0), y, .6); }); });
     const look = t < H.simply ? 120 + 260 * (.5 + .5 * Math.sin((t - 37) * 2.4)) : 300; cust(c, t, 1, look, F + 50, 1.3, { f: .2, look: Math.sin(t * 3) * .5, smile: .3, sad: .4 });
@@ -180,14 +180,14 @@ const SHOT = {
     if (t > H.bought) { const u = ease(seg(t, H.bought, H.bought + .4)); cust(c, t, 0, 905, F, 1.4, { f: -.4, look: -.3, smile: 1, handL: [lerp(900, 880, u), lerp(1500, 1560, u)] }); check(c, 780, 1300, 40, E(t, H.bought + .2, .45, .2)); } else cust(c, t, 0, 905, F, 1.4, { f: -.4, look: -.3, smile: .9 });
   },
   sold(c, t) {   // and the shop sold the things almost nobody had noticed before: the dusty top shelf empties, boxes go out the door, the sales climb
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     bigShelf(c, t, { grey: .5 * (1 - ss(seg(t, H.sell - .5, H.sell))), gone: seg(t, H.sell, H.sell + 1.6), dust: 1 - ss(seg(t, H.sell - .5, H.sell + .2)) });
     for (let k = 0; k < 3; k++) { const w = walkU(t, H.sell - .2 + k * .7, H.sell + 1.8 + k * .7); if (w.u <= 0 || w.u >= 1) continue; const x = lerp(560, -160, w.u); cust(c, t, k, x, F, 1.35, { f: -.45, walk: 1, look: -.3, smile: 1, handL: [x - 70, 1520] }); scaled(c, x - 70, 1600, .4, () => box(c, x - 70, 1600, 1, { col: KITS[k].col, label: KITS[k].label })); }
     owner(c, t, 180, F, 1.5, { f: .4, look: .3, smile: 1 });
     pop(c, 670, 1080, E(t, H.nobody, .3, .5), () => { rrect(c, 560, 1010, 220, 140, 18, CREAM); const up = ss(seg(t, H.nobody, H.nobody + .6)); [.3, .5, .8].forEach((v, i) => { const h = 100 * v * lerp(.5, 1, up); rrect(c, 590 + i * 60, 1130 - h, 40, h, 6, i === 2 ? GOLD : '#3d5cc8'); }); });
   },
   lesson(c, t) {   // the owner sees it: sometimes it isn't that they don't want it; they just don't know yet what to use it for. A lone cake tin; a question; it becomes a birthday cake
-    bg(c, '#163A8C'); floor(c); const H = HIT; const turn = ss(seg(t, H.use - .3, H.use + .4));
+    bg(c, '#0d2463'); floor(c); const H = HIT; const turn = ss(seg(t, H.use - .3, H.use + .4));
     owner(c, t, 190, F, 1.6, { f: .4, look: .3, smile: 1 }); bulbIcon(c, 190, 1150, 42, E(t, H.realise, .3, .5) * (1 - ss(seg(t, H.problem - .2, H.problem))));
     rrect(c, 420, 1640, 400, 60, 12, SAND2);
     if (turn < 1) pop(c, 620, 1640, 1 - turn, () => cakeTin(c, 620, 1640, 1.6));
@@ -225,7 +225,7 @@ function captions(c, t) {
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
   p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
-    const hot = w === now, col = hot || w.key ? GOLD : CREAM;
+    const hot = w === now, col = hot || w.key ? '#2ED3C6' : CREAM;   // dark story world: turquoise key words
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
     c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10; c.shadowOffsetY = 3; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
     c.restore(); });
@@ -234,7 +234,7 @@ function captions(c, t) {
 
 // —— the locked 23 Team end card (ANIMATION-STYLE.md) ——
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
-const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();
+const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#F4F7FF'; x.fillRect(0, 0, c.width, c.height); return c; })();
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = W * .30, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
