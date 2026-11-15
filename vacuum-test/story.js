@@ -2,7 +2,7 @@
 // A small vacuum maker stops shouting claims like the big rivals and simply shows both machines on the same rug.
 import { WORDS } from './captions.js';
 const T = i => WORDS[i][1];
-export const STORY = 68.9, DUR = 71.1;
+export const STORY = 68.9, DUR = 73.6;   // end card: the call to action 1.3 s in, then 1.5 s of the logo alone
 export const TS = 1;
 export const VO = 'refs/voiceover-hu-x1.15.mp3';
 export const SHOTS = [[0, 'intro', 'cut'], [3.3, 'rivals', 'soft'], [11.5, 'copy', 'soft'], [16.5, 'ignore', 'whip'], [21.6, 'idea', 'soft'], [24.2, 'pair', 'soft'], [31.9, 'test', 'whip'], [41.0, 'simple', 'soft'], [50.4, 'viral', 'whip'], [57.6, 'lesson', 'soft']];

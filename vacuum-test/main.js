@@ -10,7 +10,7 @@ const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
 const [bufA, actx] = mk(), [bufB, bctx] = mk();
-const TOP = '#00113F', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#00113F';
+const TOP = '#050916', NAVY = '#0f131e', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#050916';
 const GLOW = (() => { const [c, x] = mk(); c.width = c.height = 256; const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,214,120,1)'); g.addColorStop(.25, 'rgba(255,214,120,.45)'); g.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c; })();
 
 function sp(tau, d = .4, b = .2) {   // a spring like Motion's { type: 'spring', visualDuration, bounce }
@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
+function bg(c, col = '#1a2138') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: two upright vacuums, a rug with crumbs, billboards, a phone ——
 const T = i => WORDS[i][1];
@@ -67,24 +67,24 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', WOOD2 = '#a6744a',
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0a1022'); fl.addColorStop(1, '#070b18'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 // an upright vacuum standing on (x, y): o.ours = the small company's gold one, else the well-known rose one; o.run 0..1 hums it
 function vacuum(c, x, y, s = 1, o = {}) { const body = o.ours ? GOLD : ROSE, dark = o.ours ? GOLD2 : ROSE2, run = o.run || 0, jig = run * 1.5 * Math.sin(NOW * 60);
   c.save(); c.translate(x, y + jig * .3); c.scale(s, s); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.ellipse(0, 4, 95, 12, 0, 0, 7); c.fill();
-  rrect(c, -86, -46, 172, 46, 18, dark); rrect(c, -86, -46, 172, 16, 8, body); rrect(c, -80, -12, 160, 10, 5, '#2b2f48');   // the head and its brush
-  c.save(); c.translate(0, -40); c.rotate(-.18); rrect(c, -32, -250, 64, 220, 28, body); rrect(c, -22, -230, 44, 70, 18, 'rgba(255,255,255,.5)'); rrect(c, -22, -150, 44, 10, 5, dark); rrect(c, -8, -380, 16, 140, 8, STEEL); rrect(c, -40, -398, 80, 26, 13, '#2b2f48'); c.restore();
+  rrect(c, -86, -46, 172, 46, 18, dark); rrect(c, -86, -46, 172, 16, 8, body); rrect(c, -80, -12, 160, 10, 5, '#14161c');   // the head and its brush
+  c.save(); c.translate(0, -40); c.rotate(-.18); rrect(c, -32, -250, 64, 220, 28, body); rrect(c, -22, -230, 44, 70, 18, 'rgba(255,255,255,.5)'); rrect(c, -22, -150, 44, 10, 5, dark); rrect(c, -8, -380, 16, 140, 8, STEEL); rrect(c, -40, -398, 80, 26, 13, '#14161c'); c.restore();
   if (o.ours) { ell(c, 0, -27, 9, 9, NAVY); } else star(c, 0, -27, 11, 1, '#ffffff');
   c.restore(); }
 function rug(c, x, y, w, h = 120) { c.save(); rrect(c, x - w / 2, y - h / 2, w, h, 14, '#3d5cc8'); c.strokeStyle = SAND; c.lineWidth = 6; c.beginPath(); c.roundRect(x - w / 2 + 14, y - h / 2 + 12, w - 28, h - 24, 8); c.stroke(); c.fillStyle = SAND; for (let i = 0; i < 14; i++) { c.fillRect(x - w / 2 - 14, y - h / 2 + 8 + i * (h - 16) / 13, 14, 3); c.fillRect(x + w / 2, y - h / 2 + 8 + i * (h - 16) / 13, 14, 3); } c.restore(); }
 const CRUMBS = Array.from({ length: 70 }, (_, i) => [hash(i * 3.1), hash(i * 7.7 + 2), 4 + hash(i + 11) * 7, hash(i * 1.3 + 5)]);
 function crumbs(c, x0, x1, y0, y1, k, gone) { for (const [u, v, r, h] of CRUMBS) { const x = lerp(x0, x1, u), y = lerp(y0, y1, v), a = clamp(k * 3 - u * 2); if (a <= 0 || gone(x, h)) continue; c.save(); c.globalAlpha = a; ell(c, x, y, r, r * .7, h > .5 ? '#7a5233' : '#b5a682'); c.restore(); } }
-function billboard(c, x, y, w, h, k, draw) { if (k <= 0) return; pop(c, x, y + h / 2 + 260, k, () => { rrect(c, x - w * .3 - 9, y + h / 2, 18, 260, 4, '#2b3f8e'); rrect(c, x + w * .3 - 9, y + h / 2, 18, 260, 4, '#2b3f8e'); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 12, w, h, 16); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 16, '#f6efdc'); rrect(c, x - w / 2 + 10, y - h / 2 + 10, w - 20, h - 20, 10, '#22357f'); draw(); }); }
+function billboard(c, x, y, w, h, k, draw) { if (k <= 0) return; pop(c, x, y + h / 2 + 260, k, () => { rrect(c, x - w * .3 - 9, y + h / 2, 18, 260, 4, '#181f35'); rrect(c, x + w * .3 - 9, y + h / 2, 18, 260, 4, '#181f35'); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 12, w, h, 16); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 16, '#f6efdc'); rrect(c, x - w / 2 + 10, y - h / 2 + 10, w - 20, h - 20, 10, '#141b2f'); draw(); }); }
 function word(c, s, x, y, size, col = CREAM, a = 1) { if (a <= 0) return; c.save(); c.globalAlpha = a; text(c, s, x, y, size, col); c.restore(); }
 function coins(c, x, y, n, k) { for (let i = 0; i < n; i++) { const a = clamp(k * n - i); if (a <= 0) continue; const yy = y - i * 16 - (1 - ease(a)) * 60; c.save(); c.globalAlpha = Math.min(1, a * 2); ell(c, x, yy + 6, 46, 14, GOLD2); ell(c, x, yy, 46, 14, GOLD); c.restore(); } }
 function moneyBag(c, x, y, s, k) { pop(c, x, y, k, () => { c.save(); c.translate(x, y); c.scale(s, s); c.fillStyle = SAND2; c.beginPath(); c.moveTo(-26, -96); c.lineTo(26, -96); c.lineTo(16, -74); c.bezierCurveTo(80, -50, 82, 0, 60, 0); c.lineTo(-60, 0); c.bezierCurveTo(-82, 0, -80, -50, -16, -74); c.closePath(); c.fill(); rrect(c, -22, -82, 44, 10, 5, GOLD2); text(c, 'Ft', 0, -34, 46, NAVY); c.restore(); }); }
-function phone(c, x, y, w, h, draw) { c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 12, w, h, 34); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 34, '#1a1f3a'); rrect(c, x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24, '#2b3f8e'); c.save(); c.beginPath(); c.roundRect(x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24); c.clip(); draw(); c.restore(); rrect(c, x - 30, y - h / 2 + 22, 60, 12, 6, '#1a1f3a'); }
+function phone(c, x, y, w, h, draw) { c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 12, w, h, 34); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 34, '#0d0f16'); rrect(c, x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24, '#181f35'); c.save(); c.beginPath(); c.roundRect(x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24); c.clip(); draw(); c.restore(); rrect(c, x - 30, y - h / 2 + 22, 60, 12, 6, '#0d0f16'); }
 function iconNote(c, x, y, r) { c.fillStyle = CREAM; ell(c, x - r * .35, y + r * .45, r * .3, r * .24, CREAM, -.4); ell(c, x + r * .4, y + r * .3, r * .3, r * .24, CREAM, -.4); c.fillRect(x - r * .12, y - r * .6, r * .1, r * 1.05); c.fillRect(x + r * .63, y - r * .75, r * .1, r * 1.05); c.beginPath(); c.moveTo(x - r * .12, y - r * .6); c.lineTo(x + r * .73, y - r * .75); c.lineTo(x + r * .73, y - r * .5); c.lineTo(x - r * .12, y - r * .35); c.fill(); }
-function iconCard(c, x, y, r, k, cut, draw) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#2b3f8e'); c.strokeStyle = CREAM; c.lineWidth = 5; c.beginPath(); c.arc(x, y, r - 6, 0, 7); c.stroke(); draw(); cross(c, x, y, r * .62, cut); }); }
+function iconCard(c, x, y, r, k, cut, draw) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#181f35'); c.strokeStyle = CREAM; c.lineWidth = 5; c.beginPath(); c.arc(x, y, r - 6, 0, 7); c.stroke(); draw(); cross(c, x, y, r * .62, cut); }); }
 function eyeB(c, x, y, r, k) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, CREAM); c.fillStyle = NAVY; c.beginPath(); c.moveTo(x - r * .72, y); c.quadraticCurveTo(x, y - r * .66, x + r * .72, y); c.quadraticCurveTo(x, y + r * .66, x - r * .72, y); c.fill(); ell(c, x, y, r * .27, r * .27, CREAM); ell(c, x, y, r * .13, r * .13, GOLD); }); }
 function earB(c, x, y, r, k, cut) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, CREAM); c.strokeStyle = NAVY; c.lineWidth = r * .14; c.lineCap = 'round'; c.beginPath(); c.arc(x + r * .02, y - r * .12, r * .38, Math.PI * .95, Math.PI * 2.3); c.quadraticCurveTo(x + r * .2, y + r * .35, x - r * .05, y + r * .5); c.stroke(); c.beginPath(); c.arc(x + r * .02, y - r * .1, r * .14, Math.PI, Math.PI * 2.2); c.stroke(); cross(c, x, y, r * .62, cut); }); }
 function bulbIcon(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { glow(c, x, y, r * 3, .7); ell(c, x, y, r, r, '#ffd889'); rrect(c, x - r * .45, y + r * .8, r * .9, r * .5, r * .15, SAND2); c.strokeStyle = GOLD2; c.lineWidth = r * .12; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - r * .3, y + r * .2); c.lineTo(x, y - r * .25); c.lineTo(x + r * .3, y + r * .2); c.stroke(); for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .5; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.35, y + Math.sin(a) * r * 1.35); c.lineTo(x + Math.cos(a) * r * 1.75, y + Math.sin(a) * r * 1.75); c.stroke(); } }); }
@@ -92,7 +92,7 @@ function bulbIcon(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(
 function boss(c, t, x, y, s, o = {}) { mascot(c, { id: 'mk', skin: 'owner', s, x, y, f: o.f ?? .3, smile: o.smile ?? .9, sad: o.sad || 0, look: o.look ?? .2, blink: blinkAt(t, 7), walk: o.walk || 0, phi: o.phi || 0, handL: o.handL, handR: o.handR, squash: o.squash || 0, bowtie: true }); }
 const CUST = [{ skin: 'blue2', fem: 'pony' }, { skin: 'blue1' }, { skin: 'blue3', fem: 'glasses' }, { skin: 'blue1', tache: true }];
 function cust(c, t, k, x, y, s, o = {}) { mascot(c, { id: 'c' + k, ...CUST[k % 4], s, x, y, f: o.f ?? -.4, smile: o.smile ?? .85, sad: o.sad || 0, look: o.look ?? -.2, blink: blinkAt(t, 3 + k), walk: o.walk || 0, phi: o.phi ?? x / 30, handL: o.handL, handR: o.handR, squash: o.squash || 0 }); }
-function phoneInHand(c, x, y, s, f) { const hx = x + f * 46 * s, hy = y - 150 * s; rrect(c, hx - 14 * s, hy - 24 * s, 28 * s, 46 * s, 6 * s, '#1a1f3a'); rrect(c, hx - 10 * s, hy - 20 * s, 20 * s, 36 * s, 4 * s, '#9fc7f0'); return [hx, hy + 10 * s]; }
+function phoneInHand(c, x, y, s, f) { const hx = x + f * 46 * s, hy = y - 150 * s; rrect(c, hx - 14 * s, hy - 24 * s, 28 * s, 46 * s, 6 * s, '#0d0f16'); rrect(c, hx - 10 * s, hy - 20 * s, 20 * s, 36 * s, 4 * s, '#9fc7f0'); return [hx, hy + 10 * s]; }
 // the test: one rug, two halves; each vacuum runs over its own half; the gold one takes every crumb, the rose one leaves some
 function testRig(c, t, o) { c.save(); c.translate(540, 1700); c.scale(.82, .82); c.translate(-540, -1700); testRig0(c, t, o); c.restore(); }
 function testRig0(c, t, o) { const L = [130, 520], R = [560, 950], y0 = 1560, y1 = 1690;
@@ -106,9 +106,9 @@ function testRig0(c, t, o) { const L = [130, 520], R = [560, 950], y0 = 1560, y1
 
 const SHOT = {
   intro(c, t) {   // a small vacuum maker shows its new product: a little workshop; a cloth is pulled off the new vacuum
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     // the little workshop behind: a small building
-    rrect(c, 140, 1180, 800, 520, 24, '#22357f'); c.fillStyle = '#2b3f8e'; c.beginPath(); c.moveTo(110, 1200); c.lineTo(540, 1000); c.lineTo(970, 1200); c.closePath(); c.fill(); rrect(c, 230, 1290, 150, 120, 10, '#9fc7f0'); rrect(c, 700, 1290, 150, 120, 10, '#9fc7f0');
+    rrect(c, 140, 1180, 800, 520, 24, '#141b2f'); c.fillStyle = '#181f35'; c.beginPath(); c.moveTo(110, 1200); c.lineTo(540, 1000); c.lineTo(970, 1200); c.closePath(); c.fill(); rrect(c, 230, 1290, 150, 120, 10, '#9fc7f0'); rrect(c, 700, 1290, 150, 120, 10, '#9fc7f0');
     // the plinth and the new vacuum: the cloth slides off on "új"
     rrect(c, 420, 1640, 240, 60, 10, SAND2); const off = ease(seg(t, H.unveil - .2, H.unveil + .5));
     vacuum(c, 540, 1640, 1.15, { ours: true });
@@ -117,8 +117,8 @@ const SHOT = {
     boss(c, t, 260, F, 1.5, { f: .4, look: .3, smile: 1 });
   },
   rivals(c, t) {   // the big rivals: piles of money; three huge billboards, each with a rose vacuum and a big claim; our little gold one looks up
-    bg(c, '#163A8C'); floor(c); const H = HIT;
-    for (let i = 0; i < 9; i++) rrect(c, 40 + i * 120, 1300 - hash(i + 4) * 260, 100, 400 + hash(i + 4) * 260, 6, '#16286b');   // a city behind
+    bg(c, '#0d2463'); floor(c); const H = HIT;
+    for (let i = 0; i < 9; i++) rrect(c, 40 + i * 120, 1300 - hash(i + 4) * 260, 100, 400 + hash(i + 4) * 260, 6, '#0f1428');   // a city behind
     const B = [[235, 1170, H.claims[0], 'LEGERŐSEBB'], [540, 1110, H.claims[1], 'LEGGYORSABB'], [845, 1170, H.claims[2], 'LEGJOBB']];
     B.forEach(([x, y, at, s], i) => billboard(c, x, y, 270, 190, E(t, H.boards + i * .25, .35, .45), () => { vacuum(c, x, y + 88, .27); const k = E(t, at, .3, .55); if (k > 0) scaled(c, x, y - 52, Math.min(1.15, k), () => text(c, s, x, y - 46, s.length > 8 ? 30 : 42, GOLD)); }));
     // the money: bags and coin stacks
@@ -126,7 +126,7 @@ const SHOT = {
     vacuum(c, 600, F, .55, { ours: true });
   },
   copy(c, t) {   // at first the small firm copies them: the manager and a colleague at a drawing board, sketching a billboard just like theirs
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     // the board on an easel
     rrect(c, 330, 1060, 460, 330, 14, CREAM); rrect(c, 350, 1080, 420, 290, 8, '#ffffff'); c.fillStyle = WOOD3; c.save(); c.translate(560, 1390); for (const a of [-.25, .25]) { c.save(); c.rotate(a); c.fillRect(-8, 0, 16, 320); c.restore(); } c.restore();
     const d = seg(t, H.draft - .2, H.draft + 1.4); if (d > 0) { c.save(); c.beginPath(); c.rect(350, 1080, 420 * clamp(d * 1.4), 290); c.clip(); vacuum(c, 440, 1330, .5, { ours: true }); text(c, 'LEG…', 640, 1200, 64, NAVY); c.strokeStyle = NAVY; c.lineWidth = 6; c.beginPath(); c.moveTo(560, 1260); c.lineTo(730, 1260); c.moveTo(560, 1300); c.lineTo(690, 1300); c.stroke(); c.restore(); }
@@ -135,19 +135,19 @@ const SHOT = {
     check(c, 220, 1180, 42, E(t, H.decide1, .45, .2) * (1 - ss(seg(t, H.draft, H.draft + .3))));
   },
   ignore(c, t) {   // but people don't listen any more: shoppers walk past the billboards, eyes on their phones, while the claims fade out
-    bg(c, '#163A8C'); floor(c); const H = HIT; const fade = ss(seg(t, H.noone - .3, H.noone + .6));
+    bg(c, '#0d2463'); floor(c); const H = HIT; const fade = ss(seg(t, H.noone - .3, H.noone + .6));
     [[300, 1150, 'LEGJOBB'], [800, 1150, 'LEGGYORSABB']].forEach(([x, y, s]) => billboard(c, x, y, 340, 210, 1, () => { vacuum(c, x, y + 88, .27); word(c, s, x, y - 50, s.length > 8 ? 36 : 48, GOLD, 1 - .75 * fade); }));
     for (let k = 0; k < 3; k++) { const x = ((t - 16.8) * 120 + k * 380) % 1300 - 110; const ph = phoneInHand(c, x, F, 1.4, .45); cust(c, t, k, x, F, 1.4, { f: .45, walk: 1, look: .5, smile: .6, handR: ph }); phoneInHand(c, x, F, 1.4, .45); }
     boss(c, t, 175, F, 1.5, { f: .4, look: .4, smile: .4 }); badge(c, 'ex', 175, 1180, 44, E(t, H.notice, .3, .5));
     eyeB(c, 540, 1300, 60, E(t, H.noone, .3, .5)); cross(c, 540, 1300, 40, seg(t, H.noone + .2, H.noone + .6));
   },
   idea(c, t) {   // so he came up with a strange idea: a close-up, the bulb
-    bg(c, '#163A8C'); floor(c); const H = HIT; const z = 1 + .06 * ss(seg(t, 21.6, 24.3)); c.save(); c.translate(540, 1700); c.scale(z, z); c.translate(-540, -1700);
+    bg(c, '#0d2463'); floor(c); const H = HIT; const z = 1 + .06 * ss(seg(t, 21.6, 24.3)); c.save(); c.translate(540, 1700); c.scale(z, z); c.translate(-540, -1700);
     boss(c, t, 540, F, 2.3, { f: .1, look: lerp(-.3, .3, ss(seg(t, H.idea - .5, H.idea))), smile: lerp(.6, 1, ss(seg(t, H.idea, H.idea + .3))), squash: wob(t, H.idea, .4, 18, .6) });
     bulbIcon(c, 540, 1010, 60, E(t, H.idea, .3, .5)); c.restore();
   },
   pair(c, t) {   // instead of a usual ad: the billboard slides away; two vacuums are set side by side: theirs, gold, and a well-known one, rose
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     const gone = ease(seg(t, H.instead, H.instead + .6)); if (gone < 1) billboard(c, 540 - 900 * gone, 1080, 460, 240, 1, () => { vacuum(c, 400 - 900 * gone, 1170, .42); text(c, 'LEGJOBB', 600 - 900 * gone, 1084, 52, GOLD); });
     rrect(c, 140, 1640, 800, 60, 12, SAND2);
     pop(c, 340, F - 60, E(t, H.pair, .35, .45), () => vacuum(c, 340, F - 60, 1.45, { ours: true }));
@@ -157,7 +157,7 @@ const SHOT = {
     if (t > H.pair) glow(c, 540, 1500, 380, .15);
   },
   test(c, t) {   // the same rug, crumbs on both halves; both run; no words, just the result: the gold half is spotless, crumbs stay on the rose half. People watch with their own eyes
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     const run = ss(seg(t, H.run, H.run + 1.8)), running = run > 0 && run < 1 ? 1 : 0;
     testRig(c, t, { dirt: seg(t, H.rug - .1, H.rug + .6), run, running, clean: ss(seg(t, H.result, H.result + .4)), cleanAt: H.result });
     // the watchers, behind the rug
@@ -166,9 +166,9 @@ const SHOT = {
     if (t > H.result) { pop(c, 330, 1260, E(t, H.result, .3, .5), () => check(c, 330, 1260, 44, 1)); pop(c, 750, 1260, E(t, H.result + .2, .3, .5), () => badge(c, 'x', 750, 1260, 44, 1)); }
   },
   simple(c, t) {   // the ad was very simple: no exciting music, no famous actor, no strange promises; just two products, side by side, compared
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     // the ad: a screen
-    const sk = E(t, 41.1, .35, .45); pop(c, 540, 1460, sk, () => { rrect(c, 160, 1240, 760, 440, 26, '#1a1f3a'); rrect(c, 180, 1260, 720, 400, 16, '#22357f'); rrect(c, 480, 1680, 120, 20, 6, '#1a1f3a');
+    const sk = E(t, 41.1, .35, .45); pop(c, 540, 1460, sk, () => { rrect(c, 160, 1240, 760, 440, 26, '#0d0f16'); rrect(c, 180, 1260, 720, 400, 16, '#141b2f'); rrect(c, 480, 1680, 120, 20, 6, '#0d0f16');
       const hi = ss(seg(t, H.two - .2, H.two + .3)); vacuum(c, 380, 1620, .75 + .05 * hi, { ours: true }); vacuum(c, 700, 1620, .75 + .05 * hi);
       const vs = E(t, H.compare - .2, .3, .55); if (vs > 0) scaled(c, 540, 1460, Math.min(1.15, vs), () => { ell(c, 540, 1460, 50, 50, CREAM); text(c, 'VS', 540, 1464, 40, NAVY); }); });
     iconCard(c, 260, 1080, 70, E(t, H.music - .2, .3, .5), seg(t, H.music + .1, H.music + .5), () => iconNote(c, 260, 1080, 46));
@@ -176,7 +176,7 @@ const SHOT = {
     iconCard(c, 820, 1080, 70, E(t, H.promise - .2, .3, .5), seg(t, H.promise + .1, H.promise + .5), () => text(c, '!', 820, 1084, 72, GOLD));
   },
   viral(c, t) {   // the video got huge attention: a phone with the test, hearts and comments flying, the count rolling up; people didn't hear it, they saw it
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     phone(c, 540, 1380, 380, 620, () => { const s = .5; c.save(); c.translate(540, 1280); c.scale(s, s); c.translate(-540, -1625); rug(c, 540, 1625, 860, 170); vacuum(c, 330, 1640, 1.25, { ours: true }); vacuum(c, 750, 1640, 1.25); crumbs(c, 590, 920, 1560, 1690, 1, (x, h) => h < .45); c.restore();
       const n = Math.floor(lerp(0, 980, ease(seg(t, H.views - .3, H.views + 2.4)))); rrect(c, 380, 1480, 320, 60, 30, 'rgba(0,0,20,.35)'); text(c, (n >= 1000 ? '1M' : n + 'K') + '  ♥', 540, 1512, 40, CREAM); });
     for (let k = 0; k < 12; k++) { const at = H.views + k * .3, u = seg(t, at, at + 1.6); if (u <= 0 || u >= 1) continue; const x = 540 + (hash(k) - .5) * 520 + Math.sin(u * 6 + k) * 30, y = 1500 - u * 520; heart(c, x, y, 18 + hash(k + 3) * 16, Math.sin(u * Math.PI) * 1.2, k % 3 ? ROSE : GOLD); }
@@ -184,7 +184,7 @@ const SHOT = {
     cust(c, t, 0, 175, F, 1.3, { f: .4, look: .3, smile: 1 }); cust(c, t, 2, 905, F, 1.3, { f: -.4, look: -.3, smile: 1 });
   },
   lesson(c, t) {   // the lesson: you don't have to tell them why it's better; set it up so they see the difference themselves
-    bg(c, '#163A8C'); floor(c); const H = HIT; const show = ss(seg(t, H.enough - .2, H.enough + .5));
+    bg(c, '#0d2463'); floor(c); const H = HIT; const show = ss(seg(t, H.enough - .2, H.enough + .5));
     // first the manager, explaining with a full bubble of words, which gets crossed out
     const tell = 1 - show; if (tell > 0) { c.save(); c.globalAlpha = tell; boss(c, t, 300, F, 1.7, { f: .4, look: .2, smile: .9 }); bulbIcon(c, 300, 1100, 40, E(t, H.important, .3, .5) * (1 - ss(seg(t, H.tell - .4, H.tell)))); const b = E(t, H.tell, .3, .5); if (b > 0) bubble(c, 680, 1170, 380, 170, Math.min(1.1, b), 430, 1330, () => { for (let i = 0; i < 3; i++) rrect(c, 520, 1120 + i * 40, 320 - i * 60, 18, 9, SAND3); cross(c, 680, 1170, 60, seg(t, H.why, H.why + .5)); }); c.restore(); }
     // then the test, seen by a customer, who sees the difference
@@ -220,7 +220,7 @@ function captions(c, t) {
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
   p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
-    const hot = w === now, col = hot || w.key ? GOLD : CREAM;
+    const hot = w === now, col = hot || w.key ? '#2ED3C6' : CREAM;   // dark story world: turquoise key words
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
     c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10; c.shadowOffsetY = 3; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
     c.restore(); });
@@ -229,7 +229,7 @@ function captions(c, t) {
 
 // —— the locked 23 Team end card (ANIMATION-STYLE.md) ——
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
-const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();
+const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#F4F7FF'; x.fillRect(0, 0, c.width, c.height); return c; })();
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = W * .30, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;
