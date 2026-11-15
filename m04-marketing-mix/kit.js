@@ -2,7 +2,8 @@
 // A reel's main.js imports this, draws its scenes with the neon pen, and calls start(). Copied into each reel folder by tools/motion-kit/new-reel.sh.
 // Look: glowing white line art on the locked midnight blue, captions at the top, a soft blur-zoom between scenes, the locked 23 end card.
 export const W = innerWidth, H = innerHeight, K = W / 1080;
-export const MID = '#00113F', WHITE = '#F4F7FF', GOLD = '#ECBD4A', GREY = 'rgba(244,247,255,.35)';
+export const MID = '#000000',   // user 2026-11-14: motion reels on black (brand palette: dark blue, turquoise, black, white)
+  NAVY_BG = '#00113F', WHITE = '#F4F7FF', GOLD = '#ECBD4A', GREY = 'rgba(244,247,255,.35)';
 export const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), lerp = (a, b, u) => a + (b - a) * u, ss = u => { u = clamp(u); return u * u * (3 - 2 * u); }, seg = (t, a, b) => clamp((t - a) / (b - a));
 function sp(tau, d = .4, b = .25) { if (tau <= 0) return 0; const z = Math.max(.05, 1 - b), wd = Math.PI / d, w0 = wd / Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w0 * tau) * (Math.cos(wd * tau) + z * w0 / wd * Math.sin(wd * tau)); }
 export const E = (t, at, d = .4, b = .3) => t < at ? 0 : sp(t - at, d, b);   // a spring from 0 to 1 starting at time `at`
@@ -23,7 +24,7 @@ export function glowDot(c, x, y, r, a = 1) {   // a bright filled orb with a sof
 export function txt(c, s, x, y, size, o = {}) { c.save(); c.font = `${o.weight || 800} ${size}px "${o.font || 'Unbounded'}"`; c.textAlign = o.align || 'center'; c.textBaseline = 'middle'; if (o.ls) c.letterSpacing = o.ls + 'px'; c.globalAlpha *= o.alpha ?? 1; c.fillStyle = o.col || WHITE; c.shadowColor = 'rgba(190,210,255,.9)'; c.shadowBlur = (o.glow ?? 18) * K; c.fillText(s, x, y); c.shadowBlur = 0; c.fillText(s, x, y); c.restore(); }
 const GLY = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉŐŰÖÜ0123456789#%&?';
 export function scramble(s, t, t0, dur) { return [...s].map((ch, i) => { if (ch === ' ') return ' '; const settle = t0 + dur * (i / s.length) + .15; if (t >= settle) return ch; if (t < t0) return ''; return GLY[Math.floor(hash(i * 13 + Math.floor(t * 24)) * GLY.length)]; }).join(''); }
-export function bg(c) { c.fillStyle = MID; c.fillRect(0, 0, 1080, 1920); const g = c.createRadialGradient(540, 900, 40, 540, 900, 1000); g.addColorStop(0, 'rgba(22,58,140,.42)'); g.addColorStop(1, 'rgba(22,58,140,0)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
+export function bg(c) { c.fillStyle = MID; c.fillRect(0, 0, 1080, 1920); const g = c.createRadialGradient(540, 1000, 40, 540, 1000, 1000); g.addColorStop(0, 'rgba(0,17,63,.75)'); g.addColorStop(1, 'rgba(0,17,63,0)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 // 3D: a flat w×h rectangle turned in space and projected; onQuad maps flat drawing onto it
 export function quad3(w, h, ry, rx, rz, cx, cy, s = 1) { const f = 1500; return [[-w / 2, -h / 2], [w / 2, -h / 2], [w / 2, h / 2], [-w / 2, h / 2]].map(([x, y]) => { x *= s; y *= s; const x1 = x * Math.cos(rz) - y * Math.sin(rz), y1 = x * Math.sin(rz) + y * Math.cos(rz); const x2 = x1 * Math.cos(ry), z2 = x1 * Math.sin(ry); const y3 = y1 * Math.cos(rx) - z2 * Math.sin(rx), z3 = y1 * Math.sin(rx) + z2 * Math.cos(rx); return [cx + x2 * f / (f + z3), cy + y3 * f / (f + z3)]; }); }
 export function onQuad(c, q, w, h, f) { const [p0, p1, , p3] = q; c.save(); c.transform((p1[0] - p0[0]) / w, (p1[1] - p0[1]) / w, (p3[0] - p0[0]) / h, (p3[1] - p0[1]) / h, p0[0], p0[1]); f(); c.restore(); }
@@ -34,7 +35,7 @@ export async function start({ scenes, words, story, dur, caption = {}, continuou
   await Promise.all([document.fonts.load('800 80px "Unbounded"', 'ÁÉŐŰ?'), document.fonts.load('600 42px "Inter"', 'ÁÉÍÓÖŐÚÜŰáéíóöőúüű'), document.fonts.load('500 42px "JBMono"', 'ÁÉŐŰáéőű')]);
   const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
   const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; }; const [bufA, actx] = mk(), [bufB, bctx] = mk();
-  const LOGO = await loadImage('logo-23.png'); const LOGO_C = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();
+  const LOGO = await loadImage('logo-23.png'); const LOGO_C = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#f4f7ff'; x.fillRect(0, 0, c.width, c.height); return c; })();
   const STAGE = c => { if (!stage) return; c.translate(540, 1205); c.scale(.87, .87); c.translate(-540, -955); };
   // caption: the reference's line (centred), at the top; mode 'type' types each word in, 'fade' fades and lifts it
   const CAPF = caption.font || '600 42px "Inter"', CY = caption.y ?? 470, mode = caption.mode || 'fade', meas = document.createElement('canvas').getContext('2d'); meas.font = CAPF;
