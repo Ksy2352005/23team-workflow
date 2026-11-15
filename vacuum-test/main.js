@@ -203,7 +203,7 @@ function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.trans
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['porszívógyártó','legerősebb','leggyorsabb','legjobb','furcsa','két','szőnyegen','szemükkel','egyszerű','összehasonlítás','látták','különbséget']);
 const bare = w => w.replace(/[.,:;!?…„”"]/g, '');
-const CAP = { x: 130, y: 540, size: 56, lh: 72, maxW: 790, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Montserrat"`;   // the caption area, placed for Instagram's preview: Montserrat Bold, two lines at most
+const CAP = { x: 130, y: 540, size: 50, lh: 64, maxW: 790, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Montserrat"`;   // the caption area, placed for Instagram's preview: Montserrat Bold, two lines at most
 const PAGES = (() => {   // group the words into short pages: a new page after a full stop, a question, a colon, or once a page is full
   const m = document.createElement('canvas').getContext('2d'); m.font = CAPFONT; const space = m.measureText(' ').width;
   const pages = []; let cur = [], x = 0, line = 0;
