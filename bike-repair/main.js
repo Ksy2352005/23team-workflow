@@ -10,7 +10,7 @@ const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
 const [bufA, actx] = mk(), [bufB, bctx] = mk();
-const TOP = '#00113F', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#00113F';
+const TOP = '#050916', NAVY = '#0f131e', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#050916';
 const GLOW = (() => { const [c, x] = mk(); c.width = c.height = 256; const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,214,120,1)'); g.addColorStop(.25, 'rgba(255,214,120,.45)'); g.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c; })();
 
 function sp(tau, d = .4, b = .2) {   // a spring like Motion's { type: 'spring', visualDuration, bounce }
@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
+function bg(c, col = '#1a2138') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: bikes, a repair stand, parts, the shop ——
 const T = i => WORDS[i][1];
@@ -67,40 +67,40 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', WOOD2 = '#a6744a',
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
+function floor(c) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, '#0a1022'); fl.addColorStop(1, '#070b18'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 function line(c, pts, col, w) { c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke(); }
 // a bike standing on y, centred on x, facing right; o.old = tired and grey, o.col = the frame colour, o.spin = wheel turn, o.gear = the chain ring colour
 function bike(c, x, y, s = 1, o = {}) { const R = 78 * s, bx = x - 120 * s, fx = x + 120 * s, wy = y - R, col = o.col || (o.old ? RUST : GOLD), spin = o.spin || 0;
-  for (const wx of [bx, fx]) { c.strokeStyle = '#1a1f3a'; c.lineWidth = 14 * s; c.beginPath(); c.arc(wx, wy, R - 7 * s, 0, 7); c.stroke(); c.strokeStyle = o.old ? '#6b7290' : STEEL; c.lineWidth = 3 * s; c.beginPath(); c.arc(wx, wy, R - 16 * s, 0, 7); c.stroke();
+  for (const wx of [bx, fx]) { c.strokeStyle = '#0d0f16'; c.lineWidth = 14 * s; c.beginPath(); c.arc(wx, wy, R - 7 * s, 0, 7); c.stroke(); c.strokeStyle = o.old ? '#2f323a' : STEEL; c.lineWidth = 3 * s; c.beginPath(); c.arc(wx, wy, R - 16 * s, 0, 7); c.stroke();
     c.lineWidth = 2 * s; for (let k = 0; k < 8; k++) { const a = spin + k * Math.PI / 4; c.beginPath(); c.moveTo(wx, wy); c.lineTo(wx + Math.cos(a) * (R - 16 * s), wy + Math.sin(a) * (R - 16 * s)); c.stroke(); } ell(c, wx, wy, 7 * s, 7 * s, STEEL); }
   const px = x - 10 * s, py = wy + 4 * s, sx = x - 40 * s, sy = wy - 105 * s, hx = x + 75 * s, hy = wy - 115 * s;
   line(c, [[bx, wy], [px, py], [sx, sy], [bx, wy]], col, 12 * s); line(c, [[px, py], [hx - 10 * s, hy + 18 * s], [sx, sy]], col, 12 * s); line(c, [[hx - 10 * s, hy + 18 * s], [fx, wy]], col, 11 * s);
-  line(c, [[sx, sy], [sx - 8 * s, sy - 26 * s]], STEEL, 7 * s); rrect(c, sx - 40 * s, sy - 38 * s, 62 * s, 16 * s, 8 * s, '#1a1f3a');
-  line(c, [[hx - 10 * s, hy + 18 * s], [hx - 4 * s, hy - 10 * s], [hx + 26 * s, hy - 14 * s]], STEEL, 7 * s); rrect(c, hx + 16 * s, hy - 22 * s, 26 * s, 14 * s, 7 * s, '#1a1f3a');
-  if (o.gear !== false) { c.save(); c.translate(px, py); c.rotate(spin); gearShape(c, 0, 0, 22 * s, o.gearCol || (o.old ? '#6b7290' : SAND2)); c.restore(); }
+  line(c, [[sx, sy], [sx - 8 * s, sy - 26 * s]], STEEL, 7 * s); rrect(c, sx - 40 * s, sy - 38 * s, 62 * s, 16 * s, 8 * s, '#0d0f16');
+  line(c, [[hx - 10 * s, hy + 18 * s], [hx - 4 * s, hy - 10 * s], [hx + 26 * s, hy - 14 * s]], STEEL, 7 * s); rrect(c, hx + 16 * s, hy - 22 * s, 26 * s, 14 * s, 7 * s, '#0d0f16');
+  if (o.gear !== false) { c.save(); c.translate(px, py); c.rotate(spin); gearShape(c, 0, 0, 22 * s, o.gearCol || (o.old ? '#2f323a' : SAND2)); c.restore(); }
   if (o.old) { c.fillStyle = 'rgba(80,60,50,.5)'; for (let k = 0; k < 5; k++) ell(c, lerp(bx, px, hash(k)), lerp(wy, py, hash(k + 3)) - 4 * s, 4 * s, 3 * s, 'rgba(80,60,50,.6)'); }
   if (o.shine) { glow(c, x, wy - 40 * s, 200 * s, .3 * o.shine); } }
-function gearShape(c, x, y, r, col) { c.fillStyle = col; c.beginPath(); for (let k = 0; k < 24; k++) { const a = k / 24 * Math.PI * 2, rr = k % 2 ? r : r * 1.25; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); c.fill(); ell(c, x, y, r * .4, r * .4, '#1a1f3a'); }
-function wrench(c, x, y, s, rot) { c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s); rrect(c, -8, -10, 16, 110, 8, STEEL); c.fillStyle = STEEL; c.beginPath(); c.arc(0, -16, 22, 0, 7); c.fill(); rrect(c, -7, -44, 14, 26, 3, '#22357f'); c.restore(); }
+function gearShape(c, x, y, r, col) { c.fillStyle = col; c.beginPath(); for (let k = 0; k < 24; k++) { const a = k / 24 * Math.PI * 2, rr = k % 2 ? r : r * 1.25; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); c.fill(); ell(c, x, y, r * .4, r * .4, '#0d0f16'); }
+function wrench(c, x, y, s, rot) { c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s); rrect(c, -8, -10, 16, 110, 8, STEEL); c.fillStyle = STEEL; c.beginPath(); c.arc(0, -16, 22, 0, 7); c.fill(); rrect(c, -7, -44, 14, 26, 3, '#141b2f'); c.restore(); }
 function helmet(c, x, y, s) { c.fillStyle = ROSE; c.beginPath(); c.arc(x, y, 50 * s, Math.PI, 0); c.closePath(); c.fill(); c.fillStyle = 'rgba(255,255,255,.35)'; for (let k = 0; k < 3; k++) rrect(c, x - 30 * s + k * 22 * s, y - 38 * s, 12 * s, 24 * s, 6 * s, 'rgba(255,255,255,.35)'); rrect(c, x - 54 * s, y - 6 * s, 108 * s, 12 * s, 6 * s, '#9b3f52'); }
 function bag(c, x, y, s, col = GOLD) { c.strokeStyle = GOLD2; c.lineWidth = 6 * s; c.beginPath(); c.arc(x, y - 70 * s, 22 * s, Math.PI, 0); c.stroke(); rrect(c, x - 44 * s, y - 72 * s, 88 * s, 72 * s, 8 * s, col); }
-function lightIcon(c, x, y, s) { rrect(c, x - 26 * s, y - 20 * s, 52 * s, 40 * s, 12 * s, '#1a1f3a'); ell(c, x + 14 * s, y, 12 * s, 12 * s, '#ffd889'); glow(c, x + 20 * s, y, 70 * s, .5); }
-function glovesIcon(c, x, y, s) { for (const d of [-1, 1]) { c.save(); c.translate(x + d * 30 * s, y); c.scale(d, 1); rrect(c, -22 * s, -30 * s, 44 * s, 56 * s, 16 * s, '#3d5cc8'); rrect(c, -30 * s, -14 * s, 14 * s, 30 * s, 7 * s, '#3d5cc8'); rrect(c, -22 * s, 18 * s, 44 * s, 12 * s, 5 * s, '#1a1f3a'); c.restore(); } }
+function lightIcon(c, x, y, s) { rrect(c, x - 26 * s, y - 20 * s, 52 * s, 40 * s, 12 * s, '#0d0f16'); ell(c, x + 14 * s, y, 12 * s, 12 * s, '#ffd889'); glow(c, x + 20 * s, y, 70 * s, .5); }
+function glovesIcon(c, x, y, s) { for (const d of [-1, 1]) { c.save(); c.translate(x + d * 30 * s, y); c.scale(d, 1); rrect(c, -22 * s, -30 * s, 44 * s, 56 * s, 16 * s, '#3d5cc8'); rrect(c, -30 * s, -14 * s, 14 * s, 30 * s, 7 * s, '#3d5cc8'); rrect(c, -22 * s, 18 * s, 44 * s, 12 * s, 5 * s, '#0d0f16'); c.restore(); } }
 function priceTag(c, x, y, k, str, big = 1) { if (k <= 0) return; scaled(c, x, y, Math.min(1.1, k) * big, () => { const w = Math.max(180, str.length * 23 + 70); c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(x - w / 2 + 5, y - 34 + 7, w, 68, 12); c.fill(); rrect(c, x - w / 2, y - 34, w, 68, 12, SAND); ell(c, x - w / 2 + 22, y, 7, 7, GOLD2); text(c, str, x + 14, y + 3, 40, NAVY); }); }
 function bulbIcon(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { glow(c, x, y, r * 3, .7); ell(c, x, y, r, r, '#ffd889'); rrect(c, x - r * .45, y + r * .8, r * .9, r * .5, r * .15, SAND2); c.strokeStyle = GOLD2; c.lineWidth = r * .12; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - r * .3, y + r * .2); c.lineTo(x, y - r * .25); c.lineTo(x + r * .3, y + r * .2); c.stroke(); for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .5; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.35, y + Math.sin(a) * r * 1.35); c.lineTo(x + Math.cos(a) * r * 1.75, y + Math.sin(a) * r * 1.75); c.stroke(); } }); }
-function sign(c, x, y, w, s, k, lit) { pop(c, x, y, k, () => { c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(x - w / 2 + 6, y - 40 + 10, w, 80, 16); c.fill(); rrect(c, x - w / 2, y - 40, w, 80, 16, lit ? GOLD : '#2b3f8e'); if (lit) glow(c, x, y, w * .7, .35 * lit); text(c, s, x, y + 3, 44, lit ? NAVY : SAND2); }); }
+function sign(c, x, y, w, s, k, lit) { pop(c, x, y, k, () => { c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.roundRect(x - w / 2 + 6, y - 40 + 10, w, 80, 16); c.fill(); rrect(c, x - w / 2, y - 40, w, 80, 16, lit ? GOLD : '#181f35'); if (lit) glow(c, x, y, w * .7, .35 * lit); text(c, s, x, y + 3, 44, lit ? NAVY : SAND2); }); }
 function calendarBadge(c, x, y, k, n) { pop(c, x, y, k, () => { rrect(c, x - 60, y - 70, 120, 140, 12, CREAM); rrect(c, x - 60, y - 70, 120, 36, 12, ROSE); c.fillStyle = ROSE; c.fillRect(x - 60, y - 48, 120, 14); text(c, String(n), x, y + 18, 58, NAVY); }); }
 // the people: the shop owner is white; the staff and the customers are blue
 function owner(c, t, x, y, s, o = {}) { mascot(c, { id: 'own', skin: 'owner', cap: true, s, x, y, f: o.f ?? .3, smile: o.smile ?? .9, sad: o.sad || 0, look: o.look ?? .2, blink: blinkAt(t, 7), walk: o.walk || 0, phi: o.phi || 0, handL: o.handL, handR: o.handR, squash: o.squash || 0 }); }
 const CUST = [{ skin: 'blue2', fem: 'pony' }, { skin: 'blue1' }, { skin: 'blue3', fem: 'glasses' }, { skin: 'blue1', tache: true }, { skin: 'blue2' }];
 function cust(c, t, k, x, y, s, o = {}) { mascot(c, { id: 'c' + k, ...CUST[k % 5], s, x, y, f: o.f ?? -.4, smile: o.smile ?? .85, sad: o.sad || 0, look: o.look ?? -.2, blink: blinkAt(t, 3 + k), walk: o.walk || 0, phi: o.phi ?? x / 30, handL: o.handL, handR: o.handR, squash: o.squash || 0 }); }
-function shopBack(c) { c.fillStyle = '#16286b'; c.fillRect(60, 1080, 960, 620); c.fillStyle = 'rgba(255,255,255,.035)'; for (let x = 100; x < 1020; x += 90) c.fillRect(x, 1080, 3, 620); rrect(c, 60, 1060, 960, 26, 8, '#22357f');
+function shopBack(c) { c.fillStyle = '#0f1428'; c.fillRect(60, 1080, 960, 620); c.fillStyle = 'rgba(255,255,255,.035)'; for (let x = 100; x < 1020; x += 90) c.fillRect(x, 1080, 3, 620); rrect(c, 60, 1060, 960, 26, 8, '#141b2f');
   for (let k = 0; k < 6; k++) { const x = 140 + k * 160; c.strokeStyle = STEEL; c.lineWidth = 4; c.beginPath(); c.moveTo(x - 30, 1170); c.lineTo(x + 30, 1170); c.stroke(); } }   // a pegboard wall with hooks
 function walkU(t, a, b) { const u = seg(t, a, b); return { u, walk: u > 0 && u < 1 ? 1 : 0 }; }
 
 const SHOT = {
   prices(c, t) {   // people want a new bike, but they see the price and put it off: a shiny bike, a customer walks up; the tag grows; she walks away
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT;
     rrect(c, 300, 1650, 480, 50, 10, SAND2); bike(c, 540, 1650, 1.25, { shine: 1 }); if (t > H.newb) spark(c, 540, 1420, t, H.newb, 6, 220, 14);
     owner(c, t, 900, F, 1.5, { f: -.4, look: -.3, smile: lerp(.95, .4, ss(seg(t, H.away, H.away + .6))) }); badge(c, 'ex', 900, 1180, 42, E(t, H.notice, .3, .5) * (1 - ss(seg(t, H.newb, H.newb + .3))));
     const tg = E(t, H.price - .2, .3, .5), big = 1 + .35 * ss(seg(t, H.price, H.price + .5)); priceTag(c, 540, 1170, tg, '899 900 Ft', big * .9);
@@ -109,13 +109,13 @@ const SHOT = {
     calendarBadge(c, 260, 1240, E(t, H.away, .3, .5) * (1 - ss(seg(t, 7.9, 8.2))), '?');
   },
   decide(c, t) {   // one day he decides to try something else
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT; const z = 1 + .05 * ss(seg(t, 8.2, 11)); c.save(); c.translate(540, 1700); c.scale(z, z); c.translate(-540, -1700);
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT; const z = 1 + .05 * ss(seg(t, 8.2, 11)); c.save(); c.translate(540, 1700); c.scale(z, z); c.translate(-540, -1700);
     bike(c, 260, F, .95, { old: true }); bike(c, 830, F, .95);
     owner(c, t, 540, F, 2.0, { f: .1, look: lerp(-.3, .2, ss(seg(t, H.dec - .4, H.dec))), smile: 1, squash: wob(t, H.dec, .4, 18, .5) });
     bulbIcon(c, 540, 1060, 50, E(t, H.dec, .3, .5)); c.restore();
   },
   pitch(c, t) {   // instead of the staff always pushing the newest models: a salesman points at a row of shiny new bikes; it is crossed out; he asks a question instead
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT; const cut = ss(seg(t, H.first - .2, H.first + .3));
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT; const cut = ss(seg(t, H.first - .2, H.first + .3));
     [[330, 0], [600, 1], [870, 2]].forEach(([x, i]) => { const a = E(t, H.newest - .2 + i * .15, .3, .45); pop(c, x, F, a, () => bike(c, x, F, .82, { col: [GOLD, ROSE, '#3fa45f'][i], shine: 1 - cut })); });
     if (t > H.newest) spark(c, 600, 1480, t, H.newest + .2, 7, 300, 14);
     pop(c, 600, 1290, E(t, H.newest, .3, .5) * (1 - cut), () => { rrect(c, 530, 1260, 140, 64, 14, GOLD); text(c, 'ÚJ', 600, 1294, 46, NAVY); });
@@ -124,19 +124,19 @@ const SHOT = {
     const q = E(t, H.ask, .3, .5); if (q > 0) bubble(c, 300, 1180, 120, 110, Math.min(1.1, q), 200, 1290, () => text(c, '?', 300, 1184, 70, NAVY));
   },
   ask(c, t) {   // "what's wrong with your bike?": a customer with her old bike; the salesman asks
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT;
     const w = walkU(t, 16.9, 17.9), x = lerp(1200, 700, ss(w.u)); bike(c, x - 10, F, 1.05, { old: true, spin: -x / 70 }); cust(c, t, 0, x + 170, F, 1.5, { f: -.45, walk: w.walk, look: -.2, smile: .7, handL: [x + 90, F - 250] });
     cust(c, t, 3, 200, F, 1.6, { f: .45, look: .3, smile: 1 });
     const b = E(t, H.what - .1, .3, .5); if (b > 0) bubble(c, 350, 1160, 230, 150, Math.min(1.1, b), 260, 1300, () => { bike(c, 330, 1210, .32, { old: true }); text(c, '?', 430, 1162, 70, ROSE); });
   },
   fix(c, t) {   // some needed just one part: the old chain ring comes off, a new one goes on; others just a service: the wrench, a drop of oil, it shines; and they ride again
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT;
     // the repair stand and the bike up on it
     const ride = ss(seg(t, H.again - .2, H.again + 1.2)), bx = 520 + ride * 900; rrect(c, 300, 1500, 18, 200, 6, STEEL); rrect(c, 250, 1690, 120, 14, 6, STEEL);
     const up = 1 - ss(seg(t, H.again - .5, H.again - .1)), by = lerp(F, 1620, up), clean = ss(seg(t, H.service + .4, H.service + 1.2));
     if (ride < 1) { if (up > .5) line(c, [[309, 1500], [bx - 60, by - 150]], STEEL, 10); bike(c, bx, by, 1.2, { old: clean < .5, gearCol: t > H.part + .2 ? GOLD : undefined, spin: ride * -30, shine: clean * (1 - ride) }); if (ride > 0) cust(c, t, 1, bx - 40, by - 70, 1.4, { f: .45, look: .3, smile: 1, walk: 0 }); }
     // the part: the old ring flies off, the gold one lands
-    const px = 510, py = F - 1.2 * 78 + 4 * 1.2; const off = seg(t, H.part - .3, H.part + .3); if (off > 0 && off < 1) { c.save(); c.globalAlpha = 1 - off; gearShape(c, px - 200 * off, py - 300 * off + 400 * off * off, 26, '#6b7290'); c.restore(); }
+    const px = 510, py = F - 1.2 * 78 + 4 * 1.2; const off = seg(t, H.part - .3, H.part + .3); if (off > 0 && off < 1) { c.save(); c.globalAlpha = 1 - off; gearShape(c, px - 200 * off, py - 300 * off + 400 * off * off, 26, '#2f323a'); c.restore(); }
     if (t > H.part - .1 && t < H.part + .3) { const u = seg(t, H.part - .1, H.part + .3); gearShape(c, lerp(px + 200, px, ease(u)), lerp(py - 260, py, ease(u)), 26, GOLD); }
     if (t > H.part + .25) spark(c, px, py, t, H.part + .25, 5, 70, 12);
     // the service: the wrench turns; an oil drop
@@ -146,26 +146,26 @@ const SHOT = {
     owner(c, t, 175, F, 1.45, { f: .4, look: .3, smile: 1, handR: wk > .5 ? [620, 1460] : undefined });
   },
   service(c, t) {   // the shop starts offering repairs and servicing, even when nobody buys anything new: two signs light up; a customer leaves with her own bike, smiling, no bag
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT;
     sign(c, 330, 1190, 330, 'JAVÍTÁS', E(t, H.repair - .2, .35, .45), ss(seg(t, H.repair, H.repair + .3))); sign(c, 750, 1190, 330, 'SZERVIZ', E(t, H.maint - .2, .35, .45), ss(seg(t, H.maint, H.maint + .3)));
     const w = walkU(t, H.nothing - .4, H.nothing + 1.6), x = lerp(420, 1250, ss(w.u)); bike(c, x + 160, F, 1.0, { spin: -x / 60 }); cust(c, t, 0, x, F, 1.5, { f: .45, walk: w.walk, look: .3, smile: 1, handR: [x + 90, F - 250] });
     owner(c, t, 175, F, 1.5, { f: .4, look: .3, smile: 1, handR: t > H.nothing ? [220, 1340 + 20 * Math.sin(t * 12)] : undefined });
     pop(c, x + 20, 1330, E(t, H.nothing + .2, .3, .5) * (1 - ss(seg(t, 31.3, 31.7))), () => heart(c, x + 20, 1330, 36, 1, GOLD));
   },
   doubt(c, t) {   // at first some staff thought it would hurt new bike sales: two worried colleagues; a falling chart over the new bikes
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT;
     const ck = E(t, H.hurt - .7, .35, .45); pop(c, 540, 1240, ck, () => { rrect(c, 360, 1110, 360, 260, 22, CREAM); const dn = ss(seg(t, H.hurt, H.hurt + .7)); [1, .8, .6].forEach((v, i) => { const h = 170 * v * lerp(1, .5 + .15 * i, dn) ; rrect(c, 410 + i * 100, 1340 - h, 60, h, 8, i ? ROSE : '#3d5cc8'); }); if (dn > 0) { c.strokeStyle = ROSE; c.lineWidth = 10; c.lineCap = 'round'; c.beginPath(); c.moveTo(400, 1150); c.lineTo(lerp(400, 680, dn), lerp(1150, 1320, dn)); c.stroke(); } bike(c, 600, 1250, .3); });
     cust(c, t, 1, 190, F, 1.55, { f: .4, look: .3, smile: .2, sad: .7 }); cust(c, t, 2, 890, F, 1.55, { f: -.4, look: -.3, smile: .2, sad: .7 });
     badge(c, 'q', 190, 1180, 40, E(t, H.staff, .3, .5)); badge(c, 'q', 890, 1180, 40, E(t, H.staff + .2, .3, .5));
   },
   later(c, t) {   // a few months later something interesting happened: the calendar flies through months; a "!"
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     const n = Math.floor(clamp(seg(t, H.months, H.months + 1.0)) * 4); scaled(c, 540, 1360, 1.8, () => calendarBadge(c, 540, 1360, E(t, 36.3, .35, .45), 3 + n));
     for (let k = 0; k < 4; k++) { const at = H.months + k * .25, u = seg(t, at, at + .6); if (u > 0 && u < 1) { c.save(); c.globalAlpha = 1 - u; c.translate(540 + 300 * u, 1380 - 100 * u + 300 * u * u); c.rotate(u * 2); rrect(c, -108, -126, 216, 252, 14, CREAM); c.restore(); } }
     badge(c, 'ex', 760, 1160, 60, E(t, H.interesting, .3, .5)); if (t > H.interesting) spark(c, 540, 1360, t, H.interesting, 7, 260, 16);
   },
   back(c, t) {   // those who came for repairs came back: for accessories, gear, even a new bike; and they brought their friends
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT;
     // the counter: things pile up as they come back
     rrect(c, 560, 1520, 460, 180, 16, WOOD); rrect(c, 560, 1520, 460, 22, 10, WOOD2);
     pop(c, 640, 1520, E(t, H.acc, .3, .5), () => helmet(c, 640, 1520, 1)); pop(c, 760, 1510, E(t, H.acc + .35, .3, .5), () => lightIcon(c, 760, 1500, 1.1));
@@ -178,13 +178,13 @@ const SHOT = {
     for (let k = 0; k < 4; k++) { const at = H.recommend + k * .2, u = seg(t, at, at + 1.2); if (u > 0 && u < 1) heart(c, 160 + k * 50, 1300 - u * 200, 22, Math.sin(u * Math.PI) * 1.2, k % 2 ? ROSE : GOLD); }
   },
   lesson(c, t) {   // the owner sees it: the sale doesn't always have to come first. If you help them use what they already have, they trust you next time
-    bg(c, '#163A8C'); floor(c); shopBack(c); const H = HIT; const help = ss(seg(t, H.help - .4, H.help + .2));
+    bg(c, '#0d2463'); floor(c); shopBack(c); const H = HIT; const help = ss(seg(t, H.help - .4, H.help + .2));
     // first: the owner thinks; the sale tag steps back
     if (help < 1) { c.save(); c.globalAlpha = 1 - help; owner(c, t, 540, F, 1.9, { f: .1, look: .2, smile: 1 }); bulbIcon(c, 540, 1050, 46, E(t, H.realise, .3, .5));
       priceTag(c, 820, 1300, E(t, H.sale - .1, .3, .5), 'Ft'); cross(c, 820, 1300, 60, seg(t, H.notfirst, H.notfirst + .4)); pop(c, 260, 1300, E(t, H.notfirst + .2, .3, .5), () => heart(c, 260, 1300, 46, 1, ROSE)); c.restore(); }
     // then: he pumps up her old bike's tyre, they shake hands; a heart and trust
     if (help > 0) { c.save(); c.globalAlpha = help; bike(c, 520, F, 1.15, { old: false, col: RUST }); const pump = Math.abs(Math.sin(t * 6)) * (t < H.reason ? 1 : 0);
-      rrect(c, 270, 1560 + 40 * pump, 14, 140 - 40 * pump, 6, STEEL); rrect(c, 236, 1550 + 40 * pump, 82, 14, 7, '#1a1f3a'); line(c, [[277, 1700], [330, 1720], [430, 1700]], '#1a1f3a', 5);
+      rrect(c, 270, 1560 + 40 * pump, 14, 140 - 40 * pump, 6, STEEL); rrect(c, 236, 1550 + 40 * pump, 82, 14, 7, '#0d0f16'); line(c, [[277, 1700], [330, 1720], [430, 1700]], '#0d0f16', 5);
       owner(c, t, 170, F, 1.5, { f: .4, look: .3, smile: 1, handR: t < H.reason ? [262, 1560 + 40 * pump] : [lerp(262, 520, ss(seg(t, H.reason, H.reason + .5))), 1440] });
       cust(c, t, 0, 880, F, 1.5, { f: -.45, look: -.3, smile: 1, handL: t > H.reason ? [lerp(800, 560, ss(seg(t, H.reason, H.reason + .5))), 1440] : undefined });
       pop(c, 540, 1240, E(t, H.reason + .5, .3, .5), () => heart(c, 540, 1240, 52, 1, GOLD)); if (t > H.trust) { glow(c, 540, 1400, 520, .25 * ss(seg(t, H.trust, H.trust + .5))); spark(c, 540, 1300, t, H.trust, 8, 360, 18); } c.restore(); }
@@ -218,7 +218,7 @@ function captions(c, t) {
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
   p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
-    const hot = w === now, col = hot || w.key ? GOLD : CREAM;
+    const hot = w === now, col = hot || w.key ? '#2ED3C6' : CREAM;   // dark story world: turquoise key words
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
     c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10; c.shadowOffsetY = 3; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
     c.restore(); });
@@ -227,7 +227,7 @@ function captions(c, t) {
 
 // —— the locked 23 Team end card (ANIMATION-STYLE.md) ——
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
-const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();
+const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#F4F7FF'; x.fillRect(0, 0, c.width, c.height); return c; })();
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = W * .30, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;

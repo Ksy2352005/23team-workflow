@@ -2,7 +2,7 @@
 // A bike shop asks what's wrong with your bike instead of pushing new ones; repair customers come back to buy, and bring friends.
 import { WORDS } from './captions.js';
 const T = i => WORDS[i][1];
-export const STORY = 62.6, DUR = 64.8;
+export const STORY = 62.6, DUR = 67.6;   // end card: the call to action (line 4) 1.3 s in, then 1.5 s of the logo alone
 export const TS = 1;
 export const VO = 'refs/voiceover-hu-x1.15.mp3';
 export const SHOTS = [[0, 'prices', 'cut'], [8.2, 'decide', 'soft'], [11.0, 'pitch', 'soft'], [16.6, 'ask', 'whip'], [19.3, 'fix', 'soft'], [25.4, 'service', 'whip'], [31.8, 'doubt', 'soft'], [36.2, 'later', 'whip'], [39.7, 'back', 'soft'], [49.7, 'lesson', 'soft']];
