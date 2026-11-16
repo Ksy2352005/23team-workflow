@@ -1,5 +1,7 @@
-// M05 Kölcsönösség (reciprocity), in the locked M03/M04 style on black: hairline white lines, one turquoise-glowing orb, hand-built drawings per sentence.
-// Hook (user 2026-11-13: "always start with a visual hook"): a gift box falls from the sky and slams down (flash, shockwave, shake); the lid flies off, the light bursts out and shoots up a sales arrow.
+// M05 Kölcsönösség (reciprocity), v2 (user 2026-11-16: v1's drawings did not tell the story): in the locked M03/M04 style on black, hairline white lines,
+// one turquoise-glowing orb, but now ONE small story that shows every sentence literally: a shop owner behind a counter gives a customer gifts first,
+// the customer wants to give back and buys; two friends on a balance scale (human nature); the circle of give and give back; trust, loyalty, purchase.
+// Hook: sales bars rocket up from nothing on frame one and slam into an impact (flash, shockwave, shake, a burst of coins).
 // Voice and call to action (line 1) spoken in ONE ElevenLabs request (CLAUDE.md 2026-11-15), pauses tightened (tools/motion-kit/voice_with_cta.py).
 import { WORDS } from './captions.js';
 import { start, ss, seg, clamp, lerp, ease3, WHITE, MID, K } from './kit.js';
@@ -94,97 +96,150 @@ const check = (cx, cy, s) => [[[cx - .5 * s, cy], [cx - .15 * s, cy + .35 * s], 
 const shield = (cx, cy, s) => [[[cx, cy - s], [cx + .8 * s, cy - .72 * s], [cx + .8 * s, cy], ...bez([cx + .8 * s, cy], [cx + .8 * s, cy + .55 * s], [cx + .3 * s, cy + .85 * s], [cx, cy + 1.05 * s]).slice(1), ...bez([cx, cy + 1.05 * s], [cx - .3 * s, cy + .85 * s], [cx - .8 * s, cy + .55 * s], [cx - .8 * s, cy]).slice(1), [cx - .8 * s, cy - .72 * s], [cx, cy - s]]];
 const lem = (cx, cy, a, p) => { const d = 1 + Math.sin(p) ** 2; return [cx + a * Math.cos(p) / d, cy + a * Math.sin(p) * Math.cos(p) / d]; };
 const infinity = (cx, cy, a) => [Array.from({ length: 161 }, (_, i) => lem(cx, cy, a, i / 160 * Math.PI * 2))];
+const scaleBeam = (x, y, tilt) => { const L = 280, dx = Math.cos(tilt) * L, dy = Math.sin(tilt) * L, lx = x - dx, ly = y - dy, rx = x + dx, ry = y + dy;
+  return [[[x, y + 380], [x, y]], [[x - 120, y + 380], [x + 120, y + 380]], [[lx, ly], [rx, ry]], [[lx, ly], [lx - 90, ly + 150]], [[lx, ly], [lx + 90, ly + 150]], arc(lx, ly + 150, 110, 30, 0, Math.PI, 20), [[rx, ry], [rx - 90, ry + 150]], [[rx, ry], [rx + 90, ry + 150]], arc(rx, ry + 150, 110, 30, 0, Math.PI, 20)]; };
+// —— the people: a friendly line figure (head with a smile, torso, arms that reach to a hand point, legs); s = 1 is 420 px tall ——
+function person(cx, base, s = 1, o = {}) { const P = (x, y) => [cx + x * s, base + y * s], hy = base - 378 * s, out = [];
+  out.push(ring(cx, hy, 42 * s), arc(cx + (o.look || 0) * 8 * s, hy + 6 * s, 16 * s, 11 * s, Math.PI * .15, Math.PI * .85, 16), [[cx - 14 * s + (o.look || 0) * 8 * s, hy - 10 * s], [cx - 14 * s + (o.look || 0) * 8 * s, hy - 3 * s]], [[cx + 14 * s + (o.look || 0) * 8 * s, hy - 10 * s], [cx + 14 * s + (o.look || 0) * 8 * s, hy - 3 * s]]);
+  if (o.cap) out.push(arc(cx, hy - 26 * s, 42 * s, 30 * s, Math.PI, Math.PI * 2, 24), [[cx - 46 * s, hy - 26 * s], [cx + 70 * s, hy - 26 * s]]);
+  out.push([P(0, -336), P(0, -320)], close([P(-62, -320), P(62, -320), P(48, -170), P(-48, -170)]));
+  if (!o.noLegs) out.push([P(-60, 0), P(-30, 0), P(-24, -170)], [P(24, -170), P(30, 0), P(60, 0)]);
+  [[-1, o.hl], [1, o.hr]].forEach(([side, h]) => { const sh = P(side * 62, -312), hd = h || P(side * 80, -185), el = [(sh[0] + hd[0]) / 2 + side * 14 * s, (sh[1] + hd[1]) / 2 + 26 * s];
+    out.push([sh, el, hd], ring(hd[0], hd[1], 9 * s)); });
+  return out; }
+const headOf = (cx, base, s = 1) => [cx, base - 378 * s], chestOf = (cx, base, s = 1) => [cx, base - 270 * s];
+// —— the objects ——
+const counter = (l, r, top, base) => [close([[l, top + 22], [r, top + 22], [r, base], [l, base]]), close([[l - 20, top], [r + 20, top], [r + 20, top + 22], [l - 20, top + 22]])];
+const sampleCup = (x, y, s = 1) => [close([[x - 60 * s, y - 50 * s], [x + 60 * s, y - 50 * s], [x + 44 * s, y + 50 * s], [x - 44 * s, y + 50 * s]]), [[x - 60 * s, y - 30 * s], [x + 60 * s, y - 30 * s]], [[x + 20 * s, y - 50 * s], [x + 48 * s, y - 110 * s]], arc(x + 52 * s, y - 118 * s, 10 * s, 10 * s, 0, Math.PI * 2, 16)];
+const steam = (x, y, s, t) => [-1, 1].map(k => Array.from({ length: 17 }, (_, i) => { const u = i / 16; return [x + k * 22 * s + 10 * s * Math.sin(u * 7 + t * 5 + k), y - u * 80 * s]; }));
+const guide = (x, y, s = 1) => [rrect(x - 70 * s, y - 95 * s, 140 * s, 190 * s, 10 * s), ...[0, 1, 2].flatMap(k => { const yy = y - 45 * s + k * 50 * s; return [[[x - 46 * s, yy], [x - 34 * s, yy + 12 * s], [x - 16 * s, yy - 12 * s]], [[x - 2 * s, yy], [x + 46 * s, yy]]]; })];
+const register = (x, base, open = 0) => [close([[x - 130, base], [x - 108, base - 130], [x + 108, base - 130], [x + 130, base]]), [[x + 50, base - 130], [x + 50, base - 165]], rrect(x - 10, base - 215, 120, 50, 8),
+  ...[0, 1, 2].map(k => [[x - 80 + k * 6, base - 98 + k * 30], [x + 20 - k * 6, base - 98 + k * 30]]), close([[x - 110, base + 4 + 60 * open], [x + 110, base + 4 + 60 * open], [x + 110, base + 44 + 60 * open], [x - 110, base + 44 + 60 * open]])];
+const coin = (x, y, r = 22) => [ring(x, y, r), ring(x, y, r * .62)];
+const phone = (x, y) => [rrect(x - 125, y - 225, 250, 450, 34), [[x - 30, y - 200], [x + 30, y - 200]], rrect(x - 95, y - 160, 190, 230, 14), [[x - 95, y + 110], [x + 40, y + 110]], [[x - 95, y + 145], [x + 10, y + 145]]];
+const handshake = (x, y, s = 1) => { const P = (a, b) => [x + a * s, y + b * s];
+  return [close([P(-250, -10), P(-150, -60), P(-115, 10), P(-215, 60)]), close([P(250, -10), P(150, -60), P(115, 10), P(215, 60)]),
+    [P(-140, -40), ...bez(P(-140, -40), P(-80, -100), P(40, -95), P(140, -40)).slice(1)], [P(-122, 10), ...bez(P(-122, 10), P(-60, 70), P(60, 80), P(122, 10)).slice(1)],
+    bez(P(-70, -78), P(-20, -110), P(40, -100), P(70, -62)), ...[0, 1, 2, 3].map(k => arc(-60 * s + x + k * 40 * s, y - 20 * s + k * 6 * s, 20 * s, 34 * s, -Math.PI * .5, Math.PI * .5, 14))]; };
+const card = (x, y) => [rrect(x - 160, y - 92, 320, 184, 18), [[x - 130, y - 52], [x - 30, y - 52]], ...[0, 1, 2, 3, 4].map(k => ring(x - 112 + k * 56, y + 22, 21))];
+const xMark = (x, y, r) => [[[x - r, y - r], [x + r, y + r]], [[x + r, y - r], [x - r, y + r]]];
+const one = (x, y, r) => [ring(x, y, r), [[x - r * .25, y - r * .35], [x + r * .08, y - r * .55], [x + r * .08, y + r * .55]], [[x - r * .25, y + r * .55], [x + r * .38, y + r * .55]]];
+const giftAt = (x, y, s) => gift(x, y + 58 * s, 116 * s, 92 * s);   // a gift centred on x, y
 // —— the storyboard ——
-const HOOK = .45, BASE = 1560, CX = 540;
-// 0 THE HOOK (frame one already moving): „Ha több eladást szeretnél”: a gift box falls from the sky and slams down (flash, shockwave, shake);
-//   its lid flies off, the light bursts out and shoots up a rising sales arrow
-const boxBase = t => t < HOOK ? lerp(-260, BASE, (t / HOOK) ** 2) : BASE + 18 * Math.sin(clamp((t - HOOK) / .3) * Math.PI) * (1 - clamp((t - HOOK) / .3));
-const lidU = t => ease3(seg(t, HOOK + .03, HOOK + .55));
-el(t => gift(CX, boxBase(t), 400, 310).slice(0, 2), 0, 1.0, { din: .01, dout: .4, quiet: 1 });
-el(t => { const u = lidU(t); return gift(CX, boxBase(t), 400, 310, 1000 * u, -1.6 * u).slice(2); }, 0, 1.0, { din: .01, dout: .3, quiet: 1 });
-rays(CX, BASE - 155, 250, HOOK, { n: 16, len: 130 }); ripple(CX, BASE - 155, 150, HOOK); ripple(CX, BASE - 155, 50, HOOK + .12);
-el(chartUp(CX - 80, BASE - 330, 860, 860), .6, 1.05, { din: .35, dout: .35, col: TURQ, quiet: 1 });
-// 1 „újra kell gondolnod a mostani stratégiádat”: a figure; two arrows turn around its head (think again), the light sits in its mind
-const FB = 1700;
-el(figure(CX, FB, 2.4), T(4) + .08, T(10) - .45, { din: .55, dout: .4 });
-el(t => cycle(CX, FB - 218 * 2.4, 175, t * 2.6, 150), T(5), T(10) - .45, { din: .45, dout: .4, col: TURQ, quiet: 1 });
-// 2 „Először te adj valamit a vásárlóidnak”: you on the left, the customer on the right; a gift travels from you to them
-const YOU = 260, THEM = 820, FS = 1.9, CHEST = FB - 163 * FS, TOPH = FB - 277 * FS;
-el(figure(YOU, FB, FS), T(10), T(16) - .55, { din: .5, dout: .4, x: YOU });
-el(figure(THEM, FB, FS), T(10) + .1, T(16) - .55, { din: .5, dout: .4, quiet: 1, x: THEM });
-const giftU = t => ss(seg(t, T(13), T(15) + .1)), giftAt = u => [lerp(YOU, THEM, u), TOPH - 30 - 240 * Math.sin(u * Math.PI)];
-el(t => { const [x, y] = giftAt(giftU(t)); return gift(x, y + 70, 150, 116); }, T(11) - .1, T(16) - .55, { din: .35, dout: .4, col: TURQ, x: YOU });
-ripple(THEM, TOPH - 60, 110, T(15) + .3);
-// 3 „Egy ingyenes mintát, egy hasznos útmutatót vagy exkluzív tippeket”: a sample jar, a guide book, a light bulb with a star, each as it is said
-el(jar(205, 1250, 1.15), T(17) - .15, T(25) - .45, { din: .5, dout: .4, x: 205 });
-el(bookS(CX, 1250, .85), T(20) - .15, T(25) - .45, { din: .5, dout: .4, x: CX });
-el(bulb(860, 1180, 92), T(23) - .1, T(25) - .45, { din: .5, dout: .4, x: 850 });
-el([star5(860, 960, 40)], T(24) - .05, T(25) - .45, { din: .3, dout: .3, col: TURQ, quiet: 1 });
-rays(860, 1180, 130, T(24), { n: 12, len: 50 });
-// 4 „Ha előre értéket adsz, az emberek szeretnék viszonozni”: you give a diamond (value) first; a heart comes back
-el(figure(YOU, FB, FS), T(25), T(33) - .45, { din: .5, dout: .4, x: YOU });
-el(figure(THEM, FB, FS), T(25) + .1, T(33) - .45, { din: .5, dout: .4, quiet: 1, x: THEM });
-const diaU = t => ss(seg(t, T(27), T(28) + .2)), diaAt = u => [lerp(YOU, THEM, u), TOPH - 70 - 220 * Math.sin(u * Math.PI)];
-el(t => { const [x, y] = diaAt(diaU(t)); return diamond(x, y, .8); }, T(26) - .1, T(33) - .45, { din: .35, dout: .35, col: TURQ, x: YOU });
-const hrtU = t => ss(seg(t, T(31) - .2, T(32) + .2)), hrtAt = u => [lerp(THEM, YOU, u), TOPH - 70 - 220 * Math.sin(u * Math.PI)];
-el(t => { const [x, y] = hrtAt(hrtU(t)); return [heart(x, y, 70)]; }, T(30) + .1, T(33) - .45, { din: .35, dout: .35, col: TURQ, x: THEM });
-ripple(YOU, TOPH - 70, 110, T(32) + .2);
-// 5 „Például úgy, hogy megveszik a termékedet”: a shopping bag; your product drops into it; a check
-const BAGB = 1700, BAGW = 500, BAGH = 520, BAGTOP = BAGB - BAGH;
-el(bag(CX, BAGB, BAGW, BAGH), T(33), T(39) - .45, { din: .6, dout: .4 });
-const prodY = t => lerp(880, BAGTOP + 260, ss(seg(t, T(36) - .2, T(37))) ** 1.6);
-el(t => P_PRODUCT.map(st => S(st, CX, prodY(t), 130)), T(35) - .1, T(39) - .45, { din: .3, dout: .3, quiet: 1, clipY: BAGTOP + 2 });
-el(check(CX, BAGB - 210, 140), T(38) - .05, T(39) - .45, { din: .3, dout: .3, col: TURQ });
-ripple(CX, BAGB - 210, 150, T(38) + .1);
-// 6 „Ez az emberi természet. Úgy érezzük, vissza kell adnunk valamit”: a figure with a glowing heart; two arrows circle round it (give and give back)
-const F6 = 1720, F6S = 2.4, CH6 = F6 - 163 * F6S;
-el(figure(CX, F6, F6S), T(39), T(49) - .45, { din: .6, dout: .4 });
-el(t => [heart(CX, CH6 - 12, 52 * (1 + .1 * Math.sin((t - T(41)) * 7)))], T(41) - .1, T(49) - .45, { din: .4, dout: .3, col: TURQ, quiet: 1 });
-el(t => cycle(CX, 1380, 420, -Math.PI / 2 + (t - T(45)) * 1.1, 440), T(45) - .1, T(49) - .45, { din: .6, dout: .4 });
-// 7 „A neve: a kölcsönösség elve”: an infinity loop with a small figure in each loop; the light runs round and round between them
-const LX = CX, LY = 1220, LA = 450;
-el(infinity(LX, LY, LA), T(49) + .05, T(54) - .45, { din: .7, dout: .4 });
-el(figure(LX - 300, LY + 115, .85), T(50), T(54) - .45, { din: .45, dout: .35, quiet: 1 });
-el(figure(LX + 300, LY + 115, .85), T(50) + .1, T(54) - .45, { din: .45, dout: .35, quiet: 1 });
-rays(LX, LY, 80, T(52) + .1, { n: 14, len: 80 });
-const lemP = t => Math.PI * 2 * ss(seg(t, T(50), T(53) + .25));
-// 8 „Használd a marketingedben, hogy olyan bizalmat és hűséget építs, ami vásárlásba fordul”:
-//   a megaphone sends waves; a shield (trust) and a heart (loyalty); both drop into a shopping bag; a check
-el(P_PROMO.map(st => S(st, 290, 1200, 190)), T(54), T(58) - .1, { din: .5, dout: .4, x: 300 });
-el(t => { const u = seg(t, T(55), T(58)); return [0, 1, 2].map(k => { const v = (u * 2.4 + k / 3) % 1; return arc(420 + v * 400, 1200, 70 + v * 80, 110 + v * 130, -Math.PI / 3, Math.PI / 3, 14); }); }, T(55), T(58) - .1, { din: .2, dout: .3, col: TURQ, quiet: 1 });
-const mergeU = t => ss(seg(t, T(63) - .1, T(64) + .5)), B8 = 1720, B8T = B8 - 460;
-el(t => { const u = mergeU(t); return shield(lerp(330, CX - 60, u), lerp(1130, B8T + 260, u ** 1.5), lerp(160, 90, u)); }, T(59) - .15, STORY - .5, { din: .45, dout: .4, x: 330, clipY: B8T + 2 });
-el(t => { const u = mergeU(t); return [heart(lerp(760, CX + 70, u), lerp(1160, B8T + 270, u ** 1.5), lerp(110, 60, u))]; }, T(61) - .1, STORY - .5, { din: .45, dout: .4, col: TURQ, x: 760, clipY: B8T + 2 });
-el(bag(CX, B8, 440, 460), T(63) - .2, STORY - .5, { din: .5, dout: .45 });
-el(check(CX, B8 - 180, 130), T(65) - .1, STORY - .5, { din: .3, dout: .4, col: TURQ });
-rays(CX, B8 - 180, 140, T(65) + .05, { n: 14, len: 60 });
-// the light's path (key frames), with rides where it travels with a gift, a diamond, a heart or round the infinity loop
-const gA = giftAt(0), gB = giftAt(1), dA = diaAt(0), dB = diaAt(1), hA = hrtAt(0), hB = hrtAt(1), L0 = lem(LX, LY, LA, 0);
-const ORB = orb([[HOOK, CX, BASE - 155, 24], [.68, CX, 1180, 28], [1.0, 860, 860, 24], [1.35, 860, 860, 24], [T(4) + .3, CX, FB - 218 * 2.4, 32], [T(10) - .5, CX, FB - 218 * 2.4, 32],
-  [T(11) + .2, gA[0], gA[1] - 40, 22], [T(13), gA[0], gA[1] - 40, 22], [T(15) + .1, gB[0], gB[1] - 40, 22], [T(16) - .5, gB[0], gB[1] - 40, 22],
-  [T(17) + .2, 205, 1250, 28], [T(20) - .2, 205, 1250, 28], [T(20) + .25, CX, 1230, 26], [T(23) - .2, CX, 1230, 26], [T(23) + .25, 860, 1170, 30], [T(25) - .4, 860, 1170, 30],
-  [T(26) + .1, dA[0], dA[1], 20], [T(27), dA[0], dA[1], 20], [T(28) + .2, dB[0], dB[1], 20], [T(31) - .2, hA[0], hA[1], 20], [T(32) + .2, hB[0], hB[1], 20], [T(33) - .4, hB[0], hB[1], 20],
-  [T(35) - .1, CX, 800, 24], [T(36) - .2, CX, 800, 24], [T(37), CX, BAGTOP + 160, 26], [T(38), CX, BAGB - 210, 30], [T(39) - .4, CX, BAGB - 210, 30],
-  [T(41) - .1, CX, CH6 - 12, 28], [T(49) - .4, CX, CH6 - 12, 28], [T(50), L0[0], L0[1], 24], [T(53) + .25, L0[0], L0[1], 24],
-  [T(54) + .3, 290 + 114, 1200, 28], [T(58) - .2, 290 + 114, 1200, 28], [T(59) + .1, 330, 1130, 28], [T(61) - .2, 330, 1130, 28], [T(61) + .2, 760, 1160, 28], [T(63) - .1, 760, 1160, 28], [T(64) + .5, CX, B8T + 230, 28], [T(65), CX, B8 - 180, 30]]);
+const HOOK = .45, CX = 540, AX = 1600;
+// 0 THE HOOK „Ha több eladást szeretnél” (frame one already moving): four sales bars rocket up from nothing and slam into place (flash, shockwave,
+//   shake); an arrow sweeps over their tops and a burst of coins flies out of the tallest
+const BARS = [[300, 200], [440, 320], [580, 450], [720, 640]];
+const barH = (k, t) => BARS[k][1] * (t < HOOK ? Math.pow(t / HOOK, 1.6) : 1 + .07 * Math.sin((t - HOOK) * 30) * Math.exp(-(t - HOOK) * 7));
+el([[[220, AX], [860, AX]]], 0, 1.0, { din: .01, dout: .35, quiet: 1 });
+el(t => BARS.map(([x], k) => { const h = barH(k, t); return [[x - 45, AX], [x - 45, AX - h], [x + 45, AX - h], [x + 45, AX]]; }), 0, 1.0, { din: .01, dout: .35, quiet: 1 });
+el(t => { const p = BARS.map(([x], k) => [x, AX - barH(k, t) - 50]); return [p, arrowHead(p[3], 140, -190, 40)]; }, HOOK - .05, 1.0, { din: .3, dout: .35, col: TURQ, quiet: 1 });
+rays(720, AX - 640, 120, HOOK, { n: 16, len: 120 }); ripple(720, AX - 640, 80, HOOK);
+const COINS = Array.from({ length: 9 }, (_, k) => ({ vx: (k - 4) * 115 + 30, vy: -620 - (k % 3) * 160 }));
+function coinBurst(c, t) { const u = t - HOOK; if (u < 0 || u > 1.05) return; c.save(); pen(c, 1 - clamp((u - .7) / .35), LW, TURQ);
+  COINS.forEach(({ vx, vy }) => coin(720 + vx * u, AX - 640 + vy * u + 1400 * u * u, 20).forEach(st => part(c, st, 0, 1))); c.restore(); }
+// 1 „újra kell gondolnod a mostani stratégiádat”: a plan on a clipboard with a falling line; a turquoise X strikes it out; a new arrow turns upward
+const CB = [CX, 1250];
+el([rrect(CB[0] - 230, CB[1] - 300, 460, 600, 22), rrect(CB[0] - 80, CB[1] - 330, 160, 60, 12), [[CB[0] - 160, CB[1] - 170], [CB[0] + 40, CB[1] - 170]], [[CB[0] - 160, CB[1] - 120], [CB[0] - 20, CB[1] - 120]]], T(4), T(10) - .45, { din: .55, dout: .4 });
+el([[[CB[0] - 160, CB[1] - 30], [CB[0] - 60, CB[1] + 30], [CB[0] + 20, CB[1] + 10], [CB[0] + 150, CB[1] + 180]], arrowHead([CB[0] + 150, CB[1] + 180], 130, 170, 34)], T(5) - .1, T(10) - .45, { din: .5, dout: .4, quiet: 1 });
+el(xMark(CB[0], CB[1] + 70, 150), T(8) + .05, T(10) - .45, { din: .35, dout: .35, col: TURQ });
+el([[[CB[0] - 120, CB[1] + 230], [CB[0] + 60, CB[1] + 60], [CB[0] + 150, CB[1] - 40]], arrowHead([CB[0] + 150, CB[1] - 40], 90, -100, 38)], T(9) + .3, T(10) - .45, { din: .35, dout: .3, col: TURQ, quiet: 1 });
+// 2–5 THE SHOP: the owner (cap) behind the counter, a customer in front
+const CT = 1420, CTB = 1700, OW = 290, CU = 820, PB = 1700;
+const ownerHand = t => { const reach = ss(seg(t, T(11) - .3, T(11) + .1)) * (1 - ss(seg(t, T(15) + .1, T(15) + .5))) + ss(seg(t, T(36) - .3, T(36))) * (1 - ss(seg(t, T(38) + .3, T(38) + .6)));
+  return [lerp(OW + 85, 470, reach), lerp(CT + 30, 1330, reach)]; };
+const custHands = t => { const take = ss(seg(t, T(14) - .2, T(14) + .2)) * (1 - ss(seg(t, T(33) - .4, T(33)))), pay = ss(seg(t, T(36) - .3, T(36))) * (1 - ss(seg(t, T(38), T(38) + .3)));
+  const hold = [[lerp(CU - 80, CU - 75, take), lerp(PB - 185, PB - 250, take)], [lerp(CU + 80, CU + 75, take), lerp(PB - 185, PB - 250, take)]];
+  if (pay > 0) hold[0] = [lerp(hold[0][0], 640, pay), lerp(hold[0][1], 1330, pay)]; if (t > T(38)) hold[1] = [CU + 95, PB - 200]; return hold; };
+el(counter(110, 560, CT, CTB), T(10), T(39) - .45, { din: .5, dout: .4, x: 330 });
+el(t => person(OW, PB, 1.05, { cap: 1, noLegs: 1, look: .6, hr: ownerHand(t) }), T(10) + .05, T(39) - .45, { din: .55, dout: .4, quiet: 1, clipY: CT, x: OW });
+el(t => { const [hl, hr] = custHands(t); return person(CU, PB, 1.05, { look: -.6, hl, hr }); }, T(10) + .15, T(39) - .45, { din: .55, dout: .4, x: CU });
+// „Először te adj valamit a vásárlóidnak”: a turquoise „1” by the owner; the owner hands the customer a gift
+el(one(OW - 10, 930, 58), T(10) + .3, T(13) + .3, { din: .35, dout: .3, col: TURQ, quiet: 1 });
+const g1 = t => { const u = ss(seg(t, T(13) - .1, T(15) + .1)), a = ownerHand(t), b = [CU - 80, PB - 300]; return t < T(13) - .1 ? [a[0], a[1] - 50] : [lerp(470, b[0], u), lerp(1280, b[1], u) - 150 * Math.sin(u * Math.PI)]; };
+el(t => { const [x, y] = g1(t); return giftAt(x, y, 1); }, T(11), T(17) - .3, { din: .35, dout: .35, col: TURQ, x: OW });
+ripple(CU - 80, PB - 300, 90, T(15) + .25);
+// „Egy ingyenes mintát, egy hasznos útmutatót vagy exkluzív tippeket”: each appears over the counter as it is said, then they fly into the customer's arms
+const ITEMS = [[300, 1000, T(17) - .15], [540, 1000, T(21) - .15], [780, 990, T(23) - .1]];
+const toArms = (k, t) => { const u = ss(seg(t, T(25) + k * .12, T(26) + .3 + k * .12)), [x, y] = ITEMS[k]; return [lerp(x, CU + (k - 1) * 70, u), lerp(y, PB - 300 - (k === 1 ? 50 : 0), u), lerp(1, .55, u)]; };
+el(t => { const [x, y, s] = toArms(0, t); return [...sampleCup(x, y, s), ...steam(x, y - 70 * s, s, t)]; }, ITEMS[0][2], T(33) - .45, { din: .45, dout: .35, x: 300 });
+el(t => { const [x, y, s] = toArms(1, t); return guide(x, y, s); }, ITEMS[1][2], T(33) - .45, { din: .45, dout: .35, x: 540 });
+el(t => { const [x, y, s] = toArms(2, t); return [...bulb(x, y, 66 * s), star5(x, y - 120 * s, 26 * s)]; }, ITEMS[2][2], T(33) - .45, { din: .45, dout: .35, x: 780, col: TURQ });
+// „Ha előre értéket adsz, az emberek szeretnék viszonozni”: a heart lights up in the customer; a turquoise arrow curves back to the owner, carrying a heart
+const [chX, chY] = chestOf(CU, PB, 1.05);
+el(t => [heart(chX, chY + 10, 34 * (1 + .12 * Math.sin((t - T(30)) * 8)))], T(30) - .1, T(33) - .45, { din: .35, dout: .35, col: TURQ, quiet: 1 });
+const BACK = bez([CU - 40, 1080], [700, 760], [420, 760], [OW + 20, 1060], 40);
+el([BACK, arrowHead(BACK[40], BACK[40][0] - BACK[37][0], BACK[40][1] - BACK[37][1], 36)], T(32) - .35, T(33) - .45, { din: .55, dout: .35, col: TURQ });
+// „Például úgy, hogy megveszik a termékedet”: a till on the counter; the customer pays, the drawer opens, coins pop; the customer holds a bag with the product
+el(t => register(430, CT, ss(seg(t, T(37), T(37) + .3))), T(33), T(39) - .45, { din: .5, dout: .4, x: 430 });
+el(t => { const [x, y] = custHands(t)[0]; return coin(x, y - 30, 20); }, T(35), T(37) + .1, { din: .25, dout: .2, col: TURQ, quiet: 1 });
+el(bag(CU + 95, PB - 110, 170, 190), T(36) - .1, T(39) - .45, { din: .4, dout: .4, x: CU });
+el(P_PRODUCT.map(st => S(st, CU + 95, PB - 320, 55)), T(36) + .1, T(39) - .45, { din: .3, dout: .3, quiet: 1, clipY: PB - 302 });
+el(t => [0, 1, 2].flatMap(k => { const u = clamp((t - T(38) - k * .1) / .7); return coin(430 + (k - 1) * 70, CT - 230 - 220 * Math.sin(u * Math.PI * .8), 20); }), T(38), T(39) - .45, { din: .2, dout: .3, col: TURQ, quiet: 1 });
+rays(430, CT - 330, 80, T(38) + .2, { n: 12, len: 60 });
+// 6 „Ez az emberi természet. Úgy érezzük, vissza kell adnunk valamit”: two friends and a balance scale. One puts a gift on his side: the scale tips;
+//   the other feels he must give back: he puts a gift on the other side, and it levels
+const FA = 130, FB2 = 950, FBASE = 1700, PIV = [CX, 1240];
+const tilt = t => lerp(0, -.3, ss(seg(t, T(42) - .2, T(42) + .3))) * (1 - ss(seg(t, T(47), T(47) + .6)));
+const panL = t => { const tl = tilt(t); return [PIV[0] - Math.cos(tl) * 220, PIV[1] - Math.sin(tl) * 220 + 140]; }, panR = t => { const tl = tilt(t); return [PIV[0] + Math.cos(tl) * 220, PIV[1] + Math.sin(tl) * 220 + 140]; };
+const scale2 = (x, y, tilt) => { const L = 220, dx = Math.cos(tilt) * L, dy = Math.sin(tilt) * L, lx = x - dx, ly = y - dy, rx = x + dx, ry = y + dy;
+  return [[[x, y + 420], [x, y]], [[x - 110, y + 420], [x + 110, y + 420]], ring(x, y, 12), [[lx, ly], [rx, ry]], ...[[lx, ly], [rx, ry]].flatMap(([px, py]) => [[[px, py], [px - 80, py + 140]], [[px, py], [px + 80, py + 140]], arc(px, py + 140, 95, 28, 0, Math.PI, 20)])]; };
+el(t => scale2(PIV[0], PIV[1], tilt(t)), T(39), T(49) - .45, { din: .7, dout: .4 });
+const giveA = t => ss(seg(t, T(41) - .1, T(42))), giveB = t => ss(seg(t, T(45) - .1, T(47)));
+el(t => { const u = giveA(t), p = panL(t); return person(FA, FBASE, .95, { look: .7, hr: [lerp(FA + 90, p[0] - 60, u * (1 - ss(seg(t, T(42), T(42) + .4)))), lerp(FBASE - 180, p[1] - 40, u * (1 - ss(seg(t, T(42), T(42) + .4))))] }); }, T(39) + .1, T(49) - .45, { din: .55, dout: .4, x: FA });
+el(t => { const u = giveB(t), p = panR(t); return person(FB2, FBASE, .95, { look: -.7, hl: [lerp(FB2 - 90, p[0] + 60, u * (1 - ss(seg(t, T(47), T(47) + .4)))), lerp(FBASE - 180, p[1] - 40, u * (1 - ss(seg(t, T(47), T(47) + .4))))] }); }, T(39) + .2, T(49) - .45, { din: .55, dout: .4, quiet: 1, x: FB2 });
+el(t => { const u = giveA(t), p = panL(t); return giftAt(lerp(FA + 90, p[0], u), lerp(FBASE - 230, p[1] - 70, u) - 120 * Math.sin(u * Math.PI), .95); }, T(40) + .1, T(49) - .45, { din: .35, dout: .35, col: TURQ, quiet: 1 });
+el(t => { const u = giveB(t), p = panR(t); return giftAt(lerp(FB2 - 90, p[0], u), lerp(FBASE - 230, p[1] - 70, u) - 120 * Math.sin(u * Math.PI), .95); }, T(44) + .1, T(49) - .45, { din: .35, dout: .35, col: TURQ, x: FB2 });
+el(t => [heart(FB2, FBASE - .95 * 270 + 8, 26 * (1 + .1 * Math.sin(t * 8)))], T(43) - .1, T(49) - .45, { din: .3, dout: .3, col: TURQ, quiet: 1 });
+ripple(PIV[0], PIV[1], 120, T(47) + .5);
+// 7 „A neve: a kölcsönösség elve”: the two friends face each other; a gift and a heart travel round a circle between them: give, give back, give again
+const RC = [CX, 1270], RR = 250;
+el(person(170, FBASE, .95, { look: .7 }), T(49) + .05, T(54) - .45, { din: .5, dout: .35, x: 170 });
+el(person(910, FBASE, .95, { look: -.7 }), T(49) + .1, T(54) - .45, { din: .5, dout: .35, quiet: 1, x: 910 });
+el(t => cycle(RC[0], RC[1], RR, Math.PI * .95 + (t - T(50)) * 2.2, RR * .8), T(50) - .1, T(54) - .45, { din: .5, dout: .35 });
+const onRing = (t, o) => { const a = Math.PI * .95 + (t - T(50)) * 2.2 + 1.2 + o; return [RC[0] + Math.cos(a) * RR, RC[1] + Math.sin(a) * RR * .8]; };
+el(t => { const [x, y] = onRing(t, 0); return giftAt(x, y, .7); }, T(50) + .2, T(54) - .45, { din: .3, dout: .3, col: TURQ, quiet: 1 });
+el(t => { const [x, y] = onRing(t, Math.PI); return [heart(x, y, 40)]; }, T(50) + .3, T(54) - .45, { din: .3, dout: .3, col: TURQ, quiet: 1 });
+rays(RC[0], RC[1], 70, T(52) + .1, { n: 14, len: 70 });
+// 8 „Használd a marketingedben”: a phone with a post that gives something (a gift) and gets likes; „bizalmat”: a handshake; „hűséget”: a loyalty card
+//   fills with stamps; „ami vásárlásba fordul”: it all becomes a shopping bag with coins jumping out
+const PH = [290, 1240], HS = [790, 1080], LC = [790, 1450];
+el(phone(PH[0], PH[1]), T(54), T(63) - .3, { din: .55, dout: .35, x: PH[0] });
+el(giftAt(PH[0], PH[1] - 50, 1), T(55), T(63) - .3, { din: .4, dout: .3, col: TURQ, quiet: 1 });
+el(t => [0, 1, 2].map(k => { const u = clamp((t - T(57) - k * .25) / 1.1); return heart(PH[0] + 70 + 30 * Math.sin(u * 6 + k), PH[1] + 120 - u * 330, 16 * (1 - u * .3)); }).filter((_, k) => t > T(57) + k * .25), T(57), T(63) - .3, { din: .1, dout: .2, col: TURQ, quiet: 1 });
+el(handshake(HS[0], HS[1], .95), T(59) - .15, T(63) - .3, { din: .5, dout: .35, x: HS[0] });
+el(card(LC[0], LC[1]), T(61) - .2, T(63) - .3, { din: .4, dout: .35, quiet: 1, x: LC[0] });
+el(t => [0, 1, 2, 3, 4].filter(k => t > T(61) + k * .14).map(k => heart(LC[0] - 112 + k * 56, LC[1] + 22, 13)), T(61), T(63) - .3, { din: .05, dout: .3, col: TURQ, quiet: 1 });
+const BB = 1660;
+el(bag(CX, BB, 440, 470), T(63) + .15, STORY - .5, { din: .55, dout: .45 });
+el(P_PRODUCT.map(st => S(st, CX, BB - 500, 120)), T(63) + .3, STORY - .5, { din: .4, dout: .45, quiet: 1, clipY: BB - 468 });
+el(t => [0, 1, 2].flatMap(k => { const u = clamp((t - T(65) - k * .12) / .9); return u > 0 ? coin(CX + (k - 1) * 120, BB - 470 - 60 - 230 * Math.sin(u * Math.PI * .75), 24) : []; }), T(65), STORY - .5, { din: .05, dout: .4, col: TURQ, quiet: 1 });
+rays(CX, BB - 640, 120, T(65) + .1, { n: 14, len: 70 });
+// the light's path: it rides the tallest bar, sits in each thing as it is said, rides the gifts and the heart
+const g1A = g1(T(13) - .1), g1B = g1(T(15) + .1);
+const ORB = orb([[HOOK, 720, AX - 640 - 50, 24], [1.0, 860, 760, 26], [1.4, 860, 760, 26], [T(4) + .3, CB[0], CB[1] - 30, 30], [T(8), CB[0], CB[1] + 70, 30], [T(9) + .4, CB[0] + 150, CB[1] - 40, 28], [T(10) - .3, CB[0] + 150, CB[1] - 40, 28],
+  [T(11) + .2, g1A[0], g1A[1] - 100, 22], [T(13) - .1, g1A[0], g1A[1] - 100, 22], [T(15) + .1, g1B[0], g1B[1] - 100, 22], [T(17) - .3, g1B[0], g1B[1] - 100, 22],
+  [T(17) + .1, 300, 1000, 26], [T(21) - .3, 300, 1000, 26], [T(21) + .1, 540, 1000, 26], [T(23) - .3, 540, 1000, 26], [T(23) + .1, 780, 990, 28], [T(25), 780, 990, 28], [T(26) + .5, CU, PB - 420, 22],
+  [T(30) - .1, chX, chY + 10, 24], [T(32) - .3, chX, chY + 10, 24], [T(33) - .4, OW + 20, 1060, 24], [T(33) + .2, 480, CT - 190, 24], [T(37), 480, CT - 190, 24], [T(38) + .3, 430, CT - 420, 28], [T(39) - .4, 430, CT - 420, 28],
+  [T(40), CX, PIV[1] - 20, 26], [T(45), CX, PIV[1] - 20, 26], [T(46), FB2, FBASE - 265, 22], [T(48), FB2, FBASE - 265, 22], [T(49) + .1, CX, PIV[1] - 20, 26],
+  [T(50) - .1, RC[0], RC[1], 30], [T(54) - .4, RC[0], RC[1], 30], [T(54) + .3, PH[0], PH[1] - 50, 26], [T(59) - .3, PH[0], PH[1] - 50, 26], [T(59) + .2, HS[0], HS[1] - 20, 26], [T(61) - .3, HS[0], HS[1] - 20, 26], [T(62), LC[0] + 112, LC[1] + 22, 22],
+  [T(63) - .1, LC[0] + 112, LC[1] + 22, 22], [T(64) + .2, CX, BB - 520, 28], [T(65) + .2, CX, BB - 640, 30]]);
 const orbAt = t => {
-  if (t < HOOK) return [CX, boxBase(t) - 155, 22];
-  const ride = (a, b, f) => t >= a && t <= b ? f : null;
-  const g = ride(T(13), T(15) + .1, 1) && giftAt(giftU(t)); if (g) return [g[0], g[1] - 40, 22];
-  const d = ride(T(27), T(28) + .2, 1) && diaAt(diaU(t)); if (d) return [d[0], d[1], 20];
-  const h = ride(T(31) - .2, T(32) + .2, 1) && hrtAt(hrtU(t)); if (h) return [h[0], h[1], 20];
-  if (t >= T(50) && t <= T(53) + .25) { const p = lem(LX, LY, LA, lemP(t)); return [p[0], p[1], 24]; }
+  if (t < HOOK) return [720, AX - barH(3, t) - 50, 22];
+  if (t >= T(13) - .1 && t <= T(15) + .1) { const [x, y] = g1(t); return [x, y - 100, 22]; }
+  if (t >= T(32) - .35 && t <= T(33) - .4) { const p = polyAt(BACK, ss(seg(t, T(32) - .35, T(33) - .4))); return [p[0], p[1], 24]; }
   return track(ORB, t); };
 function take(c, t) { const shake = t > HOOK && t < HOOK + .25 ? 14 * (1 - (t - HOOK) / .25) : 0;
   c.save(); c.translate(540 + shake * Math.sin(t * 95), 1160 + shake * Math.cos(t * 83)); c.scale(.92, .92); c.translate(-540, -1160);   // safe zone (and the hook's impact shake)
   for (const e of ELS) drawEl(c, e, t);
   for (const A of ACC) drawAcc(c, A, t);
+  coinBurst(c, t);
   const [x, y, r] = orbAt(t), fade = 1 - ss(seg(t, STORY - .5, STORY)), flash = t > HOOK && t < HOOK + .3 ? 1 + 1.8 * (1 - (t - HOOK) / .3) : 1;
   orbDraw(c, x, y + 5 * Math.sin(t * 1.6), r * flash * (1 + .04 * Math.sin(t * 2.3)), fade);
   c.restore();
   const fl = t > HOOK && t < HOOK + .22 ? .32 * (1 - (t - HOOK) / .22) : 0; if (fl > 0) { c.save(); c.globalAlpha = fl; c.fillStyle = '#bff7f1'; c.fillRect(0, 0, 1080, 1920); c.restore(); }   // the hook's impact flash
 }
 await start({ scenes: [[0, take]], words: WORDS, story: STORY, dur: DUR, stage: false, caption: { font: '600 46px "Inter"', mode: 'fade', y: 470 } });
-window.EV = [{ t: 0, type: 'rush', d: HOOK }, { t: HOOK, type: 'impact' }, { t: .6, type: 'rise', d: .5 },
+window.EV = [{ t: 0, type: 'rush', d: HOOK }, { t: HOOK, type: 'impact' }, { t: HOOK - .05, type: 'rise', d: .5 },
   ...ELS.filter(e => !e.quiet).map(e => ({ t: +e.a.toFixed(3), type: 'in', x: e.x, d: e.din })), ...glides.filter(g => g.t > .7).map(g => ({ t: +g.t.toFixed(3), type: 'glide', d: +g.d.toFixed(3), x: g.x })),
   ...ACC.filter(A => A.at > HOOK + .05).map(A => ({ t: +A.at.toFixed(3), type: A.k }))].sort((p, q) => p.t - q.t);
