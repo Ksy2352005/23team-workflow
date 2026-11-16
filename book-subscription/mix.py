@@ -132,6 +132,11 @@ sys.path.insert(0, os.path.join(HERE, '..', 'tools')); from logo_sting import pl
 vo_path = os.path.join(HERE, os.environ.get('VO', 'refs/voiceover-hu-x1.15.mp3'))   # the voice at 1.15×, pitch kept
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', vo_path, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
 vo = np.frombuffer(raw, np.float32).astype(np.float64)
+CTA = int(os.environ.get('CTA', '4'))   # the end-card call to action (CLAUDE.md 2026-11-15): spoken in the same ElevenLabs request as the script's last lines (tools/cta/cta_with_script.py), at the voice's own speech level (gain 1.0), 1.3 s into the end card
+if CTA:
+    _c = subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(HERE, 'refs', f'cta-{CTA}-same-voice-x1.15.wav'), '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
+    cv = np.frombuffer(_c, np.float32).astype(np.float64); _r = lambda x: np.sqrt(np.mean(x[np.abs(x) > np.abs(x).max() * .05] ** 2))
+    cv = cv * (_r(vo) / max(_r(cv), 1e-9)) * 1.0; _a = int((STORY + 1.3) * SR); _f = np.zeros(max(len(vo), _a + len(cv))); _f[:len(vo)] = vo; _f[_a:_a + len(cv)] += cv; vo = _f
 vo = compress(norm(vo, .9), thr=.3, ratio=3)
 voice = buf(); add(voice, vo, 0, 1)
 

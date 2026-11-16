@@ -2,7 +2,7 @@
 // An online bookshop swaps endless browsing for a short quiz and one hand-picked book a month.
 import { WORDS } from './captions.js';
 const T = i => WORDS[i][1];
-export const STORY = 45.5, DUR = 47.7;
+export const STORY = 45.5, DUR = 50.4;   // end card: the call to action (line 4, same voice) 1.3 s in, then 1.5 s of the logo alone
 export const TS = 1;
 export const VO = 'refs/voiceover-hu-x1.15.mp3';
 export const SHOTS = [[0, 'browse', 'cut'], [5.5, 'toomany', 'soft'], [9.7, 'service', 'soft'], [12.0, 'quiz', 'whip'], [20.2, 'monthly', 'soft'], [24.4, 'nomore', 'whip'], [28.9, 'surprise', 'soft'], [37.0, 'lesson', 'soft']];
