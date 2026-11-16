@@ -11,7 +11,7 @@
 | HU 004 | HU | Marketing story 20 (dark world, CTA 1, HQ) | „A két porszívó” (The Product Comparison) | 2026-11-12 | — | `posts/HU/004-story20-porszivo/` (source: `vacuum-test/`) |
 | HU 006 | HU | Marketing story 22 (dark world, CTA 4, HQ) | „A kész csomagok” (The Store That Sold Products in Unexpected Bundles) | 2026-11-12 | — | `posts/HU/006-story22-kesz-csomagok/` (source: `kitchen-bundles/`) |
 | HU 007 | HU | Marketing story 23 (dark world, CTA 1 in the script's own voice, HQ) | „A nyugalom bőröndje” (The Brand That Sold Peace of Mind) | 2026-11-16 | — | `posts/HU/007-story23-borond/` (source: `suitcase-tracker/`) |
-| HU 008 | HU | Marketing story 24 | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-12 | — | `posts/HU/008-story24-havi-konyv/` (source: `book-subscription/`) |
+| HU 008 | HU | Marketing story 24 (dark world, CTA 4 in the script's own voice, HQ) | „A havi könyv” (The Store That Let Customers Stop Choosing) | 2026-11-16 | — | `posts/HU/008-story24-havi-konyv/` (source: `book-subscription/`) |
 | HU 009 | HU | Motion reel M01 (redone, approved) | „Tükrözés” (mirroring) | 2026-11-12 | ✅ posted | `posts/HU/009-m01-tukrozes/` (source: `m01-mirroring/`) |
 | HU 010 | HU | Motion reel M02 (v4: thin-line reference style, guiding orb, CTA 1) | „Megerősítés” (confirmation) | 2026-11-13 | — | `posts/HU/010-m02-megerosites/` (source: `m02-confirmation/`) |
 | HU 011 | HU | Simulation reel (v7: frame-for-frame remake, red evil boss, swelling pocket, hit + kick out of scene, reference audio + louder hits, no end card) | „Ugyanaz a csapat. Más főnök.” (same team, different boss) | 2026-11-13 | ✅ posted | `posts/HU/011-mas-fonok/` (source: `boss-difference/`) |
