@@ -10,7 +10,7 @@ const W = innerWidth, H = innerHeight, K = W / 1080;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const mk = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; return [c, c.getContext('2d')]; };
 const [bufA, actx] = mk(), [bufB, bctx] = mk();
-const TOP = '#00113F', NAVY = '#1c2450', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#00113F';
+const TOP = '#050916', NAVY = '#0f131e', GOLD = '#ecbd4a', GOLD2 = '#d9a332', CREAM = '#f6efdc', WOOD = '#8a5d38', END_BLUE = '#050916';
 const GLOW = (() => { const [c, x] = mk(); c.width = c.height = 256; const g = x.createRadialGradient(128, 128, 0, 128, 128, 128); g.addColorStop(0, 'rgba(255,214,120,1)'); g.addColorStop(.25, 'rgba(255,214,120,.45)'); g.addColorStop(1, 'rgba(255,214,120,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256); return c; })();
 
 function sp(tau, d = .4, b = .2) {   // a spring like Motion's { type: 'spring', visualDuration, bounce }
@@ -29,7 +29,7 @@ function glow(c, x, y, r, a) { if (a <= 0) return; c.save(); c.globalCompositeOp
 function scaled(c, x, y, k, f) { if (k <= 0) return; c.save(); c.translate(x, y); c.scale(k, k); c.translate(-x, -y); f(); c.restore(); }
 function spot(c, x, y, w, a = .35) { const g = c.createRadialGradient(x, y, 0, x, y, w); g.addColorStop(0, `rgba(0,0,20,${a})`); g.addColorStop(1, 'rgba(0,0,20,0)'); c.save(); c.translate(x, y); c.scale(1, .2); c.translate(-x, -y); c.fillStyle = g; c.beginPath(); c.arc(x, y, w, 0, 7); c.fill(); c.restore(); }
 function mascot(c, P, k = 1) { spot(c, P.x, P.y + 4, Hs(P.s) * .42); scaled(c, P.x, P.y, k, () => drawMascot(c, { ...P, shadow: false })); }
-function text(c, s, x, y, size, col = CREAM, align = 'center') { c.font = `${size}px "Lilita One"`; c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
+function text(c, s, x, y, size, col = CREAM, align = 'center') { c.font = `700 ${Math.round(size * .84)}px "Montserrat"`; c.textAlign = align; c.textBaseline = 'middle'; c.fillStyle = col; c.fillText(s, x, y); }
 function ell(c, x, y, rx, ry, col, rot = 0) { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, Math.max(.1, rx), Math.max(.1, ry), rot, 0, 7); c.fill(); }
 // the stage: the part of the frame under the captions where the story plays; each shot names the box its content needs, and the camera fits that box inside the stage
 const STAGE = { x0: 50, x1: 1030, y0: 760, y1: 1860 };   // the story plays under the caption area
@@ -58,7 +58,7 @@ function badge(c, kind, x, y, r, k = 1) {
     if (kind === 'pin') { c.fillStyle = '#c4566a'; c.beginPath(); c.moveTo(x - g * .45, y - g * .7); c.lineTo(x + g * .45, y - g * .7); c.lineTo(x + g * .45, y + g * .7); c.lineTo(x, y + g * .35); c.lineTo(x - g * .45, y + g * .7); c.closePath(); c.fill(); } });
 }
 function spark(c, x, y, t, at, n = 5, r = 120, sz = 16) { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + .4, u = clamp((t - at - k * .05) / .8); if (u <= 0 || u >= 1) continue; star(c, x + Math.cos(a) * r * (.6 + .5 * u), y + Math.sin(a) * r * (.6 + .5 * u), sz, Math.sin(u * Math.PI)); } }
-function bg(c, col = '#2d4596') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
+function bg(c, col = '#0d2463') { const g = c.createRadialGradient(540, 1420, 60, 540, 1420, 640); g.addColorStop(0, col); g.addColorStop(.98, TOP); g.addColorStop(1, TOP); c.fillStyle = g; c.fillRect(-400, -400, 1880, 2720); }
 
 // —— the world: suitcases, the plane's hold, the baggage belt, a phone with a map ——
 const T = i => WORDS[i][1];
@@ -67,100 +67,100 @@ const SAND = '#e9dcc0', SAND2 = '#cdbf9c', SAND3 = '#b5a682', INKC = '#151018', 
 const ease = u => 1 - Math.pow(1 - clamp(u), 3);
 function rrect(c, x, y, w, h, r, col) { c.fillStyle = col; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); }
 function pop(c, x, y, k, f) { if (k > 0) scaled(c, x, y, Math.min(1.12, k), f); }
-function floor(c, col) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, col || '#0d1d5c'); fl.addColorStop(1, '#071341'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
+function floor(c, col) { const fl = c.createLinearGradient(0, F, 0, 1920); fl.addColorStop(0, col || '#0a1022'); fl.addColorStop(1, '#070b18'); c.fillStyle = fl; c.fillRect(-400, F, 1880, 420); c.fillStyle = 'rgba(246,239,220,.1)'; c.fillRect(-400, F, 1880, 4); }
 // a hard-shell suitcase standing on y, centred on x; o.col; o.ours = the new one, gold, with the little tracker light; o.rot; o.handle 0..1 pulls the handle up
-function suitcase(c, x, y, s = 1, o = {}) { const col = o.col || (o.ours ? GOLD : '#3d5cc8'), dk = o.dk || (o.ours ? GOLD2 : '#2b3f8e'); c.save(); c.translate(x, y); c.rotate(o.rot || 0); c.scale(s, s);
+function suitcase(c, x, y, s = 1, o = {}) { const col = o.col || (o.ours ? GOLD : '#3d5cc8'), dk = o.dk || (o.ours ? GOLD2 : '#181f35'); c.save(); c.translate(x, y); c.rotate(o.rot || 0); c.scale(s, s);
   if (!o.noShadow) { c.fillStyle = 'rgba(0,0,20,.3)'; c.beginPath(); c.ellipse(0, 2, 80, 10, 0, 0, 7); c.fill(); }
-  const hu = o.handle || 0; if (hu > 0) { rrect(c, -34, -220 - 120 * hu, 8, 120 * hu + 10, 4, STEEL2); rrect(c, 26, -220 - 120 * hu, 8, 120 * hu + 10, 4, STEEL2); rrect(c, -40, -232 - 120 * hu, 80, 16, 8, '#1a1f3a'); }
-  rrect(c, -30, -236, 60, 18, 9, '#1a1f3a');   // the top handle
+  const hu = o.handle || 0; if (hu > 0) { rrect(c, -34, -220 - 120 * hu, 8, 120 * hu + 10, 4, STEEL2); rrect(c, 26, -220 - 120 * hu, 8, 120 * hu + 10, 4, STEEL2); rrect(c, -40, -232 - 120 * hu, 80, 16, 8, '#0d0f16'); }
+  rrect(c, -30, -236, 60, 18, 9, '#0d0f16');   // the top handle
   rrect(c, -74, -222, 148, 210, 22, col); for (const dx of [-36, 0, 36]) rrect(c, dx - 5, -214, 10, 194, 5, dk); rrect(c, -74, -126, 148, 10, 0, dk);
-  ell(c, -50, -4, 12, 12, '#1a1f3a'); ell(c, 50, -4, 12, 12, '#1a1f3a');
+  ell(c, -50, -4, 12, 12, '#0d0f16'); ell(c, 50, -4, 12, 12, '#0d0f16');
   if (o.ours) { const on = .5 + .5 * Math.sin(NOW * 6); ell(c, 52, -196, 9, 9, '#ffffff'); ell(c, 52, -196, 6, 6, `rgba(95,184,154,${.5 + .5 * on})`); }
   if (o.tag) { c.strokeStyle = SAND2; c.lineWidth = 3; c.beginPath(); c.moveTo(-20, -232); c.lineTo(-40, -200); c.stroke(); rrect(c, -64, -204, 44, 28, 6, o.tag); }
-  if (o.crack) { c.strokeStyle = '#1a1f3a'; c.lineWidth = 5; c.lineCap = 'round'; c.beginPath(); c.moveTo(-20, -210); c.lineTo(-4, -170); c.lineTo(-22, -140); c.lineTo(0, -100); c.stroke(); }
+  if (o.crack) { c.strokeStyle = '#0d0f16'; c.lineWidth = 5; c.lineCap = 'round'; c.beginPath(); c.moveTo(-20, -210); c.lineTo(-4, -170); c.lineTo(-22, -140); c.lineTo(0, -100); c.stroke(); }
   c.restore(); }
 function signal(c, x, y, r, t, a = 1) { for (let k = 0; k < 3; k++) { const u = ((t * .9 + k / 3) % 1); c.save(); c.globalAlpha = a * (1 - u); c.strokeStyle = MINT; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.arc(x, y, r * (.4 + u), -Math.PI * .8, -Math.PI * .2); c.stroke(); c.restore(); } }
-function chip(c, x, y, s) { rrect(c, x - 34 * s, y - 34 * s, 68 * s, 68 * s, 10 * s, '#1a1f3a'); rrect(c, x - 22 * s, y - 22 * s, 44 * s, 44 * s, 6 * s, MINT); c.fillStyle = STEEL; for (let k = 0; k < 4; k++) for (const d of [-1, 1]) { c.fillRect(x - 26 * s + k * 16 * s, y + d * 34 * s - (d > 0 ? 0 : 8 * s), 6 * s, 8 * s); c.fillRect(x + d * 34 * s - (d > 0 ? 0 : 8 * s), y - 26 * s + k * 16 * s, 8 * s, 6 * s); } }
-function phone(c, x, y, w, h, draw) { c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 12, w, h, 34); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 34, '#1a1f3a'); rrect(c, x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24, '#dfe8f5'); c.save(); c.beginPath(); c.roundRect(x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24); c.clip(); draw(); c.restore(); rrect(c, x - 30, y - h / 2 + 22, 60, 12, 6, '#1a1f3a'); }
+function chip(c, x, y, s) { rrect(c, x - 34 * s, y - 34 * s, 68 * s, 68 * s, 10 * s, '#0d0f16'); rrect(c, x - 22 * s, y - 22 * s, 44 * s, 44 * s, 6 * s, MINT); c.fillStyle = STEEL; for (let k = 0; k < 4; k++) for (const d of [-1, 1]) { c.fillRect(x - 26 * s + k * 16 * s, y + d * 34 * s - (d > 0 ? 0 : 8 * s), 6 * s, 8 * s); c.fillRect(x + d * 34 * s - (d > 0 ? 0 : 8 * s), y - 26 * s + k * 16 * s, 8 * s, 6 * s); } }
+function phone(c, x, y, w, h, draw) { c.fillStyle = 'rgba(0,0,20,.35)'; c.beginPath(); c.roundRect(x - w / 2 + 8, y - h / 2 + 12, w, h, 34); c.fill(); rrect(c, x - w / 2, y - h / 2, w, h, 34, '#0d0f16'); rrect(c, x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24, '#dfe8f5'); c.save(); c.beginPath(); c.roundRect(x - w / 2 + 14, y - h / 2 + 14, w - 28, h - 28, 24); c.clip(); draw(); c.restore(); rrect(c, x - 30, y - h / 2 + 22, 60, 12, 6, '#0d0f16'); }
 function mapView(c, x, y, w, h, pin, t) { c.fillStyle = '#dfe8f5'; c.fillRect(x - w / 2, y - h / 2, w, h); c.strokeStyle = '#ffffff'; c.lineWidth = 16; for (const d of [-.3, .15]) { c.beginPath(); c.moveTo(x - w / 2, y + d * h); c.lineTo(x + w / 2, y + d * h + 40); c.stroke(); c.beginPath(); c.moveTo(x + d * w, y - h / 2); c.lineTo(x + d * w - 30, y + h / 2); c.stroke(); }
   rrect(c, x - w * .4, y - h * .42, w * .25, h * .18, 8, '#c7e3c9'); rrect(c, x + w * .12, y + h * .2, w * .3, h * .16, 8, '#c7e3c9');
   if (pin) { const [px, py] = pin, b = 6 * Math.abs(Math.sin(t * 4)); ell(c, px, py + 4, 16, 6, 'rgba(0,0,20,.25)'); c.fillStyle = ROSE; c.beginPath(); c.moveTo(px, py); c.bezierCurveTo(px - 30, py - 40 - b, px - 30, py - 76 - b, px, py - 76 - b); c.bezierCurveTo(px + 30, py - 76 - b, px + 30, py - 40 - b, px, py); c.fill(); ell(c, px, py - 54 - b, 12, 12, '#ffffff'); scaled(c, px, py - 54 - b, .12, () => suitcase(c, px, py - 54 - b + 110, 1, { ours: true, noShadow: true })); } }
 function clockB(c, x, y, r, k, t) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, CREAM); c.strokeStyle = NAVY; c.lineWidth = r * .1; c.lineCap = 'round'; const a = t * 3; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a - Math.PI / 2) * r * .65, y + Math.sin(a - Math.PI / 2) * r * .65); c.stroke(); c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a / 12 - Math.PI / 2) * r * .45, y + Math.sin(a / 12 - Math.PI / 2) * r * .45); c.stroke(); ell(c, x, y, r * .1, r * .1, GOLD); }); }
-function iconCard(c, x, y, r, k, cut, draw) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#2b3f8e'); c.strokeStyle = CREAM; c.lineWidth = 5; c.beginPath(); c.arc(x, y, r - 6, 0, 7); c.stroke(); draw(); cross(c, x, y, r * .62, cut); }); }
+function iconCard(c, x, y, r, k, cut, draw) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#181f35'); c.strokeStyle = CREAM; c.lineWidth = 5; c.beginPath(); c.arc(x, y, r - 6, 0, 7); c.stroke(); draw(); cross(c, x, y, r * .62, cut); }); }
 function bulbIcon(c, x, y, r, k) { if (k <= 0) return; scaled(c, x, y, Math.min(1.12, k), () => { glow(c, x, y, r * 3, .7); ell(c, x, y, r, r, '#ffd889'); rrect(c, x - r * .45, y + r * .8, r * .9, r * .5, r * .15, SAND2); c.strokeStyle = GOLD2; c.lineWidth = r * .12; c.lineCap = 'round'; c.beginPath(); c.moveTo(x - r * .3, y + r * .2); c.lineTo(x, y - r * .25); c.lineTo(x + r * .3, y + r * .2); c.stroke(); for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .5; c.beginPath(); c.moveTo(x + Math.cos(a) * r * 1.35, y + Math.sin(a) * r * 1.35); c.lineTo(x + Math.cos(a) * r * 1.75, y + Math.sin(a) * r * 1.75); c.stroke(); } }); }
-function worry(c, x, y, r, k) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#2b3f8e'); c.strokeStyle = CREAM; c.lineWidth = r * .08; c.beginPath(); c.arc(x, y, r * .9, 0, 7); c.stroke(); text(c, '?', x, y + r * .08, r * 1.3, CREAM); }); }
+function worry(c, x, y, r, k) { pop(c, x, y, k, () => { ell(c, x + 4, y + 8, r, r, 'rgba(0,0,20,.3)'); ell(c, x, y, r, r, '#181f35'); c.strokeStyle = CREAM; c.lineWidth = r * .08; c.beginPath(); c.arc(x, y, r * .9, 0, 7); c.stroke(); text(c, '?', x, y + r * .08, r * 1.3, CREAM); }); }
 // the people: the traveller is white; other travellers and staff are blue
 function trav(c, t, x, y, s, o = {}) { mascot(c, { id: 'tr', skin: 'owner', s, x, y, f: o.f ?? .3, smile: o.smile ?? .9, sad: o.sad || 0, look: o.look ?? .2, blink: blinkAt(t, 7), walk: o.walk || 0, phi: o.phi ?? x / 30, handL: o.handL, handR: o.handR, squash: o.squash || 0, cap: true }); }
 const CUST = [{ skin: 'blue2', fem: 'pony' }, { skin: 'blue1' }, { skin: 'blue3', fem: 'glasses' }, { skin: 'blue1', tache: true }];
 function cust(c, t, k, x, y, s, o = {}) { mascot(c, { id: 'c' + k, ...CUST[k % 4], s, x, y, f: o.f ?? -.4, smile: o.smile ?? .85, sad: o.sad || 0, look: o.look ?? -.2, blink: blinkAt(t, 3 + k), walk: o.walk || 0, phi: o.phi ?? x / 30, handL: o.handL, handR: o.handR, squash: o.squash || 0 }); }
-function terminal(c) { c.fillStyle = '#16286b'; c.fillRect(0, 1060, 1080, 640); c.fillStyle = 'rgba(159,199,240,.18)'; for (let k = 0; k < 6; k++) c.fillRect(30 + k * 175, 1100, 150, 300); c.fillStyle = 'rgba(255,255,255,.06)'; for (let k = 0; k < 6; k++) c.fillRect(30 + k * 175 + 72, 1100, 6, 300);
+function terminal(c) { c.fillStyle = '#0f1428'; c.fillRect(0, 1060, 1080, 640); c.fillStyle = 'rgba(159,199,240,.18)'; for (let k = 0; k < 6; k++) c.fillRect(30 + k * 175, 1100, 150, 300); c.fillStyle = 'rgba(255,255,255,.06)'; for (let k = 0; k < 6; k++) c.fillRect(30 + k * 175 + 72, 1100, 6, 300);
   // a plane taking off in the windows
   c.save(); c.globalAlpha = .5; c.fillStyle = CREAM; c.translate(700 + ((NOW * 40) % 300), 1250 - ((NOW * 15) % 100)); c.rotate(-.15); rrect(c, -60, -8, 120, 16, 8, CREAM); c.beginPath(); c.moveTo(-10, 0); c.lineTo(20, -36); c.lineTo(32, -36); c.lineTo(20, 0); c.fill(); c.restore(); }
-function belt(c, t, y, run = 1) { rrect(c, 40, y - 20, 1000, 90, 16, '#2b2f48'); c.fillStyle = '#41466a'; for (let k = 0; k < 16; k++) { const x = 40 + ((k * 70 + t * 120 * run) % 1000); c.fillRect(x, y - 16, 6, 70); } rrect(c, 40, y + 50, 1000, 24, 10, STEEL2); rrect(c, 40, y - 26, 1000, 12, 6, STEEL); }
+function belt(c, t, y, run = 1) { rrect(c, 40, y - 20, 1000, 90, 16, '#14161c'); c.fillStyle = '#1e212a'; for (let k = 0; k < 16; k++) { const x = 40 + ((k * 70 + t * 120 * run) % 1000); c.fillRect(x, y - 16, 6, 70); } rrect(c, 40, y + 50, 1000, 24, 10, STEEL2); rrect(c, 40, y - 26, 1000, 12, 6, STEEL); }
 
 const SHOT = {
   airport(c, t) {   // at the airport, travellers fear the same thing, again and again: three travellers with their cases; a question pops over each
-    bg(c, '#163A8C'); terminal(c); floor(c); const H = HIT;
+    bg(c, '#0d2463'); terminal(c); floor(c); const H = HIT;
     const P = [[200, 1], [540, 0], [860, 2]];
-    P.forEach(([x, k], i) => { suitcase(c, x + 110, F, .95, { col: ['#3d5cc8', ROSE, MINT][i], dk: ['#2b3f8e', ROSE2, MINT2][i], handle: 1 }); if (i === 1) trav(c, t, x, F, 1.55, { f: .3, look: .3, smile: lerp(.9, .3, ss(seg(t, H.fear, H.fear + .4))), sad: .5 * ss(seg(t, H.fear, H.fear + .4)), handR: [x + 80, F - 330] }); else cust(c, t, k, x, F, 1.45, { f: .3, look: .2, smile: lerp(.9, .3, ss(seg(t, H.again[0], H.again[0] + .4))), sad: .4 * ss(seg(t, H.again[0], H.again[0] + .4)), handR: [x + 80, F - 330] }); });
+    P.forEach(([x, k], i) => { suitcase(c, x + 110, F, .95, { col: ['#3d5cc8', ROSE, MINT][i], dk: ['#181f35', ROSE2, MINT2][i], handle: 1 }); if (i === 1) trav(c, t, x, F, 1.55, { f: .3, look: .3, smile: lerp(.9, .3, ss(seg(t, H.fear, H.fear + .4))), sad: .5 * ss(seg(t, H.fear, H.fear + .4)), handR: [x + 80, F - 330] }); else cust(c, t, k, x, F, 1.45, { f: .3, look: .2, smile: lerp(.9, .3, ss(seg(t, H.again[0], H.again[0] + .4))), sad: .4 * ss(seg(t, H.again[0], H.again[0] + .4)), handR: [x + 80, F - 330] }); });
     worry(c, 200, 1150, 42, E(t, H.again[0], .3, .5)); worry(c, 860, 1150, 42, E(t, H.again[1], .3, .5)); worry(c, 540, 1110, 50, E(t, H.fear, .3, .5));
   },
   hold(c, t) {   // they don't know what happens to their case in the hold, or whether it comes back in one piece: the plane cut open; cases slide and bump; one cracks; a question
-    bg(c, '#163A8C'); const H = HIT; const sh = Math.sin(t * 9) * 4 * ss(seg(t, H.hold - .3, H.hold));
+    bg(c, '#0d2463'); const H = HIT; const sh = Math.sin(t * 9) * 4 * ss(seg(t, H.hold - .3, H.hold));
     c.save(); c.translate(0, sh);
     // the plane's belly, cut open: a big rounded hull
-    c.fillStyle = '#cfd6e8'; c.beginPath(); c.ellipse(540, 1380, 560, 330, 0, 0, 7); c.fill(); c.fillStyle = '#16286b'; c.beginPath(); c.ellipse(540, 1390, 520, 290, 0, 0, 7); c.fill();
+    c.fillStyle = '#cfd6e8'; c.beginPath(); c.ellipse(540, 1380, 560, 330, 0, 0, 7); c.fill(); c.fillStyle = '#0f1428'; c.beginPath(); c.ellipse(540, 1390, 520, 290, 0, 0, 7); c.fill();
     rrect(c, 40, 1320, 1000, 14, 6, '#aab3cf'); c.fillStyle = 'rgba(159,199,240,.6)'; for (let k = 0; k < 9; k++) ell(c, 170 + k * 92, 1210, 18, 24, 'rgba(159,199,240,.6)');   // the cabin floor and windows above the hold
     // the cases in the hold: they slide back and forth and bump
     const slide = Math.sin((t - 6) * 2.2) * 40 * ss(seg(t, H.cases - .3, H.cases + .3));
-    [[300, ROSE, ROSE2, .05], [470, '#3d5cc8', '#2b3f8e', -.12], [660, MINT, MINT2, .1], [820, '#3d5cc8', '#2b3f8e', .2]].forEach(([x, col, dk, r], i) => suitcase(c, x + slide * (i % 2 ? -1 : 1), 1620, .75, { col, dk, rot: r + .06 * Math.sin(t * 3 + i), crack: i === 2 && t > H.safe }));
+    [[300, ROSE, ROSE2, .05], [470, '#3d5cc8', '#181f35', -.12], [660, MINT, MINT2, .1], [820, '#3d5cc8', '#181f35', .2]].forEach(([x, col, dk, r], i) => suitcase(c, x + slide * (i % 2 ? -1 : 1), 1620, .75, { col, dk, rot: r + .06 * Math.sin(t * 3 + i), crack: i === 2 && t > H.safe }));
     c.restore();
     pop(c, 660, 1300, E(t, H.safe + .1, .3, .5), () => worry(c, 660, 1300, 48, 1));
     if (t > H.hold && t < H.hold + .6) badge(c, 'ex', 300, 1300, 44, E(t, H.hold, .3, .5) * (1 - ss(seg(t, H.hold + .3, H.hold + .6))));
   },
   newcase(c, t) {   // the firm decides to put something quite different into its new case: the gold case on a plinth; a spark of light inside
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     rrect(c, 380, 1640, 320, 60, 10, SAND2); const a = E(t, H.decide - .3, .35, .45); pop(c, 540, 1640, a, () => suitcase(c, 540, 1640, 1.6, { ours: true }));
     if (t > H.different) { glow(c, 540, 1460, 260, .5 * ss(seg(t, H.different, H.different + .4))); spark(c, 540, 1460, t, H.different, 7, 260, 18); }
     badge(c, 'q', 540, 1120, 50, E(t, H.different - .2, .3, .5));
     cust(c, t, 3, 190, F, 1.5, { f: .4, look: .3, smile: 1 });
   },
   track(c, t) {   // a small system built in: a chip goes into the case; it sends a signal; on the owner's phone, a map shows where the case is
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     suitcase(c, 300, F, 1.4, { ours: true }); const u = ease(seg(t, H.built - .2, H.built + .5));
     if (u < 1) chip(c, lerp(300, 372, u), lerp(1200, 1430, u), lerp(1.4, .3, u)); if (u >= 1) signal(c, 372, 1420, 90, t, ss(seg(t, H.system, H.system + .4)));
     const pk = E(t, H.phone - .2, .35, .45); pop(c, 760, 1380, pk, () => phone(c, 760, 1380, 330, 560, () => { mapView(c, 760, 1380, 300, 530, t > H.where ? [lerp(700, 790, ease(seg(t, H.where, H.where + .6))), lerp(1460, 1400, ease(seg(t, H.where, H.where + .6)))] : null, t); }));
     if (u >= 1) { c.save(); c.setLineDash([8, 14]); c.strokeStyle = 'rgba(95,184,154,.6)'; c.lineWidth = 5; c.beginPath(); c.moveTo(400, 1380); c.quadraticCurveTo(520, 1200, 620, 1300); c.stroke(); c.restore(); }
   },
   adidea(c, t) {   // but the firm didn't just talk about tracking: the tech icons fade; the whole ad is built on a familiar moment: a screen opens onto the scene
-    bg(c, '#163A8C'); floor(c); const H = HIT; const sc = ease(seg(t, H.familiar - .2, H.familiar + .7));
+    bg(c, '#0d2463'); floor(c); const H = HIT; const sc = ease(seg(t, H.familiar - .2, H.familiar + .7));
     iconCard(c, 350, 1250, 70, E(t, 21.0, .35, .45) * (1 - sc), seg(t, H.notonly - .1, H.notonly + .4), () => chip(c, 350, 1250, .8));
     iconCard(c, 730, 1250, 70, E(t, 21.2, .35, .45) * (1 - sc), seg(t, H.notonly + .1, H.notonly + .6), () => signal(c, 730, 1290, 60, t, 1));
-    if (sc > 0) pop(c, 540, 1420, sc, () => { rrect(c, 140, 1180, 800, 480, 26, '#1a1f3a'); rrect(c, 160, 1200, 760, 440, 16, '#22357f'); c.save(); c.beginPath(); c.rect(160, 1200, 760, 440); c.clip(); c.translate(540, 1420); c.scale(.42, .42); c.translate(-540, -1500); belt(c, t, 1500); suitcase(c, 760, 1510, .62, { col: ROSE, dk: ROSE2, noShadow: true }); trav(c, t, 420, 1700, 1.6, { f: .25, look: .3, smile: .3, sad: .5 }); c.restore();
-      rrect(c, 120, 1150, 160, 60, 10, '#2b2f48'); for (let k = 0; k < 4; k++) { c.save(); c.translate(130 + k * 40, 1150); c.rotate(-.5); rrect(c, 0, -16, 34, 16, 2, k % 2 ? CREAM : '#2b2f48'); c.restore(); } });   // a clapper on the corner
+    if (sc > 0) pop(c, 540, 1420, sc, () => { rrect(c, 140, 1180, 800, 480, 26, '#0d0f16'); rrect(c, 160, 1200, 760, 440, 16, '#141b2f'); c.save(); c.beginPath(); c.rect(160, 1200, 760, 440); c.clip(); c.translate(540, 1420); c.scale(.42, .42); c.translate(-540, -1500); belt(c, t, 1500); suitcase(c, 760, 1510, .62, { col: ROSE, dk: ROSE2, noShadow: true }); trav(c, t, 420, 1700, 1.6, { f: .25, look: .3, smile: .3, sad: .5 }); c.restore();
+      rrect(c, 120, 1150, 160, 60, 10, '#14161c'); for (let k = 0; k < 4; k++) { c.save(); c.translate(130 + k * 40, 1150); c.rotate(-.5); rrect(c, 0, -16, 34, 16, 2, k % 2 ? CREAM : '#14161c'); c.restore(); } });   // a clapper on the corner
   },
   carousel(c, t) {   // a traveller stands at the baggage belt, and his case still hasn't come: other cases go by; the clock ticks; he worries
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     belt(c, t, 1500);
-    for (let k = 0; k < 4; k++) { const x = ((t - 26.9) * 150 + k * 290) % 1240 - 120; suitcase(c, x, 1510, .62, { col: ['#3d5cc8', ROSE, MINT, '#3d5cc8'][k], dk: ['#2b3f8e', ROSE2, MINT2, '#2b3f8e'][k], rot: .05 * Math.sin(k), noShadow: true }); }
+    for (let k = 0; k < 4; k++) { const x = ((t - 26.9) * 150 + k * 290) % 1240 - 120; suitcase(c, x, 1510, .62, { col: ['#3d5cc8', ROSE, MINT, '#3d5cc8'][k], dk: ['#181f35', ROSE2, MINT2, '#181f35'][k], rot: .05 * Math.sin(k), noShadow: true }); }
     trav(c, t, 300, F, 1.7, { f: .25, look: .3 + Math.sin(t * 1.6) * .3, smile: lerp(.6, .2, ss(seg(t, H.notyet - .5, H.notyet))), sad: lerp(.2, .7, ss(seg(t, H.notyet - .5, H.notyet))) });
     clockB(c, 820, 1170, 56, E(t, H.belt, .3, .5), t); worry(c, 300, 1150, 46, E(t, H.notyet, .3, .5));
   },
   phonecheck(c, t) {   // he takes out his phone and looks where it is: the map; the pin; it's right here, coming round; he smiles
-    bg(c, '#163A8C'); floor(c); const H = HIT; const rel = ss(seg(t, H.whereis, H.whereis + .4));
+    bg(c, '#0d2463'); floor(c); const H = HIT; const rel = ss(seg(t, H.whereis, H.whereis + .4));
     trav(c, t, 250, F, 1.6, { f: .4, look: .3, smile: lerp(.3, 1, rel), sad: .5 * (1 - rel), handR: [400, 1440] });
     const pk = E(t, H.takeout, .35, .45); pop(c, 640, 1360, pk, () => phone(c, 640, 1360, 340, 580, () => { mapView(c, 640, 1360, 312, 552, t > H.check ? [lerp(560, 650, ease(seg(t, H.check, H.whereis + .3))), lerp(1460, 1420, ease(seg(t, H.check, H.whereis + .3)))] : null, t); }));
     if (t > H.whereis) { pop(c, 870, 1170, E(t, H.whereis + .1, .3, .5), () => check(c, 870, 1170, 44, 1)); spark(c, 640, 1300, t, H.whereis, 6, 220, 14); }
   },
   notmaterial(c, t) {   // the ad wasn't about the material or the number of wheels, but about making an old travel worry smaller: two icons crossed; the big "?" shrinks
-    bg(c, '#163A8C'); floor(c); const H = HIT;
+    bg(c, '#0d2463'); floor(c); const H = HIT;
     iconCard(c, 300, 1200, 74, E(t, H.material - .2, .3, .5), seg(t, H.material + .1, H.material + .5), () => { c.fillStyle = GOLD; for (let k = 0; k < 4; k++) rrect(c, 260, 1166 + k * 20, 80, 12, 6, k % 2 ? GOLD2 : GOLD); });
-    iconCard(c, 780, 1200, 74, E(t, H.wheels - .2, .3, .5), seg(t, H.wheels + .1, H.wheels + .5), () => { for (const d of [-1, 1]) { ell(c, 780 + d * 22, 1200, 20, 20, '#1a1f3a'); ell(c, 780 + d * 22, 1200, 7, 7, STEEL); } text(c, '×4', 780, 1250, 30, CREAM); });
+    iconCard(c, 780, 1200, 74, E(t, H.wheels - .2, .3, .5), seg(t, H.wheels + .1, H.wheels + .5), () => { for (const d of [-1, 1]) { ell(c, 780 + d * 22, 1200, 20, 20, '#0d0f16'); ell(c, 780 + d * 22, 1200, 7, 7, STEEL); } text(c, '×4', 780, 1250, 30, CREAM); });
     const sh = ss(seg(t, H.smaller - .2, H.smaller + .8)); worry(c, 540, 1470, lerp(130, 40, sh), E(t, H.butabout - .2, .35, .45) * (1 - ss(seg(t, 41.0, 41.3))));
     if (t > H.smaller) suitcase(c, 540, F, lerp(0, 1.1, ease(seg(t, H.smaller + .3, H.smaller + .9))), { ours: true });
   },
   lesson(c, t) {   // the firm sees it: buyers don't always want more features; they gladly pay more to be rid of a small but constant worry
-    bg(c, '#163A8C'); terminal(c); floor(c); const H = HIT; const free = ss(seg(t, H.rid - .2, H.rid + .6));
+    bg(c, '#0d2463'); terminal(c); floor(c); const H = HIT; const free = ss(seg(t, H.rid - .2, H.rid + .6));
     // a long feature list, crossed
     const lk = E(t, H.features - .4, .35, .45) * (1 - ss(seg(t, H.pay - .5, H.pay - .2))); pop(c, 760, 1260, lk, () => { rrect(c, 640, 1060, 240, 400, 16, '#ffffff'); for (let k = 0; k < 9; k++) { rrect(c, 664, 1090 + k * 40, 22, 22, 5, MINT); rrect(c, 698, 1096 + k * 40, 150 - (k % 3) * 30, 10, 5, SAND3); } cross(c, 760, 1260, 90, seg(t, H.features + .3, H.features + .7)); });
     // the price tag rises: he pays a bit more, happily
@@ -180,7 +180,7 @@ function paintShot(c, i, t) { NOW = t; c.setTransform(K, 0, 0, K, 0, 0); c.trans
 // —— the captions: the script, word by word as it is spoken, in the top left ——
 const KEY = new Set(['bőröndgyártó','újra','csomagterében,','épségben','mást','telefonján','ismerős','csomagszalag','megnézi,','kisebb','aggodalma.','funkciót','többet','aggodalomtól.']);
 const bare = w => w.replace(/[.,:;!?…„”"]/g, '');
-const CAP = { x: 130, y: 540, size: 56, lh: 72, maxW: 790, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Montserrat"`;   // the caption area, placed for Instagram's preview: Montserrat Bold, two lines at most
+const CAP = { x: 130, y: 540, size: 50, lh: 64, maxW: 790, maxLines: 2 }, CAPFONT = `700 ${CAP.size}px "Montserrat"`;   // the caption area, placed for Instagram's preview: Montserrat Bold, two lines at most
 const PAGES = (() => {   // group the words into short pages: a new page after a full stop, a question, a colon, or once a page is full
   const m = document.createElement('canvas').getContext('2d'); m.font = CAPFONT; const space = m.measureText(' ').width;
   const pages = []; let cur = [], x = 0, line = 0;
@@ -199,7 +199,7 @@ function captions(c, t) {
   const out = ss(seg(t, p.t1 - .12, p.t1)), now = p.words.filter(w => t >= w.t - .02).pop();
   c.save(); c.globalAlpha = 1 - out; c.translate(0, -30 * out); c.font = CAPFONT; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
   p.words.forEach(w => { const k = E(t, w.t - .06, .28, .45); if (k <= 0) return; const a = Math.min(1, k * 2.2), y = CAP.y + w.line * CAP.lh + (1 - Math.min(1, k)) * 34, sc = .75 + .25 * k, cx = CAP.x + w.x + w.wd / 2;
-    const hot = w === now, col = hot || w.key ? GOLD : CREAM;
+    const hot = w === now, col = hot || w.key ? '#2ED3C6' : CREAM;   // dark story world: turquoise key words
     c.save(); c.globalAlpha = a * (1 - out); c.translate(cx, y); c.scale(sc, sc); c.translate(-cx, -y);
     c.shadowColor = 'rgba(0,0,15,.6)'; c.shadowBlur = 10; c.shadowOffsetY = 3; c.fillStyle = col; c.fillText(w.w, CAP.x + w.x, y); c.shadowColor = 'transparent';
     c.restore(); });
@@ -208,7 +208,7 @@ function captions(c, t) {
 
 // —— the locked 23 Team end card (ANIMATION-STYLE.md) ——
 const LOGO = new Image(); LOGO.src = 'refs/logo-23.png'; await LOGO.decode();
-const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#aeb9e2'; x.fillRect(0, 0, c.width, c.height); return c; })();
+const LOGO_W = (() => { const c = document.createElement('canvas'); c.width = LOGO.width; c.height = LOGO.height; const x = c.getContext('2d'); x.drawImage(LOGO, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#F4F7FF'; x.fillRect(0, 0, c.width, c.height); return c; })();
 function endCard(c, t) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = END_BLUE; c.fillRect(0, 0, W, H);
   const u = ss(seg(t, STORY + .15, STORY + 1.05)), w = W * .30, h = w * LOGO.height / LOGO.width, sc = 1.04 - .04 * u;

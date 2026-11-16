@@ -2,7 +2,7 @@
 // A suitcase maker builds in a tracker and sells it on one familiar moment: waiting at the baggage belt, then checking the phone.
 import { WORDS } from './captions.js';
 const T = i => WORDS[i][1];
-export const STORY = 51.2, DUR = 53.4;
+export const STORY = 51.2, DUR = 55.9;   // end card: the call to action (line 1, same voice) 1.3 s in, then 1.5 s of the logo alone
 export const TS = 1;
 export const VO = 'refs/voiceover-hu-x1.15.mp3';
 export const SHOTS = [[0, 'airport', 'cut'], [5.9, 'hold', 'soft'], [11.3, 'newcase', 'soft'], [15.3, 'track', 'whip'], [20.9, 'adidea', 'soft'], [26.9, 'carousel', 'soft'], [31.2, 'phonecheck', 'soft'], [34.3, 'notmaterial', 'whip'], [41.3, 'lesson', 'soft']];
