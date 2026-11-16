@@ -16,4 +16,4 @@ for e in EV:
     if ty == 'glide': add(fx, lib('whoosh-soft-a' if k % 2 else 'whoosh-soft-b', .13), t + max(0, e['d'] / 2 - .45), pan=pan)
     if ty == 'rays': add(fx, lib('reveal-shimmer', .12), t - .05); add(fx, lib('impact-soft-b', .14), t)
     if ty == 'ripple': add(fx, lib('swell-glow', .15), t - .3)
-write_mix(HERE, voice='refs/voiceover-hu-x1.10-tight.wav', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, cta=1, cta_file='refs/cta-1-same-voice-x1.10.wav', logo_trim=1.0)
+write_mix(HERE, voice='refs/voiceover-hu-x1.10-tight.wav', fx=fx, story=STORY, dur=DUR, bed_level=0.0, seed=0, cta=1, cta_file='refs/cta-1-same-voice-x1.10.wav', logo_trim=-2.0)

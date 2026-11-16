@@ -18,5 +18,6 @@
 | HU 012 | HU | Motion reel M03 (black + turquoise, orb style, visual hook, CTA 1) | „Halo-hatás” (the halo effect) | 2026-11-13 | ✅ posted | `posts/HU/012-m03-halo/` (source: `m03-halo/`) |
 | HU 013 | HU | One-scene story (cheap shop vs brand; new palette; ElevenLabs music; no end card; 4K-supersampled HQ master) | „Ugyanaz a termék. Más márka.” (same product, different brand) | 2026-11-14 | — | `posts/HU/013-mas-marka/` (source: `brand-difference/`) |
 | HU 014 | HU | Motion reel M04 (black + turquoise, orb style, visual hook, CTA 3, HQ) | „Marketingmix” (the four P's) | 2026-11-15 | — | `posts/HU/014-m04-marketingmix/` (source: `m04-marketing-mix/`) |
+| HU 015 | HU | Motion reel M05 (black + turquoise, orb style, gift-box hook, CTA 1 in the script's own voice, 60 fps HQ) | „Kölcsönösség” (reciprocity) | 2026-11-16 | — | `posts/HU/015-m05-kolcsonosseg/` (source: `m05-reciprocity/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
