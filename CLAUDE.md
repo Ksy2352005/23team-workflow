@@ -79,6 +79,12 @@ anything one chat makes or decides is written here, so the other chats know it.
 - No 23 end card and no call to action: the video ends where the reference ends (`start({..., ending: false})` in the film's `kit.js`).
 - On-screen text in **Montserrat Bold** (our font, has ő and ű); never Lilita One (it drew Ő/Ű wrong).
 
+## 3D remakes (user 2026-11-17, first: `nightclub-line/`, the "paid 40 people NOT to enter his nightclub" reel)
+- When the user wants a 3D reference recreated: Blender (`bpy` 5.3 in `/root/blender-venv`, CPU Cycles, no GPU), built in Python: `nightclub-line/3d/nc.py` (the 3D mascot kit), `sets.py` (sets), one script per shot.
+- Copy the reference's story, shots, camera angles, timing, accessories and clothes exactly; the characters are **our mascots in 3D** (round blue heads and bodies, glossy eyes, mitten arms; the owner white), heads a little smaller than in 2D (`R = .205 H`), dressed like the reference's characters (jackets, checked shirts, dresses, coats, hats, glasses, pearls); the doorman/security is big and funny (`bulk=1.45`: round shoulders, biceps).
+- The world is the reference's world shifted to our dark blue (dark-blue brick, night sky), with its warm lights and neon kept.
+- Render about 10–20 s per frame on this machine: render at 540×960, 8 samples with denoising, upscale to 1080×1920 with lanczos; captions are drawn afterwards at full size (sharp).
+
 ## One-scene stories (user's name for the format, 2026-11-14; HU 011 boss video: 50% retention to the end, the page's best)
 - One split-screen scene comparing a bad and a good way of doing business (top: the bad one, bottom: the good one), our mascot world in the brand palette, a clear lesson, funny moments, counters that race (readable steps), a mid-video twist, a funny villain, no voice, no end card, ends where it loops. 15–22 s.
 - Calm and organised: customers one at a time, a spaced line of at most three, leavers exit on the other side; big clear price tags; Montserrat Bold for all text.
