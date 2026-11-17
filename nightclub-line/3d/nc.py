@@ -94,9 +94,11 @@ class Mascot:
     Faces: set_face(frame, kind) switches mouth/eye shapes by visibility keyframes."""
     def __init__(self, name, skin='blue1', H=1.6, loc=(0, 0, 0), rot=0., acc=(), bulk=1.):
         self.name, self.H, self.bulk = name, H, bulk; R = .205 * H; self.R = R   # heads a little smaller than the 2D .225 (user 2026-11-17: still big and cute)
-        sk = mat('skin_' + skin, SKIN[skin], rough=.42, coat=.35)
-        self.root = empty(name, loc); self.root.rotation_euler = (0, 0, rot)
-        loc0 = Vector(loc); self.root.location = (0, 0, 0)   # build at the origin, then move
+        sk = mat('skin_' + skin, SKIN[skin], rough=.62); self.sk = sk
+        chars = bpy.data.collections.get('chars') or bpy.data.collections.new('chars')
+        if chars.name not in bpy.context.scene.collection.children: bpy.context.scene.collection.children.link(chars)
+        prev = bpy.context.view_layer.active_layer_collection; bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children['chars']
+        self.root = empty(name, (0, 0, 0)); loc0 = Vector(loc)   # build at the origin unrotated, then place
         r = self.root
         # body, neck, legs, feet
         self.body = sphere(name + '_body', (0, 0, .38 * H), 1, (.15 * H * bulk, .125 * H * bulk ** .6, .155 * H * bulk ** .3), sk, parent=r, sub=1)
@@ -107,20 +109,24 @@ class Mascot:
             cyl(f'{name}_legm{s}', (s * .055 * H, 0, .15 * H), .04 * H, .24 * H, sk, parent=lg)
             sphere(f'{name}_foot{s}', (s * .06 * H, -.03 * H, .03 * H), 1, (.065 * H, .085 * H, .038 * H), sk, parent=lg)
             self.legs.append(lg)
-        # arms: a shoulder pivot, an upper capsule and a mitten
-        self.arms = {}
+        # arms: soft bendy arms (a curve from the shoulder through the elbow to the hand) with mitten hands and a thumb; posed every frame by pose()
+        self.arms, self.hands, self.sh, self.biceps = {}, {}, {}, {}
+        ar = .03 * H * (1 + (bulk - 1) * 1.8); self.armlen = .33 * H
         for s, k in ((-1, 'L'), (1, 'R')):
-            ax = s * .125 * H * bulk; sh = empty(f'{name}_arm{k}', (ax, 0, .49 * H), r); ar = .031 * H * (1 + (bulk - 1) * 1.6)
-            cyl(f'{name}_armm{k}', (ax, 0, .49 * H - .13 * H), ar, .26 * H, sk, parent=sh)
-            sphere(f'{name}_hand{k}', (ax, 0, .49 * H - .27 * H), .047 * H * (1 + (bulk - 1)), m=sk, parent=sh)
+            S0 = Vector((s * .13 * H * bulk, 0, .485 * H)); self.sh[k] = S0
+            cu = bpy.data.curves.new(f'{name}_arm{k}', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = ar; cu.bevel_resolution = 4; cu.use_fill_caps = True
+            sp = cu.splines.new('NURBS'); sp.points.add(2); sp.use_endpoint_u = True; sp.order_u = 3
+            o = bpy.data.objects.new(f'{name}_arm{k}', cu); bpy.context.collection.objects.link(o); o.data.materials.append(sk); par(o, r); self.arms[k] = o
+            hd = empty(f'{name}_handp{k}', (0, 0, 0), r); hr = .05 * H * (1 + (bulk - 1) * .9)
+            sphere(f'{name}_mitt{k}', (0, 0, 0), 1, (hr, hr * .8, hr * 1.1), sk, parent=hd); sphere(f'{name}_thumb{k}', (-s * hr * .75, -hr * .45, hr * .35), hr * .42, m=sk, parent=hd)
+            self.hands[k] = hd
             if bulk > 1.05:   # the big guy: round shoulders and biceps
-                sphere(f'{name}_shoulder{k}', (ax, 0, .49 * H), .075 * H * bulk, m=sk, parent=sh); sphere(f'{name}_bicep{k}', (ax + s * .01 * H, -.012 * H, .49 * H - .1 * H), 1, (.062 * H * bulk, .06 * H * bulk, .085 * H), sk, parent=sh, sub=1)
-            sh.rotation_euler = (0, s * .12, 0); self.arms[k] = sh
+                sphere(f'{name}_shoulder{k}', tuple(S0), .078 * H * bulk, m=sk, parent=r); self.biceps[k] = sphere(f'{name}_bicep{k}', (0, 0, 0), 1, (.066 * H * bulk, .062 * H * bulk, .09 * H), sk, parent=r)
         # head (pivot at the neck) with the face on -Y
         self.head = empty(name + '_head', (0, 0, .56 * H), r)
         hz = .74 * H; self.hz = hz
         self.skull = sphere(name + '_skull', (0, 0, hz), R, (1, .96, .97), sk, seg=48, parent=self.head)
-        ink = mat('ink', INK, rough=.15, coat=1.)
+        ink = mat('ink', INK, rough=.3)
         hi = emissive('eye_hi', '#ffffff', 3.)
         self.eyes = []
         for s in (-1, 1):
@@ -136,14 +142,46 @@ class Mascot:
                        'open': sphere(name + '_m_open', (0, fy - .01 * R, mz - .02 * R), 1, (.07 * R, .03 * R, .09 * R), ink, parent=self.head),
                        'flat': tube(name + '_m_flat', [(-.13 * R, fy, mz), (0, fy - .01 * R, mz), (.13 * R, fy, mz)], .016 * R, ink, self.head),
                        'frown': tube(name + '_m_frown', [(x * R, fy + abs(x) * .25 * R - .02 * R, mz - .03 * R - .8 * (x * x) * R) for x in (-.18, -.09, 0, .09, .18)], .017 * R, ink, self.head)}
-        self.face('smile', 1)
+        self.face('smile'); self.pose(0)
         for a in acc: getattr(self, 'acc_' + a.split(':')[0])(*a.split(':')[1:])
-        self.root.location = loc0
+        self.root.location = loc0; self.root.rotation_euler = (0, 0, rot); self.rot0 = rot; self.loc0 = loc0
+        bpy.context.view_layer.active_layer_collection = prev
+    # —— per-frame posing (the film renders frame by frame and calls pose() for every character) ——
+    def rest_hand(self, k, t):
+        s = -1 if k == 'L' else 1; H = self.H; ph = t * 1.7 + (0 if k == 'L' else 1.3) + sum(map(ord, self.name)) % 7
+        return Vector((s * (.2 * H * self.bulk + .012 * H * math.sin(ph)), -.03 * H + .015 * H * math.sin(ph * .7), .25 * H + .012 * H * math.cos(ph)))
+    def pose(self, t, hands=None, head=(0, 0, 0), mouth=None, walk=0., phase=0., bob=0., loc=None, rot=None, lean=0.):
+        H = self.H; hands = hands or {}
+        if loc is not None: self.root.location = loc
+        if rot is not None: self.root.rotation_euler = (lean, 0, rot)
+        br = .006 * H * math.sin(t * 2.2 + len(self.name))   # breathing
+        self.body.location = (0, 0, .38 * H + br + abs(math.sin(phase)) * .02 * H * walk + bob)
+        for k in ('L', 'R'):
+            s = -1 if k == 'L' else 1; S0 = self.sh[k] + Vector((0, 0, br)); hv = hands.get(k)
+            P = Vector(hv) if hv is not None else self.rest_hand(k, t)
+            if walk: P = P + Vector((0, -s * .09 * H * math.sin(phase) * walk, 0))
+            d = P - S0; L = self.armlen; dist = min(d.length, L * .98); P = S0 + d.normalized() * dist if d.length > 0 else P
+            sag = math.sqrt(max(0., (L / 2) ** 2 - (dist / 2) ** 2)); side = Vector((s, .25, -.6)).normalized()   # the elbow bends out, a little back and down
+            perp = side - d.normalized() * side.dot(d.normalized()); perp = perp.normalized() if perp.length > 1e-6 else Vector((s, 0, 0))
+            E = (S0 + P) / 2 + perp * sag * 1.4
+            sp = self.arms[k].data.splines[0]
+            for pt, q in zip(sp.points, (S0, E, P)): pt.co = (q.x, q.y, q.z, 1)
+            self.hands[k].location = P
+            if k in self.biceps: self.biceps[k].location = S0 + (E - S0) * .45
+        self.head.rotation_euler = head
+        for k2, lg in enumerate(self.legs): lg.rotation_euler = ((1 if k2 else -1) * math.sin(phase) * .5 * walk, 0, 0)
+        if mouth:
+            for k3, o in self.mouths.items(): o.hide_render = (k3 != mouth)
+    def folded(self):   # hands on the opposite upper arms: arms crossed over the chest
+        H, b = self.H, self.bulk; return {'L': (.09 * H * b, -.17 * H * b, .43 * H), 'R': (-.09 * H * b, -.19 * H * b, .4 * H)}
     # —— face keyframes ——
-    def face(self, kind, frame):
-        for k, o in self.mouths.items():
-            o.hide_render = (k != kind); o.keyframe_insert('hide_render', frame=frame)
-    # —— accessories (after the reference: caps, hats, glasses, bow ties, buttons, scarves, hair) ——
+    def face(self, kind, frame=None):
+        for k, o in self.mouths.items(): o.hide_render = (k != kind)
+    def sleeve(self, m):
+        for k in 'LR':
+            self.arms[k].data.materials.clear(); self.arms[k].data.materials.append(m)
+            for o in self.root.children:
+                if o.name.startswith(self.name + '_shoulder') or o.name.startswith(self.name + '_bicep'): setmat(o, m)
     def acc_tache(self):
         R, hz = self.R, self.hz; m = mat('tache', '#2a1a12', rough=.6)
         for s in (-1, 1): o = sphere(f'{self.name}_tache{s}', (s * .13 * R, -.93 * R, hz - .18 * R), 1, (.16 * R, .06 * R, .055 * R), m, parent=self.head); o.rotation_euler = (0, s * .3, 0)
@@ -162,15 +200,13 @@ class Mascot:
         bpy.ops.mesh.primitive_cone_add(vertices=40, radius1=.86 * R, radius2=1.12 * R, depth=.5 * R, location=(0, 0, hz + .8 * R)); cr = bpy.context.object; cr.name = self.name + '_capc'; smooth(cr, 0); setmat(cr, navy); par(cr, self.head)
         cyl(self.name + '_capband', (0, 0, hz + .64 * R), .88 * R, .14 * R, red, parent=self.head)
         sphere(self.name + '_captop', (0, 0, hz + 1.05 * R), 1, (1.12 * R, 1.12 * R, .07 * R), navy, parent=self.head)
-        br = sphere(self.name + '_brim', (0, -.72 * R, hz + .55 * R), 1, (.58 * R, .36 * R, .045 * R), mat('brim', '#0c1230', rough=.2, coat=1), parent=self.head); br.rotation_euler = (.3, 0, 0)
+        br = sphere(self.name + '_brim', (0, -.72 * R, hz + .55 * R), 1, (.58 * R, .36 * R, .045 * R), mat('brim', '#0c1230', rough=.35), parent=self.head); br.rotation_euler = (.3, 0, 0)
         sphere(self.name + '_badge', (0, -.98 * R, hz + .84 * R), .12 * R, m=gold, parent=self.head)
         # the uniform: a navy jacket over the body, gold buttons, a tie
         bk = self.bulk; sphere(self.name + '_jacket', (0, 0, .38 * H), 1, (.158 * H * bk, .132 * H * bk ** .6, .16 * H * bk ** .3), navy, parent=self.root, sub=1)
         for k in range(3): sphere(f'{self.name}_gb{k}', (.04 * H, -.133 * H, .44 * H - k * .07 * H), .012 * H, m=gold, seg=12, parent=self.root)
         box(self.name + '_tie', (0, -.135 * H, .44 * H), (.02 * H, .006 * H, .1 * H), mat('tie', '#0c1230', rough=.4), parent=self.root)
-        for k in 'LR':
-            for o in self.arms[k].children:
-                if 'armm' in o.name or 'shoulder' in o.name or 'bicep' in o.name: setmat(o, navy)
+        self.sleeve(navy)
     def acc_beanie(self, col='#c23b3b'):
         R, hz = self.R, self.hz; m = mat('knit_' + col, col, rough=.9); o = sphere(self.name + '_beanie', (0, 0, hz + .1 * R), R * 1.06, m=m, seg=40, parent=self.head); cut_below(o, .3 * R)
         torus(self.name + '_beanrim', (0, 0, hz + .42 * R), 1.0 * R, .1 * R, m, parent=self.head); sphere(self.name + '_pom', (0, 0, hz + 1.2 * R), .2 * R, m=m, parent=self.head)
@@ -198,21 +234,17 @@ class Mascot:
         R, hz = self.R, self.hz; o = sphere(self.name + '_bob', (0, .06 * R, hz - .05 * R), R * 1.1, (1.04, 1, 1.02), mat('hair_' + col, col, rough=.55), seg=48, parent=self.head); cut_below(o, -.6 * R)
         bm = bmesh.new(); bm.from_mesh(o.data); bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y < -.3 * R and v.co.z < .38 * R], context='VERTS'); bm.to_mesh(o.data); bm.free()
     def acc_pearls(self):
-        H = self.H; m = mat('pearl', '#f4f1e6', rough=.15, coat=1)
+        H = self.H; m = mat('pearl', '#f4f1e6', rough=.3)
         for k in range(16): a = k / 16 * math.pi * 2; sphere(f'{self.name}_pr{k}', (math.cos(a) * .1 * H, math.sin(a) * .085 * H - .01 * H, .54 * H - .03 * H * max(0, -math.sin(a))), .014 * H, m=m, seg=10, parent=self.root)
     def acc_dress(self, col='#2a9a7a'):
         H = self.H; o = sphere(self.name + '_dress', (0, 0, .33 * H), 1, (.17 * H, .14 * H, .19 * H), mat('dress_' + col, col, rough=.6), parent=self.root, sub=1)
     def acc_suit(self, col='#4a3a8a'):
         H = self.H; m = mat('suit_' + col, col, rough=.55); sphere(self.name + '_suit', (0, 0, .38 * H), 1, (.157 * H, .131 * H, .16 * H), m, parent=self.root, sub=1)
-        for k in 'LR':
-            for o in self.arms[k].children:
-                if 'armm' in o.name: setmat(o, m)
+        self.sleeve(m)
     def acc_wear(self, col='#e0a030', pattern='', col2='#ffffff'):   # clothes like the reference: a jacket/sweater over the body and the sleeves; pattern 'check' or 'stripe'
         H, bk = self.H, self.bulk; m = cloth_mat(col, pattern, col2)
         sphere(self.name + '_top', (0, 0, .38 * H), 1, (.158 * H * bk, .132 * H * bk ** .6, .162 * H * bk ** .3), m, parent=self.root, sub=1)
-        for k in 'LR':
-            for o in self.arms[k].children:
-                if 'armm' in o.name or 'shoulder' in o.name or 'bicep' in o.name: setmat(o, m)
+        self.sleeve(m)
     def acc_coat(self, col='#c8902e'):   # a long coat: the top plus a skirt to the knees and a collar
         H = self.H; m = cloth_mat(col); self.acc_wear(col)
         sphere(self.name + '_coatlow', (0, 0, .25 * H), 1, (.15 * H, .125 * H, .12 * H), m, parent=self.root, sub=1)
@@ -220,29 +252,14 @@ class Mascot:
     def acc_tie(self, col='#c23b3b'):
         H = self.H; box(self.name + '_tie2', (0, -.135 * H, .43 * H), (.02 * H, .006 * H, .1 * H), mat('tie_' + col, col), parent=self.root)
     def acc_cash(self, side='R'):
-        H = self.H; m = mat('cash', '#7fc48a', rough=.6); sh = self.arms[side]; hx = (.125 if side == 'R' else -.125) * H
-        for k in range(4): o = box(f'{self.name}_cash{k}', (hx + (k - 1.5) * .02 * H, -.03 * H, .2 * H + k * .01 * H), (.11 * H, .005 * H, .055 * H), m, rot=(0, (k - 1.5) * .25, 0), parent=sh)
+        H = self.H; m = mat('cash', '#7fc48a', rough=.6); hd = self.hands[side]; p = hd.matrix_world.translation
+        for k in range(4): box(f'{self.name}_cash{k}', (p.x + (k - 1.5) * .02 * H, p.y - .03 * H, p.z + .05 * H + k * .006 * H), (.12 * H, .004 * H, .06 * H), m, rot=(0, (k - 1.5) * .3, 0), parent=hd)
     # —— posing helpers ——
-    def key_arm(self, side, frame, rot):
-        a = self.arms[side]; a.rotation_euler = rot; a.keyframe_insert('rotation_euler', frame=frame)
-    def fold_arms(self, frame):   # arms crossed in front of the chest
-        self.key_arm('L', frame, (-1.5, .0, 1.05)); self.key_arm('R', frame, (-1.4, .0, -1.05))
-    def rest(self, frame):
-        self.key_arm('L', frame, (0, -.12, 0)); self.key_arm('R', frame, (0, .12, 0))
     def key_head(self, frame, rot):
         self.head.rotation_euler = rot; self.head.keyframe_insert('rotation_euler', frame=frame)
     def key_root(self, frame, loc=None, rot=None):
         if loc is not None: self.root.location = loc; self.root.keyframe_insert('location', frame=frame)
         if rot is not None: self.root.rotation_euler = (0, 0, rot); self.root.keyframe_insert('rotation_euler', frame=frame)
-    def walk(self, f0, f1, fps=24, amp=.45, rate=2.2):   # leg and arm swing between two frames
-        for f in range(f0, f1 + 1, 2):
-            ph = (f - f0) / fps * rate * math.pi * 2; s = math.sin(ph)
-            for k, lg in enumerate(self.legs): lg.rotation_euler = ((1 if k else -1) * s * amp, 0, 0); lg.keyframe_insert('rotation_euler', frame=f)
-            self.key_arm('L', f, (s * amp * .8, -.12, 0)); self.key_arm('R', f, (-s * amp * .8, .12, 0))
-            self.body.location.z = .38 * self.H + abs(math.cos(ph)) * .012 * self.H; self.body.keyframe_insert('location', frame=f)
-        for k, lg in enumerate(self.legs): lg.rotation_euler = (0, 0, 0); lg.keyframe_insert('rotation_euler', frame=f1 + 3)
-        self.rest(f1 + 3)
-
 def render_setup(w=720, h=1280, samples=16, fps=24):
     sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = samples; sc.cycles.use_denoising = True
     try: sc.cycles.denoiser = 'OPENIMAGEDENOISE'
@@ -251,7 +268,16 @@ def render_setup(w=720, h=1280, samples=16, fps=24):
     sc.cycles.use_adaptive_sampling = True; sc.cycles.adaptive_threshold = .05; sc.render.use_persistent_data = True
     sc.render.resolution_x, sc.render.resolution_y = w, h; sc.render.fps = fps
     sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = .45
+    sc.cycles.seed = 0; sc.cycles.use_animated_seed = False
     sc.render.image_settings.file_format = 'PNG'; return sc
+
+def outlines(px=1.6):   # the reference's dark outlines round the characters (Freestyle, characters only)
+    sc = bpy.context.scene; sc.render.use_freestyle = True; sc.render.line_thickness_mode = 'ABSOLUTE'; sc.render.line_thickness = px
+    vl = bpy.context.view_layer; fs = vl.freestyle_settings; ls = fs.linesets[0] if fs.linesets else fs.linesets.new('L')
+    ls.select_by_collection = True; ls.collection = bpy.data.collections['chars']; ls.select_by_visibility = True
+    ls.select_silhouette = True; ls.select_border = True; ls.select_crease = False; ls.select_contour = True
+    if ls.linestyle is None: ls.linestyle = bpy.data.linestyles.new('ink')
+    ls.linestyle.color = (.02, .02, .05); ls.linestyle.thickness = px
 
 def world(col='#05070f', strength=1.):
     w = bpy.data.worlds.new('W'); bpy.context.scene.world = w; w.use_nodes = True; bgn = w.node_tree.nodes['Background']

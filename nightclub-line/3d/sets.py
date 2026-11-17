@@ -10,7 +10,7 @@ def facade(rope_x=(1.5, 9.0)):
     box('wall', (0, .25, 4), (60, .5, 8.5), brick_mat())
     box('plinth', (0, -.02, .25), (60, .1, .5), mat('plinth', '#141628', rough=.7))
     # the door: a dark frame, two red padded doors with gold handles, a little window on each
-    red = mat('door_red', '#a5161e', rough=.55, coat=.2); frame = mat('frame', '#2a0a12', rough=.4); gold = mat('gold', '#e8c35a', rough=.25, metal=.9)
+    red = mat('door_red', '#a5161e', rough=.6); frame = mat('frame', '#2a0a12', rough=.4); gold = mat('gold', '#e8c35a', rough=.25, metal=.9)
     box('doorframe', (0, -.05, 1.7), (2.9, .2, 3.4), frame)
     for s in (-1, 1):
         box(f'door{s}', (s * .66, -.17, 1.55), (1.26, .08, 3.0), red, bevel=.03)
