@@ -93,8 +93,8 @@ INK = '#151018'
 class Mascot:
     """A 23 Team mascot. root: move/rotate it; parts for posing: armL/armR (shoulder pivots, rotate x to raise forward, y to raise sideways), head (pivot at the neck).
     Faces: set_face(frame, kind) switches mouth/eye shapes by visibility keyframes."""
-    def __init__(self, name, skin='blue1', H=1.6, loc=(0, 0, 0), rot=0., acc=(), bulk=1.):
-        self.name, self.H, self.bulk = name, H, bulk; R = .205 * H; self.R = R   # heads a little smaller than the 2D .225 (user 2026-11-17: still big and cute)
+    def __init__(self, name, skin='blue1', H=1.6, loc=(0, 0, 0), rot=0., acc=(), bulk=1., lite=False, eyes='glossy'):
+        self.name, self.H, self.bulk, self.lite = name, H, bulk, lite; R = .205 * H; self.R = R   # heads a little smaller than the 2D .225 (user 2026-11-17: still big and cute)
         sk = mat('skin_' + skin, SKIN[skin], rough=.62); self.sk = sk
         chars = bpy.data.collections.get('chars') or bpy.data.collections.new('chars')
         if chars.name not in bpy.context.scene.collection.children: bpy.context.scene.collection.children.link(chars)
@@ -134,7 +134,7 @@ class Mascot:
         self.eyes = []; self.eyesets = {}; fz = lambda x, z: -math.sqrt(max(0., R * R - x * x - z * z)) * .985   # the y of the face surface at (x, z)
         def onface(x, z, out=0.): return (x, fz(x, z) - out, hz + z)
         skn = sk
-        for kind in ('glossy', 'dots', 'lids', 'wide', 'happy'):
+        for kind in ((eyes,) if lite else ('glossy', 'dots', 'lids', 'wide', 'happy')):   # a crowd extra (lite) gets only its own eyes and a smile
             objs = []
             for s in (-1, 1):
                 ex, ez = s * .33 * R, .0 * R
@@ -154,24 +154,29 @@ class Mascot:
             self.eyesets[kind] = objs
         # brows (optional): 'angry', 'worried', 'raised', 'flat'
         self.brows = {}
-        for kind, (tilt, lift) in {'angry': (1, .2), 'worried': (-1, .24), 'raised': (0, .34), 'flat': (0, .22)}.items():   # tilt 1: inner ends down (angry), -1: inner ends up (worried)
+        for kind, (tilt, lift) in ({} if lite else {'angry': (1, .2), 'worried': (-1, .24), 'raised': (0, .34), 'flat': (0, .22)}).items():   # tilt 1: inner ends down (angry), -1: inner ends up (worried)
             self.brows[kind] = [tube(f'{name}_b{kind}{s}', [onface(s * .2 * R, (lift - .06 * tilt) * R, .02 * R), onface(s * .33 * R, (lift + .02 - .01 * tilt) * R, .02 * R), onface(s * .46 * R, (lift + .04 * tilt * 0 + .01) * R, .02 * R)], .028 * R, ink, self.head) for s in (-1, 1)]
         # mouths: smile, open, flat, frown, grin (open with a tongue), teeth (shocked grin), smirk; one visible at a time
         mz = -.3 * R; mzz = hz + mz
         arc = [onface(x * R, mz + .9 * (x * x) * R) for x in (-.2, -.1, 0, .1, .2)]
-        grin = sphere(name + '_m_grin', onface(0, mz - .02 * R), 1, (.16 * R, .04 * R, .12 * R), ink, parent=self.head)
-        bm = bmesh.new(); bm.from_mesh(grin.data); bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z > .1], context='VERTS'); bm.to_mesh(grin.data); bm.free()   # the lower half: an open laughing mouth
-        tongue = sphere(name + '_m_tongue', onface(0, mz - .09 * R, .02 * R), 1, (.08 * R, .03 * R, .04 * R), mat('tongue', '#d6456a', rough=.5), parent=self.head)
-        teeth = box(name + '_m_teeth', onface(0, mz - .04 * R, .02 * R), (.22 * R, .02 * R, .1 * R), mat('teethw', '#f6f4ee', rough=.4), parent=self.head)
-        teethb = box(name + '_m_teethb', onface(0, mz - .04 * R, .005 * R), (.26 * R, .02 * R, .14 * R), ink, parent=self.head)
-        self.mouths = {'smile': [tube(name + '_m_smile', arc, .018 * R, ink, self.head)],
-                       'open': [sphere(name + '_m_open', onface(0, mz - .02 * R), 1, (.07 * R, .03 * R, .09 * R), ink, parent=self.head)],
-                       'flat': [tube(name + '_m_flat', [onface(-.13 * R, mz), onface(0, mz, .005 * R), onface(.13 * R, mz)], .016 * R, ink, self.head)],
-                       'frown': [tube(name + '_m_frown', [onface(x * R, mz - .03 * R - .8 * (x * x) * R) for x in (-.18, -.09, 0, .09, .18)], .017 * R, ink, self.head)],
-                       'grin': [grin, tongue], 'teeth': [teeth, teethb],
-                       'smirk': [tube(name + '_m_smirk', [onface(-.12 * R, mz), onface(0, mz - .01 * R), onface(.14 * R, mz + .06 * R)], .017 * R, ink, self.head)]}
-        self.look = {'eyes': 'glossy', 'brows': None}
+        if lite:
+            self.mouths = {'smile': [tube(name + '_m_smile', arc, .018 * R, ink, self.head)]}
+        else:
+            grin = sphere(name + '_m_grin', onface(0, mz - .02 * R), 1, (.16 * R, .04 * R, .12 * R), ink, parent=self.head)
+            bm = bmesh.new(); bm.from_mesh(grin.data); bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z > .1], context='VERTS'); bm.to_mesh(grin.data); bm.free()   # the lower half: an open laughing mouth
+            tongue = sphere(name + '_m_tongue', onface(0, mz - .09 * R, .02 * R), 1, (.08 * R, .03 * R, .04 * R), mat('tongue', '#d6456a', rough=.5), parent=self.head)
+            teeth = box(name + '_m_teeth', onface(0, mz - .04 * R, .02 * R), (.22 * R, .02 * R, .1 * R), mat('teethw', '#f6f4ee', rough=.4), parent=self.head)
+            teethb = box(name + '_m_teethb', onface(0, mz - .04 * R, .005 * R), (.26 * R, .02 * R, .14 * R), ink, parent=self.head)
+            self.mouths = {'smile': [tube(name + '_m_smile', arc, .018 * R, ink, self.head)],
+                           'open': [sphere(name + '_m_open', onface(0, mz - .02 * R), 1, (.07 * R, .03 * R, .09 * R), ink, parent=self.head)],
+                           'flat': [tube(name + '_m_flat', [onface(-.13 * R, mz), onface(0, mz, .005 * R), onface(.13 * R, mz)], .016 * R, ink, self.head)],
+                           'frown': [tube(name + '_m_frown', [onface(x * R, mz - .03 * R - .8 * (x * x) * R) for x in (-.18, -.09, 0, .09, .18)], .017 * R, ink, self.head)],
+                           'grin': [grin, tongue], 'teeth': [teeth, teethb],
+                           'smirk': [tube(name + '_m_smirk', [onface(-.12 * R, mz), onface(0, mz - .01 * R), onface(.14 * R, mz + .06 * R)], .017 * R, ink, self.head)]}
+
+        self.look = {'eyes': eyes, 'brows': None}
         self.face('smile'); self.pose(0)
+        if lite: self.body.modifiers.clear()
         for a in acc: getattr(self, 'acc_' + a.split(':')[0])(*a.split(':')[1:])
         self.root.location = loc0; self.root.rotation_euler = (0, 0, rot); self.rot0 = rot; self.loc0 = loc0
         bpy.context.view_layer.active_layer_collection = prev
@@ -199,7 +204,7 @@ class Mascot:
             if k in self.biceps: self.biceps[k].location = S0 + (E - S0) * .45
         self.head.rotation_euler = head
         for k2, lg in enumerate(self.legs): lg.rotation_euler = ((1 if k2 else -1) * math.sin(phase) * .5 * walk, 0, 0)
-        if mouth: self.face(mouth)
+        if mouth and mouth in self.mouths: self.face(mouth)
     def folded(self):   # hands on the opposite upper arms: arms crossed over the chest
         H, b = self.H, self.bulk; return {'L': (.09 * H * b, -.17 * H * b, .43 * H), 'R': (-.09 * H * b, -.19 * H * b, .4 * H)}
     # —— face keyframes ——
@@ -328,6 +333,7 @@ def render_setup(w=720, h=1280, samples=16, fps=24):
     sc.render.image_settings.file_format = 'PNG'; return sc
 
 def outlines(px=1.6):   # the reference's dark outlines round the characters (Freestyle, characters only)
+    if 'chars' not in bpy.data.collections: return
     sc = bpy.context.scene; sc.render.use_freestyle = True; sc.render.line_thickness_mode = 'ABSOLUTE'; sc.render.line_thickness = px
     vl = bpy.context.view_layer; fs = vl.freestyle_settings; ls = fs.linesets[0] if fs.linesets else fs.linesets.new('L')
     ls.select_by_collection = True; ls.collection = bpy.data.collections['chars']; ls.select_by_visibility = True
