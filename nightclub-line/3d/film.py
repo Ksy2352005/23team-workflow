@@ -74,7 +74,7 @@ def _(t, S):   # „és fizetett 40 embernek”: the owner hands a fan of cash t
     o, s = S['o'], S['s']; H = o.H; g = ease(seg(t, T(5), T(6) + .3))
     o.pose(t, hands={'R': (lerp(.2, .3, g) * H, lerp(-.1, -.3, g) * H, lerp(.3, .42, g) * H), 'L': (-.22 * H, -.15 * H, .32 * H)}, head=(0, 0, .15))
     s.pose(t, hands={'L': (-.2 * s.H, lerp(-.05, -.3, g) * s.H, lerp(.28, .42, g) * s.H)}, head=(0, 0, -.2)); s.face('grin' if g > .7 else 'smile')
-    move((5.95, -3.6, 1.45), (5.95, -1.1, 1.15), (5.95, -3.1, 1.4), (5.95, -1.1, 1.15), seg(t, T(4), T(8)), 34)
+    move((5.95, -4.0, 1.45), (5.95, -1.1, 1.15), (5.95, -3.6, 1.4), (5.95, -1.1, 1.15), seg(t, T(4), T(8)), 26)
 
 @shot('line', T(8) - .05, 'front')
 def _(t, S):   # „hogy álljanak kint”: down the wall: a long line of strangers waiting outside
@@ -108,11 +108,11 @@ def _(t, S):   # „Odabent zenekar”: inside: the band on the stage under the 
     b[0].pose(t, hands={'L': (-.05 * H, -.33 * H, .55 * H), 'R': (.05 * H, -.35 * H, .56 * H)}, head=(-.15, 0, .1 * math.sin(t * 4)))
     hit = abs(math.sin(t * 10)); b[1].pose(t, hands={'L': (-.25 * H, -.3 * H, (.42 + .06 * hit) * H), 'R': (.25 * H, -.3 * H, (.42 + .06 * (1 - hit)) * H)}, head=(0, 0, .1 * math.sin(t * 5)), bob=.01 * hit)
     b[2].pose(t, hands={'L': (.2 * H, -.25 * H, .5 * H), 'R': (.1 * H, -.28 * H, (.35 + .04 * math.sin(t * 14)) * H)}, head=(.1 * math.sin(t * 6), 0, 0))
-    move((0, 7.6, 2.3), (0, 13.4, 2.0), (0, 8.8, 2.2), (0, 13.4, 2.0), seg(t, T(20), T(22)), 30)
+    move((0, 6.4, 2.4), (0, 13.4, 2.0), (0, 7.6, 2.3), (0, 13.4, 2.0), seg(t, T(20), T(22)), 30)
 
 @shot('bar', T(22) - .05, 'hall')
 def _(t, S):   # „bár”: the bar: glowing bottles, a pink lamp, the bartender polishing a glass
-    if not S: S['k'] = nc_.Mascot('bartender', 'blue3', 1.6, (-10.9, 4.0, .05), rot=math.radians(-90), acc=('wear:#f4f1e6', 'bowtie:#151018', 'tache', 'glasses:#f2c14e')); S['k'].face('flat', eyes='dots')
+    if not S: S['k'] = nc_.Mascot('bartender', 'blue3', 1.6, (-10.9, 4.0, .55), rot=math.radians(-90), acc=('wear:#f4f1e6', 'bowtie:#151018', 'tache', 'glasses:#f2c14e')); S['k'].face('flat', eyes='dots')
     k = S['k']; H = k.H; w = math.sin(t * 9)
     k.pose(t, hands={'L': (-.1 * H, -.3 * H, .55 * H), 'R': ((.0 + .05 * w) * H, -.32 * H, .56 * H)}, head=(0, 0, .1))
     move((-6.9, 2.4, 2.0), (-10.9, 4.0, 1.7), (-7.2, 2.5, 2.0), (-10.9, 4.0, 1.7), seg(t, T(22), T(24)), 30)
@@ -152,7 +152,7 @@ def _(t, S):   # „meg egy piros kötéllel”: the velvet rope and its gold po
     if not S: S['o'] = OWNER((2.4, -1.9, .08), rot=math.radians(20)); S['o'].face('smile', eyes='glossy'); S['s'] = stranger(1, (3.3, -.6, .05))
     o = S['o']; H = o.H; g = ease(seg(t, T(51), T(53)))
     o.pose(t, hands={'R': (lerp(.2, -.05, g) * H, lerp(-.1, .25, g) * H, lerp(.3, .58, g) * H)}, head=(0, 0, .2)); S['s'].pose(t)
-    move((2.2, -3.6, 1.15), (1.9, -1.25, .9), (2.0, -3.1, 1.1), (1.7, -1.25, .95), seg(t, T(50), T(54)), 32)
+    move((2.6, -5.0, 1.3), (2.2, -1.25, .95), (2.4, -4.6, 1.25), (2.1, -1.25, .95), seg(t, T(50), T(54)), 28)
 
 @shot('lineup', T(54) - .05, 'front')
 def _(t, S):   # „Sorba állítja őket a fal mellett”: he walks along the line, setting each one against the wall
@@ -239,7 +239,7 @@ def _(t, S):   # „De nem mennek haza.”: the couple, shocked; then they set t
     if not S: S['m'], S['w'] = COUPLE(.4, 1.25, -2.1)
     sh = t < T(108) + .2
     for m in (S['m'], S['w']): m.face('open' if sh else 'flat', eyes='wide' if sh else 'lids', brows='raised' if sh else 'angry'); m.pose(t, head=(0, 0, .05 * math.sin(t * 10) if sh else 0))
-    move((.82, -4.0, 1.4), (.82, -2.1, 1.15), (.82, -3.7, 1.38), (.82, -2.1, 1.15), seg(t, T(106), T(110)), 34)
+    move((.82, -4.9, 1.4), (.82, -2.1, 1.15), (.82, -4.6, 1.38), (.82, -2.1, 1.15), seg(t, T(106), T(110)), 30)
 
 @shot('backofline', T(110) - .05, 'front')
 def _(t, S):   # „Beállnak a sor végére”: they march past the line to its end
@@ -299,7 +299,7 @@ def _(t, S):   # „és felemelik a kötelet”: the rope's hook comes up off th
     u = ease(seg(t, T(155), T(157))); sp = S['r'].data.splines[0]; end = V(lerp(1.5, 1.9, u), lerp(-1.25, -1.6, u), lerp(.95, 1.35, u))
     for p, q in zip(sp.points, (end, (end + V(3.0, -1.25, .95)) / 2 - V(0, 0, .3), V(3.0, -1.25, .95))): p.co = (q.x, q.y, q.z, 1)
     S['d'].pose(t, hands={'L': (-.35, -.4, lerp(.75, 1.15, u))})
-    move((1.6, -4.0, 1.4), (1.2, -1.0, 1.1), (1.5, -3.6, 1.3), (1.0, -1.0, 1.1), seg(t, T(154), T(158)), 30)
+    move((2.4, -4.4, 1.25), (1.9, -1.25, .95), (2.2, -4.0, 1.2), (1.8, -1.25, 1.0), seg(t, T(154), T(158)), 30)
 
 @shot('cheer', T(158) - .05, 'hall')
 def _(t, S):   # „Bent úgy ujjonganak, mintha nyertek volna valamit”: the hall is packed: everyone on their feet, cheering
@@ -307,7 +307,7 @@ def _(t, S):   # „Bent úgy ujjonganak, mintha nyertek volna valamit”: the h
         S['c'] = []; k = 0
         for r in range(1, 9):
             for c in range(16):
-                if (r * 16 + c) % 2 == 0 or r < 5: x = -7.0 + c * .92 + (.5 if c >= 8 else -.5); S['c'].append(stranger(k, (x, 8.2 - r * 1.0 - .3, .05), lite=True)); k += 1
+                if (r * 16 + c) % 2 == 0 or r < 5: x = -7.0 + c * .92 + (.5 if c >= 8 else -.5); S['c'].append(stranger(k, (x, 8.2 - r * 1.0 - .3, .05), rot=math.pi, lite=True)); k += 1
         for m in S['c']: m.face('smile', eyes='happy') if 'happy' in m.eyesets else None
     for i, m in enumerate(S['c']):
         H = m.H; j = abs(math.sin(t * 7 + i * .7)); m.pose(t, hands={'L': (-.18 * H, -.05 * H, (.85 + .1 * j) * H), 'R': (.18 * H, -.05 * H, (.85 + .1 * (1 - j)) * H)}, bob=.05 * j)
@@ -339,10 +339,10 @@ def _(t, S):   # „Tudod, senki nem akar egy üres teremben ülni.”: an empty
 @shot('want', T(188) - .05, 'hall')
 def _(t, S):   # „Azt a helyet akarják, amiről épp most mondták nekik,”: in the seats now: the lucky ones, laughing, pearls and all
     if not S:
-        S['c'] = [nc_.Mascot('lady', 'blue1', 1.58, (-1.05, 4.9, .3), acc=('dress:#2a9a7a', 'bob:#c23b3b', 'pearls', 'blush')), nc_.Mascot('guy', 'blue2', 1.68, (-1.95, 4.9, .3), acc=('suit:#4a3a8a', 'bowtie:#f2c14e')), stranger(3, (1.05, 4.9, .3)), nc_.Mascot('pearl2', 'blue3', 1.55, (1.95, 4.9, .3), acc=('wear:#f4f1e6', 'pearls', 'beret:#c23b3b'))]
+        S['c'] = [nc_.Mascot('lady', 'blue1', 1.58, (-.5, 4.9, .3), acc=('dress:#2a9a7a', 'bob:#c23b3b', 'pearls', 'blush')), nc_.Mascot('guy', 'blue2', 1.68, (-1.4, 4.9, .3), acc=('suit:#4a3a8a', 'bowtie:#f2c14e')), stranger(3, (.5, 4.9, .3), rot=0), nc_.Mascot('pearl2', 'blue3', 1.55, (1.4, 4.9, .3), acc=('wear:#f4f1e6', 'pearls', 'beret:#c23b3b'))]
         for m, (mo, ey) in zip(S['c'], (('grin', 'happy'), ('smile', 'happy'), ('grin', 'happy'), ('open', 'happy'))): m.face(mo, eyes=ey)
     for i, m in enumerate(S['c']): H = m.H; m.pose(t, hands={'L': (-.2 * H, -.2 * H, .4 * H), 'R': (.2 * H, -.2 * H, .4 * H)}, head=(.05 * math.sin(t * 8 + i), 0, .08 * math.sin(t * 2 + i)), bob=.01 * abs(math.sin(t * 8 + i)))
-    move((0, 2.2, 1.5), (0, 4.9, 1.35), (0, 2.6, 1.5), (0, 4.9, 1.35), seg(t, T(188), T(197)), 30)
+    move((0, 1.4, 1.5), (0, 4.9, 1.3), (0, 1.8, 1.5), (0, 4.9, 1.3), seg(t, T(188), T(197)), 28)
 
 @shot('cannot', T(197) - .05, 'front')
 def _(t, S):   # „hogy nem kaphatják meg.”: the doorman behind his rope, arms folded, smug

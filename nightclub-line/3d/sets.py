@@ -52,6 +52,11 @@ def facade(rope_x=(1.5, 9.0)):
     # falling off before the wall, and a cool rim from above behind them
     light('AREA', (0, -5.5, 1.9), 650, '#fff1dc', 5, rot=(math.radians(88), 0, 0), name='charkey')
     light('AREA', (0, -2.6, 4.6), 260, '#9fdcff', 6, rot=(math.radians(-20), 0, 0), name='charrim')
+    # the same character light all along the street (the line, the couple, the taxi, the back door are lit like the club front)
+    for x in (-16, -12, -8, 6, 12, 18, 24, 30):
+        light('AREA', (x, -5.5, 2.0), 520, '#fff1dc', 5, rot=(math.radians(88), 0, 0), name=f'streetkey{x}')
+        light('AREA', (x, -2.6, 4.6), 200, '#9fdcff', 6, rot=(math.radians(-20), 0, 0), name=f'streetrim{x}')
+    light('AREA', (10.5, -8.5, 2.5), 500, '#fff1dc', 5, rot=(math.radians(80), 0, 0), name='taxikey')
     light('SUN', (0, 0, 10), 1.6, '#8fa8ff', rot=(math.radians(55), 0, math.radians(-25)), name='moon')
     light('AREA', (-3, -6, 4), 260, '#6f86ff', 6, rot=(math.radians(70), 0, math.radians(-30)), name='bluefill')
 
@@ -87,6 +92,7 @@ def block(x1=34., depth=30.):   # for the view from above: the club's block, its
         box(f'chim{k}', (x1 - 6 - k * 7, 6 + (k % 3) * 7, 9.2), (1.2, 1.2, 1.4), mat('chimm', '#1a1e38', rough=.8))
         sphere(f'slamp{k}', (x1 - 2 - k * 6, -3.4, 4.0), .18, m=emissive('lampglow', '#ffd28a', 10.)); cyl(f'spole{k}', (x1 - 2 - k * 6, -3.4, 2), .05, 4, mat('iron', '#0c0d18', rough=.4))
         light('POINT', (x1 - 2 - k * 6, -3.4, 3.6), 300, '#ffc77a', .3, name=f'sl{k}')
+    light('AREA', (x1 - 8, -6, 26), 9000, '#c9d6ff', 40, name='blocktop')   # seen from above: the night street lit softly from above
 
 def chair(name='chair'):   # one red velvet armchair (instanced for the 300 seats)
     col = bpy.data.collections.get(name)
