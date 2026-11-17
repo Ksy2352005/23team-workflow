@@ -112,7 +112,7 @@ def _(t, S):   # „Odabent zenekar”: inside: the band on the stage under the 
 
 @shot('bar', T(22) - .05, 'hall')
 def _(t, S):   # „bár”: the bar: glowing bottles, a pink lamp, the bartender polishing a glass
-    if not S: S['k'] = nc_.Mascot('bartender', 'blue3', 1.6, (-10.9, 4.0, .55), rot=math.radians(-90), acc=('wear:#f4f1e6', 'bowtie:#151018', 'tache', 'glasses:#f2c14e')); S['k'].face('flat', eyes='dots')
+    if not S: S['k'] = nc_.Mascot('bartender', 'blue3', 1.6, (-10.9, 4.0, .55), rot=math.radians(90), acc=('wear:#f4f1e6', 'bowtie:#151018', 'tache', 'glasses:#f2c14e')); S['k'].face('flat', eyes='dots')
     k = S['k']; H = k.H; w = math.sin(t * 9)
     k.pose(t, hands={'L': (-.1 * H, -.3 * H, .55 * H), 'R': ((.0 + .05 * w) * H, -.32 * H, .56 * H)}, head=(0, 0, .1))
     move((-6.9, 2.4, 2.0), (-10.9, 4.0, 1.7), (-7.2, 2.5, 2.0), (-10.9, 4.0, 1.7), seg(t, T(22), T(24)), 30)
@@ -253,7 +253,7 @@ def _(t, S):   # „Beállnak a sor végére”: they march past the line to its
 def _(t, S):   # „Egy férfi kiszáll egy taxiból”: a taxi pulls up; a man in a hat steps out
     if not S: S['f'] = nc_.Mascot('hatman', 'blue3', 1.7, (10.2, -4.6, .08), acc=('wear:#7a5a3a', 'fedora:#3a2418', 'tie:#c23b3b'), eyes='lids'); S['f'].face('flat', eyes='lids', brows='flat')
     u = ease(seg(t, T(115), T(118))); S['f'].pose(t, loc=(10.2, lerp(-4.7, -3.6, u), .08), rot=0, walk=1. if 0 < u < 1 else 0., phase=t * 8)
-    move((12.6, -9.5, 1.4), (10.4, -4.6, 1.0), (12.0, -8.8, 1.45), (10.3, -4.2, 1.0), seg(t, T(114), T(119)), 30)
+    move((13.6, -2.2, 1.6), (10.3, -4.4, 1.1), (13.2, -2.0, 1.55), (10.2, -4.0, 1.1), seg(t, T(114), T(119)), 30)
 
 @shot('joins', T(119) - .05, 'front')
 def _(t, S):   # „és beáll a sorba. Meg sem kérdezi, mire várnak.”: he joins the end of the line beside the couple, no questions asked
@@ -307,11 +307,11 @@ def _(t, S):   # „Bent úgy ujjonganak, mintha nyertek volna valamit”: the h
         S['c'] = []; k = 0
         for r in range(1, 9):
             for c in range(16):
-                if (r * 16 + c) % 2 == 0 or r < 5: x = -7.0 + c * .92 + (.5 if c >= 8 else -.5); S['c'].append(stranger(k, (x, 8.2 - r * 1.0 - .3, .05), rot=math.pi, lite=True)); k += 1
+                if (r * 16 + c) % 2 == 0 or r < 5: x = -7.0 + c * .92 + (.5 if c >= 8 else -.5); S['c'].append(stranger(k, (x, 8.2 - r * 1.0 - .3, .05), lite=True)); k += 1
         for m in S['c']: m.face('smile', eyes='happy') if 'happy' in m.eyesets else None
     for i, m in enumerate(S['c']):
         H = m.H; j = abs(math.sin(t * 7 + i * .7)); m.pose(t, hands={'L': (-.18 * H, -.05 * H, (.85 + .1 * j) * H), 'R': (.18 * H, -.05 * H, (.85 + .1 * (1 - j)) * H)}, bob=.05 * j)
-    move((0, 11.5, 3.2), (0, 2.0, 1.0), (0, 11.0, 3.6), (0, 1.0, .8), seg(t, T(158), T(165)), 26)
+    move((0, -6.0, 3.6), (0, 8.0, 1.3), (0, -4.8, 3.1), (0, 8.0, 1.2), seg(t, T(158), T(165)), 26)
 
 @shot('pays40', T(165) - .05, 'alley')
 def _(t, S):   # „A 40 idegent a hátsó ajtónál kifizeti”: at the back door he pays them off, one by one

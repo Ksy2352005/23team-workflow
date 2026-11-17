@@ -92,7 +92,7 @@ def block(x1=34., depth=30.):   # for the view from above: the club's block, its
         box(f'chim{k}', (x1 - 6 - k * 7, 6 + (k % 3) * 7, 9.2), (1.2, 1.2, 1.4), mat('chimm', '#1a1e38', rough=.8))
         sphere(f'slamp{k}', (x1 - 2 - k * 6, -3.4, 4.0), .18, m=emissive('lampglow', '#ffd28a', 10.)); cyl(f'spole{k}', (x1 - 2 - k * 6, -3.4, 2), .05, 4, mat('iron', '#0c0d18', rough=.4))
         light('POINT', (x1 - 2 - k * 6, -3.4, 3.6), 300, '#ffc77a', .3, name=f'sl{k}')
-    light('AREA', (x1 - 8, -6, 26), 9000, '#c9d6ff', 40, name='blocktop')   # seen from above: the night street lit softly from above
+    light('AREA', (x1 - 8, -6, 26), 30000, '#c9d6ff', 40, name='blocktop')   # seen from above: the night street lit softly from above
 
 def chair(name='chair'):   # one red velvet armchair (instanced for the 300 seats)
     col = bpy.data.collections.get(name)
