@@ -15,6 +15,7 @@ def mat(name, col, rough=.5, metal=0., emit=None, estr=0., coat=0., sss=0., alph
     m = bpy.data.materials.new(name); m.use_nodes = True; b = m.node_tree.nodes['Principled BSDF']
     b.inputs['Base Color'].default_value = hexc(col) if isinstance(col, str) else col
     b.inputs['Roughness'].default_value = rough; b.inputs['Metallic'].default_value = metal
+    b.inputs['Specular IOR Level'].default_value = .5 if metal > .3 else .18   # soft, matte toon look (no shiny surfaces)
     if coat: b.inputs['Coat Weight'].default_value = coat
     if emit: b.inputs['Emission Color'].default_value = hexc(emit) if isinstance(emit, str) else emit; b.inputs['Emission Strength'].default_value = estr
     if alpha < 1: b.inputs['Alpha'].default_value = alpha
@@ -111,7 +112,7 @@ class Mascot:
             self.legs.append(lg)
         # arms: soft bendy arms (a curve from the shoulder through the elbow to the hand) with mitten hands and a thumb; posed every frame by pose()
         self.arms, self.hands, self.sh, self.biceps = {}, {}, {}, {}
-        ar = .03 * H * (1 + (bulk - 1) * 1.8); self.armlen = .33 * H
+        ar = .022 * H * (1 + (bulk - 1) * 2.2); self.armlen = .36 * H
         for s, k in ((-1, 'L'), (1, 'R')):
             S0 = Vector((s * .13 * H * bulk, 0, .485 * H)); self.sh[k] = S0
             cu = bpy.data.curves.new(f'{name}_arm{k}', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = ar; cu.bevel_resolution = 4; cu.use_fill_caps = True
@@ -149,7 +150,7 @@ class Mascot:
     # —— per-frame posing (the film renders frame by frame and calls pose() for every character) ——
     def rest_hand(self, k, t):
         s = -1 if k == 'L' else 1; H = self.H; ph = t * 1.7 + (0 if k == 'L' else 1.3) + sum(map(ord, self.name)) % 7
-        return Vector((s * (.2 * H * self.bulk + .012 * H * math.sin(ph)), -.03 * H + .015 * H * math.sin(ph * .7), .25 * H + .012 * H * math.cos(ph)))
+        return Vector((s * (.27 * H * self.bulk + .02 * H * math.sin(ph)), -.07 * H + .025 * H * math.sin(ph * .7), .27 * H + .02 * H * math.cos(ph)))   # hands held away from the body, always drifting a little
     def pose(self, t, hands=None, head=(0, 0, 0), mouth=None, walk=0., phase=0., bob=0., loc=None, rot=None, lean=0.):
         H = self.H; hands = hands or {}
         if loc is not None: self.root.location = loc
@@ -261,7 +262,17 @@ class Mascot:
         if loc is not None: self.root.location = loc; self.root.keyframe_insert('location', frame=frame)
         if rot is not None: self.root.rotation_euler = (0, 0, rot); self.root.keyframe_insert('rotation_euler', frame=frame)
 def render_setup(w=720, h=1280, samples=16, fps=24):
-    sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = samples; sc.cycles.use_denoising = True
+    import os
+    sc = bpy.context.scene
+    if os.environ.get('ENGINE', 'EEVEE') == 'EEVEE':   # the real-time engine: stable, noise-free lighting like the reference (user 2026-11-17: Cycles' noise looked like a lagging shine)
+        sc.render.engine = 'BLENDER_EEVEE'; sc.eevee.taa_render_samples = samples
+        for k, v in (('use_shadows', True), ('use_raytracing', os.environ.get('RT') == '1'), ('use_gtao', True), ('shadow_ray_count', 1), ('shadow_step_count', 4)):
+            try: setattr(sc.eevee, k, v)
+            except Exception: pass
+        sc.render.resolution_x, sc.render.resolution_y = w, h; sc.render.fps = fps
+        sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = .45
+        sc.render.image_settings.file_format = 'PNG'; return sc
+    sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = samples; sc.cycles.use_denoising = True
     try: sc.cycles.denoiser = 'OPENIMAGEDENOISE'
     except Exception: pass
     sc.cycles.max_bounces = 4; sc.cycles.diffuse_bounces = 2; sc.cycles.glossy_bounces = 2; sc.cycles.transmission_bounces = 2; sc.cycles.transparent_max_bounces = 4

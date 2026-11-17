@@ -14,7 +14,7 @@ LINE = [('blue2', ('wear:#e0b030', 'beanie:#c23b3b')), ('blue3', ('wear:#8a5a3a'
         ('blue3', ('wear:#2a9a7a', 'beret:#d23a6a')), ('blue1', ('coat:#d0702e', 'pony:#6e4630')), ('blue2', ('wear:#c23b3b:stripe:#f4f1e6', 'beanie:#2ED3C6')), ('blue3', ('suit:#4a3a8a', 'bowtie:#f2c14e'))]
 crowd = [Mascot(f'q{i}', sk, 1.55 + .08 * ((i * 7) % 3), (1.95 + i * .8, -.55, .05), rot=math.radians(-28 + (i % 3) * 9), acc=acc) for i, (sk, acc) in enumerate(LINE)]
 for i, m in enumerate(crowd): m.face(['flat', 'smile', 'flat', 'frown'][i % 4])
-outlines(float(os.environ.get('LINE', 1.4)))
+if os.environ.get('LINES', '1') == '1': outlines(float(os.environ.get('LINE', 1.4)))
 cam = camera((.6, -9.5, 7.6), (0, 0, 6.6), lens=30)
 ease = lambda u: u * u * (3 - 2 * u)
 def pose_all(f):
@@ -22,11 +22,13 @@ def pose_all(f):
     dm.pose(t, hands=dm.folded(), head=(0, 0, math.radians(-8) * ease(min(1, t / 3))))
     # the owner: proud, one hand presenting the door, the other on his belly
     wave = ease(min(1, max(0, (t - 1.5) / .8))); Ho = own.H
-    own.pose(t, hands={'R': (lerp(.2, .36, wave) * Ho, lerp(-.05, -.18, wave) * Ho, lerp(.25, .5, wave) * Ho + .02 * Ho * math.sin(t * 5) * wave), 'L': (-.05 * Ho, -.2 * Ho, .34 * Ho)}, head=(0, 0, math.radians(10) * math.sin(t * .8)))
+    own.pose(t, hands={'R': (lerp(.2, .36, wave) * Ho, lerp(-.05, -.18, wave) * Ho, lerp(.25, .5, wave) * Ho + .02 * Ho * math.sin(t * 5) * wave), 'L': (-.24 * Ho, -.18 * Ho, .36 * Ho + .04 * Ho * math.sin(t * 4))}, head=(0, 0, math.radians(10) * math.sin(t * .8)))
     # the line: everyone a little different: hands in front, one at the chin, one on the hip, looking about
     for i, m in enumerate(crowd):
         Hm = m.H; k = i % 4
-        hands = [{'L': (-.06 * Hm, -.18 * Hm, .3 * Hm), 'R': (.06 * Hm, -.18 * Hm, .3 * Hm)}, {'R': (.05 * Hm, -.2 * Hm, .55 * Hm)}, {'L': (-.22 * Hm, -.02 * Hm, .33 * Hm)}, {}][k]
+        w = math.sin(t * 2.4 + i * 1.3)
+        hands = [{'L': (-.1 * Hm, -.22 * Hm, .32 * Hm + .03 * Hm * w), 'R': (.1 * Hm, -.22 * Hm, .32 * Hm - .03 * Hm * w)}, {'R': (.08 * Hm, -.24 * Hm, .56 * Hm + .02 * Hm * w)},
+                 {'L': (-.3 * Hm, -.05 * Hm, .3 * Hm), 'R': (.24 * Hm + .05 * Hm * w, -.2 * Hm, .42 * Hm + .06 * Hm * w)}, {'R': (.3 * Hm, -.12 * Hm, .5 * Hm + .08 * Hm * max(0, w))}][k]
         m.pose(t, hands=hands, head=(math.radians(4) * math.sin(t * .9 + i), 0, math.radians(18) * math.sin(t * .6 + i * 1.7)))
 lerp = lambda a, b, u: a + (b - a) * u
 A0, L0, A1, L1 = Vector((.6, -9.5, 7.6)), Vector((0, 0, 6.6)), Vector((.4, -8.0, 2.35)), Vector((.5, 0, 1.45))
