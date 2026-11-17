@@ -129,20 +129,48 @@ class Mascot:
         self.skull = sphere(name + '_skull', (0, 0, hz), R, (1, .96, .97), sk, seg=48, parent=self.head)
         ink = mat('ink', INK, rough=.3)
         hi = emissive('eye_hi', '#ffffff', 3.)
-        self.eyes = []
-        for s in (-1, 1):
-            d = Vector((s * .34, -.93, -.02)).normalized() * R * .97
-            e = sphere(f'{name}_eye{s}', (d.x, d.y, hz + d.z), 1, (.1 * R, .06 * R, .15 * R), ink, seg=24, parent=self.head)
-            e.rotation_euler = (0, 0, s * -.33)
-            sphere(f'{name}_hi{s}', (d.x - .03 * R, d.y - .05 * R, hz + d.z + .065 * R), .032 * R, m=hi, seg=12, parent=self.head)
-            self.eyes.append(e)
-        # mouths: smile (a dark arc), open (an oval), flat; one visible at a time
-        mz = hz - .3 * R; fy = -math.sqrt(max(0., R * R - (.3 * R) ** 2)) * .97
-        arc = [(x * R, fy + abs(x) * .25 * R - .02 * R, mz + .9 * (x * x) * R) for x in (-.2, -.1, 0, .1, .2)]
-        self.mouths = {'smile': tube(name + '_m_smile', arc, .018 * R, ink, self.head),
-                       'open': sphere(name + '_m_open', (0, fy - .01 * R, mz - .02 * R), 1, (.07 * R, .03 * R, .09 * R), ink, parent=self.head),
-                       'flat': tube(name + '_m_flat', [(-.13 * R, fy, mz), (0, fy - .01 * R, mz), (.13 * R, fy, mz)], .016 * R, ink, self.head),
-                       'frown': tube(name + '_m_frown', [(x * R, fy + abs(x) * .25 * R - .02 * R, mz - .03 * R - .8 * (x * x) * R) for x in (-.18, -.09, 0, .09, .18)], .017 * R, ink, self.head)}
+        # —— the face: the same mascot, but every character gets its own (user 2026-11-17: "like the inspiration, all a bit unique") ——
+        # eyes: 'glossy' (our usual), 'dots', 'lids' (heavy, sleepy/smug), 'wide' (white with a pupil), 'happy' (closed arcs); several sets are built and switched per frame
+        self.eyes = []; self.eyesets = {}; fz = lambda x, z: -math.sqrt(max(0., R * R - x * x - z * z)) * .985   # the y of the face surface at (x, z)
+        def onface(x, z, out=0.): return (x, fz(x, z) - out, hz + z)
+        skn = sk
+        for kind in ('glossy', 'dots', 'lids', 'wide', 'happy'):
+            objs = []
+            for s in (-1, 1):
+                ex, ez = s * .33 * R, .0 * R
+                if kind in ('glossy', 'lids'):
+                    e = sphere(f'{name}_e{kind}{s}', onface(ex, ez), 1, (.1 * R, .06 * R, .15 * R), ink, seg=24, parent=self.head); e.rotation_euler = (0, 0, s * -.33); objs.append(e)
+                    objs.append(sphere(f'{name}_h{kind}{s}', onface(ex - .03 * R, ez + .065 * R, .05 * R), .03 * R, m=hi, seg=12, parent=self.head))
+                    if kind == 'lids':   # a heavy upper lid in the skin colour, cutting the eye in half (the doorman's smug look)
+                        l = sphere(f'{name}_lid{s}', onface(ex, ez + .06 * R, .045 * R), 1, (.14 * R, .05 * R, .1 * R), skn, seg=24, parent=self.head); l.rotation_euler = (0, s * .12, s * -.33); objs.append(l)
+                        objs.append(tube(f'{name}_lidl{s}', [onface(ex - .12 * R, ez - .005 * R, .07 * R), onface(ex, ez - .02 * R, .075 * R), onface(ex + .12 * R, ez - .005 * R, .07 * R)], .012 * R, ink, self.head))
+                elif kind == 'dots':
+                    objs.append(sphere(f'{name}_e{kind}{s}', onface(ex, ez), .065 * R, (1, .7, 1), ink, seg=16, parent=self.head))
+                elif kind == 'wide':
+                    w = sphere(f'{name}_ew{s}', onface(ex * 1.08, ez + .02 * R), 1, (.15 * R, .05 * R, .19 * R), mat('eyewhite', '#f6f4ee', rough=.4), seg=24, parent=self.head); w.rotation_euler = (0, 0, s * -.33); objs.append(w)
+                    objs.append(sphere(f'{name}_ep{s}', onface(ex * 1.08, ez + .02 * R, .045 * R), .055 * R, m=ink, seg=16, parent=self.head))
+                else:   # happy: closed upside-down arcs
+                    objs.append(tube(f'{name}_ea{s}', [onface(ex - .1 * R, ez - .02 * R, .01 * R), onface(ex, ez + .06 * R, .01 * R), onface(ex + .1 * R, ez - .02 * R, .01 * R)], .02 * R, ink, self.head))
+            self.eyesets[kind] = objs
+        # brows (optional): 'angry', 'worried', 'raised', 'flat'
+        self.brows = {}
+        for kind, (tilt, lift) in {'angry': (1, .2), 'worried': (-1, .24), 'raised': (0, .34), 'flat': (0, .22)}.items():   # tilt 1: inner ends down (angry), -1: inner ends up (worried)
+            self.brows[kind] = [tube(f'{name}_b{kind}{s}', [onface(s * .2 * R, (lift - .06 * tilt) * R, .02 * R), onface(s * .33 * R, (lift + .02 - .01 * tilt) * R, .02 * R), onface(s * .46 * R, (lift + .04 * tilt * 0 + .01) * R, .02 * R)], .028 * R, ink, self.head) for s in (-1, 1)]
+        # mouths: smile, open, flat, frown, grin (open with a tongue), teeth (shocked grin), smirk; one visible at a time
+        mz = -.3 * R; mzz = hz + mz
+        arc = [onface(x * R, mz + .9 * (x * x) * R) for x in (-.2, -.1, 0, .1, .2)]
+        grin = sphere(name + '_m_grin', onface(0, mz - .02 * R), 1, (.16 * R, .04 * R, .12 * R), ink, parent=self.head)
+        bm = bmesh.new(); bm.from_mesh(grin.data); bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z > .1], context='VERTS'); bm.to_mesh(grin.data); bm.free()   # the lower half: an open laughing mouth
+        tongue = sphere(name + '_m_tongue', onface(0, mz - .09 * R, .02 * R), 1, (.08 * R, .03 * R, .04 * R), mat('tongue', '#d6456a', rough=.5), parent=self.head)
+        teeth = box(name + '_m_teeth', onface(0, mz - .04 * R, .02 * R), (.22 * R, .02 * R, .1 * R), mat('teethw', '#f6f4ee', rough=.4), parent=self.head)
+        teethb = box(name + '_m_teethb', onface(0, mz - .04 * R, .005 * R), (.26 * R, .02 * R, .14 * R), ink, parent=self.head)
+        self.mouths = {'smile': [tube(name + '_m_smile', arc, .018 * R, ink, self.head)],
+                       'open': [sphere(name + '_m_open', onface(0, mz - .02 * R), 1, (.07 * R, .03 * R, .09 * R), ink, parent=self.head)],
+                       'flat': [tube(name + '_m_flat', [onface(-.13 * R, mz), onface(0, mz, .005 * R), onface(.13 * R, mz)], .016 * R, ink, self.head)],
+                       'frown': [tube(name + '_m_frown', [onface(x * R, mz - .03 * R - .8 * (x * x) * R) for x in (-.18, -.09, 0, .09, .18)], .017 * R, ink, self.head)],
+                       'grin': [grin, tongue], 'teeth': [teeth, teethb],
+                       'smirk': [tube(name + '_m_smirk', [onface(-.12 * R, mz), onface(0, mz - .01 * R), onface(.14 * R, mz + .06 * R)], .017 * R, ink, self.head)]}
+        self.look = {'eyes': 'glossy', 'brows': None}
         self.face('smile'); self.pose(0)
         for a in acc: getattr(self, 'acc_' + a.split(':')[0])(*a.split(':')[1:])
         self.root.location = loc0; self.root.rotation_euler = (0, 0, rot); self.rot0 = rot; self.loc0 = loc0
@@ -171,18 +199,35 @@ class Mascot:
             if k in self.biceps: self.biceps[k].location = S0 + (E - S0) * .45
         self.head.rotation_euler = head
         for k2, lg in enumerate(self.legs): lg.rotation_euler = ((1 if k2 else -1) * math.sin(phase) * .5 * walk, 0, 0)
-        if mouth:
-            for k3, o in self.mouths.items(): o.hide_render = (k3 != mouth)
+        if mouth: self.face(mouth)
     def folded(self):   # hands on the opposite upper arms: arms crossed over the chest
         H, b = self.H, self.bulk; return {'L': (.09 * H * b, -.17 * H * b, .43 * H), 'R': (-.09 * H * b, -.19 * H * b, .4 * H)}
     # —— face keyframes ——
-    def face(self, kind, frame=None):
-        for k, o in self.mouths.items(): o.hide_render = (k != kind)
+    def face(self, kind, frame=None, eyes=None, brows='keep'):
+        for k, os_ in self.mouths.items():
+            for o in os_: o.hide_render = (k != kind)
+        if eyes: self.look['eyes'] = eyes
+        if brows != 'keep': self.look['brows'] = brows
+        for k, os_ in self.eyesets.items():
+            for o in os_: o.hide_render = (k != self.look['eyes'])
+        for k, os_ in self.brows.items():
+            for o in os_: o.hide_render = (k != self.look['brows'])
     def sleeve(self, m):
         for k in 'LR':
             self.arms[k].data.materials.clear(); self.arms[k].data.materials.append(m)
             for o in self.root.children:
                 if o.name.startswith(self.name + '_shoulder') or o.name.startswith(self.name + '_bicep'): setmat(o, m)
+    def acc_blush(self, col='#ef6a98'):
+        R, hz = self.R, self.hz; m = mat('blush_' + col, col, rough=.7)
+        for s_ in (-1, 1): sphere(f'{self.name}_blush{s_}', (s_ * .5 * R, -.82 * R, hz - .16 * R), 1, (.12 * R, .03 * R, .07 * R), m, parent=self.head).rotation_euler = (0, 0, s_ * -.5)
+    def acc_freckles(self):
+        R, hz = self.R, self.hz; m = mat('freck', '#13246a', rough=.7)
+        for s_ in (-1, 1):
+            for k in range(3): sphere(f'{self.name}_fr{s_}{k}', (s_ * (.42 + .07 * k) * R, -.86 * R + .03 * k * R, hz - (.13 + .04 * (k % 2)) * R), .022 * R, m=m, seg=8, parent=self.head)
+    def acc_nose(self):
+        R, hz = self.R, self.hz; sphere(self.name + '_nose', (0, -1.0 * R, hz - .12 * R), .09 * R, m=self.sk, parent=self.head)
+    def acc_beard(self, col='#2a1a12'):
+        R, hz = self.R, self.hz; o = sphere(self.name + '_beard', (0, -.55 * R, hz - .55 * R), 1, (.55 * R, .45 * R, .38 * R), mat('beard_' + col, col, rough=.8), parent=self.head)
     def acc_tache(self):
         R, hz = self.R, self.hz; m = mat('tache', '#2a1a12', rough=.6)
         for s in (-1, 1): o = sphere(f'{self.name}_tache{s}', (s * .13 * R, -.93 * R, hz - .18 * R), 1, (.16 * R, .06 * R, .055 * R), m, parent=self.head); o.rotation_euler = (0, s * .3, 0)
@@ -314,7 +359,7 @@ def cloth_mat(col, pattern='', col2='#ffffff'):
     if name in MATS: return MATS[name]
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; b = nt.nodes['Principled BSDF']; b.inputs['Roughness'].default_value = .8
     if pattern == 'check':
-        tc = nt.nodes.new('ShaderNodeTexCoord'); ck = nt.nodes.new('ShaderNodeTexChecker'); ck.inputs['Scale'].default_value = 26
+        tc = nt.nodes.new('ShaderNodeTexCoord'); ck = nt.nodes.new('ShaderNodeTexChecker'); ck.inputs['Scale'].default_value = 9
         ck.inputs['Color1'].default_value = hexc(col); ck.inputs['Color2'].default_value = hexc(col2); nt.links.new(tc.outputs['Object'], ck.inputs['Vector']); nt.links.new(ck.outputs['Color'], b.inputs['Base Color'])
     elif pattern == 'stripe':
         tc = nt.nodes.new('ShaderNodeTexCoord'); wv = nt.nodes.new('ShaderNodeTexWave'); wv.wave_type = 'BANDS'; wv.bands_direction = 'Z'; wv.inputs['Scale'].default_value = 6
