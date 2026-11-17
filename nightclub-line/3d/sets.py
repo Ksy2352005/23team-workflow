@@ -34,7 +34,7 @@ def facade(rope_x=(1.5, 9.0)):
     # wall lamps and posters
     for x in (-4.5, 4.5, 11, -11):
         box(f'lampar{x}', (x, -.3, 4.2), (.06, .5, .06), mat('iron', '#0c0d18', rough=.4))
-        sphere(f'lamp{x}', (x, -.55, 4.05), .16, m=emissive('lampglow', '#ffd28a', 10.)); light('POINT', (x, -.8, 3.9), 320, '#ffc77a', .3, name=f'lamplight{x}')
+        sphere(f'lamp{x}', (x, -.55, 4.05), .16, m=emissive('lampglow', '#ffd28a', 10.)); light('POINT', (x, -.8, 3.9), 120, '#ffc77a', .3, name=f'lamplight{x}')
     for x, c in ((-2.6, '#2ED3C6'), (3.0, '#f2c14e'), (7.5, '#e0567a')):
         box(f'poster{x}', (x, -.02, 2.0), (1.0, .04, 1.4), mat('pframe' + c, '#c9a24a', rough=.3, metal=.6))
         box(f'posterin{x}', (x, -.05, 2.0), (.85, .02, 1.25), mat('pin' + c, c, rough=.5, emit=c, estr=.3))
@@ -48,5 +48,9 @@ def facade(rope_x=(1.5, 9.0)):
         h = 7 + (k * 37 % 5); box(f'bld{k}', (-14 + k * 4.2, -15, h / 2), (3.8, 3, h), mat('bld', '#0d1024', rough=.8))
     # the night: moonlight (cool blue) and a warm fill from the club
     world('#04060f', 1.)
+    # the characters' own light (user 2026-11-17: more light on the characters than on the wall): a soft warm key from the front at body height,
+    # falling off before the wall, and a cool rim from above behind them
+    light('AREA', (0, -5.5, 1.9), 650, '#fff1dc', 5, rot=(math.radians(88), 0, 0), name='charkey')
+    light('AREA', (0, -2.6, 4.6), 260, '#9fdcff', 6, rot=(math.radians(-20), 0, 0), name='charrim')
     light('SUN', (0, 0, 10), 1.6, '#8fa8ff', rot=(math.radians(55), 0, math.radians(-25)), name='moon')
-    light('AREA', (-3, -6, 4), 520, '#6f86ff', 6, rot=(math.radians(70), 0, math.radians(-30)), name='bluefill')
+    light('AREA', (-3, -6, 4), 260, '#6f86ff', 6, rot=(math.radians(70), 0, math.radians(-30)), name='bluefill')

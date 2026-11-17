@@ -368,7 +368,7 @@ def cloth_mat(col, pattern='', col2='#ffffff'):
     else: b.inputs['Base Color'].default_value = hexc(col)
     MATS[name] = m; return m
 
-def brick_mat(name='brick', c1='#46508f', c2='#39427e', mortar='#161a33', scale=3.):
+def brick_mat(name='brick', c1='#1c2350', c2='#161c44', mortar='#070a18', scale=3.):   # deep dark-blue brick (user 2026-11-17: darker walls so the characters stand out)
     if name in MATS: return MATS[name]
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; b = nt.nodes['Principled BSDF']
     tc = nt.nodes.new('ShaderNodeTexCoord'); br = nt.nodes.new('ShaderNodeTexBrick'); br.inputs['Color1'].default_value = hexc(c1); br.inputs['Color2'].default_value = hexc(c2)
