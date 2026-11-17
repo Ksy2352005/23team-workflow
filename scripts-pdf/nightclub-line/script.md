@@ -32,7 +32,7 @@ so one word is missing between them, almost certainly "strangers" (the ending sa
 ## Hungarian (draft for approval, Instagram tone)
 1. Nyitott egy éjszakai klubot, és fizetett 40 embernek, hogy álljanak kint, és ne menjenek be.
 2. Ma este van a megnyitó.
-3. Bent van zenekar, bár, 300 bársonyszék… és egyikben sem ül senki.
+3. Odabent zenekar, bár és 300 bársonyszék várja a vendégeket… de egyikben sem ül senki.
 4. Az utolsó forintját is erre költötte.
 5. Ezért kimegy a hátsó ajtón, és elöl visszajön 40 idegennel meg egy piros kötéllel.
 6. Sorba állítja őket a fal mellett.
@@ -46,7 +46,7 @@ so one word is missing between them, almost certainly "strangers" (the ending sa
 14. De nem mennek haza. Beállnak a sor végére.
 15. Egy férfi kiszáll egy taxiból, és beáll a sorba. Meg sem kérdezi, mire várnak.
 16. Tizenegyre a sor már a sarokig ér.
-17. Éjfélre körbeéri a háztömböt, és az emberek már pénzt kínálnak az ajtónállónak.
+17. Éjfélre már az egész háztömb körül kígyózik a sor, és az emberek pénzt kínálnak az ajtónállónak.
 18. Csak ekkor bólint, és felemelik a kötelet.
 19. Bent úgy ujjonganak, mintha nyertek volna valamit.
 20. A 40 idegent a hátsó ajtónál kifizeti, és hazaküldi őket.
@@ -57,7 +57,7 @@ so one word is missing between them, almost certainly "strangers" (the ending sa
 ## Persian back-translation of the Hungarian (literal)
 1. یک کلوب شبانه باز کرد و به ۴۰ نفر پول داد که بیرون بایستند و داخل نروند.
 2. امشب افتتاحیه است.
-3. داخل، گروه موسیقی هست، بار هست، ۳۰۰ صندلی مخملی… و روی هیچ‌کدام کسی ننشسته.
+3. داخل، گروه موسیقی، بار و ۳۰۰ صندلی مخملی منتظر مهمان‌ها هستند… اما روی هیچ‌کدام کسی ننشسته.
 4. آخرین فورینتش را هم خرج این کرده.
 5. برای همین از در پشتی بیرون می‌رود و از جلو با ۴۰ غریبه و یک طناب قرمز برمی‌گردد.
 6. آن‌ها را کنار دیوار به صف می‌کند.
@@ -71,7 +71,7 @@ so one word is missing between them, almost certainly "strangers" (the ending sa
 14. ولی به خانه نمی‌روند. ته صف می‌ایستند.
 15. مردی از تاکسی پیاده می‌شود و در صف می‌ایستد. حتی نمی‌پرسد منتظر چه هستند.
 16. تا ساعت یازده صف به سر کوچه می‌رسد.
-17. تا نیمه‌شب دور تا دور بلوک را می‌گیرد و مردم دیگر به دربان پول پیشنهاد می‌دهند.
+17. تا نیمه‌شب صف مثل مار دور تمام بلوک پیچیده و مردم به دربان پول پیشنهاد می‌دهند.
 18. فقط آن موقع سر تکان می‌دهد و طناب را بالا می‌برند.
 19. داخل طوری هورا می‌کشند که انگار چیزی برده‌اند.
 20. چهل غریبه را دم در پشتی پول می‌دهد و به خانه می‌فرستد.
