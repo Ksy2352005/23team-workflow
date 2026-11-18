@@ -2,12 +2,15 @@
 // a thick warm-dark outline, simple drawn faces. They stand on top of soft 3D background plates.
 export const INK = '#2a1712';
 export const SKINS = {
-  owner: ['#f4efe4', '#d9cfbf'], blue1: ['#3d66dc', '#2a4cb4'], blue2: ['#4a74e8', '#3157c2'], blue3: ['#3458c8', '#24409e'],
+  owner: ['#f4efe4', 'rgba(150,130,120,.55)'], blue1: ['#3d66dc', 'rgba(15,30,100,.5)'], blue2: ['#4a74e8', 'rgba(15,30,100,.5)'], blue3: ['#3458c8', 'rgba(15,30,100,.5)'],
 };
 const TAU = Math.PI * 2;
 function shape(c, path, fill, lw, shade) {   // fill, a cel shadow on the right/bottom inside it, then the outline
   c.save(); path(); c.fillStyle = fill; c.fill();
-  if (shade) { c.save(); path(); c.clip(); c.fillStyle = shade[0]; c.beginPath(); c.arc(shade[1], shade[2], shade[3], 0, TAU); c.fill(); c.restore(); }
+  if (shade) {   // soft rounded shading like the reference: a light top-left, the shade colour round the right and bottom edge
+    const [sc, x0, y0, r] = shade, g = c.createRadialGradient(x0 - r * .35, y0 - r * .4, r * .1, x0 - r * .1, y0 - r * .1, r * 1.25);
+    g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(.55, 'rgba(255,255,255,0)'); g.addColorStop(1, sc);
+    c.save(); path(); c.clip(); c.fillStyle = g; c.fillRect(x0 - r * 2, y0 - r * 2, r * 4, r * 4); c.restore(); }
   path(); c.lineWidth = lw; c.strokeStyle = INK; c.lineJoin = 'round'; c.stroke(); c.restore();
 }
 function limb(c, pts, w, col, lw) {   // an outlined tube through points
@@ -39,7 +42,7 @@ export function toon(c, P) {
     return [[sx, shY], [mx, my], [ex, ey]];
   };
   // body: an egg with a cel shadow on the right
-  shape(c, ell(c, 0, bodyY, bodyRX, bodyRY), col, lw, [sh, bodyRX * .9, bodyY + bodyRY * .2, bodyRX * 1.05]);
+  shape(c, ell(c, 0, bodyY, bodyRX, bodyRY), col, lw, [sh, 0, bodyY, Math.max(bodyRX, bodyRY)]);
   if (P.buttons) for (let k = 0; k < 3; k++) { c.fillStyle = '#d9a83a'; c.strokeStyle = INK; c.lineWidth = lw * .5; c.beginPath(); c.arc(f * h * .03, bodyY - bodyRY * .35 + k * bodyRY * .38, h * .014, 0, TAU); c.fill(); c.stroke(); }
   if (P.bow) { const bx = f * h * .03, by = shY + h * .01;
     for (const s of [-1, 1]) shape(c, () => { c.beginPath(); c.moveTo(bx, by); c.lineTo(bx + s * h * .07, by - h * .03); c.lineTo(bx + s * h * .07, by + h * .03); c.closePath(); }, '#d8333a', lw * .6);
@@ -52,7 +55,7 @@ export function toon(c, P) {
   // head: a big circle with a cel shadow, sitting on the body (overlapping, so it is clearly joined)
   const hr = h * .25, hx = f * h * .02, hy = bodyY - bodyRY - hr * .72 + sq * h * .05;
   c.save(); c.translate(hx, hy); c.rotate(P.tilt || 0);
-  shape(c, ell(c, 0, 0, hr, hr * (1 - sq * .08)), col, lw, [sh, hr * .95, hr * .35, hr * 1.0]);
+  shape(c, ell(c, 0, 0, hr, hr * (1 - sq * .08)), col, lw, [sh, 0, 0, hr]);
   face(c, hr, f, P, lw);
   if (P.hair) shape(c, () => { c.beginPath(); c.moveTo(-hr * 1.02, hr * .05); c.bezierCurveTo(-hr * 1.15, -hr * 1.3, hr * 1.15, -hr * 1.3, hr * 1.02, hr * .05); c.bezierCurveTo(hr * .6, -hr * .2, -hr * .6, -hr * .2, -hr * 1.02, hr * .05); c.closePath(); }, P.hair, lw);
   if (P.cap) {   // the doorman's peaked cap: navy crown, red band, gold badge, a black peak
@@ -66,7 +69,7 @@ export function toon(c, P) {
 }
 
 function face(c, R, f, P, lw) {
-  const ox = f * R * .3, ey = -R * .02, sep = R * .3, line = (w) => { c.lineWidth = w; c.strokeStyle = INK; c.lineCap = 'round'; };
+  const ox = f * R * .3, ey = R * .14, sep = R * .3, line = (w) => { c.lineWidth = w; c.strokeStyle = INK; c.lineCap = 'round'; };
   const eyes = P.eyes || 'dot', blink = P.blink;
   for (const s of [-1, 1]) {
     const ex = ox + s * sep;
@@ -80,7 +83,7 @@ function face(c, R, f, P, lw) {
       if (eyes === 'lids') { c.fillStyle = (SKINS[P.skin] || SKINS.blue1)[0]; c.fillRect(ex - r * 1.4, ey - r * 1.6, r * 2.8, r * 1.5); line(lw * 1.1); c.beginPath(); c.moveTo(ex - r * 1.3, ey - r * .1); c.lineTo(ex + r * 1.3, ey - r * .1); c.stroke(); }
     }
   }
-  const my = R * .38, mouth = P.mouth || 'smile';
+  const my = R * .5, mouth = P.mouth || 'smile';
   if (mouth === 'laugh') {   // a wide open D with a tongue
     c.save(); c.beginPath(); c.moveTo(ox - R * .26, my - R * .06); c.quadraticCurveTo(ox, my - R * .02, ox + R * .26, my - R * .06); c.quadraticCurveTo(ox + R * .2, my + R * .32, ox, my + R * .32); c.quadraticCurveTo(ox - R * .2, my + R * .32, ox - R * .26, my - R * .06); c.closePath();
     c.fillStyle = '#5a1418'; c.fill(); c.clip(); c.fillStyle = '#e25a64'; c.beginPath(); c.ellipse(ox, my + R * .3, R * .16, R * .1, 0, 0, TAU); c.fill(); c.restore();
@@ -88,8 +91,8 @@ function face(c, R, f, P, lw) {
   } else if (mouth === 'o') { c.fillStyle = '#5a1418'; c.beginPath(); c.ellipse(ox, my + R * .08, R * .08, R * .11, 0, 0, TAU); c.fill(); line(lw * .9); c.stroke(); }
   else { line(lw * 1.1); c.beginPath(); const k = mouth === 'frown' ? -1 : mouth === 'flat' ? 0 : 1; c.moveTo(ox - R * .16, my + R * .04); c.quadraticCurveTo(ox, my + R * .04 + k * R * .14, ox + R * .16, my + R * .04); c.stroke(); }
   if (P.tache) {   // a curly handlebar moustache, like the reference's owner
-    c.fillStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.ellipse(ox + s * R * .12, my - R * .1, R * .14, R * .055, s * .15, 0, TAU); c.fill(); }
-    line(lw * 1.4); c.strokeStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.arc(ox + s * R * .3, my - R * .16, R * .07, s > 0 ? Math.PI * .6 : Math.PI * -.6 + Math.PI, s > 0 ? Math.PI * 2.1 : Math.PI * .9 - Math.PI * 1.5, s < 0); c.stroke(); }
+    c.fillStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.ellipse(ox + s * R * .12, my - R * .04, R * .14, R * .05, s * .15, 0, TAU); c.fill(); }
+    line(lw * 1.4); c.strokeStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.arc(ox + s * R * .28, my - R * .09, R * .05, s > 0 ? Math.PI * .6 : Math.PI * -.6 + Math.PI, s > 0 ? Math.PI * 2.1 : Math.PI * .9 - Math.PI * 1.5, s < 0); c.stroke(); }
   }
   if (P.brows) { line(lw * 1.2); for (const s of [-1, 1]) { const a = P.brows === 'angry' ? s * .3 : P.brows === 'worried' ? -s * .3 : 0; c.save(); c.translate(ox + s * sep, ey - R * .25); c.rotate(a); c.beginPath(); c.moveTo(-R * .1, 0); c.lineTo(R * .1, 0); c.stroke(); c.restore(); } }
 }

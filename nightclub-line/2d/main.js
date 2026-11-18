@@ -12,16 +12,18 @@ function cam(c, z, cx = 540, cy = 960) { c.translate(540, 960); c.scale(z, z); c
 const SHOTS = [];
 const shot = (t0, plate, draw) => SHOTS.push({ t0, plate, draw });
 
-// 1 „Nyitott egy éjszakai klubot,”: the owner laughing in front of his red door; a punch-in on „klubot” like the reference
+// 1 „Nyitott egy éjszakai klubot,”: the reference's first shot: the owner centred in front of his red doors, hands together;
+// a smile, then on „klubot” he laughs (eyes shut, mouth open) and the camera punches in on him
 shot(0, 'door', (c, t, P) => {
-  const punch = t < T(3) ? 1.0 + .03 * ss(seg(t, 0, T(3))) : 1.32 + .02 * ss(seg(t, T(3), T(4)));
-  c.save(); cam(c, punch, 540, t < T(3) ? 960 : 900); c.drawImage(P, 0, 0, 1080, 1920);
-  const laugh = Math.sin(t * 15), rub = Math.sin(t * 11);
-  toon(c, { x: 540, y: 1560, h: 900, skin: 'owner', hair: '#4a2a1c', tache: true, bow: true, buttons: true,
-    eyes: 'happy', mouth: 'laugh', sq: .03 + .03 * laugh, tilt: .05 * Math.sin(t * 4),
-    handL: [-.06 + .025 * rub, -.33], handR: [.06 + .025 * rub, -.31] });
-  c.restore();
+  const laughing = t >= T(3) - .1, z = laughing ? 1.3 + .03 * ss(seg(t, T(3), T(4))) : 1.0 + .025 * ss(seg(t, 0, T(3)));
+  c.save(); cam(c, z, 540, laughing ? 820 : 960); c.filter = `blur(${2.2 * K}px)`; c.drawImage(P, 0, 0, 1080, 1920); c.filter = 'none';
+  const k = laughing ? Math.sin(t * 16) : Math.sin(t * 5), rub = Math.sin(t * (laughing ? 12 : 6));
+  toon(c, { x: 540, y: 1770, h: 1150, skin: 'owner', hair: '#4a2a1c', tache: true, bow: true, buttons: true,
+    eyes: laughing ? 'happy' : 'dot', mouth: laughing ? 'laugh' : 'smile', sq: laughing ? .03 + .025 * k : .01 * k, tilt: laughing ? .04 * Math.sin(t * 7) : .02 * Math.sin(t * 2),
+    handL: [-.05 + .02 * rub, -.31], handR: [.05 + .02 * rub, -.3] });
+  c.restore(); vignette(c);
 });
+function vignette(c) { const g = c.createRadialGradient(540, 1000, 500, 540, 1000, 1250); g.addColorStop(0, 'rgba(20,6,4,0)'); g.addColorStop(1, 'rgba(20,6,4,.55)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
 
 // —— captions: the reference's big white words with a thick dark outline, three at a time, the word being said in turquoise ——
 const CHUNKS = (() => { const out = []; let cur = []; WORDS.forEach((w, i) => { cur.push(i); if (cur.length === 3 || /[.,!?…]$/.test(w[0])) { out.push(cur); cur = []; } }); if (cur.length) out.push(cur); return out; })();
