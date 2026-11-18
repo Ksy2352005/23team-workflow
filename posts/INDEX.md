@@ -19,5 +19,6 @@
 | HU 013 | HU | One-scene story (cheap shop vs brand; new palette; ElevenLabs music; no end card; 4K-supersampled HQ master) | „Ugyanaz a termék. Más márka.” (same product, different brand) | 2026-11-14 | — | `posts/HU/013-mas-marka/` (source: `brand-difference/`) |
 | HU 014 | HU | Motion reel M04 (black + turquoise, orb style, visual hook, CTA 3, HQ) | „Marketingmix” (the four P's) | 2026-11-15 | — | `posts/HU/014-m04-marketingmix/` (source: `m04-marketing-mix/`) |
 | HU 015 | HU | Motion reel M05 v3 (black + turquoise, orb style, one big drawing at a time; sales-bars hook, CTA 1 in the script's own voice, 60 fps HQ) | „Kölcsönösség” (reciprocity) | 2026-11-16 | — | `posts/HU/015-m05-kolcsonosseg/` (source: `m05-reciprocity/`) |
+| HU 016 | HU | 3D exact remake (Blender, our mascots in 3D, dark-blue world; reference's story, shots and timing; voice David 1.15×, jazz + effects, 24 fps) | „Fizetett 40 embernek, hogy NE menjenek be” (the nightclub line) | 2026-11-18 | — | `posts/HU/016-nightclub-line/` (source: `nightclub-line/`) |
 
 New posts get a row each, newest at the bottom. "Send me post 1" on the Hungarian page = HU 001.
