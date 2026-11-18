@@ -59,12 +59,12 @@ shot('opening', T(15) - .05, { panY: [.78, .22], cast(t, put) {
 } });
 shot('band', T(20) - .05, { push: .08, cast(t, put) {
   const hit = abs(sin(t * 10));
-  put([-1.8, 13.0, 1.0], 1.5, { skin: 'blue2', wear: '#ffffff', bow: '#d23a3a', tache: true, eyes: 'happy', mouth: 'o', f: .3, tilt: .1 * sin(t * 4), handL: [.18, -.55], handR: [.1, -.56], id: 'trumpet' });
+  put([-1.1, 13.0, 1.0], 1.5, { skin: 'blue2', wear: '#ffffff', bow: '#d23a3a', tache: true, eyes: 'happy', mouth: 'o', f: .3, tilt: .1 * sin(t * 4), handL: [.18, -.55], handR: [.1, -.56], id: 'trumpet' });
   put([0, 13.6, 1.0], 1.5, { skin: 'blue3', wear: '#7a5cff', hat: { type: 'beanie', col: '#f2c14e' }, eyes: 'lids', mouth: 'grin', handL: [-.25, -.42 - .06 * hit], handR: [.25, -.42 - .06 * (1 - hit)], bob: .01 * hit, id: 'drums' });
-  put([1.8, 13.0, 1.0], 1.5, { skin: 'blue1', wear: '#f2c14e', hat: { type: 'fedora', col: '#151018' }, eyes: 'happy', mouth: 'smile', f: -.3, tilt: .1 * sin(t * 6), handL: [-.2, -.5], handR: [.05, -.35 - .04 * sin(t * 14)], id: 'guitar' });
+  put([1.1, 13.0, 1.0], 1.5, { skin: 'blue1', wear: '#f2c14e', hat: { type: 'fedora', col: '#151018' }, eyes: 'happy', mouth: 'smile', f: -.3, tilt: .1 * sin(t * 6), handL: [-.2, -.5], handR: [.05, -.35 - .04 * sin(t * 14)], id: 'guitar' });
 } });
-shot('bar', T(22) - .05, { push: .05, cast(t, put) {
-  put([-10.9, 4.0, .55], 1.6, { skin: 'blue3', wear: '#f4f1e6', bow: '#151018', tache: true, glasses: '#f2c14e', mouth: 'flat', handL: [-.1, -.55], handR: [.05 * sin(t * 9), -.56], id: 'glass' });
+shot('bar', T(22) - .05, { push: .05, cast(t, put, X) {
+  put([-10.9, 4.0, .55], 1.6, { clip: X([-9.4, 4.0, 1.26])[1], skin: 'blue3', wear: '#f4f1e6', bow: '#151018', tache: true, glasses: '#f2c14e', mouth: 'flat', handL: [-.1, -.55], handR: [.05 * sin(t * 9), -.56], id: 'glass' });
 } });
 shot('seats', T(24) - .05, { push: .12 });
 shot('empty', T(29) - .05, { push: .1 });
@@ -216,7 +216,7 @@ function prop(c, id, x, y, h) {
 const plates = {};
 function viewOf(s, t) {
   const P = plates[s.name], cam = P.cam, i = SHOTS.indexOf(s), t1 = i + 1 < SHOTS.length ? SHOTS[i + 1].t0 : END, u = seg(t, s.t0, t1);
-  let z = 1920 / cam.h, ox = cam.w / 2, oy = cam.h / 2;
+  let z = Math.max(1920 / cam.h, 1080 / cam.w), ox = cam.w / 2, oy = cam.h / 2;
   if (s.push) z *= 1 + s.push * ss(u);
   if (s.zoomFrom) z *= lerp(s.zoomFrom, 1, ss(u));
   if (s.zoomAt && t >= s.zoomAt[0]) { z *= 1 + s.zoomAt[1]; oy -= cam.h * .07; }
