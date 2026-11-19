@@ -54,6 +54,11 @@ SHOTS = {
  'cannot': ('front', (-1.6, -3.4, 1.7), (-1.65, -1.0, 1.55), 36, 1),
 }
 
+# the camera a little further back (user 2026-11-19: "very close up, bring the camera a bit further"): a wider lens on the close shots
+WIDER = {**{k: .72 for k in ('opened', 'pays', 'notin', 'returns', 'rope', 'lineup', 'donttalk', 'wait', 'turns', 'sendaway', 'window', 'couple', 'nohome',
+                             'money', 'nods', 'ropeup', 'pays40', 'sendshome', 'never', 'want', 'cannot', 'taxi', 'bar')},
+         **{k: .8 for k in ('spent', 'backdoor', '300', 'whyno', 'folds', 'nottonight', 'joins', 'backofline', 'band', 'empty')}}
+
 def blue_world(nc):   # the brand's blue world, a little lighter than before so it reads blue (user 2026-11-18); the red door, rope, carpet and seats stay as warm accents
     nc.brick_mat('brick', c1='#26357a', c2='#1f2c68', mortar='#10173a', scale=3.)
     nc.cobble_mat('cobble', c='#26305a')
@@ -87,6 +92,7 @@ def build(shot):
     if shot == 'ropeup':
         for o in list(bpy.data.objects):
             if o.name == 'rope1': bpy.data.objects.remove(o)
+    lens *= WIDER.get(shot, 1.)
     cam = nc.camera(A, L, lens)
     if tall: cam.data.sensor_height = 48; cam.data.lens = lens * 1.0
     d = math.dist(A, L); cam.data.dof.use_dof = True; cam.data.dof.focus_distance = d; cam.data.dof.aperture_fstop = 2.8 if d < 6 else 5.6

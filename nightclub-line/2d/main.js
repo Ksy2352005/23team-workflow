@@ -29,9 +29,9 @@ function str(i, lite) {
   if (i % 3 === 0) p.hat = { type: 'beanie', col: LITE[(i + 5) % 12] }; else if (i % 5 === 1) p.hair = { type: 'bob', col: ['#4a2c1e', '#c23b3b', '#e0b030'][i % 3] }; else if (i % 7 === 2) p.hat = { type: 'fedora', col: '#3a2418' };
   return p;
 }
-const MAN = { H: 1.68, skin: 'blue2', wear: '#4a3a8a', bow: '#f2c14e', tie: null };
-const LADY = { H: 1.58, skin: 'blue1', wear: '#2a9a7a', hair: { type: 'bob', col: '#c23b3b' }, pearls: true, blush: true };
-const HATMAN = { H: 1.7, skin: 'blue3', wear: '#7a5a3a', hat: { type: 'fedora', col: '#3a2418' }, tie: '#c23b3b', eyes: 'lids', brows: 'flat', mouth: 'flat' };
+const MAN = { H: 1.68, skin: 'blue2', wear: '#16161f', suit: true, lapel: '#262634', bow: '#e8b93a', hair: { type: 'side', col: '#f2cc62' }, sleeve: '#16161f' };   // the rich couple (user 2026-11-19: more luxury, blonde guy in a suit)
+const LADY = { H: 1.58, skin: 'blue1', wear: '#0e7a5c', sparkle: true, hair: { type: 'long', col: '#c8323a' }, pearls: true, earrings: '#e8c35a', blush: true };
+const HATMAN = { H: 1.7, skin: 'blue3', wear: '#b8956a', coat: '#a8845a', lapel: '#9a7650', shirt: '#f4f1e6', tie: '#8a1c24', sleeve: '#b8956a', hat: { type: 'fedora', col: '#2e2018' }, eyes: 'dot', mouth: 'flat' };
 const face = r => -sin(r);   // a 3D turn (radians about Z) as the 2D facing
 
 // —— shots ——
@@ -39,10 +39,10 @@ const SHOTS = [];
 // o: { push (zoom gained over the shot), pan: [x0, x1] in plate pixels (wide plates), panY, cast(t, put), over(c, t, P) }
 const shot = (name, t0, o = {}) => SHOTS.push({ name, t0, ...o });
 
-shot('opened', 0, { push: .06, cast(t, put) {
-  const laughing = t >= T(3) - .1, k = sin(t * (laughing ? 16 : 5)), rub = sin(t * (laughing ? 12 : 6));
-  put([0, -1.5, .08], 1.7, { ...OWN, eyes: laughing ? 'happy' : 'dot', mouth: laughing ? 'laugh' : 'smile', sq: laughing ? .03 + .025 * k : .01 * k, tilt: .04 * sin(t * 4), handL: [-.05 + .02 * rub, -.32], handR: [.05 + .02 * rub, -.31] });
-}, zoomAt: [T(3), .18] });
+shot('opened', 0, { push: .05, cast(t, put) {   // a proud, happy owner (user 2026-11-19: no strange laugh): a warm smile, a little chuckle on „klubot”
+  const glad = t >= T(3) - .1, rub = sin(t * 4);
+  put([0, -1.5, .08], 1.7, { ...OWN, eyes: glad ? 'happy' : 'dot', mouth: glad ? 'grin' : 'smile', sq: glad ? .012 * abs(sin(t * 6)) : 0, tilt: .03 * sin(t * 2.2), handL: [-.05 + .012 * rub, -.32], handR: [.05 + .012 * rub, -.31] });
+} });
 shot('pays', T(4) - .05, { push: .08, cast(t, put) {
   const g = ss(seg(t, T(5), T(6) + .3));
   put([5.4, -1.2, .08], 1.7, { ...OWN, f: .35, eyes: 'dot', brows: 'raised', mouth: 'smile', cash: 'R', handR: [lerp(.2, .3, g), lerp(-.32, -.45, g)], handL: [-.18, -.3] });
@@ -64,7 +64,7 @@ shot('band', T(20) - .05, { push: .08, cast(t, put) {
   put([1.1, 13.0, 1.0], 1.5, { skin: 'blue1', wear: '#f2c14e', hat: { type: 'fedora', col: '#151018' }, eyes: 'happy', mouth: 'smile', f: -.3, tilt: .1 * sin(t * 6), handL: [-.2, -.5], handR: [.05, -.35 - .04 * sin(t * 14)], id: 'guitar' });
 } });
 shot('bar', T(22) - .05, { push: .05, cast(t, put, X) {
-  put([-10.9, 4.0, .55], 1.6, { clip: X([-9.4, 4.0, 1.26])[1], skin: 'blue3', wear: '#f4f1e6', bow: '#151018', tache: true, glasses: '#f2c14e', mouth: 'flat', handL: [-.1, -.55], handR: [.05 * sin(t * 9), -.56], id: 'glass' });
+  put([-10.4, 4.0, .6], 1.8, { clip: X([-9.45, 4.0, 1.24])[1], skin: 'blue3', wear: '#f4f1e6', vest: '#1a1a26', bow: '#151018', tache: true, hair: { type: 'side', col: '#3a2418' }, sleeve: '#f4f1e6', eyes: 'dot', mouth: 'smile', handL: [.08, -.44], handR: [.16 + .04 * sin(t * 9), -.47], id: 'glass' });
 } });
 shot('seats', T(24) - .05, { push: .12 });
 shot('empty', T(29) - .05, { push: .1 });
@@ -154,8 +154,8 @@ shot('eleven', T(128) - .05, { push: .06, cast(t, put) {
   for (let i = 0; i < 40; i++) put([2.0 + i * .78, -.6, .05], str(i, true).H, { ...str(i, true), f: ((i * 37) % 30 - 15) / 20, tilt: .05 * sin(t + i) });
 } });
 shot('midnight', T(135) - .05, { push: .1, cast(t, put) {
-  for (let i = 0; i < 40; i++) put([2.0 + i * .78, -.6, .05], 1.55, { ...str(i, true), simple: true });
-  for (let i = 0; i < 30; i++) put([34.9, .6 + i * .78, .05], 1.55, { ...str(40 + i, true), simple: true });
+  for (let i = 0; i < 40; i++) put([2.0 + i * .78, -.6, .05], 1.55, { ...str(i, true), f: .3 * sin(i) });
+  for (let i = 0; i < 30; i++) put([34.9, .6 + i * .78, .05], 1.55, { ...str(40 + i, true), f: .3 * sin(i) });
 } });
 shot('money', T(144) - .05, { push: .07, cast(t, put) {
   const w = sin(t * 9);
@@ -209,7 +209,7 @@ function prop(c, id, x, y, h) {
   if (id === 'drums') { disc(x, y - h * .22, h * .26, h * .2, '#d8333a'); disc(x, y - h * .22, h * .17, h * .13, '#f4f1e6'); disc(x - h * .3, y - h * .42, h * .14, h * .05, '#f4f1e6'); disc(x + h * .32, y - h * .62, h * .17, h * .04, '#e8c35a'); ln(h * .012, '#1a1220', [[x + h * .32, y - h * .62], [x + h * .32, y - h * .1]]); }
   if (id === 'trumpet') { ln(h * .04, '#1a1220', [[x + h * .1, y - h * .55], [x + h * .45, y - h * .58]]); ln(h * .028, '#e8c35a', [[x + h * .1, y - h * .55], [x + h * .45, y - h * .58]]); disc(x + h * .48, y - h * .58, h * .05, h * .1, '#e8c35a'); }
   if (id === 'guitar') { c.save(); c.translate(x - h * .02, y - h * .38); c.rotate(-.5); ln(h * .03, '#3a2418', [[0, 0], [h * .42, 0]]); disc(-h * .04, 0, h * .14, h * .11, '#e8705a'); disc(-h * .04, 0, h * .035, h * .035, '#1a1220'); c.restore(); }
-  if (id === 'glass') { c.save(); c.translate(x + h * .02, y - h * .6); c.beginPath(); c.moveTo(-h * .04, -h * .06); c.lineTo(h * .04, -h * .06); c.lineTo(h * .03, h * .05); c.lineTo(-h * .03, h * .05); c.closePath(); c.fillStyle = 'rgba(220,240,255,.7)'; c.fill(); c.lineWidth = h * .01; c.strokeStyle = '#1a1220'; c.stroke(); c.restore(); }
+  if (id === 'glass') { c.save(); c.translate(x + h * .2, y - h * .5); c.rotate(.3); c.fillStyle = '#f4f1e6'; c.strokeStyle = '#1a1220'; c.lineWidth = h * .008; c.beginPath(); c.rect(-h * .02, -h * .06, h * .05, h * .12); c.fill(); c.stroke(); c.restore(); c.save(); c.translate(x + h * .12, y - h * .5); c.beginPath(); c.moveTo(-h * .04, -h * .06); c.lineTo(h * .04, -h * .06); c.lineTo(h * .03, h * .05); c.lineTo(-h * .03, h * .05); c.closePath(); c.fillStyle = 'rgba(220,240,255,.7)'; c.fill(); c.lineWidth = h * .01; c.strokeStyle = '#1a1220'; c.stroke(); c.restore(); }
 }
 
 // —— camera, projection and drawing ——

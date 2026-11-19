@@ -71,17 +71,32 @@ def backdoor(x=-12.):   # the club's back door further down the same wall: a dar
     box('bin', (x + 1.6, -.5, .55), (.9, .7, 1.1), mat('binm', '#1f3a2e', rough=.6))
     return door
 
-def taxi(x, y, rot=0.):   # a yellow taxi with a checker stripe, dark windows and a roof sign
-    yel = mat('taxi', '#f2c14e', rough=.4); dark = mat('glass', '#0b0f1e', rough=.15); tyre = mat('tyre', '#0a0a0e', rough=.8)
+def taxi(x, y, rot=0.):   # a classic yellow cab (user 2026-11-19: "make it look real"): rounded glossy body, cabin with glass, chrome bumpers, hubcaps, lights, checker band, roof sign
+    yel = mat('taxi', '#f2bf2e', rough=.22, coat=.6); glass = mat('glass', '#14203a', rough=.05, metal=.3); tyre = mat('tyre', '#0c0c10', rough=.85)
+    chrome = mat('chrome', '#d8dce6', rough=.12, metal=1.); dark = mat('trim', '#15151c', rough=.4)
     root = empty('taxi', (x, y, 0)); root.rotation_euler = (0, 0, rot)
-    box('tbody', (x, y, .55), (3.8, 1.7, .7), yel, bevel=.12, parent=root); box('tcab', (x - .2, y, 1.15), (2.2, 1.55, .6), yel, bevel=.1, parent=root)
-    box('twinf', (x - .2, y - .78, 1.15), (2.0, .02, .45), dark, parent=root); box('twinb', (x - .2, y + .78, 1.15), (2.0, .02, .45), dark, parent=root)
-    box('twinw', (x + .92, y, 1.15), (.02, 1.4, .45), dark, parent=root)
-    for k in range(10): box(f'tchk{k}', (x - 1.6 + k * .34, y - .86, .62), (.17, .02, .1), mat('chk', '#151018'), parent=root)
-    box('tsign', (x - .2, y, 1.56), (.6, .3, .2), mat('tsg', '#fff1c0', emit='#ffe9a0', estr=2.), parent=root)
-    for dx in (-1.2, 1.2):
-        for dy in (-.85, .85): cyl(f'tw{dx}{dy}', (x + dx, y + dy, .38), .38, .25, tyre, rot=(1.5708, 0, 0), parent=root)
-    sphere('thead', (x + 1.9, y - .55, .6), .12, m=emissive('hl', '#fff6d8', 8.), parent=root); sphere('thead2', (x + 1.9, y + .55, .6), .12, m=emissive('hl', '#fff6d8', 8.), parent=root)
+    box('tbody', (x, y, .62), (4.4, 1.8, .62), yel, bevel=.22, parent=root)                       # the lower body
+    box('thood', (x + 1.45, y, .9), (1.4, 1.74, .12), yel, bevel=.06, parent=root)                 # hood
+    box('tcab', (x - .25, y, 1.22), (2.3, 1.62, .62), yel, bevel=.2, parent=root)                  # the cabin
+    for sy in (-1, 1):
+        box(f'twin{sy}a', (x + .3, y + sy * .815, 1.24), (.95, .02, .42), glass, bevel=.04, parent=root)
+        box(f'twin{sy}b', (x - .8, y + sy * .815, 1.24), (.95, .02, .42), glass, bevel=.04, parent=root)
+        box(f'tpill{sy}', (x - .25, y + sy * .82, 1.24), (.06, .025, .46), dark, parent=root)
+        for dx in (.35, -.8): box(f'tdoor{sy}{dx}', (x + dx - .5, y + sy * .905, .68), (.015, .015, .62), dark, parent=root)   # door seams
+        for k in range(14): box(f'tchk{sy}{k}', (x - 2.0 + k * .3, y + sy * .905, .86), (.15, .012, .08), mat('chk', '#151018'), parent=root)
+        box(f'tmirror{sy}', (x + .9, y + sy * .98, 1.05), (.1, .12, .08), yel, parent=root)
+    box('twinf', (x + .9, y, 1.24), (.02, 1.45, .44), glass, bevel=.03, parent=root); box('twinr', (x - 1.38, y, 1.24), (.02, 1.4, .4), glass, parent=root)
+    for sx in (-1, 1):
+        box(f'tbump{sx}', (x + sx * 2.24, y, .42), (.12, 1.84, .16), chrome, bevel=.05, parent=root)
+        for sy in (-1, 1):
+            cyl(f'tw{sx}{sy}', (x + sx * 1.4, y + sy * .82, .36), .36, .26, tyre, rot=(1.5708, 0, 0), parent=root)
+            cyl(f'thub{sx}{sy}', (x + sx * 1.4, y + sy * .96, .36), .19, .02, chrome, rot=(1.5708, 0, 0), parent=root)
+    for sy in (-1, 1):
+        sphere(f'thead{sy}', (x + 2.2, y + sy * .6, .66), .11, m=emissive('hl', '#fff6d8', 8.), parent=root)
+        box(f'ttail{sy}', (x - 2.2, y + sy * .65, .7), (.04, .22, .12), mat('tail', '#c01820', emit='#ff2a2a', estr=3.), parent=root)
+    box('tgrille', (x + 2.21, y, .62), (.02, .9, .2), chrome, parent=root)
+    box('tsign', (x - .25, y, 1.62), (.55, .22, .2), mat('tsg', '#fff1c0', emit='#ffe9a0', estr=2.), bevel=.03, parent=root)
+    light('AREA', (x, y - 3.5, 3.0), 400, '#fff1dc', 4, rot=(math.radians(60), 0, 0), name='taxikey2')
     return root
 
 def block(x1=34., depth=30.):   # for the view from above: the club's block, its roof, and the side street round the corner
@@ -92,7 +107,19 @@ def block(x1=34., depth=30.):   # for the view from above: the club's block, its
         box(f'chim{k}', (x1 - 6 - k * 7, 6 + (k % 3) * 7, 9.2), (1.2, 1.2, 1.4), mat('chimm', '#1a1e38', rough=.8))
         sphere(f'slamp{k}', (x1 - 2 - k * 6, -3.4, 4.0), .18, m=emissive('lampglow', '#ffd28a', 10.)); cyl(f'spole{k}', (x1 - 2 - k * 6, -3.4, 2), .05, 4, mat('iron', '#0c0d18', rough=.4))
         light('POINT', (x1 - 2 - k * 6, -3.4, 3.6), 300, '#ffc77a', .3, name=f'sl{k}')
-    light('AREA', (x1 - 8, -6, 26), 30000, '#c9d6ff', 40, name='blocktop')   # seen from above: the night street lit softly from above
+    light('AREA', (x1 - 8, -6, 26), 30000, '#c9d6ff', 40, name='blocktop')
+    # windows on the upper floors of the club's block and round the corner, some lit warm (user 2026-11-19: the aerial shot must look real)
+    lit, dim = mat('winlit', '#ffd9a0', emit='#ffcf8a', estr=2.2), mat('windim', '#18234a', rough=.15, metal=.2)
+    frame = mat('winframe', '#d9d6cc', rough=.6)
+    for r, z in enumerate((5.0, 6.9)):
+        for k in range(26):
+            wx = -28 + k * 2.4
+            if abs(wx) < 2.6: continue
+            box(f'wf{r}_{k}', (wx, -.03, z), (1.0, .04, 1.25), frame); box(f'wg{r}_{k}', (wx, -.06, z), (.82, .04, 1.07), lit if (k * 7 + r * 3) % 5 < 2 else dim)
+        for k in range(11):
+            wy = 1.5 + k * 2.6
+            box(f'sf{r}_{k}', (x1 + .53, wy, z), (.04, 1.0, 1.25), frame); box(f'sg{r}_{k}', (x1 + .56, wy, z), (.04, .82, 1.07), lit if (k * 5 + r) % 4 < 2 else dim)
+    for k in range(6): light('POINT', (x1 - 2 - k * 6, -3.0, .6), 120, '#ffc77a', 2., name=f'pool{k}')   # warm pools on the pavement under the lamps   # seen from above: the night street lit softly from above
 
 def chair(name='chair'):   # one red velvet armchair (instanced for the 300 seats)
     col = bpy.data.collections.get(name)
@@ -139,7 +166,15 @@ def hall(seated=None):   # inside the club: a dark-blue hall, a curtained stage 
     bcol = ['#2ED3C6', '#ff4fa0', '#f2c14e', '#7a5cff', '#7fc48a', '#e8705a']
     for sh in range(3):
         box(f'shelf{sh}', (-11.6, 4, 2.2 + sh * .8), (.4, 8, .05), mat('shelfm', '#3a2a40'))
-        for k in range(22): cyl(f'bot{sh}{k}', (-11.6, .6 + k * .33, 2.45 + sh * .8), .07, .42, mat('bot' + bcol[(k + sh) % 6], bcol[(k + sh) % 6], rough=.2, emit=bcol[(k + sh) % 6], estr=.8))
+        box(f'shelfglow{sh}', (-11.5, 4, 2.24 + sh * .8), (.3, 8, .02), mat('shelfglow', '#ffd9b0', emit='#ffcf9a', estr=3.))   # a lit strip under each shelf
+        for k in range(22):   # real bottles: a body, a shoulder and a neck, in varied heights and glass colours
+            bc = bcol[(k + sh) % 6]; hb = .26 + .1 * ((k * 7 + sh) % 3) / 2; gm = mat('bot' + bc, bc, rough=.08, emit=bc, estr=.35, alpha=1.)
+            by = .6 + k * .33; bz = 2.27 + sh * .8
+            cyl(f'bot{sh}{k}', (-11.6, by, bz + hb / 2), .065, hb, gm); sphere(f'bsh{sh}{k}', (-11.6, by, bz + hb), .065, m=gm, seg=16)
+            cyl(f'bneck{sh}{k}', (-11.6, by, bz + hb + .09), .022, .16, gm); cyl(f'bcap{sh}{k}', (-11.6, by, bz + hb + .18), .026, .03, mat('gold', '#e8c35a', rough=.25, metal=.9))
+    box('barmirror', (-11.85, 4, 3.0), (.04, 8.2, 2.4), mat('mirror', '#9aa8d0', rough=.06, metal=1.))
+    box('barfront', (-9.45, 4, .6), (.05, 8, 1.1), mat('barwood', '#5a2a1c', rough=.45), bevel=.01)
+    cyl('barrail', (-9.38, 4, .2), .03, 8, mat('gold', '#e8c35a', rough=.25, metal=.9), rot=(1.5708, 0, 0))
     cyl('barlampc', (-10.2, 4, 4.4), .02, 2.4, mat('iron', '#0c0d18')); bpy.ops.mesh.primitive_cone_add(radius1=.45, depth=.35, location=(-10.2, 4, 3.15)); setmat(bpy.context.object, mat('lampshade', '#ff4fa0', rough=.4, emit='#ff4fa0', estr=1.5))
     # light: a warm room, coloured stage lights, a key on the seats
     world('#03040c', 1.)
