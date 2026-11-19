@@ -6,7 +6,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); SR = 48000; END = 66.3
 W = json.loads(open(os.path.join(HERE, 'captions.js')).read().split('=', 1)[1].strip().rstrip(';')); T = lambda i: W[i][1]
 def load(p):
     return np.frombuffer(subprocess.run(['ffmpeg', '-v', 'error', '-i', os.path.join(HERE, p), '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout, np.float32).astype(np.float64)
-N = int(END * SR); vo = np.zeros(N); v = load('refs/voiceover-hu-x1.15-tight.wav'); v = v / np.abs(v).max() * .85; vo[:min(N, len(v))] = v[:N]
+N = int(END * SR); vo = np.zeros(N); v = load(os.environ.get('VO', 'refs/voiceover-hu-x1.15-tight.wav')); v = v / np.abs(v).max() * .85; vo[:min(N, len(v))] = v[:N]
 fx = np.zeros(N)
 def add(name, t, g, fade_in=0., fade_out=.3, dur=None):
     x = load(f'refs/sfx/{name}.mp3'); x = x / (np.abs(x).max() + 1e-9)
@@ -31,5 +31,5 @@ env = np.convolve(np.abs(vo), np.ones(int(.25 * SR)) / int(.25 * SR), 'same'); d
 mus *= .22 * duck; k = int(1.2 * SR); mus[-k:] *= np.linspace(1, 0, k)
 mix = vo + fx + mus; mix = mix / np.abs(mix).max() * .9
 os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f64le', '-ar', str(SR), '-ac', '1', '-i', '-', '-ac', '2', os.path.join(HERE, 'out', 'mix.wav')], input=mix.tobytes(), check=True)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f64le', '-ar', str(SR), '-ac', '1', '-i', '-', '-ac', '2', os.path.join(HERE, os.environ.get('OUT', 'out/mix.wav'))], input=mix.tobytes(), check=True)
 print('mix.wav', round(N / SR, 2), 's')
