@@ -152,7 +152,7 @@ function face(c, R, f, P, lw, skin) {
   if (P.earrings) for (const s of [-1, 1]) { c.fillStyle = P.earrings; c.strokeStyle = INK; c.lineWidth = lw * .5; c.beginPath(); c.arc(s * R * .96, R * .45, R * .07, 0, TAU); c.fill(); c.stroke(); }
   if (P.blush) { c.fillStyle = 'rgba(255,120,150,.45)'; for (const s of [-1, 1]) { c.beginPath(); c.ellipse(ox + s * sep * 1.45, ey + R * .22, R * .1, R * .06, 0, 0, TAU); c.fill(); } }
   if (P.freckles) { c.fillStyle = 'rgba(30,20,60,.5)'; for (const s of [-1, 1]) for (let k = 0; k < 3; k++) { c.beginPath(); c.arc(ox + s * (sep * 1.2 + k * R * .06), ey + R * .2 + (k % 2) * R * .04, R * .02, 0, TAU); c.fill(); } }
-  const my = R * .5, m = P.mouth || 'smile';
+  const my = R * .5, m = P.lips && !['flat', 'frown', 'smirk'].includes(P.mouth) ? 'smile' : (P.mouth || 'smile');   // lipstick lips stay closed (user 2026-11-20: never an open mouth)
   const D = (wd, dp) => { c.beginPath(); c.moveTo(ox - wd, my - R * .05); c.quadraticCurveTo(ox, my - R * .01, ox + wd, my - R * .05); c.quadraticCurveTo(ox + wd * .8, my + dp, ox, my + dp); c.quadraticCurveTo(ox - wd * .8, my + dp, ox - wd, my - R * .05); c.closePath(); };
   if (m === 'laugh' || m === 'grin' || m === 'open') {
     const wd = m === 'open' ? R * .15 : R * .25, dp = m === 'open' ? R * .26 : m === 'grin' ? R * .22 : R * .32;
@@ -162,12 +162,12 @@ function face(c, R, f, P, lw, skin) {
   else if (m === 'smirk') { ln(lw * 1.1); c.beginPath(); c.moveTo(ox - R * .14, my + R * .06); c.quadraticCurveTo(ox + R * .02, my + R * .1, ox + R * .17, my - R * .04); c.stroke(); }
   else { ln(lw * 1.1); const k = m === 'frown' ? -1 : m === 'flat' ? 0 : 1; c.beginPath(); c.moveTo(ox - R * .15, my + R * .04); c.quadraticCurveTo(ox, my + R * .04 + k * R * .14, ox + R * .15, my + R * .04); c.stroke(); }
   if (P.lips && !['laugh', 'grin', 'open', 'o', 'teeth'].includes(m)) {   // full red lips (lipstick, a little filler): a cupid's-bow upper lip and a plump lower lip
-    const w = R * .17, y0 = my + R * .05; c.fillStyle = P.lips;
+    const w = R * .2, y0 = my + R * .05; c.fillStyle = P.lips;
     c.beginPath(); c.moveTo(ox - w, y0); c.quadraticCurveTo(ox - w * .5, y0 - R * .1, ox - w * .12, y0 - R * .07); c.quadraticCurveTo(ox, y0 - R * .03, ox + w * .12, y0 - R * .07); c.quadraticCurveTo(ox + w * .5, y0 - R * .1, ox + w, y0);
-    c.quadraticCurveTo(ox + w * .6, y0 + R * .14, ox, y0 + R * .14); c.quadraticCurveTo(ox - w * .6, y0 + R * .14, ox - w, y0); c.closePath(); c.fill(); ln(lw * .9); c.stroke();
+    c.quadraticCurveTo(ox + w * .65, y0 + R * .17, ox, y0 + R * .17); c.quadraticCurveTo(ox - w * .65, y0 + R * .17, ox - w, y0); c.closePath(); c.fill(); ln(lw * .9); c.stroke();
     c.beginPath(); c.moveTo(ox - w * .92, y0); c.quadraticCurveTo(ox, y0 + R * .03, ox + w * .92, y0); c.stroke();
     c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(ox + w * .25, y0 + R * .075, R * .04, R * .018, 0, 0, TAU); c.fill();
-  } else if (P.lips) { D(m === 'open' ? R * .15 : R * .25, m === 'open' ? R * .26 : m === 'grin' ? R * .22 : R * .32); c.lineWidth = lw * 4.2; c.strokeStyle = P.lips; c.stroke(); D(m === 'open' ? R * .15 : R * .25, m === 'open' ? R * .26 : m === 'grin' ? R * .22 : R * .32); ln(lw); c.stroke(); }
+  }
   if (P.tache) {   // a curly handlebar moustache, like the reference's owner
     c.fillStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.ellipse(ox + s * R * .12, my - R * .1, R * .14, R * .05, s * .15, 0, TAU); c.fill(); }
     ln(lw * 1.3); c.strokeStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.arc(ox + s * R * .27, my - R * .15, R * .05, s > 0 ? Math.PI * .5 : Math.PI * .5, s > 0 ? Math.PI * 1.9 : -Math.PI * .9, s < 0); c.stroke(); }
