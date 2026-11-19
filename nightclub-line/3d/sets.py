@@ -46,6 +46,11 @@ def facade(rope_x=(1.5, 9.0)):
     # the far side of the street: dark buildings with a few lit windows (out of focus behind the camera mostly)
     for k in range(8):
         h = 7 + (k * 37 % 5); box(f'bld{k}', (-14 + k * 4.2, -15, h / 2), (3.8, 3, h), mat('bld', '#0d1024', rough=.8))
+        for i in range(2):   # their windows, facing the club, some lit warm (user 2026-11-19: the taxi shot looked fake against black slabs)
+            for j in range(1, int(h / 2.2)):
+                lit_ = (k * 3 + i * 5 + j * 7) % 5 < 2
+                box(f'bw{k}_{i}_{j}', (-14 + k * 4.2 - .9 + i * 1.8, -13.47, j * 2.2 + .4), (.9, .06, 1.2),
+                    mat('bwlit', '#ffd9a0', emit='#ffc878', estr=3.0) if lit_ else mat('bwdark', '#141c40', rough=.3))
     # the night: moonlight (cool blue) and a warm fill from the club
     world('#04060f', 1.)
     # the characters' own light (user 2026-11-17: more light on the characters than on the wall): a soft warm key from the front at body height,
@@ -100,7 +105,7 @@ def taxi(x, y, rot=0.):   # a classic yellow cab (user 2026-11-19: "make it look
     return root
 
 def block(x1=34., depth=30.):   # for the view from above: the club's block, its roof, and the side street round the corner
-    box('roof', (x1 / 2 - 15, depth / 2 + .5, 8.4), (x1 + 30, depth, .4), mat('roofm', '#10142a', rough=.8))
+    box('roof', (x1 / 2 - 15, depth / 2 + .5, 8.4), (x1 + 30, depth, .4), mat('roofm', '#1a2250', rough=.8))
     box('sidewall', (x1 + .25, depth / 2, 4), (.5, depth, 8.5), brick_mat())
     box('sidepave', (x1 + 1.8, depth / 2 - 2, .02), (3.6, depth + 4, .08), mat('pave', '#1c1f36', rough=.6))
     for k in range(6):
@@ -119,7 +124,29 @@ def block(x1=34., depth=30.):   # for the view from above: the club's block, its
         for k in range(11):
             wy = 1.5 + k * 2.6
             box(f'sf{r}_{k}', (x1 + .53, wy, z), (.04, 1.0, 1.25), frame); box(f'sg{r}_{k}', (x1 + .56, wy, z), (.04, .82, 1.07), lit if (k * 5 + r) % 4 < 2 else dim)
-    for k in range(6): light('POINT', (x1 - 2 - k * 6, -3.0, .6), 120, '#ffc77a', 2., name=f'pool{k}')   # warm pools on the pavement under the lamps   # seen from above: the night street lit softly from above
+    for k in range(6): light('POINT', (x1 - 2 - k * 6, -3.0, .6), 120, '#ffc77a', 2., name=f'pool{k}')
+    # a real city round it (user 2026-11-19: the aerial shot "looks fake"): the street and the side street paved all the way, the wall closed up to the corner,
+    # lamps down the side street too, and buildings with lit windows across both streets and behind the block
+    box('bground', (x1, depth / 2 - 10, -.06), (120, depth + 60, .1), cobble_mat())
+    box('bwallfill', (x1 - 2, .25, 4), (4, .5, 8.5), brick_mat()); box('bpavefill', (x1 - 2, -1.8, .02), (4, 3.6, .08), mat('pave', '#2c3560'))   # butt-joined at x 30 (an overlap flickered black)
+    box('bkerbfill', (x1 - 2, -3.62, .05), (4, .2, .14), mat('kerb', '#3a4472'))
+    for k in range(5):
+        y = 3 + k * 6
+        sphere(f'sslamp{k}', (x1 + 3.4, y, 4.0), .18, m=emissive('lampglow', '#ffd28a', 10.)); cyl(f'sspole{k}', (x1 + 3.4, y, 2), .05, 4, mat('iron', '#0c0d18', rough=.4))
+        light('POINT', (x1 + 3.2, y, 3.6), 300, '#ffc77a', .3, name=f'ssl{k}')
+    import random; rnd = random.Random(23)
+    lit2 = mat('winlit2', '#ffd9a0', emit='#ffc878', estr=3.0); dark2 = mat('windark2', '#141c40', rough=.3)
+    def city(name, cx, cy, sx, sy, h, face):   # one building block, windows on the face turned to the camera ('-y' or '-x' or '+y')
+        box(name, (cx, cy, h / 2), (sx, sy, h), mat('bld' + name, rnd.choice(['#1a2150', '#202a5e', '#161c46', '#242c62']), rough=.8))
+        n = int((sx if face != '-x' else sy) / 2.2); fl = int(h / 2.6)
+        for i in range(n):
+            for j in range(1, fl):
+                m = lit2 if rnd.random() < .35 else dark2; z = j * 2.6 + .6
+                if face == '-y': box(f'{name}w{i}_{j}', (cx - sx / 2 + 1.1 + i * 2.2, cy - sy / 2 - .03, z), (1.0, .06, 1.3), m)
+                elif face == '-x': box(f'{name}w{i}_{j}', (cx - sx / 2 - .03, cy - sy / 2 + 1.1 + i * 2.2, z), (.06, 1.0, 1.3), m)
+    for k in range(5): city(f'cs{k}', x1 + 17, 2 + k * 9, 9, 8.4, rnd.choice([10, 13, 16, 20]), '-x')        # across the side street
+    for k in range(6): city(f'cb{k}', x1 - 34 + k * 11, depth + 7, 10.4, 10, rnd.choice([16, 20, 24, 28]), '-y')   # behind the block, taller
+    for k in range(3): city(f'cc{k}', x1 + 17 + k * 11, depth + 9, 10.4, 10, rnd.choice([18, 24]), '-x')   # warm pools on the pavement under the lamps   # seen from above: the night street lit softly from above
 
 def chair(name='chair'):   # one red velvet armchair (instanced for the 300 seats)
     col = bpy.data.collections.get(name)
