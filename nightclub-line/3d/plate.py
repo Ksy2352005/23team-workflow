@@ -60,8 +60,8 @@ WIDER = {**{k: .72 for k in ('opened', 'pays', 'notin', 'returns', 'rope', 'line
          **{k: .8 for k in ('spent', 'backdoor', '300', 'whyno', 'folds', 'nottonight', 'joins', 'backofline', 'band', 'empty')}}
 
 # the shots that were still close after the wider lens: the camera itself steps back from what it looks at (a wide lens up close bends the faces)
-BACK = {'opened': 1.5, 'notin': 1.8, 'donttalk': 1.9, 'wait': 1.3, 'turns': 1.3, 'sendaway': 1.7, '300': 1.8, 'whyno': 1.3, 'nottonight': 2.0, 'nohome': 1.3,
-        'money': 1.5, 'nods': 1.9, 'cannot': 1.8, 'pays': 1.3, 'spent': 1.4}
+BACK = {'opened': 1.5, 'notin': 2.4, 'donttalk': 2.7, 'wait': 1.3, 'turns': 1.3, 'sendaway': 2.6, '300': 2.7, 'whyno': 1.3, 'nottonight': 3.0, 'nohome': 1.3,
+        'money': 1.5, 'nods': 2.8, 'cannot': 2.4, 'pays': 1.3, 'spent': 1.4}
 
 def blue_world(nc):   # the brand's blue world, a little lighter than before so it reads blue (user 2026-11-18); the red door, rope, carpet and seats stay as warm accents
     nc.brick_mat('brick', c1='#26357a', c2='#1f2c68', mortar='#10173a', scale=3.)
