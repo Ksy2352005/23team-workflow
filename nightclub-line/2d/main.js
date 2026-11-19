@@ -94,7 +94,7 @@ shot('lineup', T(54) - .05, { pan: [0, 1], cast(t, put) {
 } });
 shot('donttalk', T(60) - .05, { push: .06, cast(t, put) {
   for (let i = 0; i < 5; i++) put([2.0 + i * .85, -.6, .05], str(i, true).H, { ...str(i, true) });
-  put([3.0, -1.4, .08], 1.7, { ...OWN, brows: 'angry', mouth: talk(t, T(60), T(63) - .1, 'flat'), handR: [.2, -.72 - .03 * sin(t * 8)], tilt: .05 * sin(t * 5) });
+  put([3.0, -2.0, .08], 1.7, { ...OWN, brows: 'angry', mouth: talk(t, T(60), T(63) - .1, 'flat'), handR: [.2, -.72 - .03 * sin(t * 8)], tilt: .05 * sin(t * 5) });
 } });
 shot('wait', T(63) - .05, { pan: [0, 1], cast(t, put) {
   const hh = [{ handL: [-.05, -.45], handR: [.12, -.42] }, {}, { handR: [.08, -.56] }, {}, { handL: [-.25, -.3] }, {}];
@@ -138,8 +138,9 @@ shot('nohome', T(106) - .05, { push: .06, cast(t, put) {
 shot('backofline', T(110) - .05, { pan: [0, 1], cast(t, put) {
   const u = seg(t, T(110), T(114) - .2), mv = u > 0 && u < 1;
   for (let i = 0; i < 9; i++) put([2.0 + i * .85, -.6, .05], str(i, i > 3).H, { ...str(i, i > 3), f: .2 });
-  put([lerp(2.0, 9.6, u), lerp(-1.9, -1.0, u), .08], 1.68, { ...MAN, f: 1, eyes: 'lids', brows: 'angry', mouth: 'flat', walk: mv ? 1 : 0, phi: t * 9 });
-  put([lerp(1.2, 8.8, u), lerp(-1.9, -1.0, u), .08], 1.58, { ...LADY, f: 1, eyes: 'lids', brows: 'angry', mouth: 'flat', walk: mv ? 1 : 0, phi: t * 9 + 1 });
+  const path = (x0, xe, xf) => { if (u < .6) return [lerp(x0, xe, u / .6), -1.9]; const v = (u - .6) / .4; return [lerp(xe, xf, ss(Math.max(0, v * 2 - 1))), lerp(-1.9, -.7, ss(Math.min(1, v * 2)))]; };   // round the end post, then back along the line behind the rope
+  put([...path(2.0, 9.7, 7.85), .08], 1.68, { ...MAN, f: 1, eyes: 'lids', brows: 'angry', mouth: 'flat', walk: mv ? 1 : 0, phi: t * 9 });
+  put([...path(1.2, 10.2, 8.5), .08], 1.58, { ...LADY, f: 1, eyes: 'lids', brows: 'angry', mouth: 'flat', walk: mv ? 1 : 0, phi: t * 9 + 1 });
 } });
 shot('taxi', T(114) - .05, { push: .05, cast(t, put) {
   const u = ss(seg(t, T(115), T(118)));
@@ -147,8 +148,8 @@ shot('taxi', T(114) - .05, { push: .05, cast(t, put) {
 } });
 shot('joins', T(119) - .05, { push: .06, cast(t, put) {
   const u = seg(t, T(119), T(121)), look = ss(seg(t, T(122), T(123)));
-  put([6.7, -.6, .05], str(6, true).H, { ...str(6, true) });
-  put([8.0, -.7, .08], 1.68, { ...MAN, f: .5 * look, mouth: 'smile' }); put([8.8, -.7, .08], 1.58, { ...LADY, f: .45 * look, mouth: 'smile' });
+  put([6.9, -.6, .05], str(6, true).H, { ...str(6, true) });
+  put([7.85, -.7, .08], 1.68, { ...MAN, f: .5 * look, mouth: 'smile' }); put([8.5, -.7, .08], 1.58, { ...LADY, f: .45 * look, mouth: 'smile' });   // between two posts, behind the rope
   put([lerp(10.8, 9.6, u), lerp(-1.8, -.7, u), .08], 1.7, { ...HATMAN, f: u < 1 ? -.8 : .3 * sin(t), walk: u > 0 && u < 1 ? 1 : 0, phi: t * 8 });
 } });
 shot('eleven', T(128) - .05, { push: .06, cast(t, put) {
