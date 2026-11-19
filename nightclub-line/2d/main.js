@@ -160,8 +160,8 @@ shot('midnight', T(135) - .05, { push: .1, cast(t, put) {
 shot('money', T(144) - .05, { push: .07, cast(t, put) {
   const w = sin(t * 9);
   put([-1.7, -1.0, .08], 1.95, { ...DOOR, folded: true, eyes: 'wide', brows: 'raised', f: .3 * sin(t * 2.5) });
-  put([-2.75, -1.6, .05], 1.63, { ...str(1), f: .8, cash: 'L', handL: [.3, -.6 - .05 * w] });
-  put([-.6, -1.6, .05], 1.55, { ...str(3), f: -.8, cash: 'R', handR: [-.3, -.6 + .05 * w] });
+  put([-2.3, -1.75, .05], 1.63, { ...str(1), f: .8, cash: 'R', handR: [.3, -.6 - .05 * w] });
+  put([-1.1, -1.75, .05], 1.55, { ...str(3), f: -.8, cash: 'L', handL: [-.3, -.6 + .05 * w] });
 } });
 shot('nods', T(151) - .05, { push: .05, cast(t, put) {
   const nod = sin(seg(t, T(152), T(154)) * Math.PI * 2);
@@ -197,7 +197,7 @@ shot('never', T(175) - .05, { push: .08, cast(t, put) {
 shot('nobody', T(180) - .05, { zoomFrom: 1.7 });
 shot('want', T(188) - .05, { push: .05, cast(t, put, X) {
   const clip = X([0, 4.47, 1.1])[1];
-  const ppl = [[-1.4, MAN, 'smile'], [-.5, LADY, 'grin'], [.5, str(3), 'grin'], [1.4, { H: 1.55, skin: 'blue3', wear: '#f4f1e6', pearls: true, hat: { type: 'beret', col: '#c23b3b' } }, 'laugh']];
+  const ppl = [[-.95, MAN, 'smile'], [-.32, LADY, 'grin'], [.32, str(3), 'grin'], [.95, { H: 1.55, skin: 'blue3', wear: '#f4f1e6', pearls: true, hat: { type: 'beret', col: '#c23b3b' } }, 'laugh']];
   ppl.forEach(([x, p, mo], i) => put([x, 4.9, .3], p.H || 1.6, { ...p, eyes: 'happy', mouth: mo, handL: [-.2, -.4], handR: [.2, -.4], tilt: .08 * sin(t * 2 + i), bob: .01 * abs(sin(t * 8 + i)), clip }));
 } });
 shot('cannot', T(197) - .05, { push: .1, cast(t, put) { put([-1.7, -1.0, .08], 1.95, { ...DOOR, folded: true, eyes: 'lids', brows: 'flat', mouth: 'smirk' }); } });

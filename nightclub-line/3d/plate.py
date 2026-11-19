@@ -40,7 +40,7 @@ SHOTS = {
  'backofline': ('front', (3.0, -5.2, 1.6), (5.5, -1.2, 1.0), 28, 2.0),
  'taxi': ('taxi', (13.6, -2.2, 1.6), (10.3, -4.4, 1.1), 30, 1),
  'joins': ('front', (8.9, -3.9, 1.35), (8.9, -.7, 1.1), 30, 1),
- 'eleven': ('block', (1.0, -3.4, 2.6), (32, -.4, 1.0), 28, 1),
+ 'eleven': ('front', (1.0, -3.4, 2.6), (32, -.4, 1.0), 28, 1),
  'midnight': ('block', (42, -18, 20), (26, 8, 0), 24, 1),
  'money': ('front', (-1.7, -3.9, 1.65), (-1.7, -1.0, 1.45), 32, 1),
  'nods': ('front', (0, -3.2, 1.45), (0, -1.5, 1.32), 40, 1),
@@ -74,10 +74,16 @@ def build(shot):
     if kind == 'block': sets.block()
     if kind == 'taxi': sets.taxi(10.5, -5.4)
     if kind == 'hall': sets.hall()
-    if kind != 'hall':   # a deep navy night sky instead of black, and the street wall running on out of sight
+    if kind not in ('hall', 'block'):   # a deep navy night sky instead of black, and the street wall running on out of sight
         bpy.context.scene.world.node_tree.nodes['Background'].inputs[0].default_value = nc.hexc('#0c1438')
         nc.box('wallfar', (70, .25, 4), (80, .5, 8.5), nc.brick_mat()); nc.box('pavefar', (70, -1.8, .02), (80, 3.6, .08), nc.mat('pave', '#2c3560'))
         nc.box('groundfar', (70, -6, -.05), (80, 20, .1), nc.cobble_mat())
+    if kind == 'block': bpy.context.scene.world.node_tree.nodes['Background'].inputs[0].default_value = nc.hexc('#0c1438')
+    if kind == 'block':   # seen from above for a plate: a softer top light (the full 30000 W blew out the street)
+        bpy.data.lights['blocktop'].energy = 7000
+        for o in list(bpy.data.objects):   # the street-lamp poles cast long black shadows across the aerial view
+            if o.name.startswith('spole'): bpy.data.objects.remove(o)
+        sc.view_settings.exposure = .2
     if shot == 'ropeup':
         for o in list(bpy.data.objects):
             if o.name == 'rope1': bpy.data.objects.remove(o)
