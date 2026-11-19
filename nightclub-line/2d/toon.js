@@ -132,6 +132,7 @@ function face(c, R, f, P, lw, skin) {
   const ox = f * R * .32, ey = R * .12, sep = R * .3 * (1 - .25 * Math.abs(f));
   const ln = w => { c.lineWidth = w; c.strokeStyle = INK; c.lineCap = 'round'; c.lineJoin = 'round'; };
   const eyes = P.eyes || 'dot';
+  if (P.shadow) for (const s of [-1, 1]) { c.fillStyle = P.shadow; c.beginPath(); c.ellipse(ox + s * sep, ey - R * (eyes === 'wide' ? .1 : .07), R * (eyes === 'wide' ? .22 : .15), R * (eyes === 'wide' ? .17 : .1), 0, 0, TAU); c.fill(); }   // eyeshadow (make-up)
   for (const s of [-1, 1]) {
     const ex = ox + s * sep;
     if (eyes === 'happy') { ln(lw * 1.3); c.beginPath(); c.arc(ex, ey + R * .07, R * .1, Math.PI * 1.15, Math.PI * 1.85); c.stroke(); }
@@ -145,6 +146,7 @@ function face(c, R, f, P, lw, skin) {
         c.fillStyle = skin; c.beginPath(); c.rect(ex - r * 1.6, ey - r * 2, r * 3.2, r * 1.9); c.fill(); ln(lw * 1.2); c.beginPath(); c.moveTo(ex - r * 1.4, ey - r * .05); c.lineTo(ex + r * 1.4, ey - r * .05); c.stroke(); }
     }
   }
+  if (P.lashes) { ln(lw * .9); for (const s of [-1, 1]) for (let k = 0; k < 3; k++) { const ex = ox + s * sep, a = -Math.PI / 2 + s * (.5 + k * .38), r0 = R * (eyes === 'wide' ? .19 : .1); c.beginPath(); c.moveTo(ex + Math.cos(a) * r0, ey + Math.sin(a) * r0 * 1.1); c.lineTo(ex + Math.cos(a) * r0 * 1.75, ey + Math.sin(a) * r0 * 1.85); c.stroke(); } }
   if (P.glasses) { ln(lw * .8); c.strokeStyle = P.glasses; for (const s of [-1, 1]) { c.beginPath(); c.arc(ox + s * sep, ey, R * .17, 0, TAU); c.stroke(); } c.beginPath(); c.moveTo(ox - sep + R * .17, ey); c.lineTo(ox + sep - R * .17, ey); c.stroke(); }
   if (P.brows) { ln(lw * 1.2); for (const s of [-1, 1]) { const a = P.brows === 'angry' ? s * .35 : P.brows === 'worried' ? -s * .35 : 0, up = P.brows === 'raised' ? R * .08 : 0; c.save(); c.translate(ox + s * sep, ey - R * .24 - up); c.rotate(a); c.beginPath(); c.moveTo(-R * .1, 0); c.lineTo(R * .1, 0); c.stroke(); c.restore(); } }
   if (P.earrings) for (const s of [-1, 1]) { c.fillStyle = P.earrings; c.strokeStyle = INK; c.lineWidth = lw * .5; c.beginPath(); c.arc(s * R * .96, R * .45, R * .07, 0, TAU); c.fill(); c.stroke(); }
@@ -159,6 +161,13 @@ function face(c, R, f, P, lw, skin) {
   else if (m === 'teeth') { c.fillStyle = '#fff'; c.beginPath(); c.rect(ox - R * .26, my - R * .06, R * .52, R * .2); c.fill(); ln(lw); c.stroke(); for (let k = 1; k < 5; k++) { c.beginPath(); c.moveTo(ox - R * .26 + k * R * .104, my - R * .06); c.lineTo(ox - R * .26 + k * R * .104, my + R * .14); c.stroke(); } c.beginPath(); c.moveTo(ox - R * .26, my + R * .04); c.lineTo(ox + R * .26, my + R * .04); c.stroke(); }
   else if (m === 'smirk') { ln(lw * 1.1); c.beginPath(); c.moveTo(ox - R * .14, my + R * .06); c.quadraticCurveTo(ox + R * .02, my + R * .1, ox + R * .17, my - R * .04); c.stroke(); }
   else { ln(lw * 1.1); const k = m === 'frown' ? -1 : m === 'flat' ? 0 : 1; c.beginPath(); c.moveTo(ox - R * .15, my + R * .04); c.quadraticCurveTo(ox, my + R * .04 + k * R * .14, ox + R * .15, my + R * .04); c.stroke(); }
+  if (P.lips && !['laugh', 'grin', 'open', 'o', 'teeth'].includes(m)) {   // full red lips (lipstick, a little filler): a cupid's-bow upper lip and a plump lower lip
+    const w = R * .17, y0 = my + R * .05; c.fillStyle = P.lips;
+    c.beginPath(); c.moveTo(ox - w, y0); c.quadraticCurveTo(ox - w * .5, y0 - R * .1, ox - w * .12, y0 - R * .07); c.quadraticCurveTo(ox, y0 - R * .03, ox + w * .12, y0 - R * .07); c.quadraticCurveTo(ox + w * .5, y0 - R * .1, ox + w, y0);
+    c.quadraticCurveTo(ox + w * .6, y0 + R * .14, ox, y0 + R * .14); c.quadraticCurveTo(ox - w * .6, y0 + R * .14, ox - w, y0); c.closePath(); c.fill(); ln(lw * .9); c.stroke();
+    c.beginPath(); c.moveTo(ox - w * .92, y0); c.quadraticCurveTo(ox, y0 + R * .03, ox + w * .92, y0); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,.55)'; c.beginPath(); c.ellipse(ox + w * .25, y0 + R * .075, R * .04, R * .018, 0, 0, TAU); c.fill();
+  } else if (P.lips) { D(m === 'open' ? R * .15 : R * .25, m === 'open' ? R * .26 : m === 'grin' ? R * .22 : R * .32); c.lineWidth = lw * 4.2; c.strokeStyle = P.lips; c.stroke(); D(m === 'open' ? R * .15 : R * .25, m === 'open' ? R * .26 : m === 'grin' ? R * .22 : R * .32); ln(lw); c.stroke(); }
   if (P.tache) {   // a curly handlebar moustache, like the reference's owner
     c.fillStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.ellipse(ox + s * R * .12, my - R * .1, R * .14, R * .05, s * .15, 0, TAU); c.fill(); }
     ln(lw * 1.3); c.strokeStyle = '#3a2016'; for (const s of [-1, 1]) { c.beginPath(); c.arc(ox + s * R * .27, my - R * .15, R * .05, s > 0 ? Math.PI * .5 : Math.PI * .5, s > 0 ? Math.PI * 1.9 : -Math.PI * .9, s < 0); c.stroke(); }

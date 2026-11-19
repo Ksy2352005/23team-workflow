@@ -30,7 +30,8 @@ function str(i, lite) {
   return p;
 }
 const MAN = { H: 1.68, skin: 'blue2', wear: '#16161f', suit: true, lapel: '#262634', bow: '#e8b93a', hair: { type: 'side', col: '#f2cc62' }, sleeve: '#16161f' };   // the rich couple (user 2026-11-19: more luxury, blonde guy in a suit)
-const LADY = { H: 1.58, skin: 'blue1', wear: '#0e7a5c', sparkle: true, hair: { type: 'long', col: '#c8323a' }, pearls: true, earrings: '#e8c35a', blush: true };
+const LADY = { H: 1.58, skin: 'blue1', wear: '#0e7a5c', sparkle: true, hair: { type: 'long', col: '#f2cc62' }, pearls: true, earrings: '#e8c35a', blush: true,   // user 2026-11-20: blonde, red lipstick, fuller lips, make-up
+  lips: '#d0142c', lashes: true, shadow: 'rgba(150,90,200,.55)' };
 const HATMAN = { H: 1.7, skin: 'blue3', wear: '#b8956a', coat: '#a8845a', lapel: '#9a7650', shirt: '#f4f1e6', tie: '#8a1c24', sleeve: '#b8956a', hat: { type: 'fedora', col: '#2e2018' }, eyes: 'dot', mouth: 'flat' };
 const face = r => -sin(r);   // a 3D turn (radians about Z) as the 2D facing
 
@@ -174,12 +175,17 @@ shot('ropeup', T(154) - .05, { push: .06, cast(t, put) {
   const u = ss(seg(t, T(155), T(157))), a = [lerp(1.5, 1.9, u), lerp(-1.25, -1.6, u), lerp(.95, 1.35, u)], b = [3.0, -1.25, .95], m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2 - .3];
   const [A, M, B] = [a, m, b].map(X); c.save(); for (const [w, col] of [[22, '#1a1220'], [16, '#d01a30']]) { c.lineWidth = w * (A[2] || 1); c.strokeStyle = col; c.lineCap = 'round'; c.beginPath(); c.moveTo(A[0], A[1]); c.quadraticCurveTo(2 * M[0] - (A[0] + B[0]) / 2, 2 * M[1] - (A[1] + B[1]) / 2, B[0], B[1]); c.stroke(); } c.restore();
 } });
-shot('cheer', T(158) - .05, { push: .07, cast(t, put) {
+shot('cheer', T(158) - .05, { push: .07, cast(t, put) {   // the dance floor (user 2026-11-20): people dancing and drinking, the band playing on the stage behind
+  const hit = abs(sin(t * 10));
+  put([-1.1, 13.0, 1.0], 1.5, { skin: 'blue2', wear: '#ffffff', bow: '#d23a3a', tache: true, eyes: 'happy', mouth: 'o', f: .3, tilt: .1 * sin(t * 4), handL: [.18, -.55], handR: [.1, -.56], id: 'trumpet' });
+  put([0, 13.6, 1.0], 1.5, { skin: 'blue3', wear: '#7a5cff', hat: { type: 'beanie', col: '#f2c14e' }, eyes: 'lids', mouth: 'grin', handL: [-.25, -.42 - .06 * hit], handR: [.25, -.42 - .06 * (1 - hit)], id: 'drums' });
+  put([1.1, 13.0, 1.0], 1.5, { skin: 'blue1', wear: '#f2c14e', hat: { type: 'fedora', col: '#151018' }, eyes: 'happy', mouth: 'smile', f: -.3, tilt: .1 * sin(t * 6), handL: [-.2, -.5], handR: [.05, -.35 - .04 * sin(t * 14)], id: 'guitar' });
   let k = 0;
-  for (let r = 1; r < 9; r++) for (let cc = 0; cc < 16; cc++) {
-    if (!((r * 16 + cc) % 2 === 0 || r < 5)) continue;
-    const x = -7.0 + cc * .92 + (cc >= 8 ? .5 : -.5), j = abs(sin(t * 7 + k * .7)), p = str(k, true);
-    put([x, 8.2 - r * 1.0 - .3, .05], p.H, { ...p, eyes: 'happy', mouth: k % 2 ? 'laugh' : 'grin', handL: [-.2, -.85 - .1 * j], handR: [.2, -.85 - .1 * (1 - j)], bob: .04 * j }); k++;
+  for (let r = 0; r < 5; r++) for (let cc = 0; cc < 6 - (r % 2); cc++) {
+    const x = -4.2 + cc * 1.65 + (r % 2) * .82 + .25 * sin(k * 2.3), y = 10.4 - r * 1.3 + .2 * sin(k * 1.7), ph = t * 7.5 + k * 1.3, j = abs(sin(ph));
+    const p = k === 7 ? LADY : k === 8 ? MAN : str(k + 3, true), drink = k % 3 === 1, up = k % 3 === 0;
+    const hands = up ? { handL: [-.26, -.82 - .1 * j], handR: [.26, -.82 - .1 * (1 - j)] } : drink ? { handL: [-.22, -.36 - .05 * j], handR: [.24, -.6 - .04 * j], drink: ['#e85a7a', '#f2c14e', '#2ED3C6'][k % 3] } : { handL: [-.28, -.5 + .12 * sin(ph)], handR: [.28, -.5 - .12 * sin(ph)] };
+    put([x + .12 * sin(ph * .5), y, .05], p.H || 1.58, { ...p, ...hands, eyes: 'happy', mouth: ['laugh', 'grin', 'smile', 'open'][k % 4], tilt: .14 * sin(ph * .5), bob: .035 * j, f: .5 * sin(ph * .25 + k) }); k++;
   }
 } });
 shot('pays40', T(165) - .05, { push: .06, cast(t, put) {
@@ -195,12 +201,17 @@ shot('never', T(175) - .05, { push: .08, cast(t, put) {
   put([-12, -.6, .08], 1.7, { ...OWN, eyes: 'happy', mouth: 'smirk', handL: [-.1, -.36], handR: [.1, -.36], tilt: .08 * sin(t * 2) });
 } });
 shot('nobody', T(180) - .05, { zoomFrom: 1.7 });
-shot('want', T(188) - .05, { push: .05, cast(t, put, X) {
-  const clip = X([0, 4.47, 1.1])[1];
-  const ppl = [[-.95, MAN, 'smile'], [-.32, LADY, 'grin'], [.32, str(3), 'grin'], [.95, { H: 1.55, skin: 'blue3', wear: '#f4f1e6', pearls: true, hat: { type: 'beret', col: '#c23b3b' } }, 'laugh']];
-  ppl.forEach(([x, p, mo], i) => put([x, 4.9, .3], p.H || 1.6, { ...p, eyes: 'happy', mouth: mo, handL: [-.2, -.4], handR: [.2, -.4], tilt: .08 * sin(t * 2 + i), bob: .01 * abs(sin(t * 8 + i)), clip }));
-} });
-shot('cannot', T(197) - .05, { push: .1, cast(t, put) { put([-1.7, -1.0, .08], 1.95, { ...DOOR, folded: true, eyes: 'lids', brows: 'flat', mouth: 'smirk' }); } });
+// the guests in armchairs at a long lounge table, drinking and toasting (user 2026-11-20: "people sitting on the tables drinking", to the end)
+const GUESTS = [[-1.15, MAN, 'smile', '#f2c14e'], [-.4, LADY, 'grin', '#e85a7a'], [.38, str(3), 'laugh', '#2ED3C6'], [1.12, { H: 1.55, skin: 'blue3', wear: '#f4f1e6', pearls: true, lashes: true, lips: '#c8102e', hair: { type: 'bob', col: '#3a2418' } }, 'grin', '#f2c14e']];
+function lounge(t, put, X, t0, turn) {
+  const toast = seg(t, t0 + .5, t0 + 1.0) * (1 - seg(t, t0 + 1.6, t0 + 2.1));
+  GUESTS.forEach(([x, p, mo, dc], i) => {
+    const sip = (i + Math.floor(t * .8)) % 3 === 0 ? abs(sin(t * 2.2 + i)) : 0, hx = lerp(.22, i < 2 ? .34 : .1, toast), hy = lerp(-.42 - .2 * sip, -.78, toast);
+    put([x, 5.15, .32], p.H || 1.6, { ...p, eyes: 'happy', mouth: sip > .7 ? 'o' : mo, f: turn ? (i < 2 ? .5 : -.5) : .25 * sin(t * 1.5 + i * 2), handL: [-.2, -.4], handR: [hx, hy], drink: dc, tilt: .06 * sin(t * 2 + i), bob: .01 * abs(sin(t * 8 + i)), clip: X([x, 4.85, .77])[1] });   // hidden below the table's far edge: seated behind it
+  });
+}
+shot('want', T(188) - .05, { push: .05, cast(t, put, X) { lounge(t, put, X, T(188), false); } });
+shot('cannot', T(197) - .05, { push: .08, cast(t, put, X) { lounge(t, put, X, T(197) - 2.5, true); } });
 
 // —— props held in the band and bar shots (drawn on the character's screen position) ——
 function prop(c, id, x, y, h) {
@@ -210,6 +221,33 @@ function prop(c, id, x, y, h) {
   if (id === 'trumpet') { ln(h * .04, '#1a1220', [[x + h * .1, y - h * .55], [x + h * .45, y - h * .58]]); ln(h * .028, '#e8c35a', [[x + h * .1, y - h * .55], [x + h * .45, y - h * .58]]); disc(x + h * .48, y - h * .58, h * .05, h * .1, '#e8c35a'); }
   if (id === 'guitar') { c.save(); c.translate(x - h * .02, y - h * .38); c.rotate(-.5); ln(h * .03, '#3a2418', [[0, 0], [h * .42, 0]]); disc(-h * .04, 0, h * .14, h * .11, '#e8705a'); disc(-h * .04, 0, h * .035, h * .035, '#1a1220'); c.restore(); }
   if (id === 'glass') { c.save(); c.translate(x + h * .2, y - h * .5); c.rotate(.3); c.fillStyle = '#f4f1e6'; c.strokeStyle = '#1a1220'; c.lineWidth = h * .008; c.beginPath(); c.rect(-h * .02, -h * .06, h * .05, h * .12); c.fill(); c.stroke(); c.restore(); c.save(); c.translate(x + h * .12, y - h * .5); c.beginPath(); c.moveTo(-h * .04, -h * .06); c.lineTo(h * .04, -h * .06); c.lineTo(h * .03, h * .05); c.lineTo(-h * .03, h * .05); c.closePath(); c.fillStyle = 'rgba(220,240,255,.7)'; c.fill(); c.lineWidth = h * .01; c.strokeStyle = '#1a1220'; c.stroke(); c.restore(); }
+}
+
+function drinkProp(c, p) {   // a cocktail glass held in the right hand
+  const h = p.h, bob = (p.bob || 0) * h, gx = p.x + p.handR[0] * h, gy = p.y - bob + p.handR[1] * h, s = h * .09;
+  c.save(); c.translate(gx, gy - s * .2); c.lineJoin = 'round'; c.lineWidth = Math.max(1, h * .008); c.strokeStyle = '#1a1220';
+  c.fillStyle = 'rgba(220,235,255,.85)'; c.beginPath(); c.moveTo(-s * .55, -s * 1.2); c.lineTo(s * .55, -s * 1.2); c.lineTo(0, -s * .45); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = p.drink; c.beginPath(); c.moveTo(-s * .42, -s * 1.08); c.lineTo(s * .42, -s * 1.08); c.lineTo(0, -s * .52); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(0, -s * .45); c.lineTo(0, s * .15); c.moveTo(-s * .25, s * .15); c.lineTo(s * .25, s * .15); c.stroke(); c.restore();
+}
+// the rope line, drawn here (not in the plates) so the people in the line stand behind it (user 2026-11-20)
+const FRONT = new Set(['opened', 'pays', 'line', 'notin', 'opening', 'returns', 'rope', 'lineup', 'donttalk', 'wait', 'turns', 'sendaway', 'window', '300', 'whyno', 'couple', 'folds', 'nottonight', 'nohome', 'backofline', 'joins', 'eleven', 'money', 'nods', 'ropeup']);
+const POSTS = [1.5, 3.0, 4.5, 6.0, 7.5, 9.0], RY = -1.25;
+function ropeItems(list, X, skipFirst) {
+  const gold = '#e8c35a';
+  POSTS.forEach((x, i) => {
+    const B = X([x, RY, 0]), Tp = X([x, RY, 1.05]);
+    list.push({ d: B[2], draw(c) { const ppm = (B[1] - Tp[1]) / 1.05; if (ppm <= 0) return; const lw = Math.max(1, ppm * .02); c.save(); c.strokeStyle = '#1a1220'; c.lineWidth = lw; c.fillStyle = gold;
+      c.beginPath(); c.ellipse(B[0], B[1], ppm * .2, ppm * .06, 0, 0, 7); c.fill(); c.stroke();
+      c.beginPath(); c.rect(B[0] - ppm * .045, Tp[1], ppm * .09, B[1] - Tp[1]); c.fill(); c.stroke();
+      c.beginPath(); c.arc(Tp[0], Tp[1], ppm * .08, 0, 7); c.fill(); c.stroke();
+      c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.arc(Tp[0] - ppm * .025, Tp[1] - ppm * .025, ppm * .025, 0, 7); c.fill(); c.restore(); } });
+    if (i && !(skipFirst && i === 1)) {
+      const a = X([POSTS[i - 1], RY, .95]), mm = X([(POSTS[i - 1] + x) / 2, RY, .62]), b = X([x, RY, .95]), mb = X([(POSTS[i - 1] + x) / 2, RY, 0]);
+      list.push({ d: mm[2] - .01, draw(c) { const ppm = (mb[1] - mm[1]) / .62; if (ppm <= 0) return; const cx = 2 * mm[0] - (a[0] + b[0]) / 2, cy = 2 * mm[1] - (a[1] + b[1]) / 2;
+        c.save(); c.lineCap = 'round'; for (const [w, col] of [[.1, '#1a1220'], [.07, '#c0182a']]) { c.lineWidth = w * ppm; c.strokeStyle = col; c.beginPath(); c.moveTo(a[0], a[1]); c.quadraticCurveTo(cx, cy, b[0], b[1]); c.stroke(); } c.restore(); } });
+    }
+  });
 }
 
 // —— camera, projection and drawing ——
@@ -235,27 +273,32 @@ function drawShot(c, s, t) {
   c.save(); c.filter = `blur(${1.6 * K}px)`; c.drawImage(P.img, -v.ox * v.z + 540, -v.oy * v.z + 960, cam.w * v.z, cam.h * v.z); c.restore();
   const list = [];
   if (s.cast) s.cast(t, (pos, Hm, props) => { const a = X(pos), b = X([pos[0], pos[1], pos[2] + Hm]); list.push({ x: a[0], y: a[1], h: a[1] - b[1], d: a[2], props }); }, X);
+  if (FRONT.has(s.name)) ropeItems(list, X, s.name === 'ropeup');
   list.sort((p, q) => q.d - p.d);
   for (const it of list) {
+    if (it.draw) { it.draw(c); continue; }
     if (it.x < -400 || it.x > 1480 || it.h < 3) continue;
     const p = { ...it.props, x: it.x, y: it.y, h: it.h * .94 }; delete p.H;
     if (p.simple) { c.fillStyle = p.wear; c.beginPath(); c.arc(p.x, p.y - p.h * .4, p.h * .17, 0, 7); c.fill(); c.fillStyle = '#4f7bf0'; c.beginPath(); c.arc(p.x, p.y - p.h * .78, p.h * .2, 0, 7); c.fill(); continue; }
-    toon(c, p); if (p.id) prop(c, p.id, p.x, p.y, p.h);
+    toon(c, p); if (p.id) prop(c, p.id, p.x, p.y, p.h); if (p.drink) drinkProp(c, p);
   }
   if (s.over) s.over(c, t, X);
   const g = c.createRadialGradient(540, 960, 600, 540, 960, 1300); g.addColorStop(0, 'rgba(4,6,24,0)'); g.addColorStop(1, 'rgba(4,6,24,.5)'); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
 }
 
 // —— captions: Hungarian like the reference (big white words, dark outline, three at a time, the spoken word turquoise); Persian: the whole line, for checking ——
-const CHUNKS = (() => { const out = []; let cur = []; WORDS.forEach((w, i) => { cur.push(i); if (cur.length === 3 || /[.,!?…”]$/.test(w[0])) { out.push(cur); cur = []; } }); if (cur.length) out.push(cur); return out; })();
+// word by word (user 2026-11-20): at most 2–3 short words on screen, each appearing as it is spoken, so the captions stay out of the pictures' way
+const CHUNKS = (() => { const out = []; let cur = [], len = 0; WORDS.forEach((w, i) => {
+  if (cur.length && (cur.length === 3 || len + w[0].length > 15)) { out.push(cur); cur = []; len = 0; }
+  cur.push(i); len += w[0].length + 1; if (/[.,!?…”:]$/.test(w[0])) { out.push(cur); cur = []; len = 0; } }); if (cur.length) out.push(cur); return out; })();
 function capHU(c, t) {
   const n = CHUNKS.findIndex((k, j) => t >= T(k[0]) - .02 && (j + 1 >= CHUNKS.length || t < T(CHUNKS[j + 1][0]) - .02)); if (n < 0) return; const ch = CHUNKS[n];
   if (t > WORDS[ch[ch.length - 1]][2] + 1.2) return;
-  c.save(); c.font = '700 80px "Montserrat"'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+  c.save(); c.font = '700 74px "Montserrat"'; c.textBaseline = 'middle'; c.lineJoin = 'round';
   const words = ch.map(i => WORDS[i][0]), sp = c.measureText(' ').width, wid = words.map(w => c.measureText(w).width), tot = wid.reduce((a, b) => a + b, 0) + sp * (words.length - 1);
   const sc = Math.min(1, 900 / tot), y = 1180, pop = sc * (1 + .08 * (1 - ss(seg(t, T(ch[0]) - .02, T(ch[0]) + .1))));
   c.translate(540, y); c.scale(pop, pop); c.translate(-540, -y); let x = 540 - tot / 2;
-  ch.forEach((i, k) => { const on = t >= WORDS[i][1] - .02; c.lineWidth = 16; c.strokeStyle = '#0c0a1a'; c.strokeText(words[k], x, y); c.fillStyle = on && t < WORDS[i][2] + .05 ? '#2ED3C6' : '#ffffff'; c.fillText(words[k], x, y); x += wid[k] + sp; });
+  ch.forEach((i, k) => { const on = t >= WORDS[i][1] - .02; if (!on) { x += wid[k] + sp; return; } c.lineWidth = 16; c.strokeStyle = '#0c0a1a'; c.strokeText(words[k], x, y); c.fillStyle = on && t < WORDS[i][2] + .05 ? '#2ED3C6' : '#ffffff'; c.fillText(words[k], x, y); x += wid[k] + sp; });
   c.restore();
 }
 const FA = ['یک کلوب شبانه باز کرد و به ۴۰ نفر پول داد که بیرون بایستند و داخل نروند.', 'امشب افتتاحیه است.', 'داخل، گروه موسیقی، بار و ۳۰۰ صندلی مخملی منتظر مهمان‌ها هستند… اما روی هیچ‌کدام کسی ننشسته.', 'آخرین فورینتش را هم خرج این کرده.', 'برای همین از در پشتی بیرون می‌رود و از جلو با ۴۰ غریبه و یک طناب قرمز برمی‌گردد.', 'آن‌ها را کنار دیوار به صف می‌کند.', '«با هیچ‌کس حرف نزنید. فقط وانمود کنید که منتظرید.»', 'بعد رو به دربان می‌کند.', '«هر کس الان بیاید، ردش کن.»', 'دربان از پنجره به سالن خالی نگاه می‌کند.', '«ما ۳۰۰ جا داریم. چرا باید نه بگویم؟»', 'یک زوج با بهترین لباس‌هایشان جلو می‌آیند.', 'دربان دست‌به‌سینه می‌ایستد. «امشب نه.»', 'ولی به خانه نمی‌روند. ته صف می‌ایستند.', 'مردی از تاکسی پیاده می‌شود و در صف می‌ایستد. حتی نمی‌پرسد منتظر چه هستند.', 'تا ساعت یازده صف به سر کوچه می‌رسد.', 'تا نیمه‌شب صف مثل مار دور تمام بلوک پیچیده و مردم به دربان پول پیشنهاد می‌دهند.', 'فقط آن موقع سر تکان می‌دهد و طناب را بالا می‌برند.', 'داخل طوری هورا می‌کشند که انگار چیزی برده‌اند.', 'چهل غریبه را دم در پشتی پول می‌دهد و به خانه می‌فرستد.', 'دیگر هیچ‌وقت به آن‌ها نیازی ندارد.', 'می‌دانی، هیچ‌کس نمی‌خواهد در یک سالن خالی بنشیند.', 'آن جایی را می‌خواهند که همین الان به آن‌ها گفتند نمی‌توانند داشته باشند.'];

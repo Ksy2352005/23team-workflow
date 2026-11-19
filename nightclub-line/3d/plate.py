@@ -19,7 +19,7 @@ SHOTS = {
  'band': ('hall', (0, 6.4, 2.4), (0, 13.4, 2.0), 30, 1),
  'bar': ('hall', (-6.9, 2.4, 2.0), (-10.9, 4.0, 1.7), 30, 1),
  'seats': ('hall', (0, -4.8, 3.9), (0, 9, 1.5), 24, 1),
- 'empty': ('hall', (2.24, 3.7, 1.45), (2.24, 6.0, 1.05), 32, 1),
+ 'empty': ('hall', (9.6, 1.2, 1.5), (2.0, 6.6, .6), 24, 1),   # another angle (user 2026-11-20): across the rows of empty seats from the side aisle
  'spent': ('hall', (0, -3.4, 1.4), (0, -1.0, 1.2), 34, 1),
  'backdoor': ('alley', (-11.7, -5.0, 1.6), (-12, -.6, 1.3), 30, 1),
  'returns': ('front', (9.2, -6.0, 1.5), (11.7, -2.0, 1.1), 28, 1.8),
@@ -45,13 +45,13 @@ SHOTS = {
  'money': ('front', (-1.7, -3.9, 1.65), (-1.7, -1.0, 1.45), 32, 1),
  'nods': ('front', (0, -3.2, 1.45), (0, -1.5, 1.32), 40, 1),
  'ropeup': ('front', (2.4, -4.4, 1.25), (1.9, -1.25, .95), 30, 1),
- 'cheer': ('hall', (0, -6.0, 3.6), (0, 8.0, 1.3), 26, 1),
+ 'cheer': ('hall', (0, .6, 2.5), (0, 9.0, 1.1), 24, 1),   # the dance floor (user 2026-11-20: people dancing and drinking)
  'pays40': ('alley', (-10.8, -4.4, 1.55), (-11.2, -1.1, 1.15), 30, 1),
  'sendshome': ('alley', (-11.0, -3.4, 1.7), (-16.5, -1.6, 1.0), 30, 1),
  'never': ('alley', (-12, -4.0, 1.45), (-12, -.6, 1.2), 32, 1),
  'nobody': ('hall', (0, -4.0, 3.2), (0, 9, 1.4), 26, 1),
- 'want': ('hall', (0, 1.4, 1.5), (0, 4.9, 1.3), 28, 1),
- 'cannot': ('front', (-1.6, -3.4, 1.7), (-1.65, -1.0, 1.55), 36, 1),
+ 'want': ('hall', (0, 2.0, 1.6), (0, 5.0, 1.2), 22, 1),   # guests in armchairs at lounge tables, drinking (user 2026-11-20)
+ 'cannot': ('hall', (1.2, 3.3, 1.45), (-.4, 5.1, 1.15), 24, 1),   # a second angle on the lounge tables to the end (user 2026-11-20)
 }
 
 # the camera a little further back (user 2026-11-19: "very close up, bring the camera a bit further"): a wider lens on the close shots
@@ -92,6 +92,29 @@ def build(shot):
         bpy.data.lights['blocktop'].energy = 7000
         bpy.data.lights['blocktop'].energy = 3500   # moonlight; the street lamps and lit windows do the rest
         sc.view_settings.exposure = .3
+    if kind == 'front':   # the rope line is drawn in 2D now, so people stand behind it, not mixed with it (user 2026-11-20)
+        for o in list(bpy.data.objects):
+            if o.name.startswith(('post', 'rope')) and not o.name.startswith('poster'): bpy.data.objects.remove(o)
+    if shot == 'cheer':   # a dance floor where the front seats were: big glowing tiles, a mirror ball, coloured spots
+        for o in list(bpy.data.objects):
+            if (o.name.startswith('seat') and o.instance_type == 'COLLECTION') or o.name.startswith(('tab', 'tlamp')): bpy.data.objects.remove(o)
+        cols = ['#1a9a90', '#b8306e', '#5236c0', '#b08a2a']
+        for r in range(9):
+            for c in range(11): nc.box(f'dtile{r}_{c}', (-6.0 + c * 1.2, 1.6 + r * 1.2, .01), (1.16, 1.16, .02), nc.mat('dt' + cols[(r + c) % 4], cols[(r + c) % 4], rough=.3, emit=cols[(r + c) % 4], estr=.18))
+        nc.sphere('mirrorball', (0, 6.5, 6.6), .55, m=nc.mat('mball', '#d8dce8', rough=.12, metal=1.))
+        for k, (x, col) in enumerate(((-5, '#ff4fa0'), (0, '#2ED3C6'), (5, '#7a5cff'))): nc.light('SPOT', (x, 4, 8.5), 1500, col, .3, name=f'dspot{k}')
+    if shot in ('want', 'cannot'):   # lounge: the front rows cleared, two low tables with drinks in front of a row of armchairs (y 5.2)
+        for o in list(bpy.data.objects):
+            if (o.name.startswith('seat') and o.instance_type == 'COLLECTION') or o.name.startswith(('tab', 'tlamp')):
+                x, y = o.location[0], o.location[1]
+                if y < 5.0 and abs(x) < 8.5: bpy.data.objects.remove(o)
+        wood = nc.mat('loungetab', '#3a1e14', rough=.35); brass = nc.mat('brass', '#e8c35a', rough=.25, metal=.9)
+        for k, x in enumerate((-.1,)):   # one long low table across the whole group
+            nc.box(f'ltop{k}', (x, 4.45, .74), (4.8, .8, .06), wood, bevel=.03); nc.box(f'lbase{k}', (x, 4.45, .37), (4.4, .5, .7), nc.mat('ltb', '#1e0f0a', rough=.5))
+            nc.sphere(f'llamp{k}', (x - 2.1, 4.55, .86), .09, m=nc.emissive('tlampg', '#ffe2b0', 6.)); nc.light('POINT', (x, 4.0, 1.4), 80, '#ffd9a0', .1, name=f'lll{k}')
+            for j, (gx, liq) in enumerate(((-1.9, '#e85a7a'), (-1.0, '#f2c14e'), (-.3, '#2ED3C6'), (.8, '#e85a7a'), (1.5, '#f2c14e'))):   # glasses with coloured drinks
+                nc.cyl(f'gl{k}{j}', (x + gx, 4.35, .84), .045, .14, nc.mat('glassm', '#cfe0ff', rough=.05, metal=.1)); nc.cyl(f'lq{k}{j}', (x + gx, 4.35, .82), .04, .08, nc.mat('lq' + liq, liq, rough=.2, emit=liq, estr=.4))
+            nc.cyl(f'bucket{k}', (x + .3, 4.5, .87), .1, .2, brass); nc.cyl(f'bottle{k}', (x + .3, 4.5, 1.02), .035, .3, nc.mat('bottlem', '#1d3a22', rough=.15))
     if shot == 'ropeup':
         for o in list(bpy.data.objects):
             if o.name == 'rope1': bpy.data.objects.remove(o)
