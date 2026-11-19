@@ -47,14 +47,16 @@ export function toon(c, P) {
     const sx = s * rx * .82, sy = bodyY - ry * .5, tgt = s < 0 ? P.handL : P.handR;
     let ex, ey;
     if (P.folded) {   // arms crossed: down to the elbow at the side, the forearm across the chest to the other elbow
-      const elx = s * rx * 1.02, ely = bodyY + ry * .05, hx2 = -s * rx * .62, hy2 = bodyY - ry * .22 + (s > 0 ? -h * .012 : h * .012), aw = h * .048 * (bulk > 1 ? 1.25 : 1), acol = P.sleeve || (P.jacket ? wear : col);
-      limb(c, [[sx, sy], [elx, ely], [hx2, hy2]], aw, acol, lw); shape(c, ell(c, hx2, hy2, h * .04 * (bulk > 1 ? 1.15 : 1), h * .038), col, lw); return [hx2, hy2]; }
+      const elx = s * rx * 1.02, ely = bodyY + ry * .05, hx2 = -s * rx * .62, hy2 = bodyY - ry * .22 + (s > 0 ? -h * .012 : h * .012), aw = h * .048 * (bulk > 1 ? 1 + (bulk - 1) * .7 : 1), acol = P.sleeve || (P.jacket ? wear : col);
+      limb(c, [[sx, sy], [elx, ely], [hx2, hy2]], aw, acol, lw);
+      if (bulk > 1.2) shape(c, ell(c, (sx + elx) / 2 + s * aw * .25, (sy + ely) / 2, aw * 1.0, aw * .82), acol, lw);   // the gym biceps bulge, even with arms crossed
+      shape(c, ell(c, hx2, hy2, h * .04 * (bulk > 1 ? 1.15 : 1), h * .038), col, lw); return [hx2, hy2]; }
     else if (tgt) { ex = tgt[0] * h; ey = tgt[1] * h; }
     else { const sw = walk ? Math.sin(phi + (s > 0 ? 0 : Math.PI)) * .06 : 0; ex = s * (rx + h * .06) + sw * h; ey = -h * .17; }
     const mx = (sx + ex) / 2 + s * h * .05, my = (sy + ey) / 2 + h * .025;
-    const aw = h * .048 * (bulk > 1 ? 1.25 : 1), acol = P.sleeve || (P.jacket ? wear : col);
+    const aw = h * .048 * (bulk > 1 ? 1 + (bulk - 1) * .7 : 1), acol = P.sleeve || (P.jacket ? wear : col);
     limb(c, [[sx, sy], [mx, my], [ex, ey]], aw, acol, lw);
-    if (bulk > 1.2 && !P.folded) shape(c, ell(c, (sx + mx) / 2, (sy + my) / 2, aw * .9, aw * .75), acol, lw);   // biceps
+    if (bulk > 1.2 && !P.folded) shape(c, ell(c, (sx + mx) / 2, (sy + my) / 2, aw * 1.05, aw * .85), acol, lw);   // biceps
     shape(c, ell(c, ex, ey, h * .04 * (bulk > 1 ? 1.15 : 1), h * .038), col, lw);
     if (P.cash === (s < 0 ? 'L' : 'R')) for (let k = 0; k < 3; k++) { c.save(); c.translate(ex + s * h * .02, ey - h * .045); c.rotate((k - 1) * .3 - s * .2); shape(c, () => { c.beginPath(); c.rect(-h * .055, -h * .028, h * .11, h * .056); }, '#7cc68a', lw * .6); c.restore(); }
     return [ex, ey];

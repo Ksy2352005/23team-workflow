@@ -5,13 +5,16 @@ import { toon } from './toon.js';
 import { WORDS } from './captions.js';
 const W = innerWidth, H = innerHeight, K = W / 1080;
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), ss = u => { u = clamp(u); return u * u * (3 - 2 * u); }, seg = (t, a, b) => clamp((t - a) / (b - a)), lerp = (a, b, u) => a + (b - a) * u;
-const T = i => WORDS[i][1], END = 66.3, LANG = new URLSearchParams(location.search).get('lang') || 'hu';
+// a pause in the voice after „Beállnak a sor végére.” (user 2026-11-20): the couple walk slower to the back of the line, and the man gets out of the taxi naturally
+const GAP_AT = 38.55, GAP = 3.8; WORDS.forEach(w => { if (w[1] >= GAP_AT) { w[1] += GAP; w[2] += GAP; } });
+const T = i => WORDS[i][1], END = 66.3 + GAP, LANG = new URLSearchParams(location.search).get('lang') || 'hu';
 const R = d => d * Math.PI / 180, sin = Math.sin, abs = Math.abs;
 const talk = (t, a, b, closed = 'smile') => (a <= t && t <= b) ? ((t * 7.5) % 1 < .55 ? 'open' : closed) : closed;
 
 // —— the cast (as in the 3D film) ——
 const OWN = { skin: 'owner', hair: { type: 'bowl', col: '#4a2a1c' }, tache: true, bow: '#d8333a', bowDots: true, buttons: true };
-const DOOR = { skin: 'blue1', wear: '#1c2560', jacket: true, hat: { type: 'cap', col: '#1c2560' }, tie: '#0e0e1a', bulk: 1.45, eyes: 'lids', mouth: 'flat' };
+const DOOR = { skin: 'blue1', wear: '#1c2560', jacket: true, hat: { type: 'cap', col: '#1c2560' }, tie: '#0e0e1a', bulk: 1.85,   // gym-bulky, big biceps (user 2026-11-20)
+  eyes: 'lids', mouth: 'flat' };
 const STR = [
   { skin: 'blue2', wear: '#e0b030', hat: { type: 'beanie', col: '#c23b3b', col2: '#f4f1e6' }, freckles: true, mouth: 'smile' },
   { skin: 'blue3', wear: '#8a5a3a', hat: { type: 'fedora', col: '#5a3a2a' }, tie: '#c23b3b', beard: true, eyes: 'lids', brows: 'angry', mouth: 'smirk' },
@@ -135,22 +138,35 @@ shot('nohome', T(106) - .05, { push: .06, cast(t, put) {
   const sh = t < T(108) + .2;
   for (const [x, p] of [[.4, MAN], [1.25, LADY]]) put([x, -2.1, .08], p.H, { ...p, mouth: sh ? 'open' : 'flat', eyes: sh ? 'wide' : 'lids', brows: sh ? 'raised' : 'angry', tilt: sh ? .05 * sin(t * 10) : 0 });
 } });
-shot('backofline', T(110) - .05, { pan: [0, 1], cast(t, put) {
-  const u = seg(t, T(110), T(114) - .2), mv = u > 0 && u < 1;
+// the couple walk slowly along the line to its end and step in behind the last person; the camera follows them (user 2026-11-20: slower)
+const BACK_U = t => seg(t, T(110) - .1, GAP_AT + 2.0);
+const backPath = (u, x0, xf) => u < .72 ? [lerp(x0, xf, ss(u / .72)), -1.9] : [xf, lerp(-1.9, -.62, ss((u - .72) / .28))];
+shot('backofline', T(110) - .05, { follow: t => { const u = BACK_U(t), a = backPath(u, 4.6, 9.65), b = backPath(u, 5.3, 10.35); return [(a[0] + b[0]) / 2, -1.2, 1.0]; }, cast(t, put) {
+  const u = BACK_U(t), mv = u > 0 && u < 1;
   for (let i = 0; i < 9; i++) put([2.0 + i * .85, -.6, .05], str(i, i > 3).H, { ...str(i, i > 3), f: .2 });
-  const path = (x0, xe, xf) => { if (u < .6) return [lerp(x0, xe, u / .6), -1.9]; const v = (u - .6) / .4; return [lerp(xe, xf, ss(Math.max(0, v * 2 - 1))), lerp(-1.9, -.7, ss(Math.min(1, v * 2)))]; };   // round the end post, then back along the line behind the rope
-  put([...path(2.0, 9.7, 7.85), .08], 1.68, { ...MAN, f: 1, eyes: 'lids', brows: 'angry', mouth: 'flat', walk: mv ? 1 : 0, phi: t * 9 });
-  put([...path(1.2, 10.2, 8.5), .08], 1.58, { ...LADY, f: 1, eyes: 'lids', brows: 'angry', mouth: 'flat', walk: mv ? 1 : 0, phi: t * 9 + 1 });
+  put([...backPath(u, 4.6, 9.65), .08], 1.68, { ...MAN, f: u < .72 ? 1 : .2, eyes: 'lids', brows: 'angry', mouth: 'flat', back: u > .74 && u < .98, walk: mv ? 1 : 0, phi: t * 6 });
+  put([...backPath(u, 5.3, 10.35), .08], 1.58, { ...LADY, f: u < .72 ? 1 : .2, eyes: 'lids', brows: 'angry', mouth: 'flat', back: u > .74 && u < .98, walk: mv ? 1 : 0, phi: t * 6 + 1 });
 } });
-shot('taxi', T(114) - .05, { push: .05, cast(t, put) {
-  const u = ss(seg(t, T(115), T(118)));
-  put([10.2, lerp(-4.7, -3.6, u), .08], 1.7, { ...HATMAN, walk: u > 0 && u < 1 ? 1 : 0, phi: t * 8 });
+shot('taxi', GAP_AT + 2.2, { push: .05, over(c, t, X) {   // the rear door swings open, the man climbs out and stands up, then walks off (user 2026-11-20: "all natural")
+  const t0 = GAP_AT + 2.2, th = 1.25 * ss(seg(t, t0 + .2, t0 + .8)), Hx = 10.35, Hy = -4.5, DW = 1.1;
+  const quad = (pts, fill) => { const q = pts.map(X); c.beginPath(); q.forEach((p, k) => k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fillStyle = fill; c.fill(); c.lineWidth = 2.2; c.strokeStyle = '#1a1220'; c.stroke(); };
+  const hole = [[9.25, -4.49, .32], [Hx, -4.49, .32], [Hx, -4.49, 1.45], [9.25, -4.49, 1.45]];
+  if (th > .01) quad(hole, '#1a1426');
+  const v = ss(seg(t, t0 + .7, t0 + 1.6)), w = ss(seg(t, t0 + 1.6, t0 + 3.1));
+  const pos = [lerp(9.8, 9.75, v) + lerp(0, 1.0, w), lerp(-4.62, -4.05, v) + lerp(0, .75, w), .08], inside = v < .6;
+  const man = () => { const a = X(pos), b = X([pos[0], pos[1], pos[2] + 1.7]); const P = { ...HATMAN, f: w > 0 ? .7 : .5, x: a[0], y: a[1] + (1 - v) * (a[1] - b[1]) * .32, h: (a[1] - b[1]) * .94, sq: .25 * (1 - v), lean: .25 * (1 - v), walk: w > 0 && w < 1 ? 1 : 0, phi: t * 7 };
+    if (inside) { c.save(); const q = hole.map(X); c.beginPath(); q.forEach((p, k) => k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.lineTo(q[3][0], q[3][1] - 600); c.lineTo(q[2][0], q[2][1] - 600); c.closePath(); c.clip(); toon(c, P); c.restore(); } else toon(c, P); };
+  if (th > .01 && inside) man();
+  if (th > .01) { const F = [Hx - DW * Math.cos(th), Hy + DW * Math.sin(th)], at = z => [[Hx, Hy, z[0]], [F[0], F[1], z[0]], [F[0], F[1], z[1]], [Hx, Hy, z[1]]];
+    quad(at([.32, .95]), '#f2bf2e'); quad(at([.95, 1.45]), '#f2bf2e'); const g = at([1.0, 1.4]).map((p, k) => k === 0 || k === 3 ? [lerp(Hx, F[0], .1), lerp(Hy, F[1], .1), p[2]] : [lerp(Hx, F[0], .9), lerp(Hy, F[1], .9), p[2]]); quad(g, '#22304e');
+    const band = at([.83, .89]); quad(band, '#151018'); }
+  if (!inside) man();
 } });
 shot('joins', T(119) - .05, { push: .06, cast(t, put) {
   const u = seg(t, T(119), T(121)), look = ss(seg(t, T(122), T(123)));
-  put([6.9, -.6, .05], str(6, true).H, { ...str(6, true) });
-  put([7.85, -.7, .08], 1.68, { ...MAN, f: .5 * look, mouth: 'smile' }); put([8.5, -.7, .08], 1.58, { ...LADY, f: .45 * look, mouth: 'smile' });   // between two posts, behind the rope
-  put([lerp(10.8, 9.6, u), lerp(-1.8, -.7, u), .08], 1.7, { ...HATMAN, f: u < 1 ? -.8 : .3 * sin(t), walk: u > 0 && u < 1 ? 1 : 0, phi: t * 8 });
+  put([8.8, -.6, .05], str(8, true).H, { ...str(8, true) });
+  put([9.65, -.62, .08], 1.68, { ...MAN, f: .5 * look, mouth: 'smile' }); put([10.35, -.62, .08], 1.58, { ...LADY, f: .45 * look, mouth: 'smile' });   // at the end of the line, past the rope's last post
+  put([lerp(12.2, 11.05, u), lerp(-1.8, -.62, u), .08], 1.7, { ...HATMAN, f: u < 1 ? -.8 : .3 * sin(t), walk: u > 0 && u < 1 ? 1 : 0, phi: t * 8 });
 } });
 shot('eleven', T(128) - .05, { push: .06, cast(t, put) {
   for (let i = 0; i < 40; i++) put([2.0 + i * .78, -.6, .05], str(i, true).H, { ...str(i, true), f: ((i * 37) % 30 - 15) / 20, tilt: .05 * sin(t + i) });
@@ -189,10 +205,17 @@ shot('cheer', T(158) - .05, { push: .07, cast(t, put) {   // the dance floor (us
     put([x + .12 * sin(ph * .5), y, .05], p.H || 1.58, { ...p, ...hands, eyes: 'happy', mouth: ['laugh', 'grin', 'smile', 'open'][k % 4], tilt: .14 * sin(ph * .5), bob: .035 * j, f: .5 * sin(ph * .25 + k) }); k++;
   }
 } });
+const HAND = [0, 1, 2, 3].map(k => T(165) + .15 + k * .55);   // the owner hands cash to one stranger after another at the back door (user 2026-11-20); a cash sound on each (mix.py)
 shot('pays40', T(165) - .05, { push: .06, cast(t, put) {
-  const w = abs(sin((t - T(165)) * 3.5));
-  put([-12, -1.0, .08], 1.7, { ...OWN, f: .6, eyes: 'happy', mouth: 'grin', cash: 'R', handR: [.25, -.4 - .1 * w], handL: [-.2, -.35] });
-  for (let i = 0; i < 4; i++) put([-10.6 + i * .8, -1.3, .05], SH[(i * 7) % 3], { ...str(i), f: -.9, mouth: i ? str(i).mouth : 'grin', handL: i ? undefined : [-.22, -.4 - .1 * w] });
+  const reach = Math.max(...HAND.map(hk => Math.exp(-(((t - hk) / .14) ** 2))));
+  put([-12, -1.0, .08], 1.7, { ...OWN, f: .6, eyes: 'happy', mouth: 'grin', cash: 'R', handR: [lerp(.22, .34, reach), lerp(-.4, -.52, reach)], handL: [-.2, -.35] });
+  const slot = s => [-11.2 + s * .72, -1.25 - s * .06];
+  for (let i = 0; i < 7; i++) {
+    const L = i < 4 ? HAND[i] + .12 : 1e9, p = str(i + 1), s = i - HAND.slice(0, Math.min(i, 4)).reduce((a, hk) => a + ss(seg(t, hk + .12, hk + .55)), 0);
+    if (t > L) { const v = seg(t, L, L + .7); if (v >= 1) continue; put([lerp(-11.2, -9.0, v), lerp(-1.25, -.5, v), .05], SH[(i * 7) % 3], { ...p, back: true, walk: 1, phi: t * 9 + i, cash: 'L', handL: [-.25, -.5], mouth: 'grin', alpha: 1 - ss(seg(v, .6, 1)) }); continue; }
+    const [x, y] = slot(s), got = i < 4 && t > HAND[i] - .05;
+    put([x, y, .05], SH[(i * 7) % 3], { ...p, f: -.9, eyes: got ? 'happy' : p.eyes, mouth: got ? 'grin' : p.mouth, walk: abs(s - Math.round(s)) > .05 ? 1 : 0, phi: t * 9 + i, ...(s < .5 ? { handL: [-.26, -.45 - .08 * (got ? 1 : reach)], cash: got ? 'L' : undefined } : {}) });
+  }
 } });
 shot('sendshome', T(172) - .05, { push: .03, cast(t, put) {
   const u = seg(t, T(172), T(175) + .6);
@@ -212,7 +235,10 @@ function lounge(t, put, X, t0, turn) {
   });
 }
 shot('want', T(188) - .05, { push: .05, cast(t, put, X) { lounge(t, put, X, T(188), false); } });
-shot('cannot', T(197) - .05, { push: .08, cast(t, put, X) { lounge(t, put, X, T(197) - 2.5, true); } });
+shot('cannot', T(197) - .05, { push: .06, cast(t, put) {   // the end: the guests standing on the dance floor, dancing with their drinks (user 2026-11-20)
+  for (let k = 0; k < 10; k++) { const p = str(k + 20, true), ph = t * 7 + k * 1.7, j = abs(sin(ph)); put([-3.2 + (k % 5) * 1.6 + (k > 4 ? .8 : 0), 10.6 - (k > 4 ? 1.2 : 0), .05], p.H, { ...p, eyes: 'happy', mouth: 'grin', handL: [-.26, -.8 - .1 * j], handR: [.26, -.8 - .1 * (1 - j)], bob: .03 * j, tilt: .12 * sin(ph * .5) }); }
+  GUESTS.forEach(([x, p, mo, dc], i) => { const ph = t * 6.5 + i * 1.9, j = abs(sin(ph)); put([x * 1.15 - .3, 7.9 - (i % 2) * .35, .05], p.H || 1.6, { ...p, eyes: 'happy', mouth: mo, f: .4 * sin(ph * .3 + i), handL: [-.26, -.62 + .14 * sin(ph)], handR: [.25, -.62 - .04 * j], drink: dc, bob: .035 * j, tilt: .12 * sin(ph * .5) }); });
+} });
 
 // —— props held in the band and bar shots (drawn on the character's screen position) ——
 function prop(c, id, x, y, h) {
@@ -232,7 +258,7 @@ function drinkProp(c, p) {   // a cocktail glass held in the right hand
   c.beginPath(); c.moveTo(0, -s * .45); c.lineTo(0, s * .15); c.moveTo(-s * .25, s * .15); c.lineTo(s * .25, s * .15); c.stroke(); c.restore();
 }
 // the rope line, drawn here (not in the plates) so the people in the line stand behind it (user 2026-11-20)
-const FRONT = new Set(['opened', 'pays', 'line', 'notin', 'opening', 'returns', 'rope', 'lineup', 'donttalk', 'wait', 'turns', 'sendaway', 'window', '300', 'whyno', 'couple', 'folds', 'nottonight', 'nohome', 'backofline', 'joins', 'eleven', 'money', 'nods', 'ropeup']);
+const FRONT = new Set(['opened', 'pays', 'line', 'notin', 'opening', 'rope', 'lineup', 'donttalk', 'wait', 'turns', 'sendaway', 'window', '300', 'whyno', 'couple', 'folds', 'nottonight', 'nohome', 'backofline', 'joins', 'eleven', 'money', 'nods', 'ropeup']);
 const POSTS = [1.5, 3.0, 4.5, 6.0, 7.5, 9.0], RY = -1.25;
 function ropeItems(list, X, skipFirst) {
   const gold = '#e8c35a';
@@ -260,6 +286,7 @@ function viewOf(s, t) {
   if (s.zoomFrom) z *= lerp(s.zoomFrom, 1, ss(u));
   if (s.zoomAt && t >= s.zoomAt[0]) { z *= 1 + s.zoomAt[1]; oy -= cam.h * .07; }
   if (s.pan) { const a = 540 / z, b = cam.w - 540 / z; ox = lerp(lerp(a, b, s.pan[0]), lerp(a, b, s.pan[1]), u); }
+  if (s.follow) { const a = 540 / z, b = cam.w - 540 / z; ox = clamp(project(cam, s.follow(t))[0], a, b); }
   if (s.panY) { const half = 960 / z; oy = lerp(lerp(half, cam.h - half, s.panY[0]), lerp(half, cam.h - half, s.panY[1]), ss(u)); }
   return { z, ox, oy };
 }
@@ -295,7 +322,7 @@ const CHUNKS = (() => { const out = []; let cur = [], len = 0; WORDS.forEach((w,
 function capHU(c, t) {
   const n = CHUNKS.findIndex((k, j) => t >= T(k[0]) - .02 && (j + 1 >= CHUNKS.length || t < T(CHUNKS[j + 1][0]) - .02)); if (n < 0) return; const ch = CHUNKS[n];
   if (t > WORDS[ch[ch.length - 1]][2] + 1.2) return;
-  c.save(); c.font = '700 74px "Montserrat"'; c.textBaseline = 'middle'; c.lineJoin = 'round';
+  c.save(); c.font = '700 66px "Montserrat"'; c.textBaseline = 'middle'; c.lineJoin = 'round';
   const words = ch.map(i => WORDS[i][0]), sp = c.measureText(' ').width, wid = words.map(w => c.measureText(w).width), tot = wid.reduce((a, b) => a + b, 0) + sp * (words.length - 1);
   const sc = Math.min(1, 900 / tot), y = 1180, pop = sc * (1 + .08 * (1 - ss(seg(t, T(ch[0]) - .02, T(ch[0]) + .1))));
   c.translate(540, y); c.scale(pop, pop); c.translate(-540, -y); let x = 540 - tot / 2;

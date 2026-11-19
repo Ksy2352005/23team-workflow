@@ -37,9 +37,9 @@ SHOTS = {
  'folds': ('front', (-1.0, -4.8, 1.6), (-1.3, -1.0, 1.35), 30, 1),
  'nottonight': ('front', (-1.6, -2.7, 1.72), (-1.65, -1.0, 1.62), 40, 1),
  'nohome': ('front', (.82, -4.9, 1.4), (.82, -2.1, 1.15), 30, 1),
- 'backofline': ('front', (3.0, -5.2, 1.6), (5.5, -1.2, 1.0), 28, 2.0),
+ 'backofline': ('front', (4.6, -5.2, 1.6), (7.1, -1.2, 1.0), 28, 2.4),
  'taxi': ('taxi', (13.6, -2.2, 1.6), (10.3, -4.4, 1.1), 30, 1),
- 'joins': ('front', (8.9, -3.9, 1.35), (8.9, -.7, 1.1), 30, 1),
+ 'joins': ('front', (10.1, -3.9, 1.35), (10.1, -.7, 1.1), 30, 1),
  'eleven': ('front', (1.0, -3.4, 2.6), (32, -.4, 1.0), 28, 1),
  'midnight': ('block', (43, -18, 15), (27, 4, 1.0), 22, 1),
  'money': ('front', (-1.7, -3.9, 1.65), (-1.7, -1.0, 1.45), 32, 1),
@@ -51,17 +51,17 @@ SHOTS = {
  'never': ('alley', (-12, -4.0, 1.45), (-12, -.6, 1.2), 32, 1),
  'nobody': ('hall', (0, -4.0, 3.2), (0, 9, 1.4), 26, 1),
  'want': ('hall', (0, 2.0, 1.6), (0, 5.0, 1.2), 22, 1),   # guests in armchairs at lounge tables, drinking (user 2026-11-20)
- 'cannot': ('hall', (1.2, 3.3, 1.45), (-.4, 5.1, 1.15), 24, 1),   # a second angle on the lounge tables to the end (user 2026-11-20)
+ 'cannot': ('hall', (1.6, 4.3, 1.75), (-.4, 9.0, 1.2), 26, 1),   # the end on the dance floor, closer (user 2026-11-20: standing, dancing, drinking)   # a second angle on the lounge tables to the end (user 2026-11-20)
 }
 
 # the camera a little further back (user 2026-11-19: "very close up, bring the camera a bit further"): a wider lens on the close shots
 WIDER = {**{k: .72 for k in ('opened', 'pays', 'notin', 'returns', 'rope', 'lineup', 'donttalk', 'wait', 'turns', 'sendaway', 'window', 'couple', 'nohome',
-                             'money', 'nods', 'ropeup', 'pays40', 'sendshome', 'never', 'want', 'cannot', 'taxi', 'bar')},
+                             'money', 'nods', 'ropeup', 'pays40', 'sendshome', 'never', 'want', 'taxi', 'bar')},
          **{k: .8 for k in ('spent', 'backdoor', '300', 'whyno', 'folds', 'nottonight', 'joins', 'backofline', 'band', 'empty')}}
 
 # the shots that were still close after the wider lens: the camera itself steps back from what it looks at (a wide lens up close bends the faces)
 BACK = {'opened': 1.5, 'notin': 2.4, 'donttalk': 2.7, 'wait': 1.3, 'turns': 1.3, 'sendaway': 2.6, '300': 2.7, 'whyno': 1.3, 'nottonight': 3.0, 'nohome': 1.3,
-        'money': 1.5, 'nods': 2.8, 'cannot': 2.4, 'pays': 1.3, 'spent': 1.4}
+        'money': 1.5, 'nods': 2.8, 'pays': 1.3, 'spent': 1.4}
 
 def blue_world(nc):   # the brand's blue world, a little lighter than before so it reads blue (user 2026-11-18); the red door, rope, carpet and seats stay as warm accents
     nc.brick_mat('brick', c1='#26357a', c2='#1f2c68', mortar='#10173a', scale=3.)
@@ -95,7 +95,7 @@ def build(shot):
     if kind == 'front':   # the rope line is drawn in 2D now, so people stand behind it, not mixed with it (user 2026-11-20)
         for o in list(bpy.data.objects):
             if o.name.startswith(('post', 'rope')) and not o.name.startswith('poster'): bpy.data.objects.remove(o)
-    if shot == 'cheer':   # a dance floor where the front seats were: big glowing tiles, a mirror ball, coloured spots
+    if shot in ('cheer', 'cannot'):   # a dance floor where the front seats were: big glowing tiles, a mirror ball, coloured spots
         for o in list(bpy.data.objects):
             if (o.name.startswith('seat') and o.instance_type == 'COLLECTION') or o.name.startswith(('tab', 'tlamp')): bpy.data.objects.remove(o)
         cols = ['#1a9a90', '#b8306e', '#5236c0', '#b08a2a']
@@ -103,7 +103,7 @@ def build(shot):
             for c in range(11): nc.box(f'dtile{r}_{c}', (-6.0 + c * 1.2, 1.6 + r * 1.2, .01), (1.16, 1.16, .02), nc.mat('dt' + cols[(r + c) % 4], cols[(r + c) % 4], rough=.3, emit=cols[(r + c) % 4], estr=.18))
         nc.sphere('mirrorball', (0, 6.5, 6.6), .55, m=nc.mat('mball', '#d8dce8', rough=.12, metal=1.))
         for k, (x, col) in enumerate(((-5, '#ff4fa0'), (0, '#2ED3C6'), (5, '#7a5cff'))): nc.light('SPOT', (x, 4, 8.5), 1500, col, .3, name=f'dspot{k}')
-    if shot in ('want', 'cannot'):   # lounge: the front rows cleared, two low tables with drinks in front of a row of armchairs (y 5.2)
+    if shot == 'want':   # lounge: the front rows cleared, two low tables with drinks in front of a row of armchairs (y 5.2)
         for o in list(bpy.data.objects):
             if (o.name.startswith('seat') and o.instance_type == 'COLLECTION') or o.name.startswith(('tab', 'tlamp')):
                 x, y = o.location[0], o.location[1]
